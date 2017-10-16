@@ -38,7 +38,7 @@ pub fn template_login_fail(user: &str, reason: &str) -> String {
 "##, user=user, why=reason)
 }
 
-pub fn template_login_dashboard() -> &'static str {
+pub fn template_login_user() -> &'static str {
     r##"
 <!DOCTYPE html>
 <html lang="en">
@@ -66,10 +66,7 @@ pub fn template_login_dashboard() -> &'static str {
     <body>
         <div class="main-wrapper">
             
-            <div class="alert alert-danger" role="alert">
-                Login failed: Incorrect password
-            </div>
-            <form action="http://localhost:8000/dashboard" name="login_form" method="post" onsubmit="return validate_form()">
+            <form action="http://localhost:8000/user" name="login_form" method="post" onsubmit="return validate_form()">
                 <div class="form-group">
                     <label for="usernameField">Email Address</label>
                     <input type="text" name="username" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">

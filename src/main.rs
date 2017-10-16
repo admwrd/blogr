@@ -73,9 +73,25 @@ fn admin_process(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> Lo
     form.into_inner().redirect("/admin", "/admin", cookies)
 }
 
+#[get("/user")]
+fn user_page(data: UserCookie) -> Html<String> {
+    let body = format!("Welcome {user}! You are at the user page.", user = data.username);
+    template(&body)
+}
+
+#[get("/user", rank = 2)]
+fn user_login() -> Html<&'static str> {
+    Html(template_login_user())
+}
+
+#[post("/user", data = "<form>")]
+fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> LoginFormRedirect {
+    form.into_inner().redirect("/user", "/user", cookies)
+}
+
 #[get("/")]
 fn index() -> Html<String> {
-    let body = r#"Hello! This is a blog.<br><a href="/admin">Go to admin page</a>"#;
+    let body = r#"Hello! This is a blog.<br><a href="/user">User page</a><br><a href="/admin">Go to admin page</a>"#;
     template(&body)
 }
 
@@ -89,6 +105,9 @@ fn main() {
         admin_page,
         admin_login,
         admin_process,
+        user_page,
+        user_login,
+        user_process,
         index,
         static_files
         ]).launch();
