@@ -1,0 +1,12 @@
+
+body {
+    width: 90%;
+    margin: 20px auto;
+    
+}
+
+.main-wrapper {
+    width: 40%;
+    min-width: 50ch;
+}
+
