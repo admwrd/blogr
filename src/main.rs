@@ -19,12 +19,11 @@ extern crate time;
 
 use std::time::Instant;
 
-use std::str;
-use std::io;
+use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 
-use rocket::response::{content, NamedFile};
+use rocket::response::{content, NamedFile, Redirect};
 use rocket::{Request, Data, Outcome};
 use rocket::data::FromData;
 use rocket::response::content::Html;
@@ -56,6 +55,7 @@ use user_data::*;
 
 mod login_form_status;
 use login_form_status::*;
+use login_form_status::LoginFormRedirect;
 
 #[get("/admin")]
 fn admin_page(data: AdminCookie) -> Html<String> {
@@ -70,7 +70,10 @@ fn admin_login() -> Html<&'static str> {
 
 #[post("/admin", data = "<form>")]
 fn admin_process(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
-    form.into_inner().redirect("/admin", "/admin", cookies)
+    let inside = form.into_inner();
+    let failurl = inside.fail_str();
+    // form.into_inner().redirect("/admin", cookies).unwrap_or( LoginFormRedirect(Redirect::to(failurl)) )
+    inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(failurl)) )
 }
 
 #[get("/user")]
@@ -86,7 +89,9 @@ fn user_login() -> Html<&'static str> {
 
 #[post("/user", data = "<form>")]
 fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> LoginFormRedirect {
-    form.into_inner().redirect("/user", "/user", cookies)
+    let inside = form.into_inner();
+    let failurl = inside.fail_str();
+    inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(failurl)) )
 }
 
 #[get("/")]

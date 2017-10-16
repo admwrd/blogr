@@ -1,4 +1,7 @@
 // use cookies::*;
+
+use std::env;
+
 use rocket::Response;
 use rocket::response::Redirect;
 use rocket::response::Responder;
@@ -30,9 +33,24 @@ pub enum LoginFormStatus<A>{
     Failed(A)
 }
 
+
+pub trait AuthFail {
+    fn reason(&self) -> String;
+    fn reason_str(&self) -> &str;
+}
+
 pub struct LoginFormRedirect(Redirect);
 
-impl<A: Authenticator + CookieId> LoginFormStatus<A> {
+// pub struct FallbackRedirect<'a>(&'a str);
+
+impl<'a, A: 'a> LoginFormStatus<A> where A: Authenticator + CookieId + AuthFail {
+    pub fn fail_str(self) -> &'a str {
+        // let 
+        match self {
+            LoginFormStatus::Succeed(inside) => inside.reason_str(),
+            LoginFormStatus::Failed(inside) => inside.reason_str(),
+        }
+    }
     /// Returns the user id from an instance of Authenticator
     pub fn get_authenticator (&self) -> &A{
         match self{
@@ -42,25 +60,36 @@ impl<A: Authenticator + CookieId> LoginFormStatus<A> {
     }
 
     /// Generates a succeed response
+    // fn succeed(self, url: &str, mut cookies: Cookies) -> Redirect {
     fn succeed(self, url: &'static str, mut cookies: Cookies) -> Redirect {
         let cookie_identifier = A::get_cookie_id();
 
         cookies.add_private(Cookie::new(cookie_identifier, self.get_authenticator().user().to_string()));
-        Redirect::to(url)
+        Redirect::to(&url)
     }
 
     /// Generates a failed response
+    // fn failed(self, url: &str) -> Redirect {
     fn failed(self, url: &'static str) -> Redirect {
-        Redirect::to(url)
+        // match env::var(url) {
+        //     Ok(val) => Redirect::to(&val),
+        //     Err(er) => Redirect::to(&fallback),
+        // }
+        Redirect::to(&url)
     }
 
-    pub fn redirect(self, success_url: &'static str, failure_url: &'static str, cookies: Cookies) -> LoginFormRedirect{
-        let redirect = match self {
-          LoginFormStatus::Succeed(_) => self.succeed(success_url, cookies),
-          LoginFormStatus::Failed(_) => self.failed(failure_url)
-        };
-
-        LoginFormRedirect(redirect)
+    // pub fn redirect(self, success_url: &'static str, failure_url: &'static str, cookies: Cookies) -> LoginFormRedirect{
+    pub fn redirect(self, success_url: &'static str, cookies: Cookies) -> Option<LoginFormRedirect> {
+        // let redirect = match self {
+        match self {
+          // LoginFormStatus::Succeed(_) => self.succeed(success_url, cookies),
+          // LoginFormStatus::Failed(_) => self.failed(failure_url)
+          LoginFormStatus::Succeed(_) => Some(LoginFormRedirect(self.succeed(success_url, cookies))),
+          LoginFormStatus::Failed(_) => None,
+          // LoginFormStatus::Failed(_) => self.failed(failure_url, fallback)
+        }
+        
+        // Some(LoginFormRedirect(redirect))
     }
 }
 
@@ -68,20 +97,27 @@ impl<'f,A: Authenticator> FromForm<'f> for LoginFormStatus<A>{
     type Error = &'static str;
     
     fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
-        let mut user_pass = HashMap::new();
-
+        // let mut user_pass = HashMap::new();
+        let mut user = String::new();
+        let mut pass = String::new();
+        
+        
         for (key,value) in form_items{
             match key.as_str(){
-                "username" => user_pass.insert("username", value).map_or((), |_v| ()),
-                "password" => user_pass.insert("password", value).map_or((), |_v| ()),
+                // "username" => user_pass.insert("username", value).map_or((), |_v| ()),
+                // "password" => user_pass.insert("password", value).map_or((), |_v| ()),
+                "username" => { user = value.to_string() },
+                "password" => { pass = value.to_string() }
                 _ => ()
             }
         }
 
-        if user_pass.get("username").is_none() || user_pass.get("password").is_none() {
+        // if user_pass.get("username").is_none() || user_pass.get("password").is_none() {
+        if user == "" || pass == "" {
             Err("invalid form")
         } else {
-            let result = A::check_credentials(user_pass.get("username").unwrap().to_string(), user_pass.get("password").unwrap().to_string());
+            // let result = A::check_credentials(user_pass.get("username").unwrap().to_string(), user_pass.get("password").unwrap().to_string());
+            let result = A::check_credentials(user, pass);
 
             Ok(match result{
                 Ok(authenticator) => LoginFormStatus::Succeed(authenticator),
@@ -91,8 +127,20 @@ impl<'f,A: Authenticator> FromForm<'f> for LoginFormStatus<A>{
     }
 }
 
+impl LoginFormRedirect {
+    pub fn new(r: Redirect) -> LoginFormRedirect {
+        LoginFormRedirect(r)
+    }
+}
+
 impl<'r> Responder<'r> for LoginFormRedirect{
     fn respond_to(self, request: &Request) -> Result<Response<'r>, Status>{
         self.0.respond_to(request)
     }
 }
+
+// impl<'r, 'a> Responder<'r> for FallbackRedirect<'a> {
+//     fn respond_to(self, request: &Request) -> Result<Response<'r>, Status> {
+//         self.0.
+//     }
+// }

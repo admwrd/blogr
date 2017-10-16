@@ -2,10 +2,29 @@
 use auth::authenticator::Authenticator;
 use rocket::config::{Config, Environment};
 use cookie_data::{SECRET_KEY, CookieId};
+use login_form_status::AuthFail;
 
 pub struct AdminAuth {
     pub username: String,
     password: String,
+    pub failreason: Option<String>,
+}
+
+impl AuthFail for AdminAuth {
+    fn reason(&self) -> String {
+        if let Some(ref msg) = self.failreason {
+            msg.clone()
+        } else {
+            String::new()
+        }
+    }
+    fn reason_str(&self) -> &str {
+        if let Some(ref msg) = self.failreason {
+            msg
+        } else {
+            ""
+        }
+    }
 }
 
 impl AdminAuth {
@@ -13,6 +32,7 @@ impl AdminAuth {
         AdminAuth {
             username,
             password,
+            failreason: None,
         }
     }
     pub fn authenticate(username: &str, password: &str) -> Result<Self, Self> {
