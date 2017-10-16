@@ -10,7 +10,7 @@ use ::rocket::Request;
 use ::rocket::outcome::Outcome;
 use ::rocket::config::{Config, Environment};
 
-// Todo: allow AdminCookie to take a generic parameter that
+// Todo: possibly: allow AdminCookie to take a generic parameter that
 //         will be a struct containing the user data
 //       make a trait that will create the struct
 //         it should take the username from the Cookie and look

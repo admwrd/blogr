@@ -39,8 +39,8 @@ use auth::authenticator::Authenticator;
 mod layout;
 use layout::*;
 
-mod cookies;
-use cookies::*;
+// mod cookies;
+// use cookies::*;
 
 mod cookie_data;
 use cookie_data::*;
