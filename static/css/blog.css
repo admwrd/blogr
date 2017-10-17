@@ -10,3 +10,7 @@ body {
     min-width: 50ch;
 }
 
+.form-auth-alert {
+    display: inline;
+    padding: 2px 10px;
+}

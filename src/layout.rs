@@ -90,7 +90,7 @@ pub fn template_login_user() -> &'static str {
         </style>
     </head>
     <body>
-        <div class="main-wrapper">
+        <div id="mainWrapper" class="main-wrapper">
             
             <form action="http://localhost:8000/user" name="login_form" method="post" onsubmit="return validate_form()">
                 <div class="form-group">
@@ -120,6 +120,7 @@ pub fn template_login_user() -> &'static str {
         <!-- Custom JavaScript -->
         <script src="blog.js">
         <script type="text/javascript">
+        // $(".alert).alert();
         </script>
         
     </body>
@@ -153,7 +154,7 @@ pub fn template_login_admin() -> &'static str {
         </style>
     </head>
     <body>
-        <div class="main-wrapper">
+        <div id="mainWrapper" class="main-wrapper">
             
             <form action="http://localhost:8000/admin" name="login_form" method="post" onsubmit="return validate_form()">
                 <div class="form-group">
