@@ -1,4 +1,27 @@
 
+/* Todo:
+  AUTHENTICATE
+    Setup a database with a user table and query the username and password for authentication
+  ARTICLES
+    Setup a database table with an article table
+  VIEW
+    Add: articles in a category, articles with a tag, single article
+  JOIN
+    Add a signup page
+    
+  COMMENTS
+    Add comments for logged in users
+      -Users that are not logged in will just see a link to 
+          Login to Comment instead of a post new comment form
+      -List all comments below the article
+      -Allow admin users to delete comments
+      -Routes: Admin Users: can create comments and delete comments
+               Regular users: can create comments and delete own comments
+               Public: can view comments and see a link to login to post comments   
+    
+
+*/
+
 
 #![feature(custom_derive)]
 #![feature(plugin)]
@@ -8,13 +31,13 @@
 extern crate rocket;
 extern crate rocket_simpleauth as auth;
 
-// extern crate chrono;
-// #[macro_use] extern crate lazy_static;
-// extern crate regex;
+extern crate chrono;
+#[macro_use] extern crate lazy_static;
+extern crate regex;
 extern crate time;
 
-// use regex::Regex;
-// use chrono::prelude::*;
+use regex::Regex;
+use chrono::prelude::*;
 // use multipart::server::Multipart;
 
 use std::time::Instant;
@@ -56,6 +79,12 @@ use user_data::*;
 mod login_form_status;
 use login_form_status::*;
 use login_form_status::LoginFormRedirect;
+
+mod articles;
+use articles::*;
+
+mod view;
+use view::*;
 
 #[get("/admin")]
 fn admin_page(data: AdminCookie) -> Html<String> {
@@ -125,6 +154,69 @@ fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> Logi
     inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
 }
 
+#[get("/view")]
+fn all_articles() -> Html<String> {
+    let mut content = String::new();
+    
+    template(&content)
+}
+
+
+#[get("/view?<category>")]
+fn view_category(category: Category) -> Html<String> {
+    let mut content = String::new();
+    
+    template(&content)
+}
+
+
+#[get("/view?<tag>", rank = 2)]
+fn view_tag(tag: Tag) -> Html<String> {
+    let mut content = String::new();
+    
+    template(&content)
+}
+
+#[get("/article?<aid>")]
+fn view_article(aid: ArticleId) -> Html<String> {
+    let article = aid.retrieve();
+    let mut content = String::new();
+    
+    template(&content)
+}
+
+#[get("/article")]
+fn article_not_found() -> Html<String> {
+    let mut content = String::new();
+    
+    template(&content)
+}
+
+#[post("/article", data = "<form>")]
+
+fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form<ArticleForm>) -> Html<String> {
+    let result = form.into_inner().save();
+    let mut content = String::new();
+    
+    match result {
+        Ok(article) => {
+            // article, admin, user, username
+            let is_admin = if admin.is_some() { true } else { false };
+            let is_user = if user.is_some() { true } else { false };
+            let username: Option<String> = if is_user { Some(user.unwrap().username) } else if is_admin { Some(admin.unwrap().username) } else { None };
+            content.push_str(template_article( article, is_admin, is_user, username) );
+        },
+        Err(why) => {
+            content.push_str(&format!("Could not post the blog article.  Reason: {}", why))
+        },
+    }
+    
+    template(&content)
+}
+
+
+
+
 #[get("/")]
 fn index() -> Html<String> {
     let body = r#"Hello! This is a blog.<br><a href="/user">User page</a><br><a href="/admin">Go to admin page</a>"#;
@@ -142,10 +234,19 @@ fn main() {
         admin_login,
         admin_retry,
         admin_process,
+        
         user_page,
         user_retry,
         user_login,
         user_process,
+        
+        all_articles,
+        view_category,
+        view_tag,
+        view_article,
+        article_not_found,
+        post_article,
+        
         index,
         static_files
         ]).launch();

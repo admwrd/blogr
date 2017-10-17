@@ -52,6 +52,32 @@ pub struct LoginFormRedirect(Redirect);
 
 // pub struct FallbackRedirect<'a>(&'a str);
 
+
+
+pub fn sanitize(string: &str) -> String {
+    lazy_static! {
+        static ref SANITARY: Regex = Regex::new(r#"^\w+$"#).unwrap();
+        static ref SANITIZE: Regex = Regex::new(r#"\W+"#).unwrap();
+    }
+    if SANITARY.is_match(string) {
+        string.to_string()
+    } else {
+        SANITIZE.replace_all(string, "").to_string()
+    }
+}
+
+pub fn sanitize_password(string: &str) -> String {
+    lazy_static! {
+        static ref SANITARY_PASSWORD: Regex = Regex::new(r#"^[A-Fa-f0-9]+$"#).unwrap();
+        static ref SANITIZE_PASSWORD: Regex = Regex::new(r#"[^A-Fa-f0-9]+"#).unwrap();
+    }
+    if SANITARY_PASSWORD.is_match(string) {
+        string.to_string()
+    } else {
+        SANITIZE_PASSWORD.replace_all(string, "").to_string()
+    }
+}
+
 impl<'a, A: 'a> LoginFormStatus<A> where A: Authenticator + CookieId + AuthFail {
     pub fn fail_str(&self) -> String {
         // let 
@@ -129,22 +155,22 @@ impl<'f,A: Authenticator> FromForm<'f> for LoginFormStatus<A>{
             match key.as_str(){
                 // "username" => user_pass.insert("username", value).map_or((), |_v| ()),
                 // "password" => user_pass.insert("password", value).map_or((), |_v| ()),
-                "username" => { user = value.to_string() },
-                "password" => { pass = value.to_string() }
+                "username" => { user = sanitize(value.to_string()) },
+                "password" => { pass = sanitize_password(value.to_string()) },
                 _ => ()
             }
         }
 
         // if user_pass.get("username").is_none() || user_pass.get("password").is_none() {
         if user == "" || pass == "" {
-            Err("invalid form")
+            Err("Authentication error: Blank credential fields")
         } else {
             // let result = A::check_credentials(user_pass.get("username").unwrap().to_string(), user_pass.get("password").unwrap().to_string());
             let result = A::check_credentials(user, pass);
 
             Ok(match result{
                 Ok(authenticator) => LoginFormStatus::Succeed(authenticator),
-                Err(authenticator) => LoginFormStatus::Failed(authenticator)
+                Err(authenticator) => LoginFormStatus::Failed(authenticator),
             })
         }
     }

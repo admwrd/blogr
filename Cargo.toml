@@ -5,12 +5,17 @@ authors = ["Andrew Prindle <prindle.andrew@gmail.com>"]
 
 [dependencies]
 rocket-simpleauth = {path = "auth-rs"}
-# chrono = "0.4.0"
-# lazy_static = "0.2.8"
+diesel = { version = "0.16.0", features = ["postgres"] }
+# diesel_codegen = { version = "0.16.0", features = ["postgres"] }
+chrono = "0.4.0"
+dotenv = "0.10.1"
+lazy_static = "0.2.8"
 # multipart = "0.13.3"
-# regex = "0.2"
-rocket = "0.3.2"
-rocket_codegen = "0.3.2"
+regex = "0.2.2"
+rocket = "0.3.3"
+rocket_codegen = "0.3.3"
+# rocket = "0.3.2"
+# rocket_codegen = "0.3.2"
 # rocket-simpleauth = "0.3.0"
 # serde_json = "1.0.2"
 # serde = "1.0.11"

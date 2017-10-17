@@ -24,6 +24,7 @@ pub trait CookieId {
     // fn get_cookie_id(&self) -> String;
     fn get_cookie_config() -> Config;
     fn get_cookie_id() -> String;
+    fn cookie_username() -> String;
 }
 
 pub struct AdminCookie {
@@ -48,6 +49,9 @@ impl CookieId for AdminCookie {
     fn get_cookie_id() -> String {
         let config = Self::get_cookie_config();
             config.get_str("admin_cookie_identifier").unwrap().to_owned()
+    }
+    fn cookie_username(&self) -> String {
+        self.username.clone()
     }
 }
 
@@ -92,6 +96,9 @@ impl CookieId for UserCookie {
     fn get_cookie_id() -> String {
         let config = Self::get_cookie_config();
             config.get_str("user_cookie_identifier").unwrap().to_owned()
+    }
+    fn cookie_username(&self) -> String {
+        self.username.clone()
     }
 }
 impl<'a, 'r> FromRequest<'a, 'r> for UserCookie {
