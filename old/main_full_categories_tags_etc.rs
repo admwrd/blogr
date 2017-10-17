@@ -113,9 +113,6 @@ fn admin_process(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> Lo
     inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
 }
 
-
-
-
 #[get("/user")]
 fn user_page(data: UserCookie) -> Html<String> {
     let body = format!("Welcome {user}! You are at the user page.", user = data.username);
@@ -150,9 +147,6 @@ fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> Logi
     inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
 }
 
-
-
-
 #[get("/view")]
 fn all_articles() -> Html<String> {
     let mut content = String::new();
@@ -160,16 +154,25 @@ fn all_articles() -> Html<String> {
     template(&content)
 }
 
-// #[get("/view?<tag>", rank = 2)]
-// fn view_tag(tag: Tag) -> Html<String> {
-//     let mut content = String::new();
+
+#[get("/view?<category>")]
+fn view_category(category: Category) -> Html<String> {
+    let mut content = String::new();
     
-//     template(&content)
-// }
+    template(&content)
+}
+
+
+#[get("/view?<tag>", rank = 2)]
+fn view_tag(tag: Tag) -> Html<String> {
+    let mut content = String::new();
+    
+    template(&content)
+}
 
 #[get("/article?<aid>")]
 fn view_article(aid: ArticleId) -> Html<String> {
-    let article: Article = aid.retrieve();
+    let article = aid.retrieve();
     let mut content = String::new();
     
     template(&content)
@@ -193,8 +196,8 @@ fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form
             // article, admin, user, username
             let is_admin = if admin.is_some() { true } else { false };
             let is_user = if user.is_some() { true } else { false };
-            let username: Option<&str> = if is_user { Some(&user.unwrap().username) } else if is_admin { Some(&admin.unwrap().username) } else { None };
-            content.push_str(&template_article( &article, is_admin, is_user, username) );
+            let username: Option<String> = if is_user { Some(user.unwrap().username) } else if is_admin { Some(admin.unwrap().username) } else { None };
+            content.push_str(template_article( article, is_admin, is_user, username) );
         },
         Err(why) => {
             content.push_str(&format!("Could not post the blog article.  Reason: {}", why))
@@ -231,8 +234,8 @@ fn main() {
         user_process,
         
         all_articles,
-        // view_category,
-        // view_tag,
+        view_category,
+        view_tag,
         view_article,
         article_not_found,
         post_article,

@@ -74,6 +74,9 @@ impl CookieId for AdminAuth {
         let config = Self::get_cookie_config();
             config.get_str("admin_cookie_identifier").unwrap().to_owned()
     }
+    fn cookie_username(&self) -> String {
+        self.username.clone()
+    }
 }
 
 

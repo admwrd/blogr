@@ -6,7 +6,7 @@ use chrono::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct Tag {
-    tag: String,
+    tag: String, // Limit to 32 characters
 }
 
 #[derive(Debug, Clone)]

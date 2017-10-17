@@ -1,0 +1,82 @@
+  = note: LINK : fatal error LNK1181: cannot open input file 'libpq.lib'           
+                                                                                   
+                                                                                   
+
+  = note: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.10.25017\\bin\\HostX6
+4\\x64\\link.exe" "/NOLOGO" "/NXCOMPAT" "/LIBPATH:C:\\Users\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc
+\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f2
+37bb745540bf5.diesel_codegen0.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237b
+b745540bf5.diesel_codegen1.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb74
+5540bf5.diesel_codegen10.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb7455
+40bf5.diesel_codegen11.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540
+bf5.diesel_codegen12.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf
+5.diesel_codegen13.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.
+diesel_codegen14.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.di
+esel_codegen15.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.dies
+el_codegen16.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel
+_codegen17.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_c
+odegen18.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_cod
+egen19.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codeg
+en2.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen2
+0.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen21.
+rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen22.ru
+st-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen23.rust
+-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen24.rust-c
+gu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen25.rust-cgu
+.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen26.rust-cgu.o
+" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen27.rust-cgu.o" 
+"C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen28.rust-cgu.o" "C
+:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen29.rust-cgu.o" "C:\
+\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen3.rust-cgu.o" "C:\\co
+de\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen30.rust-cgu.o" "C:\\code
+\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen31.rust-cgu.o" "C:\\code\\
+lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen4.rust-cgu.o" "C:\\code\\lan
+g\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen5.rust-cgu.o" "C:\\code\\lang\\
+Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen6.rust-cgu.o" "C:\\code\\lang\\Rus
+t\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen7.rust-cgu.o" "C:\\code\\lang\\Rust\\
+proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen8.rust-cgu.o" "C:\\code\\lang\\Rust\\pro
+j\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.diesel_codegen9.rust-cgu.o" "/OUT:C:\\code\\lang\\Rust\\p
+roj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.dll" "/DEF:C:\\Users\\Andrew\\AppData\\Local\\Temp\\rus
+tc.cPBGoQTN2Io6\\lib.def" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.crate
+.metadata.rust-cgu.o" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_codegen-4f237bb745540bf5.crate.all
+ocator.rust-cgu.o" "/OPT:REF,NOICF" "/DEBUG" "/NATVIS:C:\\Users\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-
+msvc\\lib\\rustlib\\etc\\liballoc.natvis" "/NATVIS:C:\\Users\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msv
+c\\lib\\rustlib\\etc\\libcore.natvis" "/LIBPATH:C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps" "/LIBPATH:C:\\Us
+ers\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib" "C:\\code\\
+lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libsyn-a451e4ee617ec2b2.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\
+debug\\deps\\libdotenv-476eb30a4ad84d17.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\liberror_chain-f8
+c757bd73b07652.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libdiesel_infer_schema-a72742d1c6cba995.rl
+ib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libdiesel-b44aad6dbd1ec9e5.rlib" "C:\\code\\lang\\Rust\\pro
+j\\blogr\\target\\debug\\deps\\libpq_sys-d5cb29533fea6119.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\
+\libbitflags-978fc8fedc61cbba.rlib" "/LIBPATH:C:\\Users\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc\\li
+b\\rustlib\\x86_64-pc-windows-msvc\\lib" "proc_macro-fe04747134df4ad9.dll.lib" "/LIBPATH:C:\\Users\\Andrew\\.rustup\\too
+lchains\\nightly-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib" "syntax-5db43583fdd722e5.dll.lib" "/
+LIBPATH:C:\\Users\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\li
+b" "rustc_errors-472d2a0c5c1db3ac.dll.lib" "/LIBPATH:C:\\Users\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-m
+svc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib" "term-f6201d61c6734aae.dll.lib" "C:\\code\\lang\\Rust\\proj\\blogr\\targ
+et\\debug\\deps\\libsynom-c9bc4d9fb9f80a0d.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libbacktrace-3
+6edd59a3d3bcb96.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\librustc_demangle-3a01995747e5262e.rlib" 
+"C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libcfg_if-4814543ea8c59fc2.rlib" "C:\\code\\lang\\Rust\\proj\\b
+logr\\target\\debug\\deps\\libkernel32-4a7708e40179d0d9.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\l
+ibdbghelp-9b086ceee4cfa6e7.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libwinapi-defd9101d66a44f3.rli
+b" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libregex-0fe327198e7c29e2.rlib" "C:\\code\\lang\\Rust\\proj\
+\blogr\\target\\debug\\deps\\libregex_syntax-63a71bdfc9577a44.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\d
+eps\\libthread_local-53b0137a5776b00f.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\liblazy_static-8f57
+7fdc005d0618.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libunreachable-3b3af538c3e59f32.rlib" "C:\\c
+ode\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libaho_corasick-572f6832784097dc.rlib" "C:\\code\\lang\\Rust\\proj\\b
+logr\\target\\debug\\deps\\libmemchr-0c6c6df32dc88460.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\lib
+libc-7d31c7156c756750.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libvoid-6e1cd32016f0282b.rlib" "C:\
+\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libutf8_ranges-e7cf171e52ea6dd9.rlib" "C:\\code\\lang\\Rust\\proj\\
+blogr\\target\\debug\\deps\\libbyteorder-14cd3c3974624a0e.rlib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\
+\libquote-909f26baae498713.rlib" "/LIBPATH:C:\\Users\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc\\lib\\
+rustlib\\x86_64-pc-windows-msvc\\lib" "rustc_cratesio_shim-6393f5f8c995a9a1.dll.lib" "/LIBPATH:C:\\Users\\Andrew\\.rustu
+p\\toolchains\\nightly-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib" "syntax_pos-60d3fffadf860a83.d
+ll.lib" "/LIBPATH:C:\\Users\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-window
+s-msvc\\lib" "rustc_data_structures-a735d91ae09a9d9d.dll.lib" "/LIBPATH:C:\\Users\\Andrew\\.rustup\\toolchains\\nightly-
+x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib" "serialize-a4a386f29f39d56f.dll.lib" "/LIBPATH:C:\\Us
+ers\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib" "std-4cd2bc
+26ba774fa6.dll.lib" "C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\libunicode_xid-790cb68042e152f5.rlib" "C:\\
+Users\\Andrew\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib\\libcompil
+er_builtins-a103a5c51c3916cb.rlib" "libpq.lib" "kernel32.lib" "kernel32.lib" "dbghelp.lib" "advapi32.lib" "ws2_32.lib" "
+userenv.lib" "shell32.lib" "msvcrt.lib" "/DLL" "/IMPLIB:C:\\code\\lang\\Rust\\proj\\blogr\\target\\debug\\deps\\diesel_c
+odegen-4f237bb745540bf5.dll.lib"                                                                                        

@@ -6,7 +6,7 @@ authors = ["Andrew Prindle <prindle.andrew@gmail.com>"]
 [dependencies]
 rocket-simpleauth = {path = "auth-rs"}
 diesel = { version = "0.16.0", features = ["postgres"] }
-# diesel_codegen = { version = "0.16.0", features = ["postgres"] }
+diesel_codegen = { version = "0.16.0", features = ["postgres"] }
 chrono = "0.4.0"
 dotenv = "0.10.1"
 lazy_static = "0.2.8"

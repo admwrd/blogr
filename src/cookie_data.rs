@@ -24,7 +24,7 @@ pub trait CookieId {
     // fn get_cookie_id(&self) -> String;
     fn get_cookie_config() -> Config;
     fn get_cookie_id() -> String;
-    fn cookie_username() -> String;
+    fn cookie_username(&self) -> String;
 }
 
 pub struct AdminCookie {

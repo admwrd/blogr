@@ -25,12 +25,13 @@ pub struct Comment {
 #[derive(Debug, Clone)]
 pub struct Article {
     pub aid: u64,
-    pub author: String,
-    pub author_display: String,
+    pub author: u32,
+    // pub author_display: String, // this comes from the users table
     pub created: DateTime<Utc>,
-    pub modified: DateTime<Utc>,
-    pub title: String,
+    pub modified: Option<DateTime<Utc>>,
+    pub title: String, // 250 character limit
     pub body: String,
+    pub catid: u32,
     // pub hits: u64,
     // pub tags: Option<Vec<Tag>>,
     // pub comments: Option<Vec<Comment>>,
@@ -38,19 +39,21 @@ pub struct Article {
 
 #[derive(Debug, Clone)]
 pub struct ArticleForm {
-    pub author: String,
+    pub author: u32,
     pub title: String,
     pub body: String,
+    pub catid: u32,
     pub tags: Option<String>, // split based on comma
 }
 
 #[derive(Debug, Clone)]
 pub struct ArticleDescription {
+    pub author: u32,
     pub author_display: String,
     pub created: DateTime<Utc>,
     pub title: String, // Max 128 characters
     pub description: String, // Max 512 characters
-    pub tags: String,
+    // pub tags: String,
     pub category: Category,
 }
 

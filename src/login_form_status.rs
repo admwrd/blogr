@@ -10,7 +10,10 @@ use rocket::http::{Status, Cookie, Cookies};
 use std::collections::HashMap;
 use auth::authenticator::Authenticator;
 
+use regex::Regex;
+
 use ::cookie_data::*;
+
 
 
 #[derive(FromForm)]
@@ -155,8 +158,8 @@ impl<'f,A: Authenticator> FromForm<'f> for LoginFormStatus<A>{
             match key.as_str(){
                 // "username" => user_pass.insert("username", value).map_or((), |_v| ()),
                 // "password" => user_pass.insert("password", value).map_or((), |_v| ()),
-                "username" => { user = sanitize(value.to_string()) },
-                "password" => { pass = sanitize_password(value.to_string()) },
+                "username" => { user = sanitize(&value.to_string()) },
+                "password" => { pass = sanitize_password(&value.to_string()) },
                 _ => ()
             }
         }
