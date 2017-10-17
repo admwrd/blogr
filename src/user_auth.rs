@@ -35,11 +35,18 @@ impl UserAuth {
             failreason: None,
         }
     }
+    pub fn error(username: String, reason: String) -> UserAuth {
+        UserAuth {
+            username,
+            password: String::new(),
+            failreason: if &reason != "" { Some(reason) } else { None },
+        }
+    }
     pub fn authenticate(username: &str, password: &str) -> Result<Self, Self> {
         if username == "andrew" {
             Ok(UserAuth::new(username.to_string(), password.to_string()))
         } else {
-            Err( UserAuth::new("Invalid username.".to_string(), String::new()) )
+            Err( UserAuth::error(username.to_string(), "Invalid username.".to_string()) )
         }
     }
 }
@@ -59,7 +66,7 @@ impl Authenticator for  UserAuth {
 impl CookieId for UserAuth {
     fn get_cookie_config() -> Config {
         Config::build(Environment::active().unwrap())
-            .secret_key(SECRET_KEY)
+            // .secret_key(SECRET_KEY)
             .extra("user_cookie_identifier", "usid")
             .unwrap()
     }

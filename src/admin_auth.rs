@@ -35,11 +35,18 @@ impl AdminAuth {
             failreason: None,
         }
     }
+    pub fn error(username: String, reason: String) -> AdminAuth {
+        AdminAuth {
+            username,
+            password: String::new(),
+            failreason: if &reason != "" { Some(reason) } else { None },
+        }
+    }
     pub fn authenticate(username: &str, password: &str) -> Result<Self, Self> {
         if username == "andrew" {
             Ok(AdminAuth::new(username.to_string(), password.to_string()))
         } else {
-            Err( AdminAuth::new("Invalid username.".to_string(), String::new()) )
+            Err( AdminAuth::error(username.to_string(), "Invalid username.".to_string()) )
         }
     }
 }
@@ -59,7 +66,7 @@ impl Authenticator for  AdminAuth {
 impl CookieId for AdminAuth {
     fn get_cookie_config() -> Config {
         Config::build(Environment::active().unwrap())
-            .secret_key(SECRET_KEY)
+            // .secret_key(SECRET_KEY)
             .extra("admin_cookie_identifier", "asid")
             .unwrap()
     }

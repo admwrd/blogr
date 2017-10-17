@@ -13,6 +13,13 @@ use auth::authenticator::Authenticator;
 use ::cookie_data::*;
 
 
+#[derive(FromForm)]
+// #[form(lenient)]
+pub struct AuthFailure {
+    pub user: String,
+    pub msg: String,
+}
+
 /// Login state is used after the user has typed its username and password. It checks with an
 /// authenticator if given credentials are valid and returns InvalidCredentials or Succeed based
 /// on the validality of the username and password.
@@ -28,6 +35,7 @@ use ::cookie_data::*;
 /// <input type="password" name="password" />
 ///</form>
 /// ```
+#[derive(Clone)]
 pub enum LoginFormStatus<A>{
     Succeed(A),
     Failed(A)
@@ -39,16 +47,23 @@ pub trait AuthFail {
     fn reason_str(&self) -> &str;
 }
 
+// #[derive(Clone)]
 pub struct LoginFormRedirect(Redirect);
 
 // pub struct FallbackRedirect<'a>(&'a str);
 
 impl<'a, A: 'a> LoginFormStatus<A> where A: Authenticator + CookieId + AuthFail {
-    pub fn fail_str(self) -> &'a str {
+    pub fn fail_str(&self) -> String {
         // let 
         match self {
-            LoginFormStatus::Succeed(inside) => inside.reason_str(),
-            LoginFormStatus::Failed(inside) => inside.reason_str(),
+            &LoginFormStatus::Succeed(ref inside) => inside.reason(),
+            &LoginFormStatus::Failed(ref inside) => inside.reason(),
+        }
+    }
+    pub fn user_str(&self) -> String {
+        match self {
+            &LoginFormStatus::Succeed(ref inside) => inside.user().to_string(),
+            &LoginFormStatus::Failed(ref inside) => inside.user().to_string(),
         }
     }
     /// Returns the user id from an instance of Authenticator
@@ -65,7 +80,7 @@ impl<'a, A: 'a> LoginFormStatus<A> where A: Authenticator + CookieId + AuthFail 
         let cookie_identifier = A::get_cookie_id();
 
         cookies.add_private(Cookie::new(cookie_identifier, self.get_authenticator().user().to_string()));
-        Redirect::to(&url)
+        Redirect::to(url)
     }
 
     /// Generates a failed response
@@ -75,18 +90,26 @@ impl<'a, A: 'a> LoginFormStatus<A> where A: Authenticator + CookieId + AuthFail 
         //     Ok(val) => Redirect::to(&val),
         //     Err(er) => Redirect::to(&fallback),
         // }
-        Redirect::to(&url)
+        Redirect::to(url)
     }
 
     // pub fn redirect(self, success_url: &'static str, failure_url: &'static str, cookies: Cookies) -> LoginFormRedirect{
     pub fn redirect(self, success_url: &'static str, cookies: Cookies) -> Option<LoginFormRedirect> {
         // let redirect = match self {
-        match self {
+        /*match self {
           // LoginFormStatus::Succeed(_) => self.succeed(success_url, cookies),
           // LoginFormStatus::Failed(_) => self.failed(failure_url)
-          LoginFormStatus::Succeed(_) => Some(LoginFormRedirect(self.succeed(success_url, cookies))),
+          // LoginFormStatus::Succeed(_) => Some(LoginFormRedirect(self.succeed(success_url, cookies))),
+          LoginFormStatus::Succeed(_) => Some( LoginFormRedirect::new(self.succeed(success_url, cookies)) ),
           LoginFormStatus::Failed(_) => None,
           // LoginFormStatus::Failed(_) => self.failed(failure_url, fallback)
+        }*/
+        
+        if let LoginFormStatus::Succeed(_) = self {
+            let redir = self.succeed(success_url, cookies);
+            Some(LoginFormRedirect(redir))
+        } else {
+            None
         }
         
         // Some(LoginFormRedirect(redirect))

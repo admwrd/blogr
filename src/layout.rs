@@ -12,12 +12,38 @@ pub fn template(body: &str) -> Html<String> {
 }
 
 
-pub fn template_login_fail(user: &str, reason: &str) -> String {
+pub fn template_admin_login_fail(user: &str, reason: &str) -> String {
     format!(r##"
             <div class="alert alert-danger" role="alert">
                 Login failed: {why}
             </div>
             <form action="http://localhost:8000/admin" name="login_form" method="post" onsubmit="return validate_form()">
+                <div class="form-group">
+                    <label for="usernameField">Email Address</label>
+                    <input type="text" name="username" value="{user}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">
+                    <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
+                </div>
+                <div class="form-group">
+                    <label for="passwordField">Password</label>
+                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
+                </div>
+                <!-- <div class="form-check">
+                  <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input">
+                  Check me out
+                    </label>
+                </div> -->
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+"##, user=user, why=reason)
+}
+
+pub fn template_user_login_fail(user: &str, reason: &str) -> String {
+    format!(r##"
+            <div class="alert alert-danger" role="alert">
+                Login failed: {why}
+            </div>
+            <form action="http://localhost:8000/user" name="login_form" method="post" onsubmit="return validate_form()">
                 <div class="form-group">
                     <label for="usernameField">Email Address</label>
                     <input type="text" name="username" value="{user}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">

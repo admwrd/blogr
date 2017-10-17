@@ -41,7 +41,7 @@ impl AdminCookie {
 impl CookieId for AdminCookie {
     fn get_cookie_config() -> Config {
         Config::build(Environment::active().unwrap())
-            .secret_key(SECRET_KEY)
+            // .secret_key(SECRET_KEY)
             .extra("admin_cookie_identifier", "asid")
             .unwrap()
     }
@@ -85,7 +85,7 @@ impl UserCookie {
 impl CookieId for UserCookie {
     fn get_cookie_config() -> Config {
         Config::build(Environment::active().unwrap())
-            .secret_key(SECRET_KEY)
+            // .secret_key(SECRET_KEY)
             .extra("user_cookie_identifier", "usid")
             .unwrap()
     }

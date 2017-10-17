@@ -68,12 +68,27 @@ fn admin_login() -> Html<&'static str> {
     Html(template_login_admin())
 }
 
+#[get("/admin?<fail>")]
+// #[get("/user/?<user>&<msg>")]
+// #[get("/user/<user>/<msg>")]
+// fn user_retry(user: String, msg: String) -> Html<String> {
+fn admin_retry(fail: AuthFailure) -> Html<String> {
+    template( &template_admin_login_fail(&fail.user, &fail.msg) )
+}
+
 #[post("/admin", data = "<form>")]
 fn admin_process(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
     let inside = form.into_inner();
-    let failurl = inside.fail_str();
-    // form.into_inner().redirect("/admin", cookies).unwrap_or( LoginFormRedirect(Redirect::to(failurl)) )
-    inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(failurl)) )
+    let failuser = inside.user_str();
+    let failmsg = inside.fail_str();
+    let mut failurl = "http://localhost:8000/admin".to_string();
+    if failmsg != "" && failmsg != " " {
+        failurl.push_str("?user=");
+        failurl.push_str(&failuser);
+        failurl.push_str("&msg=");
+        failurl.push_str(&failmsg);
+    }
+    inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
 }
 
 #[get("/user")]
@@ -87,11 +102,27 @@ fn user_login() -> Html<&'static str> {
     Html(template_login_user())
 }
 
+#[get("/user?<fail>")]
+// #[get("/user/?<user>&<msg>")]
+// #[get("/user/<user>/<msg>")]
+// fn user_retry(user: String, msg: String) -> Html<String> {
+fn user_retry(fail: AuthFailure) -> Html<String> {
+    template( &template_user_login_fail(&fail.user, &fail.msg) )
+}
+
 #[post("/user", data = "<form>")]
 fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> LoginFormRedirect {
     let inside = form.into_inner();
-    let failurl = inside.fail_str();
-    inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(failurl)) )
+    let failuser = inside.user_str();
+    let failmsg = inside.fail_str();
+    let mut failurl = "http://localhost:8000/user".to_string();
+    if failmsg != "" && failmsg != " " {
+        failurl.push_str("?user=");
+        failurl.push_str(&failuser);
+        failurl.push_str("&msg=");
+        failurl.push_str(&failmsg);
+    }
+    inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
 }
 
 #[get("/")]
@@ -109,8 +140,10 @@ fn main() {
     rocket::ignite().mount("/", routes![
         admin_page,
         admin_login,
+        admin_retry,
         admin_process,
         user_page,
+        user_retry,
         user_login,
         user_process,
         index,
