@@ -26,14 +26,14 @@ function add_error(error="") {
     div.appendChild(mp);
     ins.insertBefore(div, ins.childNodes[0]);
     var newmsg = ins.childNodes[0];
-    newmsg.className = "alert alert-danger alert-dismissible fade show";
+    newmsg.className = "alert alert-danger alert-dismissible fade show form-auth-alert";
     newmsg.setAttribute("role", "alert");
 }
 
 function add_error_before(error="", before="") {
     var div = document.createElement("div");
     // div.className = "alert alert-danger alert-dismissible fade show";
-    div.className = "alert alert-danger alert-dismissible";
+    div.className = "alert alert-danger alert-dismissible form-auth-alert";
     div.setAttribute("role", "alert");
     var mp = document.createTextNode(error);
     var btn = document.createElement("button");
@@ -66,6 +66,72 @@ function add_error_before(error="", before="") {
     // newmsg.childNodes[0].setAttribute("aria-label", "close");
 }
 
+function add_error_after(error="", after="") {
+    var div = document.createElement("div");
+    // div.className = "alert alert-danger alert-dismissible fade show";
+    div.className = "alert alert-danger alert-dismissible form-auth-alert";
+    div.setAttribute("role", "alert");
+    var mp = document.createTextNode(error);
+    var btn = document.createElement("button");
+    btn.setAttribute("aria-label", "close");
+    btn.dataset.dismiss = "alert";
+    var span = document.createElement("span");
+    span.className = "fa fa-times";
+    span.setAttribute("aria-hidden", "true");
+    btn.className = "close";
+    btn.setAttribute("type", "button");
+    // var x = document.createTextNode("&times;");
+    // span.appendChild(x);
+    btn.appendChild(span);
+    div.appendChild(btn);
+    div.appendChild(mp);
+    var ins = document.getElementById("mainWrapper");
+    if (after == "") {
+        ins.insertBefore(div, ins.childNodes[0]);
+    } else if (typeof after == "string") {
+        ins = document.getElementById(after);
+        ins.appendChild(div);
+    }
+    // newmsg.childNodes[0].dataset.dismiss = "alert";
+    // newmsg.className = "alert alert-danger alert-dismissible fade show";
+    // newmsg.setAttribute("role", "alert");
+    // newmsg.childNodes[0].setAttribute("aria-label", "close");
+}
+
+
+function add_error_after_sibling(error="", after="") {
+    var div = document.createElement("div");
+    // div.className = "alert alert-danger alert-dismissible fade show";
+    div.className = "alert alert-danger alert-dismissible form-auth-alert";
+    div.setAttribute("role", "alert");
+    var mp = document.createTextNode(error);
+    var btn = document.createElement("button");
+    btn.setAttribute("aria-label", "close");
+    btn.dataset.dismiss = "alert";
+    var span = document.createElement("span");
+    span.className = "fa fa-times";
+    span.setAttribute("aria-hidden", "true");
+    btn.className = "close";
+    btn.setAttribute("type", "button");
+    // var x = document.createTextNode("&times;");
+    // span.appendChild(x);
+    btn.appendChild(span);
+    div.appendChild(btn);
+    div.appendChild(mp);
+    var ins = document.getElementById("mainWrapper");
+    if (after == "") {
+        ins.insertBefore(div, ins.childNodes[0]);
+    } else if (typeof after == "string") {
+        b4 = document.getElementById(after).nextSibling;
+        ins = document.getElementById(after).parentNode;
+        ins.insertBefore(div, b4);
+    }
+    // newmsg.childNodes[0].dataset.dismiss = "alert";
+    // newmsg.className = "alert alert-danger alert-dismissible fade show";
+    // newmsg.setAttribute("role", "alert");
+    // newmsg.childNodes[0].setAttribute("aria-label", "close");
+}
+
 
 function validate_form() {
     // var dismiss = document.getElementsByClassName("alert-dismissable").remove();
@@ -83,9 +149,12 @@ function validate_form() {
         return true;
     } else {
         if(pass.value == "") {
-            add_error_before("No password was entered.", "passwordField");
+            // add_error_before("No password was entered.", "passGroup");
+            add_error_after("No password was entered.", "passGroup");
         } if(user.value == "") {
-            add_error_before("Please enter your username.", "usernameField");
+            // add_error_before("Please enter your username.", "usernameField");
+            // add_error_before("Please enter your username.", "userGroup");
+            add_error_after_sibling("Please enter your username.", "usernameField");
         }
         return false;
     }

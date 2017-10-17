@@ -18,12 +18,12 @@ pub fn template_admin_login_fail(user: &str, reason: &str) -> String {
                 Login failed: {why}
             </div>
             <form action="http://localhost:8000/admin" name="login_form" method="post" onsubmit="return validate_form()">
-                <div class="form-group">
+                <div class="form-group" id="userGroup">
                     <label for="usernameField">Email Address</label>
                     <input type="text" name="username" value="{user}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">
                     <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="passGroup">
                     <label for="passwordField">Password</label>
                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
                 </div>
@@ -44,12 +44,12 @@ pub fn template_user_login_fail(user: &str, reason: &str) -> String {
                 Login failed: {why}
             </div>
             <form action="http://localhost:8000/user" name="login_form" method="post" onsubmit="return validate_form()">
-                <div class="form-group">
+                <div class="form-group" id="userGroup">
                     <label for="usernameField">Email Address</label>
                     <input type="text" name="username" value="{user}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">
                     <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="passGroup">
                     <label for="passwordField">Password</label>
                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
                 </div>
@@ -93,12 +93,12 @@ pub fn template_login_user() -> &'static str {
         <div id="mainWrapper" class="main-wrapper">
             
             <form action="http://localhost:8000/user" name="login_form" method="post" onsubmit="return validate_form()">
-                <div class="form-group">
+                <div class="form-group" id="userGroup">
                     <label for="usernameField">Email Address</label>
                     <input type="text" name="username" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">
                     <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="passGroup">
                     <label for="passwordField">Password</label>
                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
                 </div>
@@ -157,12 +157,12 @@ pub fn template_login_admin() -> &'static str {
         <div id="mainWrapper" class="main-wrapper">
             
             <form action="http://localhost:8000/admin" name="login_form" method="post" onsubmit="return validate_form()">
-                <div class="form-group">
+                <div class="form-group" id="userGroup">
                     <label for="usernameField">Email Address</label>
                     <input type="text" name="username" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">
                     <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="passGroup">
                     <label for="passwordField">Password</label>
                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
                 </div>
