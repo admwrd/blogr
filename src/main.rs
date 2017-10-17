@@ -193,7 +193,7 @@ fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form
             // article, admin, user, username
             let is_admin = if admin.is_some() { true } else { false };
             let is_user = if user.is_some() { true } else { false };
-            let username: Option<&str> = if is_user { Some(&user.unwrap().username) } else if is_admin { Some(&admin.unwrap().username) } else { None };
+            let username: Option<String> = if is_user { Some(user.unwrap().username) } else if is_admin { Some(admin.unwrap().username) } else { None };
             content.push_str(&template_article( &article, is_admin, is_user, username) );
         },
         Err(why) => {

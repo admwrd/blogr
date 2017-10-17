@@ -51,10 +51,10 @@ impl ArticleForm {
         let next_aid = 0;
         Article {
             aid: next_aid,
-            title: sanitize_title(self.title),
+            title: sanitize_title(self.title.clone()),
             posted: Local::now().naive_local(), // This fn is only used when saving new articles
-            body: sanitize_body(self.body),
-            tags: split_tags(sanitize_tags(self.tags)),
+            body: sanitize_body(self.body.clone()),
+            tags: split_tags(sanitize_tags(self.tags.clone())),
         }
     }
 }

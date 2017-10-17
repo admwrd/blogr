@@ -196,7 +196,7 @@ pub fn template(body: &str) -> Html<String> {
     Html(webpage)
 }
 
-pub fn template_article(article: &Article, is_admin: bool, is_user: bool, username: Option<&str>) ->String {
+pub fn template_article(article: &Article, is_admin: bool, is_user: bool, username: Option<String>) ->String {
     // display created time, and modified time if it differs from created date
     // display how long ago it was created if modified == created
     //   or if modified != created display how long ago it was modified
