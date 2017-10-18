@@ -18,13 +18,13 @@ impl AuthFail for AdminAuth {
             String::new()
         }
     }
-    fn reason_str(&self) -> &str {
-        if let Some(ref msg) = self.failreason {
-            msg
-        } else {
-            ""
-        }
-    }
+    // fn reason_str(&self) -> &str {
+    //     if let Some(ref msg) = self.failreason {
+    //         msg
+    //     } else {
+    //         ""
+    //     }
+    // }
 }
 
 impl AdminAuth {

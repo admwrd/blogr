@@ -47,7 +47,7 @@ pub enum LoginFormStatus<A>{
 
 pub trait AuthFail {
     fn reason(&self) -> String;
-    fn reason_str(&self) -> &str;
+    // fn reason_str(&self) -> &str;
 }
 
 // #[derive(Clone)]
