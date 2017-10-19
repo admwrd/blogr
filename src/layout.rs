@@ -56,7 +56,8 @@ const ADMIN_LOGIN_FULL: &'static str = r##"
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
         
         <!-- Custom JavaScript -->
-        <script src="blog.js">
+        <script src="sha256.js"></script>
+        <script src="blog.js"></script>
         <script type="text/javascript">
         </script>
         
@@ -117,7 +118,8 @@ const USER_LOGIN_FULL: &'static str = r##"
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
         
         <!-- Custom JavaScript -->
-        <script src="blog.js">
+        <script src="sha256.js"></script>
+        <script src="blog.js"></script>
         <script type="text/javascript">
         // $(".alert).alert();
         </script>
@@ -191,7 +193,7 @@ pub fn template(body: &str) -> Html<String> {
     webpage.reserve(FOOTER.len() + body.len() + 50);
     
     webpage.push_str(body);
-    webpage.push_str(HEADER);
+    webpage.push_str(FOOTER);
     
     Html(webpage)
 }

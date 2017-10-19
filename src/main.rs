@@ -62,6 +62,10 @@ use auth::status::{LoginStatus,LoginRedirect};
 use auth::dummy::DummyAuthenticator;
 use auth::authenticator::Authenticator;
 
+// #[macro_use] extern crate diesel;
+// #[macro_use] extern crate diesel_codegen;
+extern crate dotenv;
+
 mod layout;
 mod cookie_data;
 mod admin_auth;
@@ -81,13 +85,25 @@ use blog::*;
 
 #[get("/admin")]
 fn admin_page(data: AdminCookie) -> Html<String> {
+    let start = Instant::now();
+
     let body = format!("Welcome {user}! You have reach the administrator page.", user = data.username);
-    template(&body)
+    let output = template(&body);
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+        output
 }
 
 #[get("/admin", rank = 2)]
 fn admin_login() -> Html<&'static str> {
-    Html(template_login_admin())
+    let start = Instant::now();
+
+    let output = Html(template_login_admin());
+        
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
 }
 
 #[get("/admin?<fail>")]
@@ -155,7 +171,7 @@ fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> Logi
 
 #[get("/view")]
 fn all_articles() -> Html<String> {
-    let mut content = String::new();
+    let mut content = String::from("You are viewing all of the articles.");
     
     template(&content)
 }
@@ -169,15 +185,16 @@ fn all_articles() -> Html<String> {
 
 #[get("/article?<aid>")]
 fn view_article(aid: ArticleId) -> Html<String> {
-    let article: Article = aid.retrieve();
+    // let article: Article = aid.retrieve();
     let mut content = String::new();
-    
+    content.push_str("You have reached the article page.<br>\n");
+    content.push_str(&format!("You are viewing article {}", aid.aid));
     template(&content)
 }
 
 #[get("/article")]
 fn article_not_found() -> Html<String> {
-    let mut content = String::new();
+    let mut content = String::from("The article you have specified does not exist.");
     
     template(&content)
 }

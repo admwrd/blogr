@@ -2,6 +2,8 @@
 use cookie_data::*;
 
 use chrono::prelude::*;
+// use diesel::prelude::*;
+
 
 #[derive(Debug, Clone)]
 pub struct User {

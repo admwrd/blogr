@@ -13,9 +13,9 @@ use users::*;
 
 
 // type ArticleId = u32;
-#[derive(Debug, Clone, FromForm)]
+#[derive(Debug, Clone)]
 pub struct ArticleId {
-    aid: u32,
+    pub aid: u32,
 }
 
 #[derive(Debug, Clone)]
@@ -27,7 +27,10 @@ pub struct Article {
     pub tags: Vec<String>,
 }
 
+
 #[derive(Debug, Clone)]
+// #[derive(Debug, Clone, Insertable)]
+// #[table_name="posts"]
 pub struct ArticleForm {
     // pub userid: u32,
     pub title: String,
@@ -137,6 +140,26 @@ impl<'a, 'r> FromRequest<'a, 'r> for ArticleId {
         // }
         
         unimplemented!()
+    }
+}
+impl<'f> FromForm<'f> for ArticleId {
+    type Error = &'static str;
+    fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
+        let mut aid: u32 = 0;
+        for (field, value) in form_items {
+            if field.as_str() == "aid" {
+                aid = value.to_string().parse::<u32>().unwrap_or(0u32) 
+            }
+            // match field.as_str() {
+            //     "aid" => { aid = value.to_string().parse::<u32>().unwrap_or(0u32) },
+            //     _ => {},
+            // }
+        }
+        if aid == 0  {
+            Err("Invalid user id specified")
+        } else {
+            Ok( ArticleId { aid} )
+        }
     }
 }
 
