@@ -9,7 +9,10 @@ use regex::Regex;
 use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 
+use postgres::{Connection};
+
 use users::*;
+use data::*;
 
 
 // type ArticleId = u32;
@@ -67,8 +70,23 @@ impl ArticleId {
     pub fn exists(&self) -> bool {
         unimplemented!()
     }
-    pub fn retrieve(&self) -> Article {
-        unimplemented!()
+    pub fn retrieve(&self) -> Option<Article> {
+        // unimplemented!()
+        let pgconn = establish_connection();
+        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        if let Ok(aqry) = rawqry {
+            println!("Querying articles: found {} rows", aqry.len());
+            if !aqry.is_empty() && aqry.len() == 1 {
+                let row = aqry.get(0); // get first row
+                Some( Article {
+                    aid: row.get(0),
+                    title: row.get(1), // todo: call sanitize title here
+                    posted: row.get(2),
+                    body: row.get(3), // Todo: call sanitize body here
+                    tags: Article::split_tags(row.get(4)),
+                })
+            } else { None }
+        } else { None }
     }
     pub fn last_id() -> u32 {
         unimplemented!()
@@ -98,11 +116,35 @@ pub fn split_tags(string: String) -> Vec<String> {
 }
 
 impl Article {
-    pub fn retrieve(aid: u64) -> Option<Article> {
-        unimplemented!()
+    pub fn split_tags(string: String) -> Vec<String> {
+        // Todo: call sanitize tags before splitting:
+        // let tags: Vec<String> = sanitize_tags(string).split(',')...
+        let tags: Vec<String> = string.split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| s.as_str() != "" && s.as_str() != " ")
+            .collect();
+        tags
+    }
+    pub fn retrieve(aid: u32) -> Option<Article> {
+        // unimplemented!()
+        let pgconn = establish_connection();
+        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags FROM articles WHERE aid = {id}", id=aid), &[]);
+        if let Ok(aqry) = rawqry {
+            println!("Querying articles: found {} rows", aqry.len());
+            if !aqry.is_empty() && aqry.len() == 1 {
+                let row = aqry.get(0); // get first row
+                Some( Article {
+                    aid: row.get(0),
+                    title: row.get(1), // todo: call sanitize title here
+                    posted: row.get(2),
+                    body: row.get(3), // Todo: call sanitize body here
+                    tags: Article::split_tags(row.get(4)),
+                })
+            } else { None }
+        } else { None }
     }
     pub fn info(&self) -> String {
-        format!("<br>\nAid: {aid}, Title: {title}, Posted on: {posted}, Body:<br>\n{body}<br>\ntags: {tags:#?}", aid=self.aid, title=self.title, posted=self.posted, body=self.body, tags=self.tags)
+        format!("Aid: {aid}, Title: {title}, Posted on: {posted}, Body:<br>\n{body}<br>\ntags: {tags:#?}", aid=self.aid, title=self.title, posted=self.posted, body=self.body, tags=self.tags)
     }
 }
 

@@ -77,6 +77,7 @@ mod user_auth;
 mod users;
 mod login_form_status;
 mod blog;
+mod data;
 
 use layout::*;
 use cookie_data::*;
@@ -86,6 +87,7 @@ use users::*;
 use login_form_status::*;
 use login_form_status::LoginFormRedirect;
 use blog::*;
+use data::*;
 
 #[get("/admin")]
 fn admin_page(data: AdminCookie) -> Html<String> {
@@ -192,7 +194,13 @@ fn view_article(aid: ArticleId) -> Html<String> {
     // let article: Article = aid.retrieve();
     let mut content = String::new();
     content.push_str("You have reached the article page.<br>\n");
-    content.push_str(&format!("You are viewing article {}", aid.aid));
+    let rst = aid.retrieve(); // retrieve result
+    if let Some(article) = rst {
+        content.push_str(&format!("You are viewing article #{id}.<br>\nInfo:<br>\n", id=aid.aid));
+        content.push_str(&article.info());
+    } else {
+        content.push_str(&format!("Article #{id} could not be retrieved.", id=aid.aid));
+    }
     template(&content)
 }
 
