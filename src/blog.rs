@@ -183,8 +183,43 @@ impl ArticleForm {
     //         .. new
     //     }
     // }
-    pub fn save(&self) -> Result<Article, String> {
-        unimplemented!()
+    pub fn save(&self, conn: &DbConn) -> Result<Article, String> {
+        // unimplemented!()
+        let now = Local::now().naive_local();
+        // return both id and posted date
+        // let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid, posted",
+        let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid",
+            title=self.title, posted=now, body=self.body, tags=self.tags);
+        let rawqry = conn.prepare(&qrystr).expect("Could not prepare query successfully");
+        let result = rawqry.query(&[]);
+        match result {
+            // Ok(ref qry) if qry.is_empty() => Err("Error inserting article, result is empty.".to_string()),
+            // Ok(ref qry) if !qry.is_empty() && qry.len() > 1 => Err(format!("Error inserting article, returned {} rows.", qry.len())),
+            Err(err) => Err(format!("Could not insert article. Error: {}", err)),
+            // Ok(qry) if !qry.is_empty() && qry.len() == 1 => {
+            Ok(qry)  => {
+                if !qry.is_empty() && qry.len() == 1 {
+                    let row = qry.get(0);
+                    Ok( Article {
+                        aid: row.get(0),
+                        title: self.title.clone(),
+                        // posted: row.get(1),
+                        posted: now,
+                        body: self.body.clone(),
+                        tags: Article::split_tags(self.tags.clone()),
+                    })
+                } else if qry.is_empty() {
+                    Err("Error inserting article, result is empty.".to_string())
+                } else if qry.len() > 1 {
+                    Err(format!("Error inserting article, returned {} rows.", qry.len()))
+                } else {
+                    Err("Unknown error inserting article.".to_string())
+                }
+            },
+            // Ok(_) => Err("Unknown error inserting article.".to_string()),
+        }
+        // let id: i32 = stmt.query(&[])
+            // .expect("Died for this reason").().iter().next().unwrap().get(0);
     }
 }
 

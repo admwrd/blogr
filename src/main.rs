@@ -221,10 +221,10 @@ fn article_not_found() -> Html<String> {
 
 #[post("/article", data = "<form>")]
 
-fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form<ArticleForm>) -> Html<String> {
-    let result = form.into_inner().save();
+fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
     let mut content = String::new();
     
+    let result = form.into_inner().save(&conn);
     match result {
         Ok(article) => {
             // article, admin, user, username

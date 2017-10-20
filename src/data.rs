@@ -33,6 +33,14 @@ use dotenv::dotenv;
 // use diesel::prelude::*;
 // use diesel::pg::PgConnection;
 
+
+// https://github.com/sfackler/rust-postgres/issues/128
+// let stmt = try!(conn.prepare("INSERT INTO foo (bar) VALUES ('baz') RETURNING id"));
+// let id: i32 = try!(stmt.query(&[])).iter().next().unwrap().get(0);
+
+
+
+
 // https://sfackler.github.io/r2d2-postgres/doc/v0.9.2/r2d2_postgres/struct.PostgresConnectionManager.html
 // https://medium.com/@aergonaut/writing-a-github-webhook-with-rust-part-1-rocket-4426dd06d45d
 // https://github.com/aergonaut/railgun/blob/master/src/railgun/db.rs

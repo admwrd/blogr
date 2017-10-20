@@ -1,0 +1,19 @@
+
+Blogr
+	Add a method/helper function to retrieve an article and user from a qry
+		retrieve the data from the raw qry
+		returns a result <Article/User, String>
+	
+	Add Tls/Ssl using Let's Encrypt
+		https://mmstick.tk/post/q42
+		https://rocket.rs/guide/configuration/#configuring-tls
+		https://api.rocket.rs/rocket/config/struct.Config.html#method.set_tls
+	Sanitizing strings
+	Make an actual layout
+	Maybe implement a cache
+	maybe implement a file cache
+		This would allow files to be served even when the url
+		is a folder in root.  CSS & JS files for example will
+		not work correctly if the url is: 
+		localhost/view/category/blah
+	Finish implementing the Usertype module, make it an enum that holds whatever?
