@@ -241,7 +241,19 @@ fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form
     template(&content)
 }
 
-
+#[get("/insert")]
+fn insert_form() -> Html<String> {
+    // let content = format!("Insert an article.");
+    let content = r##"
+    <form method="post" action="http://localhost:8000/article" name="insert_form">
+        <input type="text" name="title" placeholder="Title"><br>
+        <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea><br>
+        <input type="text" name="tags" placeholder="Comma, Separated, Tags"><br>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    "##;
+    template(content)
+}
 
 
 #[get("/")]
@@ -276,6 +288,7 @@ fn main() {
             view_article,
             article_not_found,
             post_article,
+            insert_form,
             
             index,
             static_files

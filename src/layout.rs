@@ -203,7 +203,11 @@ pub fn template_article(article: &Article, is_admin: bool, is_user: bool, userna
     // display how long ago it was created if modified == created
     //   or if modified != created display how long ago it was modified
     // 
-    unimplemented!()
+    // unimplemented!()
+    let mut contents = String::from("You are viewing article ");
+    contents.push_str(&format!("{}<br>\n", article.aid));
+    contents.push_str(&article.info());
+    contents
 }
 
 pub fn template_list_articles(articles: Vec<u64>, title: String) -> Html<String> {

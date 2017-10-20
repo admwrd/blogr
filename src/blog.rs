@@ -117,16 +117,19 @@ impl ArticleId {
 
 pub fn sanitize_body(string: String) -> String {
     // escape html entities/elements
-    unimplemented!()
+    // unimplemented!()
+    string
 }
 
 pub fn sanitize_title(string: String) -> String {
     // set max length to 120 characters
-    unimplemented!()
+    string
+    // unimplemented!()
 }
 
 pub fn sanitize_tags(string: String) -> String {
-    unimplemented!()
+    string
+    // unimplemented!()
 }
 pub fn split_tags(string: String) -> Vec<String> {
     let tags: Vec<String> = string.split(',').filter(|t| t != &"").map(|t| t.to_string()).collect();
@@ -188,10 +191,11 @@ impl ArticleForm {
         let now = Local::now().naive_local();
         // return both id and posted date
         // let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid, posted",
-        let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid",
+        let qrystr = format!("INSERT INTO articles (title, posted, body, tags) VALUES ('{title}', '{posted}', '{body}', '{tags}') RETURNING aid",
             title=self.title, posted=now, body=self.body, tags=self.tags);
-        let rawqry = conn.prepare(&qrystr).expect("Could not prepare query successfully");
-        let result = rawqry.query(&[]);
+        // let rawqry = conn.prepare(&qrystr).expect("Could not prepare query successfully");
+        println!("Insert query: {}", qrystr);
+        let result = conn.query(&qrystr, &[]);
         match result {
             // Ok(ref qry) if qry.is_empty() => Err("Error inserting article, result is empty.".to_string()),
             // Ok(ref qry) if !qry.is_empty() && qry.len() > 1 => Err(format!("Error inserting article, returned {} rows.", qry.len())),

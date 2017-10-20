@@ -1,5 +1,9 @@
 
 Blogr
+	IMPORTANT
+	url_decoe() the strings FromForm implementation for ArticleForm
+		They are being saved as url_encoded() strings in the database
+
 	Add a method/helper function to retrieve an article and user from a qry
 		retrieve the data from the raw qry
 		returns a result <Article/User, String>
