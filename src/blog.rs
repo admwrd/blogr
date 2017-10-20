@@ -88,6 +88,24 @@ impl ArticleId {
             } else { None }
         } else { None }
     }
+    pub fn retrieve_with_conn(&self, pgconn: DbConn) -> Option<Article> {
+        // unimplemented!()
+        // let pgconn = establish_connection();
+        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        if let Ok(aqry) = rawqry {
+            println!("Querying articles: found {} rows", aqry.len());
+            if !aqry.is_empty() && aqry.len() == 1 {
+                let row = aqry.get(0); // get first row
+                Some( Article {
+                    aid: row.get(0),
+                    title: row.get(1), // todo: call sanitize title here
+                    posted: row.get(2),
+                    body: row.get(3), // Todo: call sanitize body here
+                    tags: Article::split_tags(row.get(4)),
+                })
+            } else { None }
+        } else { None }
+    }
     pub fn last_id() -> u32 {
         unimplemented!()
     }

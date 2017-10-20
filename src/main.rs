@@ -192,12 +192,15 @@ fn all_articles() -> Html<String> {
 // }
 
 #[get("/article?<aid>")]
-fn view_article(aid: ArticleId) -> Html<String> {
+// #[get("/article?<aid>")]
+// fn view_article(aid: ArticleId) -> Html<String> {
+fn view_article(aid: ArticleId, conn: DbConn) -> Html<String> {
     let start = Instant::now();
     // let article: Article = aid.retrieve();
     let mut content = String::new();
     content.push_str("You have reached the article page.<br>\n");
-    let rst = aid.retrieve(); // retrieve result
+    // let rst = aid.retrieve(); // retrieve result
+    let rst = aid.retrieve_with_conn(conn); // retrieve result
     if let Some(article) = rst {
         content.push_str(&format!("You are viewing article #{id}.<br>\nInfo:<br>\n", id=aid.aid));
         content.push_str(&article.info());
@@ -254,27 +257,31 @@ fn static_files(file: PathBuf) -> Option<NamedFile> {
 
 fn main() {
     // env_logger::init();
-    rocket::ignite().mount("/", routes![
-        admin_page,
-        admin_login,
-        admin_retry,
-        admin_process,
-        
-        user_page,
-        user_retry,
-        user_login,
-        user_process,
-        
-        all_articles,
-        // view_category,
-        // view_tag,
-        view_article,
-        article_not_found,
-        post_article,
-        
-        index,
-        static_files
-        ]).launch();
+    rocket::ignite()
+        .manage(data::init_pg_pool())
+        .mount("/", routes![
+            admin_page,
+            admin_login,
+            admin_retry,
+            admin_process,
+            
+            user_page,
+            user_retry,
+            user_login,
+            user_process,
+            
+            all_articles,
+            // view_category,
+            // view_tag,
+            view_article,
+            article_not_found,
+            post_article,
+            
+            index,
+            static_files
+        ])
+        // .manage(data::pg_conn_pool())
+        .launch();
 }
 
 
