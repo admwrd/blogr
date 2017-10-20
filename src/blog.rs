@@ -101,6 +101,9 @@ impl Article {
     pub fn retrieve(aid: u64) -> Option<Article> {
         unimplemented!()
     }
+    pub fn info(&self) -> String {
+        format!("<br>\nAid: {aid}, Title: {title}, Posted on: {posted}, Body:<br>\n{body}<br>\ntags: {tags:#?}", aid=self.aid, title=self.title, posted=self.posted, body=self.body, tags=self.tags)
+    }
 }
 
 impl ArticleForm {
