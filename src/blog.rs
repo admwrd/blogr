@@ -194,7 +194,7 @@ impl ArticleForm {
         let qrystr = format!("INSERT INTO articles (title, posted, body, tags) VALUES ('{title}', '{posted}', '{body}', '{tags}') RETURNING aid",
             title=self.title, posted=now, body=self.body, tags=self.tags);
         // let rawqry = conn.prepare(&qrystr).expect("Could not prepare query successfully");
-        println!("Insert query: {}", qrystr);
+        // println!("Insert query: {}", qrystr);
         let result = conn.query(&qrystr, &[]);
         match result {
             // Ok(ref qry) if qry.is_empty() => Err("Error inserting article, result is empty.".to_string()),
@@ -280,9 +280,9 @@ impl<'f> FromForm<'f> for ArticleForm {
         
         for (field, value) in form_items {
             match field.as_str() {
-                "title" => { title = sanitize_title(value.to_string()) },
-                "body" => { body = sanitize_body(value.to_string()) },
-                "tags" => { tags = sanitize_tags(value.to_string()) },
+                "title" => { title = sanitize_title(value.url_decode().expect("URL Decode failed")) },
+                "body" => { body = sanitize_body(value.url_decode().expect("URL Decode failed")) },
+                "tags" => { tags = sanitize_tags(value.url_decode().expect("URL Decode failed")) },
                 _ => {},
             }
         }

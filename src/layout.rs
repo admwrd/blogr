@@ -3,6 +3,8 @@
 use rocket::response::content::Html;
 use blog::*;
 
+pub const UNAUTHORIZED_POST_MESSAGE: &'static str = "You are not authorized to post.  Please login as an administrator. <a href=\"http://localhost:8000/admin\">Admin Login</a>";
+
 const ADMIN_LOGIN_FULL: &'static str = r##"
 <!DOCTYPE html>
 <html lang="en">

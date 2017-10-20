@@ -159,6 +159,7 @@ impl<'f,A: Authenticator> FromForm<'f> for LoginFormStatus<A>{
                 // "username" => user_pass.insert("username", value).map_or((), |_v| ()),
                 // "password" => user_pass.insert("password", value).map_or((), |_v| ()),
                 "username" => { user = sanitize(&value.to_string()) },
+                // "username" => { user = sanitize(&value.url_decode().to_string()) },
                 "password" => { pass = sanitize_password(&value.to_string()) },
                 _ => ()
             }

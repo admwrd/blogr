@@ -221,17 +221,19 @@ fn article_not_found() -> Html<String> {
 
 #[post("/article", data = "<form>")]
 
-fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
-    let mut content = String::new();
+// fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
+fn post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
     
+    let mut content = String::new();
     let result = form.into_inner().save(&conn);
     match result {
         Ok(article) => {
             // article, admin, user, username
-            let is_admin = if admin.is_some() { true } else { false };
-            let is_user = if user.is_some() { true } else { false };
-            let username: Option<String> = if is_user { Some(user.unwrap().username) } else if is_admin { Some(admin.unwrap().username) } else { None };
-            content.push_str(&template_article( &article, is_admin, is_user, username) );
+            // let is_admin = if admin.is_some() { true } else { false };
+            // let is_user = if user.is_some() { true } else { false };
+            // let username: Option<String> = if is_user { Some(user.unwrap().username) } else if is_admin { Some(admin.unwrap().username) } else { None };
+            // content.push_str(&template_article( &article, is_admin, is_user, username) );
+            content.push_str(&template_article( &article, true, true, Some(admin.username) ));
         },
         Err(why) => {
             content.push_str(&format!("Could not post the blog article.  Reason: {}", why))
@@ -240,19 +242,29 @@ fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form
     
     template(&content)
 }
+#[post("/article", rank=2)]
+fn unauthorized_post() -> Html<String> {
+    
+    template(UNAUTHORIZED_POST_MESSAGE)
+}
 
 #[get("/insert")]
-fn insert_form() -> Html<String> {
-    // let content = format!("Insert an article.");
-    let content = r##"
-    <form method="post" action="http://localhost:8000/article" name="insert_form">
-        <input type="text" name="title" placeholder="Title"><br>
-        <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea><br>
-        <input type="text" name="tags" placeholder="Comma, Separated, Tags"><br>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-    "##;
-    template(content)
+fn insert_form(user: Option<AdminCookie>) -> Html<String> {
+    let content;
+    if let Some(admin) = user {
+        // let content = format!("Insert an article.");
+        content = r##"
+        <form method="post" action="http://localhost:8000/article" name="insert_form">
+            <input type="text" name="title" placeholder="Title"><br>
+            <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea><br>
+            <input type="text" name="tags" placeholder="Comma, Separated, Tags"><br>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        "##;
+    } else {
+        content = UNAUTHORIZED_POST_MESSAGE;
+    }
+    template(&content)
 }
 
 
@@ -268,6 +280,7 @@ fn static_files(file: PathBuf) -> Option<NamedFile> {
 }
 
 fn main() {
+    init_pg_pool();
     // env_logger::init();
     rocket::ignite()
         .manage(data::init_pg_pool())
@@ -289,6 +302,7 @@ fn main() {
             article_not_found,
             post_article,
             insert_form,
+            unauthorized_post,
             
             index,
             static_files
