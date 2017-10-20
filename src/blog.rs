@@ -130,7 +130,7 @@ impl Article {
         let pgconn = establish_connection();
         let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags FROM articles WHERE aid = {id}", id=aid), &[]);
         if let Ok(aqry) = rawqry {
-            println!("Querying articles: found {} rows", aqry.len());
+            // println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
                 let row = aqry.get(0); // get first row
                 Some( Article {

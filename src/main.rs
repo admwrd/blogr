@@ -69,6 +69,8 @@ use auth::authenticator::Authenticator;
 // #[macro_use] extern crate diesel;
 // #[macro_use] extern crate diesel_codegen;
 extern crate dotenv;
+#[macro_use] extern crate log;
+extern crate env_logger;
 
 mod layout;
 mod cookie_data;
@@ -191,6 +193,7 @@ fn all_articles() -> Html<String> {
 
 #[get("/article?<aid>")]
 fn view_article(aid: ArticleId) -> Html<String> {
+    let start = Instant::now();
     // let article: Article = aid.retrieve();
     let mut content = String::new();
     content.push_str("You have reached the article page.<br>\n");
@@ -201,6 +204,8 @@ fn view_article(aid: ArticleId) -> Html<String> {
     } else {
         content.push_str(&format!("Article #{id} could not be retrieved.", id=aid.aid));
     }
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     template(&content)
 }
 
@@ -248,6 +253,7 @@ fn static_files(file: PathBuf) -> Option<NamedFile> {
 }
 
 fn main() {
+    // env_logger::init();
     rocket::ignite().mount("/", routes![
         admin_page,
         admin_login,
