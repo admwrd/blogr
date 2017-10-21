@@ -41,6 +41,7 @@ const ADMIN_LOGIN_FULL: &'static str = r##"
                 <div class="form-group" id="passGroup">
                     <label for="passwordField">Password</label>
                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
+                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
                 </div>
                 <!-- <div class="form-check">
                   <label class="form-check-label">
@@ -48,7 +49,7 @@ const ADMIN_LOGIN_FULL: &'static str = r##"
                   Check me out
                     </label>
                 </div> -->
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
             </form>
             
         </div>
@@ -103,6 +104,7 @@ const USER_LOGIN_FULL: &'static str = r##"
                 <div class="form-group" id="passGroup">
                     <label for="passwordField">Password</label>
                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
+                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
                 </div>
                 <!-- <div class="form-check">
                   <label class="form-check-label">
@@ -110,7 +112,7 @@ const USER_LOGIN_FULL: &'static str = r##"
                   Check me out
                     </label>
                 </div> -->
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
             </form>
             
         </div>
@@ -148,6 +150,7 @@ pub fn template_admin_login_fail(user: &str, reason: &str) -> String {
                 <div class="form-group" id="passGroup">
                     <label for="passwordField">Password</label>
                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
+                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
                 </div>
                 <!-- <div class="form-check">
                   <label class="form-check-label">
@@ -155,7 +158,7 @@ pub fn template_admin_login_fail(user: &str, reason: &str) -> String {
                   Check me out
                     </label>
                 </div> -->
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
             </form>
 "##, user=user, why=reason)
 }
@@ -174,6 +177,7 @@ pub fn template_user_login_fail(user: &str, reason: &str) -> String {
                 <div class="form-group" id="passGroup">
                     <label for="passwordField">Password</label>
                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
+                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
                 </div>
                 <!-- <div class="form-check">
                   <label class="form-check-label">
@@ -181,7 +185,7 @@ pub fn template_user_login_fail(user: &str, reason: &str) -> String {
                   Check me out
                     </label>
                 </div> -->
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
             </form>
 "##, user=user, why=reason)
 }

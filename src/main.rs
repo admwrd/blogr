@@ -100,7 +100,7 @@ fn admin_page(data: AdminCookie) -> Html<String> {
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-        output
+    output
 }
 
 #[get("/admin", rank = 2)]
@@ -124,6 +124,8 @@ fn admin_retry(fail: AuthFailure) -> Html<String> {
 
 #[post("/admin", data = "<form>")]
 fn admin_process(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
+    let start = Instant::now();
+    
     let inside = form.into_inner();
     let failuser = inside.user_str();
     let failmsg = inside.fail_str();
@@ -134,6 +136,10 @@ fn admin_process(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> Lo
         failurl.push_str("&msg=");
         failurl.push_str(&failmsg);
     }
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    
     inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
 }
 
@@ -161,6 +167,8 @@ fn user_retry(fail: AuthFailure) -> Html<String> {
 
 #[post("/user", data = "<form>")]
 fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> LoginFormRedirect {
+    let start = Instant::now();
+    
     let inside = form.into_inner();
     let failuser = inside.user_str();
     let failmsg = inside.fail_str();
@@ -171,6 +179,10 @@ fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> Logi
         failurl.push_str("&msg=");
         failurl.push_str(&failmsg);
     }
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    
     inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
 }
 
@@ -179,7 +191,12 @@ fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> Logi
 
 #[get("/view")]
 fn all_articles() -> Html<String> {
+    let start = Instant::now();
+    
     let mut content = String::from("You are viewing all of the articles.");
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     
     template(&content)
 }
@@ -214,8 +231,11 @@ fn view_article(aid: ArticleId, conn: DbConn) -> Html<String> {
 
 #[get("/article")]
 fn article_not_found() -> Html<String> {
+    let start = Instant::now();
     let mut content = String::from("The article you have specified does not exist.");
     
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     template(&content)
 }
 
@@ -223,6 +243,7 @@ fn article_not_found() -> Html<String> {
 
 // fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
 fn post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
+    let start = Instant::now();
     
     let mut content = String::new();
     let result = form.into_inner().save(&conn);
@@ -240,6 +261,8 @@ fn post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Ht
         },
     }
     
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     template(&content)
 }
 #[post("/article", rank=2)]
@@ -250,6 +273,8 @@ fn unauthorized_post() -> Html<String> {
 
 #[get("/insert")]
 fn insert_form(user: Option<AdminCookie>) -> Html<String> {
+    let start = Instant::now();
+    
     let content;
     if let Some(admin) = user {
         // let content = format!("Insert an article.");
@@ -264,6 +289,8 @@ fn insert_form(user: Option<AdminCookie>) -> Html<String> {
     } else {
         content = UNAUTHORIZED_POST_MESSAGE;
     }
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     template(&content)
 }
 
@@ -280,8 +307,14 @@ fn static_files(file: PathBuf) -> Option<NamedFile> {
 }
 
 fn main() {
-    init_pg_pool();
     // env_logger::init();
+    // init_pg_pool();
+    // if let Ok(pg_conn) = init_pg_pool().get() {
+    //     pg_conn;
+    //     // (*pg_conn).connect();
+    // }
+    init_pg_pool().get();
+    
     rocket::ignite()
         .manage(data::init_pg_pool())
         .mount("/", routes![

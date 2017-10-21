@@ -33,7 +33,7 @@ pub trait UserType : Authenticator + CookieId + AuthFail + FromRequest +  {
 // Inevestigate using UserPass<RegularUser> instead
 //      or maybe implementing ToString/FromString for RegularUser
 
-pub struct 
+pub enum UserRegular
 
 pub struct RegularUser {
     pub username: String,

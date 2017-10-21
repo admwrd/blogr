@@ -1,7 +1,7 @@
 
 Blogr
 	IMPORTANT
-	url_decoe() the strings FromForm implementation for ArticleForm
+	url_decode() the strings FromForm implementation for ArticleForm
 		They are being saved as url_encoded() strings in the database
 
 	JAVASCRIPT
@@ -13,6 +13,8 @@ Blogr
 	Add a method/helper function to retrieve an article and user from a qry
 		retrieve the data from the raw qry
 		returns a result <Article/User, String>
+		maybe make a trait that defines methods on Strings?? for retrieving stuff like
+			.retrieve_article()
 	
 	Add Tls/Ssl using Let's Encrypt
 		https://mmstick.tk/post/q42

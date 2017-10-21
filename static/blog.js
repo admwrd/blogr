@@ -132,6 +132,22 @@ function add_error_after_sibling(error="", after="") {
     // newmsg.childNodes[0].setAttribute("aria-label", "close");
 }
 
+function switch_pass() {
+    // document.getElementById("passwordField").style.display = "none";
+    // document.getElementById("passwordHidden").style.display = "none";
+    
+    var pass_one = document.getElementById("passwordHidden");
+    var pass_two = document.getElementById("passwordField");
+    
+    pass_one.style.display = "block";
+    pass_two.style.display = "none";
+}
+
+function disable_submit() {
+    var submit = document.getElementById("submit-button-id");
+    submit.disabled = true;
+}
+
 
 function validate_form() {
     // var dismiss = document.getElementsByClassName("alert-dismissable").remove();
@@ -145,6 +161,8 @@ function validate_form() {
     var user = document.getElementById("usernameField");
     var pass = document.getElementById("passwordField");
     if (user.value != "" && pass.value != "") {
+        disable_submit();
+        switch_pass();
         pass.value = Sha256.hash(pass.value);
         return true;
     } else {
