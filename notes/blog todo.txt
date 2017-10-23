@@ -10,10 +10,6 @@ Blogr
 	Capitalize titles, capitalize each word
 	Auto resize the article body text box height when text height is larger than the box's
 	Style the insert form with bootstrap forms
-	Add pagination
-	Build a search form with search term, min and max date(time), and tags
-	
-	Add editing and deletion capabilities for admins
 	
 	Maybe add a number of tabs at the beginning of each line of body text in the template() function
 		The number of tabs to be determined by the layout
@@ -51,8 +47,19 @@ Blogr
 
 Future Todo:
 	IMPORTANT
+	Research NoSQL databases which could be faster
+		Maybe even redis
+
 	Add search functionality
 	
+	Add a signup page
+
+	Add pagination
+
+	Build a search form with search term, min and max date(time), and tags
+
+	Add editing and deletion capabilities for admins
+
 	Add comments
 	Add ability to reply to a specific comment
 	Maybe add ability for admins to reply to a comment with a special styling, 

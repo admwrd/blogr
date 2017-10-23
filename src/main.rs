@@ -44,6 +44,10 @@ extern crate postgres;
 extern crate r2d2;
 extern crate r2d2_postgres;
 
+extern crate titlecase;
+
+use titlecase::titlecase;
+
 use regex::Regex;
 // use chrono::prelude::*;
 // use multipart::server::Multipart;
@@ -227,6 +231,12 @@ fn all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCooki
     output
 }
 
+#[get("/view?<page>")]
+fn view_page(page: ViewPage, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
+    // unimplemented!()
+    template("You are viewing paginated articles.")
+}
+
 #[get("/tag?<tag>", rank = 2)]
 fn view_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
     // find articles where tag LIKE '%<tag.tag>%'
@@ -389,6 +399,7 @@ fn main() {
             all_articles,
             // view_category,
             view_tag,
+            view_page,
             view_article,
             article_not_found,
             post_article,

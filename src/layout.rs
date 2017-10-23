@@ -2,6 +2,8 @@
 
 use rocket::response::content::Html;
 use blog::*;
+use titlecase::titlecase;
+
 use super::{BLOG_URL, USER_LOGIN_URL, ADMIN_LOGIN_URL};
 
 pub const UNAUTHORIZED_POST_MESSAGE: &'static str = "You are not authorized to post.  Please login as an administrator. <a href=\"http://localhost:8000/admin\">Admin Login</a>";
@@ -11,7 +13,7 @@ const HEADER: &'static str = include_str!("../static/template_header.html");
 const FOOTER: &'static str = include_str!("../static/template_footer.html");
 const GENERIC_PAGE_START: &'static str = "<div class=\"v-content\">\n\t\t\t\t\t\t";
 const GENERIC_PAGE_END: &'static str = "\n\t\t\t\t\t</div>";
-const TABS: &'static str = "\t\t\t\t\t\t";
+const TABS: &'static str = "\t\t\t\t\t\t\t";
 
 pub fn login_form(url: &str) -> String {
     format!(r##"
@@ -106,6 +108,29 @@ pub fn template_article(article: &Article, is_admin: bool, is_user: bool, userna
     // contents.push_str(&format!("{}<br>\n", article.aid));
     // contents.push_str(&article.info());
     let mut contents = String::new();
+    let mut bodytxt = if article.body.trim().starts_with("<") {
+        article.body.clone()
+    } else {
+        let mut bt = String::new();
+        bt.push_str("<p>");
+        bt.push_str(&article.body);
+        bt.push_str("</p>");
+        bt
+    };
+    let mut indented = String::new();
+    // // ensure correct tab formatting
+    // // extremely needless but it's removable
+    // for line in bodytxt.lines() {
+    //     if line.starts_with(TABS) {
+    //         indented.push_str(line);
+    //         indented.push_str("\n");
+    //     } else {
+    //         indented.push_str(TABS);
+    //         indented.push_str(line.trim_left());
+    //         indented.push_str("\n");
+    //     }
+    // }
+    // bodytxt = indented;
     contents.push_str(&format!(r##"
                     <article class="v-article">
                         <header class="v-article-header">
@@ -120,7 +145,7 @@ pub fn template_article(article: &Article, is_admin: bool, is_user: bool, userna
                             {body}
                         </p>
                     </article>
-"##, aid=article.aid, title=article.title, date_machine=article.posted.format("%Y-%m-%dT%H:%M:%S"), date=article.posted.format("%Y-%m-%d @ %I:%M%P"), body=article.body, tags=link_tags(&article.tags)));
+"##, aid=article.aid, title=titlecase(&article.title), date_machine=article.posted.format("%Y-%m-%dT%H:%M:%S"), date=article.posted.format("%Y-%m-%d @ %I:%M%P"), body=bodytxt, tags=link_tags(&article.tags)));
     contents
 }
 

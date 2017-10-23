@@ -5,6 +5,7 @@ use ::rocket::Request;
 use ::rocket::outcome::Outcome;
 use ::rocket::config::{Config, Environment};
 
+use titlecase::titlecase;
 use regex::Regex;
 use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
@@ -49,6 +50,12 @@ pub struct ArticleForm {
 
 pub struct Search {
     pub q: String,
+}
+
+#[derive(FromForm)]
+pub struct ViewPage {
+    pub page: u32,
+    pub app: Option<u8>,
 }
 
 pub struct ArticleSearch {
@@ -204,6 +211,7 @@ impl Article {
         } else {
             String::from("SELECT aid, title, posted, body, tags FROM articles")
         };
+        // let mut qrystr: String = String::from("SELECT aid, title, posted, body, tags FROM articles");
         if min_date.is_some() || max_date.is_some() || (tag.is_some() && get_len(&tag) != 0) || (search.is_some() && get_len(&search) != 0) {
             qrystr.push_str(" WHERE");
             let mut where_str = String::from("");

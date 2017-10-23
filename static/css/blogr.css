@@ -55,6 +55,7 @@ a:active {
     color: #eeeeee;
 }
 .v-article-title {
+    font-size: 1.25em;
     /* Candara, Calibri, Segoe, "Segoe Ui", Optima, Arial, sans-serif */
     /*font-family: Segoe, "Segoe Ui", Optima, Candara, Calibri, Arial, sans-serif;*/
     /*font-family: Trebuchet, Tahoma, Arial, sans-serif;*/
@@ -83,7 +84,7 @@ a:active {
     border-radius: 10px;
     margin: 1em 0px 1em 0px;
     background-color: #212529;
-    padding: 2em 1em 1em 1em;
+    padding: 1em 1em 1em 1em;
 }
 #header {
     font-family: vishusBlog;
