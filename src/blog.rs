@@ -24,7 +24,7 @@ pub struct ArticleId {
 // used for retrieving a GET url tag
 #[derive(Debug, Clone)]
 pub struct Tag {
-    tag: String,
+    pub tag: String,
 }
 
 #[derive(Debug, Clone)]
@@ -158,6 +158,14 @@ pub fn split_tags(string: String) -> Vec<String> {
     tags
 }
 
+pub fn get_len<T>(input: &Option<Vec<T>>) -> usize {
+    if let &Some(ref inner) = input {
+        inner.len()
+    } else {
+        0
+    }
+}
+
 impl Article {
     pub fn split_tags(string: String) -> Vec<String> {
         // Todo: call sanitize tags before splitting:
@@ -188,6 +196,71 @@ impl Article {
     }
     pub fn info(&self) -> String {
         format!("Aid: {aid}, Title: {title}, Posted on: {posted}, Body:<br>\n{body}<br>\ntags: {tags:#?}", aid=self.aid, title=self.title, posted=self.posted, body=self.body, tags=self.tags)
+    }
+    
+    pub fn retrieve_all(pgconn: DbConn, limit: u32, min_date: Option<NaiveDate>, max_date: Option<NaiveDate>, tag: Option<Vec<String>>, search: Option<Vec<String>>) -> Vec<Article> {
+        let mut qrystr = String::from("SELECT aid, title, posted, body, tags FROM articles");
+        if min_date.is_some() || max_date.is_some() || (tag.is_some() && get_len(&tag) != 0) || (search.is_some() && get_len(&search) != 0) {
+            qrystr.push_str(" WHERE");
+            let mut where_str = String::from("");
+            if let Some(date_min) = min_date {
+                where_str.push_str( &format!(" posted >= '{}'", date_min.format("%Y-%m-%d %H:%M:%S")) );
+            }
+            if let Some(date_max) = max_date {
+                if &where_str != "" { where_str.push_str(" AND "); }
+                where_str.push_str( &format!(" posted <= '{}'", date_max.format("%Y-%m-%d %H:%M:%S")) );
+                
+            }
+            if let Some(v) = tag {
+                if &where_str != "" { where_str.push_str(" AND "); }
+                let mut tag_str = String::new();
+                let mut first: bool = true;
+                for t in v {
+                    if first { first = false; } else { tag_str.push_str(" AND "); }
+                    tag_str.push_str( &format!(" tags LIKE '%{}%'", t) );
+                }
+                if &tag_str != "" { where_str.push_str(&tag_str); }
+            }
+            if let Some(strings) = search {
+                if &where_str != "" { where_str.push_str(" AND "); }
+                let mut search_str = String::new();
+                let mut first: bool = true;
+                for string in strings {
+                    if first { first = false; } else { search_str.push_str(" AND ") }
+                    search_str.push_str( &format!(" (title LIKE '%{s}%' OR body LIKE '%{s}%')", s=string) );
+                }
+                if &search_str != "" { where_str.push_str(&search_str); }
+            }
+            qrystr.push_str(&where_str);
+        }
+        
+        if limit != 0 { qrystr.push_str(&format!(" LIMIT {}", limit)); }
+        println!("Query: {}", qrystr);
+        let qryrst = pgconn.query(&qrystr, &[]);
+        // if let Ok(aqry) = qryrst {
+        //     println!("Query found {} rows", aqry.len());
+        //     if !aqry.is_empty() && aqry.len() != 0 {
+                
+        //     }
+        // }
+        if let Ok(result) = qryrst {
+            let mut articles: Vec<Article> = Vec::new();
+            for row in &result {
+                let a = Article {
+                    aid: row.get(0),
+                    title: row.get(1),
+                    posted: row.get(2),
+                    body: row.get(3),
+                    tags: split_tags(row.get(4)),
+                };
+                articles.push(a);
+            }
+            println!("Found {} articles with the specified query.", articles.len());
+            articles
+        } else {
+            println!("Query failed.");
+            Vec::<Article>::new()
+        }
     }
 }
 

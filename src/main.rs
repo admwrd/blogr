@@ -208,10 +208,31 @@ fn all_articles() -> Html<String> {
 }
 
 #[get("/tag?<tag>", rank = 2)]
-fn view_tag(tag: Tag) -> Html<String> {
-    let mut content = String::new();
+fn view_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
     // find articles where tag LIKE '%<tag.tag>%'
-    template(&content)
+    let start = Instant::now();
+    
+    let output: Html<String>;
+    // limit, min date, max date, tags, strings
+    let tags = Some(split_tags(tag.tag));
+    let results = Article::retrieve_all(conn, 0, None, None, tags, None);
+    if results.len() != 0 {
+        let is_admin = if admin.is_some() { true } else { false };
+        let is_user = if user.is_some() { true } else { false };
+        let username: Option<String> = if let Some(a_user) = admin { Some(a_user.username) } else if let Some(u_user) = user { Some(u_user.username) } else { None };
+        output = template_articles(results, is_admin, is_user, username);
+        
+    } else {
+        output = template(r##"
+            <div class="alert alert-danger" role="alert">
+                Could not find any articles with the specified tag.
+            </div>"##);
+    }
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // template(&content)
+    output
 }
 
 #[get("/article?<aid>")]
@@ -347,7 +368,7 @@ fn main() {
             
             all_articles,
             // view_category,
-            // view_tag,
+            view_tag,
             view_article,
             article_not_found,
             post_article,

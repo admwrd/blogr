@@ -9,6 +9,8 @@ Blogr
 	
 	Auto resize the article body text box height when text height is larger than the box's
 	Style the insert form with bootstrap forms
+	Add pagination
+	Build a search form with search term, min and max date(time), and tags
 	
 	Add editing and deletion capabilities for admins
 	
