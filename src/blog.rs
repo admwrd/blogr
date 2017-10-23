@@ -264,7 +264,7 @@ impl Article {
             }
             qrystr.push_str(&where_str);
         }
-        
+        qrystr.push_str(" ORDER BY posted DESC");
         if limit != 0 { qrystr.push_str(&format!(" LIMIT {}", limit)); }
         println!("Query: {}", qrystr);
         let qryrst = pgconn.query(&qrystr, &[]);

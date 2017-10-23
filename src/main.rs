@@ -204,7 +204,7 @@ fn all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCooki
     let start = Instant::now();
     // let mut content = String::from("You are viewing all of the articles.");
     let output: Html<String>;
-    let results = Article::retrieve_all(conn, 20, Some(300), None, None, None, None);
+    let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
     if results.len() != 0 {
         let is_admin = if admin.is_some() { true } else { false };
         let is_user = if user.is_some() { true } else { false };

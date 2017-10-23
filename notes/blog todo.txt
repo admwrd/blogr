@@ -7,7 +7,9 @@ Blogr
 	Maybe remove all the is_admin is_user username fields for the article templates
 		Use javascript to add the edit/delete options
 		But in the route check the correct cookie is set for that action
-
+	
+	Display a page the lists the tags, maybe even sort by number of posts each has
+	
 	Add unique visitors
 
 	Authenticate user properly with a database query

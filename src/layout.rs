@@ -121,7 +121,7 @@ pub fn template_create_article(url: &str) -> String {
                             </div>
                             <div class="form-group">
                                 <label for="inputDesc" class="v-form-label">Description</label>
-                                <input name="description" type="text" class="v-form-control form-control" id="inputDesc" placeholder="Description">
+                                <input name="description" type="text" maxlength="250" class="v-form-control form-control" id="inputDesc" placeholder="Description">
                             </div>
                             <div class="form-group">
                                 <label for="input_body" class="v-form-label">Contents</label>
