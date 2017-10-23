@@ -31,6 +31,24 @@ Blogr
 	Finish implementing the Usertype module, make it an enum that holds whatever?
 
 
+Future Todo:
+	IMPORTANT
+	Add search functionality
+	
+	Add comments
+	Add ability to reply to a specific comment
+	Maybe add ability for admins to reply to a comment with a special styling, 
+		like on newegg when companies reply to a comment about a problem
+
+
+
+
+Research Futures
+	try to implement caching by calling a function that returns a string and schedules an async function
+	to write the string to a cache after the string is returned to allow the webpage to load while the 
+	string is being written to the cache
+
+
 
 
 Done

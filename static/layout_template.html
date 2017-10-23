@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>My Blog</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        
+        <!-- Font Awesome -->
+        <!-- <link rel="stylesheet" href="css/font-awesome.min.css"> -->
+        
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+        
+        <!-- Custom CSS -->
+        <!-- <link id="pageStyleSheet" type="text/css" href="css/blog.css" rel="stylesheet" /> -->
+        <link id="pageStyleSheet" type="text/css" href="css/blogr.css" rel="stylesheet" />
+        
+        <!-- JavaScript -->
+        <!-- <script src="js-head.js"></script>  -->
+        
+        <style>
+        
+        </style>
+    </head>
+    <body>
+        <div id="mainWrapper" class="main-wrapper">
+            
+<!-- ---------- -->
+            <!--   navbar-inverse bg-inverse -->
+            <nav class="v-nav-bar sticky-top navbar navbar-expand-lg navbar-dark bg-dark">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="blog-logo navbar-brand" href="#">Vishus Blog</a>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="v-nav navbar-nav mr-auto">
+                        <li class="v-nav-item nav-item active">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="v-nav-item nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="v-nav-item nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dropdown
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">Action</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                        </li>
+                        <li class="v-nav-item nav-item">
+                            <a class="nav-link disabled" href="#">Disabled</a>
+                        </li>
+                    </ul>
+                    <form id="search-form" class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+            </nav>
+            <!-- 
+            <nav id="v-nav-main" class="v-nav-bar sticky-top navbar navbar-toggleable-md navbar-light bg-faded">
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div id="v-navbrand">
+                <a class="navbar-brand" href="#">Navbar</a>
+                </div>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                    <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link disabled" href="#">Disabled</a>
+                        </li>
+                    </ul>
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+            </nav>
+             -->
+            <div id="v-main">
+                <div id="v-menu">
+                    <ul>
+                        <li>Home</li>
+                        <li>View Tags</li>
+                        <li>View by Date</li>
+                        <li>Search</li>
+                        <li>Item</li>
+                        <li>Item</li>
+                        <li>Item</li>
+                        <li>Item</li>
+                        <li>Item</li>
+                    </ul>
+                    
+                </div>
+                <div id="v-body">
+                    <article class="v-article">
+                        <header class="v-article-header">
+                            <h2 class="v-article-title"><a href="/article?aid=1">Lorem Ipsum</a></h2>
+                            <div class="row">
+                                <date class="v-article-date" datetime="2017-22-10">10/22/2017</date>
+                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
+                                <div class="col-md v-article-tags">Tags: <a href="/tags?tag=programming">Programming</a> <a href="/tags?tag=code">Code</a> <a href="/tags?tag=examples">Examples</a> <a href="/tags?tag=projects">Projects</a></div>
+                            </div>
+                        </header>
+                        <p>
+                            Etiam a elit felis. Nunc libero quam, ultricies ut egestas vel, faucibus non sapien. Quisque finibus diam ut metus faucibus posuere. Aliquam lorem ex, maximus at libero eu, faucibus sollicitudin nisi. Quisque vitae enim sapien. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ex nulla, lobortis eu varius sit amet, pretium sed tellus. Donec tincidunt vel ipsum quis hendrerit. Cras dolor sapien, hendrerit vitae nibh ut, consectetur sodales sem. Ut accumsan eu massa sed pulvinar. Pellentesque sed ante nec quam maximus facilisis.
+                        </p>
+                        <p>
+                            Proin lacinia mattis metus. Duis sed egestas tortor. Nunc sed feugiat neque. Nulla nec turpis consectetur, mollis quam ornare, pellentesque risus. Suspendisse tempus sit amet est at sodales. Nunc a magna sed augue tempus lobortis vitae et lectus. Fusce vel libero felis. Etiam id dictum purus, quis finibus felis. In a euismod massa, et ultricies augue.
+                        </p>
+                        <p>
+                            Duis consequat nisi turpis, vel tincidunt turpis ornare sit amet. Cras sapien tellus, dapibus vel metus vel, placerat vehicula turpis. Donec est odio, convallis ut tincidunt non, vestibulum vel justo. Pellentesque commodo id dolor sed tincidunt. Quisque dictum commodo fermentum. Ut consequat nibh elit, id venenatis mauris vestibulum non. Cras consequat, quam a tincidunt mollis, augue metus consectetur ligula, quis lacinia mi ipsum vel massa. Donec bibendum sed leo at congue. Quisque eros neque, ullamcorper non interdum in, gravida nec lectus.
+                        </p>
+                        <p>
+                            Phasellus accumsan luctus dolor vel bibendum. Nunc eros leo, interdum vitae purus vel, rhoncus porta massa. Vivamus laoreet pretium felis nec cursus. Ut dictum lectus non est egestas, at fermentum ligula imperdiet. Aenean quis sem eget eros aliquet laoreet ac nec diam. Proin convallis nibh sed metus imperdiet, quis dictum ligula euismod. In pharetra leo sed ligula efficitur viverra. Curabitur id arcu massa.
+                        </p>
+                        <p>
+                            Pellentesque ac rhoncus lacus, semper tempor neque. Praesent vel velit nibh. Proin laoreet a diam eget sollicitudin. Cras eget quam eget nunc commodo scelerisque. Curabitur vehicula scelerisque enim, vel congue libero consectetur iaculis. Proin id ex laoreet, vulputate ante eu, placerat mauris. Sed pretium ornare turpis quis volutpat. Vivamus ac cursus magna, nec dapibus enim. Nam sit amet arcu diam.
+                        </p>
+                        <p>
+                            Morbi vestibulum, elit et vulputate pulvinar, ante elit interdum nunc, ut ultrices sem enim vel risus. Maecenas pellentesque lobortis libero, ut tempus libero maximus at. Nunc sit amet volutpat ante. Sed id ipsum eros. Mauris ullamcorper a sem eu consectetur. Integer fringilla sollicitudin massa at porta. Morbi justo sapien, tincidunt id nibh in, viverra lacinia tortor. Etiam pellentesque elit eros, non gravida nulla hendrerit ac. Aliquam turpis nisl, scelerisque iaculis tempus eu, tempor a sem. Aliquam tempor tempor iaculis. Quisque velit magna, rutrum et accumsan ut, gravida a libero. Donec et accumsan nisl, in consectetur urna. Phasellus tincidunt lacus non erat varius semper. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                        </p>
+                        <p>
+                            Integer tempor varius scelerisque. Proin sit amet dapibus neque, ac dignissim felis. Pellentesque ultricies facilisis quam, et mollis leo posuere non. Nulla ullamcorper, sapien quis pellentesque ultricies, tellus est semper velit, pellentesque maximus augue arcu sit amet nulla. Nullam velit ex, bibendum vel odio at, feugiat auctor lectus. Sed vel auctor sem, ac rutrum sapien. Praesent ac pharetra nibh. Vivamus sed lorem tortor. Nullam luctus massa a mauris venenatis gravida. Nullam nec facilisis nisi.
+                        </p>
+                        <p>
+                            Cras arcu velit, dapibus vitae congue vitae, blandit et massa. Phasellus non fringilla tortor, at ultrices dolor. Duis tincidunt pulvinar eros in pellentesque. Ut ut turpis interdum, vestibulum tortor vel, gravida sapien. Quisque aliquam porta enim vel vulputate. Pellentesque vitae ultricies lorem. Sed convallis in lacus sit amet viverra. Pellentesque porta dui eget tempor tincidunt.
+                        </p>
+                    </article>
+                    
+                </div>
+            </div>
+            
+<!--
+            <br>
+            <nav class="sticky-top navbar navbar-expand-md  bg-faded">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                    <a class="navbar-brand" href="#">Hidden brand</a>
+                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link disabled" href="#">Disabled</a>
+                        </li>
+                    </ul>
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+            </nav>
+            <br>
+            <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+                <a class="navbar-brand" href="#">Navbar</a>
+
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Pricing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                    </ul>
+                    <form class="form-inline">
+                        <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                        <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+            </nav>
+            
+-->
+<!-- 
+            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+-->
+            
+<!-- ---------- -->
+            
+        </div>
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+        
+        <!-- Custom JavaScript -->
+        <script src="sha256.js"></script>
+        <script src="blog.js"></script>
+        <script type="text/javascript">
+        </script>
+        
+    </body>
+</html>

@@ -1,0 +1,134 @@
+
+#v-navbrand {
+
+}
+
+
+.v-nav-bar {
+    /*background: url('../white-trans-bg.png');*/
+}
+
+#header {
+    font-family: vishusBlog;
+    font-size: 250%;
+    text-shadow: 0px 0px 8px #ff4801;
+}
+#v-main {
+    display: flex;
+    flex-flow: row nowrap;
+    /*flex-basis: 30ch;*/
+}
+#v-body {
+    border: 1px dashed #dd0000;
+    margin: 0px 5%;
+    flex: 9 1 90%;
+    order: 2;
+    padding: 1em 1em 1em 1em;
+}
+#v-menu {
+    border: 1px dashed #dd0000;
+    margin: 0px;
+    padding: 1em 1em;
+    order: 1;
+    flex: 1 9 0%;
+    display: none;
+    font-family: Candara, Calibri, Segoe, "Segoe Ui", Optima, Arial, sans-serif;
+    font-weight: bold;
+}
+
+#v-menu ul {
+    margin: 0px;
+    padding: 0px;
+}
+#v-menu li {
+    display: block;
+    list-style-type: none;
+}
+
+.v-end {
+    flex-grow: 1;
+    border: 1px dashed #dd0000;
+}
+
+@media (min-width: 768px) {
+    #v-nav-main {
+        /*display: none;*/
+    }
+    #v-menu {
+        display: flex;
+        flex: 1 9 30ch;
+        margin: 0px 0px 0px 0px;
+    }
+    #v-body {
+        flex: 0 1 70%;
+        margin: 0px 10% 0px 1%;
+        width: 15%;
+    }
+}
+@media (min-width: 970px) {
+    #v-nav-main {
+        /*display: none;*/
+    }
+    #v-menu {
+        display: flex;
+        width: 14%;
+        flex: 1 9 30ch;
+        /*flex: ;*/
+        margin: 0px 0px 0px 4%;
+    }
+    #v-body {
+        flex: 9 1 60%;
+        width: 60%;
+        margin: 0px 20% 0px 1%;
+    }
+
+}
+@media (min-width: 1170px) {
+    #v-nav-main {
+        
+    }
+    #v-menu {
+        display: flex;
+        width: 15%;
+        flex: 1 9 30ch;
+        margin: 0px 0px 0px 9%;
+    }
+    #v-body {
+        flex: 9 1 50%;
+        width: 50%;
+        margin: 0px 25% 0px 1%;
+    }
+}
+
+
+
+
+
+
+.form-auth-alert {
+    /*display: inline;*/
+    padding: 2px 10px;
+    margin: 3px 0px;
+}
+
+.hidden-pass {
+    display: none;
+}
+
+
+
+
+@font-face {
+  font-family: vishusBlog;
+  src: local("vishusBlog"),
+  url(Demonized.ttf);
+  font-weight: bold;
+}
+
+
+
+
+
+
+
+

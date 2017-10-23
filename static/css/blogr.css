@@ -1,0 +1,262 @@
+
+#v-navbrand {
+
+}
+body {
+    background-color: #15191b;
+}
+
+a {
+    color: #8ceaf6;
+    text-decoration: none;
+}
+a:visited {
+    color: #0d95a7;
+}
+a:hover {
+    color: #bd67fd;
+}
+a:active {
+    color: #bd67fd;
+}
+
+.v-nav-bar {
+    /*background: url('../white-trans-bg.png');*/
+}
+
+.v-nav {  }
+.v-nav-item {
+    font-size: 1.15em;
+}
+
+.v-article {  }
+.v-article-header {
+}
+.v-article-header a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.v-article-header a:link {
+    color: #ffffff;
+}
+.v-article-header a:hover {
+    color: #bd67fd;
+}
+.v-article-header a:visted {
+    color: #eeeeee;
+}
+.v-article-title {
+    /* Candara, Calibri, Segoe, "Segoe Ui", Optima, Arial, sans-serif */
+    /*font-family: Segoe, "Segoe Ui", Optima, Candara, Calibri, Arial, sans-serif;*/
+    /*font-family: Trebuchet, Tahoma, Arial, sans-serif;*/
+    /*font-family: vishusBlogTitle, 'Century Gothic', 'Franklin Gothic Book', Trebuchet, Tahoma, Arial, sans-serif;*/
+    font-family: Tahoma, Verdana, Geneva;
+    font-weight: bold;
+}
+.v-article-date {
+    margin: 0px 0px 0px 1em;
+    color: #aaa;
+}
+.v-article-tags {
+    /*display: inline;*/
+    /*margin: 0px 0px 0px 2em;*/
+}
+
+#header {
+    font-family: vishusBlog;
+    font-size: 250%;
+    text-shadow: 0px 0px 8px #ff4801;
+}
+.blog-logo {
+    font-family: vishusBlog;
+    font-size: 250%;
+    /*text-shadow: 0px 0px 8px #ff4801;*/
+    text-shadow: 0px 0px 1px #000000;
+}
+#search-form {
+    flex-flow: row nowrap;
+}
+
+#v-main {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    /*flex-basis: 30ch;*/
+}
+#v-body {
+    border: 1px solid #212529
+    /*border: 1px dashed #dd0000;*/
+    /*margin: 0px 5%;*/
+    flex: 9 1 90%;
+    order: 2;
+    margin: 0px 5%;
+    padding: 1em 1em 1em 1em;
+    color: #e0e0e0;
+    max-width: 70ch;
+    background-color: #212529;
+    font-family: vishusBlogText, Geneva, ‘Lucida Sans’, ‘Lucida Grande’, ‘Lucida Sans Unicode’, Verdana, sans-serif;
+    /*font-family: Geneva, ‘Lucida Sans’, ‘Lucida Grande’, ‘Lucida Sans Unicode’, Verdana, sans-serif;*/
+    background: #212529 url('../sphere-trans2.png') no-repeat bottom right;
+    font-size: 1.15em;
+}
+#v-menu {
+    color: #e0e0e0;
+    border: 1px solid #212529;
+    /*border: 1px dashed #dd0000;*/
+    margin: 0px;
+    padding: 1em 1em;
+    order: 1;
+    flex: 1 9 0%;
+    display: none;
+    font-family: Candara, Calibri, Segoe, "Segoe Ui", Optima, Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+#v-menu ul {
+    margin: 0px;
+    padding: 0px;
+}
+#v-menu li {
+    display: block;
+    list-style-type: none;
+}
+
+.v-end {
+    flex-grow: 1;
+    border: 1px dashed #dd0000;
+}
+
+@media (min-width: 768px) {
+    .v-article {  }
+    .v-article-header {
+        margin: 0px 3em 1em 3em;
+    }
+    .v-article-title {
+        /* Candara, Calibri, Segoe, "Segoe Ui", Optima, Arial, sans-serif */
+        /*font-family: Segoe, "Segoe Ui", Optima, Candara, Calibri, Arial, sans-serif;*/
+    }
+    .v-article-date {
+        margin: 0px;
+    }
+    .v-article-tags {
+        /*display: inline;*/
+        /*margin: 0px 0px 0px 2em;*/
+    }
+    #v-nav-main {
+        /*display: none;*/
+    }
+    #v-menu {
+        /*display: flex;*/
+        flex: 0 0 15%;
+        margin: 0px 1em 0px 0px;
+    }
+    #v-body {
+        flex: 0 0 70%;
+        margin: 0px 0px 0px 1em;
+    }
+}
+@media (min-width: 978px) {
+    #v-nav-main {
+        /*display: none;*/
+    }
+    #v-menu {
+        /*display: flex;*/
+        flex: 0 0 15%;
+    }
+    #v-body {
+        flex: 0 0 60%;
+    }
+}
+@media (min-width: 1170px) {
+    #v-nav-main {
+        /*display: none;*/
+    }
+    #v-menu {
+        /*display: flex;*/
+        flex: 0 0 15%;
+    }
+    #v-body {
+        flex: 0 0 60%;
+    }
+}
+
+/*
+@media (min-width: 970px) {
+    #v-nav-main {
+    }
+    #v-menu {
+        display: flex;
+        width: 14%;
+        flex: 1 9 30ch;
+        margin: 0px 0px 0px 4%;
+    }
+    #v-body {
+        flex: 9 1 60%;
+        width: 60%;
+        margin: 0px 20% 0px 1%;
+    }
+
+}
+@media (min-width: 1170px) {
+    #v-nav-main {
+    }
+    #v-menu {
+        display: flex;
+        width: 15%;
+        flex: 1 9 30ch;
+        margin: 0px 0px 0px 9%;
+    }
+    #v-body {
+        flex: 9 1 50%;
+        width: 50%;
+        margin: 0px 25% 0px 1%;
+    }
+}
+*/
+
+
+
+
+
+.form-auth-alert {
+    /*display: inline;*/
+    padding: 2px 10px;
+    margin: 3px 0px;
+}
+
+.hidden-pass {
+    display: none;
+}
+
+
+
+
+@font-face {
+  font-family: vishusBlog;
+  src: local("vishusBlog"),
+  url('../fonts/Demonized.ttf');
+  font-weight: bold;
+}
+
+
+@font-face {
+  font-family: vishusBlogTitle;
+  src: local("vishusBlogTitle"),
+  url('../fonts/ERASBD.ttf');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: vishusBlogtext;
+  src: local("vishusBlogText"),
+  url('../fonts/Quicksand_Book.otf');
+  font-weight: bold;
+}
+
+
+
+
+
+

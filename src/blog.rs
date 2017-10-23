@@ -41,6 +41,16 @@ pub struct ArticleForm {
     pub tags: String,
 }
 
+pub struct Search {
+    pub q: String,
+}
+
+pub struct ArticleSearch {
+    // pub min_date: NaiveDate,
+    // pub max_date: NaiveDate,
+    pub keywords: Vec<String>,
+}
+
 #[derive(Debug, Clone)]
 pub struct User {
     pub userid: u32,
@@ -113,6 +123,12 @@ impl ArticleId {
         unimplemented!()
     }
     
+}
+
+impl Search {
+    pub fn search() -> Vec<Article> {
+        unimplemented!()
+    }
 }
 
 pub fn sanitize_body(string: String) -> String {

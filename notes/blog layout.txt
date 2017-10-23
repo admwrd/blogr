@@ -2,6 +2,9 @@
 The body content should be the middle 70%
 The menu should be left of the body, taking up 10% of the space with a 4% left margin and 1% right margin
 
+maybe use the jquery one page navigation js script to show one article per page
+maybe use transparent background boxes to show the background image a little but still show text
+
 
 
 +----- ----- ----- ----- -----%----- ----- ----- ----- -----|----- ----- ----- ----- -----%----- ----- ----- ----- -----+

@@ -294,6 +294,10 @@ fn insert_form(user: Option<AdminCookie>) -> Html<String> {
     template(&content)
 }
 
+#[get("/search")]
+fn search_results() -> Html<String> {
+    unimplemented!()
+}
 
 #[get("/")]
 fn index() -> Html<String> {
