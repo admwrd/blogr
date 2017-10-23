@@ -98,7 +98,7 @@ impl ArticleId {
     pub fn retrieve(&self) -> Option<Article> {
         // unimplemented!()
         let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -108,7 +108,7 @@ impl ArticleId {
                     title: row.get(1), // todo: call sanitize title here
                     posted: row.get(2),
                     body: row.get(3), // Todo: call sanitize body here
-                    tags: Article::split_tags(row.get(4)),
+                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     // description: opt_col(row.get_opt(5)),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                 })
@@ -119,7 +119,7 @@ impl ArticleId {
     pub fn retrieve_with_conn(&self, pgconn: DbConn) -> Option<Article> {
         // unimplemented!()
         // let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -131,7 +131,7 @@ impl ArticleId {
                     title: row.get(1), // todo: call sanitize title here
                     posted: row.get(2),
                     body: row.get(3), // Todo: call sanitize body here
-                    tags: Article::split_tags(row.get(4)),
+                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                 })
             } else { None }
@@ -194,7 +194,7 @@ impl Article {
     pub fn retrieve(aid: u32) -> Option<Article> {
         // unimplemented!()
         let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags, description FROM articles WHERE aid = {id}", id=aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=aid), &[]);
         if let Ok(aqry) = rawqry {
             // println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -204,7 +204,7 @@ impl Article {
                     title: row.get(1), // todo: call sanitize title here
                     posted: row.get(2),
                     body: row.get(3), // Todo: call sanitize body here
-                    tags: Article::split_tags(row.get(4)),
+                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                 })
             } else { None }
@@ -248,7 +248,8 @@ impl Article {
                 let mut first: bool = true;
                 for t in v {
                     if first { first = false; } else { tag_str.push_str(" AND "); }
-                    tag_str.push_str( &format!(" tags LIKE '%{}%'", t) );
+                    // tag_str.push_str( &format!(" tags LIKE '%{}%'", t) );
+                    tag_str.push_str( &format!(" '{}' = ANY(tag)", t) );
                 }
                 if &tag_str != "" { where_str.push_str(&tag_str); }
             }
@@ -277,18 +278,11 @@ impl Article {
         if let Ok(result) = qryrst {
             let mut articles: Vec<Article> = Vec::new();
             for row in &result {
-                let tagraw: Option<Result<Vec<String>, _>> = row.get_opt(4); // tag array
-                // let tagvec = tagraw.unwrap_or(Ok(Vec::new())).unwrap_or(Vec::new());
-                // let tagvec = tagraw.unwrap_or(Ok(Vec::new())).unwrap_or(Vec::new());
-                // let tagvec = row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim_matches('\'').to_string()).collect();
+                // let tagstr = row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new());
+                // println!("Tags: {:?}", tagstr);
+                // let tagvec = tagstr.into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect();
                 
-                let tagstr = row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new());
-                println!("Tags: {:?}", tagstr);
-                // let tagvec = tagstr.into_iter().map(|s| s[1..s.len()-1].to_string()).collect();
-                let tagvec = tagstr.into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect();
-                // let tagvec = row.get_opt(4).filter_map(|r| r);
-                // let tagvec: Vec<String> = tagstr[1..(tagstr.len()-1usize)].split(',').map(|s| s.to_string()).collect();
-                // let tagvec: Vec<String> = &tagstr[1..tagstr.len()-1].split(',').map(|t| t.trim_matches('\'')).collect();
+                // let vectag = row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect();
                 let a = Article {
                     aid: row.get(0),
                     title: row.get(1),
@@ -299,7 +293,7 @@ impl Article {
                             else { d }
                         } else { row.get(3) },
                     // tags: split_tags(row.get(4)),
-                    tags: tagvec,
+                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     // description: if show_desc { String::new() } else { String::new() },
                     // show_desc moves the description to the body
                     description: if show_desc { 
@@ -353,11 +347,23 @@ impl ArticleForm {
         // unimplemented!()
         let now = Local::now().naive_local();
         // return both id and posted date
+        
+        // take blah, blah2, blah3 and convert into {'blah', 'blah2', 'blah3'}
+        
+        let tagstr = format!( "{{{}}}", self.tags.clone().split(',').map(|s| format!("\"{}\"", s.trim())).collect::<Vec<_>>().join(","));
+        // let mut tagstr = self.tags.clone();
+        // tagstr.replace(",", "','");
+        // tagstr.insert(0, '\'');
+        // let tlen = tagstr.len();
+        // tagstr.insert(tlen, '\'');
+        
+            
         // let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid, posted",
-        let qrystr = format!("INSERT INTO articles (title, posted, body, tags, description) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}') RETURNING aid",
-            title=self.title, posted=now, body=self.body, tags=self.tags, desc=self.description);
+        let qrystr = format!("INSERT INTO articles (title, posted, body, tag, description) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}') RETURNING aid",
+            // title=self.title, posted=now, body=self.body, tags=self.tags, desc=self.description);
+            title=self.title, posted=now, body=self.body, tags=tagstr, desc=self.description);
         // let rawqry = conn.prepare(&qrystr).expect("Could not prepare query successfully");
-        // println!("Insert query: {}", qrystr);
+        println!("Insert query: {}", qrystr);
         let result = conn.query(&qrystr, &[]);
         match result {
             // Ok(ref qry) if qry.is_empty() => Err("Error inserting article, result is empty.".to_string()),

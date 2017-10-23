@@ -15,6 +15,9 @@ Blogr
 
 	Change validation to use jQuery and Bootstrap - looks sooo pretty
 
+	Posting articles: maybe add a javascript function to alert the user when spaces are detected in the tag field but no commas are found
+		Display: Did you mean to use commas instead of spaces?
+
 	CONVERT TO HANDLEBARS OR MUSTACHE TEMPLATES
 	Customize the navigation link
 	Make the menu link to:
@@ -51,6 +54,12 @@ Blogr
 		localhost/view/category/blah
 	Finish implementing the Usertype module, make it an enum that holds whatever?
 
+
+Design:
+	Figure out a way to make the middle box backgrounds transparent and the outside black still
+		This allows a static background to be placed that will move with the page, 
+			staying in the same position on the screen at all times
+			only the content boxes moves, allowing their inside to display the image
 
 Future Todo:
 	IMPORTANT
