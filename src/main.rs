@@ -91,6 +91,11 @@ use login_form_status::LoginFormRedirect;
 use blog::*;
 use data::*;
 
+pub const BLOG_URL: &'static str = "http://localhost:8000/";
+pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
+pub const ADMIN_LOGIN_URL: &'static str = "http://localhost:8000/admin";
+
+
 #[get("/admin")]
 fn admin_page(data: AdminCookie) -> Html<String> {
     let start = Instant::now();
@@ -104,10 +109,11 @@ fn admin_page(data: AdminCookie) -> Html<String> {
 }
 
 #[get("/admin", rank = 2)]
-fn admin_login() -> Html<&'static str> {
+fn admin_login() -> Html<String> {
     let start = Instant::now();
 
-    let output = Html(template_login_admin());
+    // let output = Html(template_login_admin());
+    let output = template(&login_form(ADMIN_LOGIN_URL));
         
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
@@ -115,11 +121,9 @@ fn admin_login() -> Html<&'static str> {
 }
 
 #[get("/admin?<fail>")]
-// #[get("/user/?<user>&<msg>")]
-// #[get("/user/<user>/<msg>")]
-// fn user_retry(user: String, msg: String) -> Html<String> {
 fn admin_retry(fail: AuthFailure) -> Html<String> {
-    template( &template_admin_login_fail(&fail.user, &fail.msg) )
+    // template( &template_admin_login_fail(&fail.user, &fail.msg) )
+    template(&login_form_fail(ADMIN_LOGIN_URL, &fail.user, &fail.msg))
 }
 
 #[post("/admin", data = "<form>")]
@@ -129,7 +133,7 @@ fn admin_process(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> Lo
     let inside = form.into_inner();
     let failuser = inside.user_str();
     let failmsg = inside.fail_str();
-    let mut failurl = "http://localhost:8000/admin".to_string();
+    let mut failurl = ADMIN_LOGIN_URL.to_string();
     if failmsg != "" && failmsg != " " {
         failurl.push_str("?user=");
         failurl.push_str(&failuser);
@@ -153,8 +157,9 @@ fn user_page(data: UserCookie) -> Html<String> {
 }
 
 #[get("/user", rank = 2)]
-fn user_login() -> Html<&'static str> {
-    Html(template_login_user())
+fn user_login() -> Html<String> {
+    template( &login_form(USER_LOGIN_URL) )
+    // Html(template_login_user())
 }
 
 #[get("/user?<fail>")]
@@ -162,7 +167,8 @@ fn user_login() -> Html<&'static str> {
 // #[get("/user/<user>/<msg>")]
 // fn user_retry(user: String, msg: String) -> Html<String> {
 fn user_retry(fail: AuthFailure) -> Html<String> {
-    template( &template_user_login_fail(&fail.user, &fail.msg) )
+    // template( &template_user_login_fail(&fail.user, &fail.msg) )
+    template(&login_form_fail(USER_LOGIN_URL, &fail.user, &fail.msg))
 }
 
 #[post("/user", data = "<form>")]
@@ -172,7 +178,7 @@ fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> Logi
     let inside = form.into_inner();
     let failuser = inside.user_str();
     let failmsg = inside.fail_str();
-    let mut failurl = "http://localhost:8000/user".to_string();
+    let mut failurl = USER_LOGIN_URL.to_string();
     if failmsg != "" && failmsg != " " {
         failurl.push_str("?user=");
         failurl.push_str(&failuser);
@@ -201,32 +207,39 @@ fn all_articles() -> Html<String> {
     template(&content)
 }
 
-// #[get("/view?<tag>", rank = 2)]
-// fn view_tag(tag: Tag) -> Html<String> {
-//     let mut content = String::new();
-    
-//     template(&content)
-// }
+#[get("/tag?<tag>", rank = 2)]
+fn view_tag(tag: Tag) -> Html<String> {
+    let mut content = String::new();
+    // find articles where tag LIKE '%<tag.tag>%'
+    template(&content)
+}
 
 #[get("/article?<aid>")]
 // #[get("/article?<aid>")]
 // fn view_article(aid: ArticleId) -> Html<String> {
-fn view_article(aid: ArticleId, conn: DbConn) -> Html<String> {
+fn view_article(aid: ArticleId, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
     let start = Instant::now();
     // let article: Article = aid.retrieve();
-    let mut content = String::new();
-    content.push_str("You have reached the article page.<br>\n");
+    // let mut content = String::new();
+    // content.push_str("You have reached the article page.<br>\n");
     // let rst = aid.retrieve(); // retrieve result
     let rst = aid.retrieve_with_conn(conn); // retrieve result
+    let mut output: Html<String>; 
     if let Some(article) = rst {
-        content.push_str(&format!("You are viewing article #{id}.<br>\nInfo:<br>\n", id=aid.aid));
-        content.push_str(&article.info());
+        // admin, user, username
+        let is_admin = if admin.is_some() { true } else { false };
+        let is_user = if user.is_some() { true } else { false };
+        let username: Option<String> = if let Some(a_user) = admin { Some(a_user.username) } else if let Some(u_user) = user { Some(u_user.username) } else { None };
+        output = full_template_article(&article, is_admin, is_user, username)
+        // content.push_str(&format!("You are viewing article #{id}.<br>\nInfo:<br>\n", id=aid.aid));
+        // content.push_str(&article.info());
     } else {
-        content.push_str(&format!("Article #{id} could not be retrieved.", id=aid.aid));
+        output =  template(&format!("Article #{id} could not be retrieved.", id=aid.aid))
     }
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    template(&content)
+    output
+    // template(&content)
 }
 
 #[get("/article")]

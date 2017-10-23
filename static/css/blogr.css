@@ -81,7 +81,7 @@ a:active {
 .v-content {
     border: 1px solid #aaa;
     border-radius: 10px;
-    margin: 0em 0px 1em 0px;
+    margin: 1em 0px 1em 0px;
     background-color: #212529;
     padding: 2em 1em 1em 1em;
 }

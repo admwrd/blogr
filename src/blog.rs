@@ -21,6 +21,12 @@ pub struct ArticleId {
     pub aid: u32,
 }
 
+// used for retrieving a GET url tag
+#[derive(Debug, Clone)]
+pub struct Tag {
+    tag: String,
+}
+
 #[derive(Debug, Clone)]
 pub struct Article {
     pub aid: u32,
@@ -266,7 +272,7 @@ impl<'f> FromForm<'f> for ArticleId {
         let mut aid: u32 = 0;
         for (field, value) in form_items {
             if field.as_str() == "aid" {
-                aid = value.to_string().parse::<u32>().unwrap_or(0u32) 
+                aid = value.to_string().parse::<u32>().unwrap_or(0u32);
             }
             // match field.as_str() {
             //     "aid" => { aid = value.to_string().parse::<u32>().unwrap_or(0u32) },
@@ -280,7 +286,41 @@ impl<'f> FromForm<'f> for ArticleId {
         }
     }
 }
-
+// A request guard to ensure that an article exists for a given ArticleId or aid
+impl<'a, 'r> FromRequest<'a, 'r> for Tag {
+    type Error = ();
+    
+    fn from_request(request: &'a Request<'r>) -> rocket::request::Outcome<Tag, Self::Error> {
+        
+        
+        // match Article::retrieve() {
+        //     Some(cookie) => Outcome::Success(UserCookie::new(cookie.value().to_string())),
+        //     None => Outcome::Forward(()),
+        // }
+        
+        unimplemented!()
+    }
+}
+impl<'f> FromForm<'f> for Tag {
+    type Error = &'static str;
+    fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
+        let mut tag: String = String::new();
+        for (field, value) in form_items {
+            if field.as_str() == "tag" {
+                tag = value.url_decode().expect("URL Decode fail."); 
+            }
+            // match field.as_str() {
+            //     "aid" => { aid = value.to_string().parse::<u32>().unwrap_or(0u32) },
+            //     _ => {},
+            // }
+        }
+        if &tag == ""  {
+            Err("No tag specified")
+        } else {
+            Ok( Tag{ tag } )
+        }
+    }
+}
 
 impl<'f> FromForm<'f> for ArticleForm {
     type Error = &'static str;

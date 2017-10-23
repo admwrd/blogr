@@ -2,40 +2,23 @@
 
 use rocket::response::content::Html;
 use blog::*;
+use super::{BLOG_URL, USER_LOGIN_URL, ADMIN_LOGIN_URL};
 
 pub const UNAUTHORIZED_POST_MESSAGE: &'static str = "You are not authorized to post.  Please login as an administrator. <a href=\"http://localhost:8000/admin\">Admin Login</a>";
 
-const ADMIN_LOGIN_FULL: &'static str = r##"
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="css/font-awesome.min.css">
-        
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-        
-        <!-- Custom CSS -->
-        <link id="pageStyleSheet" type="text/css" href="css/blog.css" rel="stylesheet" />
-        
-        <!-- JavaScript -->
-        <!-- <script src="js-head.js"></script>  -->
-        
-        <style>
-        
-        </style>
-    </head>
-    <body>
-        <div id="mainWrapper" class="main-wrapper">
-            
-            <form action="http://localhost:8000/admin" name="login_form" method="post" onsubmit="return validate_form()">
+
+const HEADER: &'static str = include_str!("../static/template_header.html");
+const FOOTER: &'static str = include_str!("../static/template_footer.html");
+const GENERIC_PAGE_START: &'static str = "<div class=\"v-content\">\n\t\t\t\t\t\t";
+const GENERIC_PAGE_END: &'static str = "\n\t\t\t\t\t</div>";
+const TABS: &'static str = "\t\t\t\t\t\t";
+
+pub fn login_form(url: &str) -> String {
+    format!(r##"
+            <form action="{url}" name="login_form" method="post" onsubmit="return validate_form()">
                 <div class="form-group" id="userGroup">
                     <label for="usernameField">Email Address</label>
-                    <input type="text" name="username" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">
+                    <input type="text" name="username" value="" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username">
                     <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
                 </div>
                 <div class="form-group" id="passGroup">
@@ -43,108 +26,21 @@ const ADMIN_LOGIN_FULL: &'static str = r##"
                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
                     <input type="password" id="passwordHidden" class="hidden-pass form-control">
                 </div>
-                <!-- <div class="form-check">
-                  <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input">
-                  Check me out
-                    </label>
-                </div> -->
                 <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
             </form>
-            
-        </div>
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-        
-        <!-- Custom JavaScript -->
-        <script src="sha256.js"></script>
-        <script src="blog.js"></script>
-        <script type="text/javascript">
-        </script>
-        
-    </body>
-</html>
-"##;
+"##, url=url)
+}
 
-const USER_LOGIN_FULL: &'static str = r##"
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="css/font-awesome.min.css">
-        
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-        
-        <!-- Custom CSS -->
-        <link id="pageStyleSheet" type="text/css" href="css/blog.css" rel="stylesheet" />
-        
-        <!-- JavaScript -->
-        <!-- <script src="js-head.js"></script>  -->
-        
-        <style>
-        
-        </style>
-    </head>
-    <body>
-        <div id="mainWrapper" class="main-wrapper">
-            
-            <form action="http://localhost:8000/user" name="login_form" method="post" onsubmit="return validate_form()">
-                <div class="form-group" id="userGroup">
-                    <label for="usernameField">Email Address</label>
-                    <input type="text" name="username" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">
-                    <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
-                </div>
-                <div class="form-group" id="passGroup">
-                    <label for="passwordField">Password</label>
-                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
-                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
-                </div>
-                <!-- <div class="form-check">
-                  <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input">
-                  Check me out
-                    </label>
-                </div> -->
-                <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
-            </form>
-            
-        </div>
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-        
-        <!-- Custom JavaScript -->
-        <script src="sha256.js"></script>
-        <script src="blog.js"></script>
-        <script type="text/javascript">
-        // $(".alert).alert();
-        </script>
-        
-    </body>
-</html>
-"##;
-
-
-const HEADER: &'static str = include_str!("../static/header.html");
-const FOOTER: &'static str = include_str!("../static/footer.html");
-
-pub fn template_admin_login_fail(user: &str, reason: &str) -> String {
+// http://localhost:8000/admin
+pub fn login_form_fail(url: &str, user: &str, why: &str) -> String {
     format!(r##"
             <div class="alert alert-danger" role="alert">
                 Login failed: {why}
             </div>
-            <form action="http://localhost:8000/admin" name="login_form" method="post" onsubmit="return validate_form()">
+            <form action="{url}" name="login_form" method="post" onsubmit="return validate_form()">
                 <div class="form-group" id="userGroup">
                     <label for="usernameField">Email Address</label>
-                    <input type="text" name="username" value="{user}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">
+                    <input type="text" name="username" value="{user}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username">
                     <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
                 </div>
                 <div class="form-group" id="passGroup">
@@ -152,43 +48,28 @@ pub fn template_admin_login_fail(user: &str, reason: &str) -> String {
                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
                     <input type="password" id="passwordHidden" class="hidden-pass form-control">
                 </div>
-                <!-- <div class="form-check">
-                  <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input">
-                  Check me out
-                    </label>
-                </div> -->
                 <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
             </form>
-"##, user=user, why=reason)
+"##, url=url, user=user, why=why)
 }
 
-pub fn template_user_login_fail(user: &str, reason: &str) -> String {
-    format!(r##"
-            <div class="alert alert-danger" role="alert">
-                Login failed: {why}
-            </div>
-            <form action="http://localhost:8000/user" name="login_form" method="post" onsubmit="return validate_form()">
-                <div class="form-group" id="userGroup">
-                    <label for="usernameField">Email Address</label>
-                    <input type="text" name="username" value="{user}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Enter email">
-                    <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
-                </div>
-                <div class="form-group" id="passGroup">
-                    <label for="passwordField">Password</label>
-                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
-                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
-                </div>
-                <!-- <div class="form-check">
-                  <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input">
-                  Check me out
-                    </label>
-                </div> -->
-                <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
-            </form>
-"##, user=user, why=reason)
-}
+
+
+
+// pub fn template_login_admin() -> String {
+    
+// }
+// pub fn template_login_admin_fail() -> String {
+    
+// }
+// pub fn template_login_user() -> String {
+    
+// }
+// pub fn template_login_user_fail() -> String {
+    
+// }
+
+
 
 pub fn template(body: &str) -> Html<String> {
     
@@ -196,12 +77,23 @@ pub fn template(body: &str) -> Html<String> {
     // webpage.push_str(template_header().to_string());
     let mut webpage = HEADER.to_string();
     
-    webpage.reserve(FOOTER.len() + body.len() + 50);
-    
+    webpage.reserve(FOOTER.len() + body.len() + GENERIC_PAGE_START.len() + GENERIC_PAGE_END.len() + 200);
+    webpage.push_str(GENERIC_PAGE_START);
+    // do not add tabs to first line, add TABS to every newline after
     webpage.push_str(body);
+    webpage.push_str(GENERIC_PAGE_END);
     webpage.push_str(FOOTER);
     
     Html(webpage)
+}
+
+pub fn link_tags(tags: &Vec<String>) -> String {
+    let mut contents = String::new();
+    for t in tags {
+        contents.push_str(&format!(" <a href=\"{url}?tag={tag}\">{tag}</a>", url=BLOG_URL, tag=t));
+        // contents.push_str("<a href=\"");  contents.push_str(BLOG_URL);  contents.push_str("tag?tag=");  contents.push_str(&t);  contents.push_str("\">");  contents.push_str(&t);  contents.push_str("</a>");
+    }
+    contents
 }
 
 pub fn template_article(article: &Article, is_admin: bool, is_user: bool, username: Option<String>) ->String {
@@ -210,26 +102,61 @@ pub fn template_article(article: &Article, is_admin: bool, is_user: bool, userna
     //   or if modified != created display how long ago it was modified
     // 
     // unimplemented!()
-    let mut contents = String::from("You are viewing article ");
-    contents.push_str(&format!("{}<br>\n", article.aid));
-    contents.push_str(&article.info());
+    // let mut contents = String::from("You are viewing article ");
+    // contents.push_str(&format!("{}<br>\n", article.aid));
+    // contents.push_str(&article.info());
+    let mut contents = String::new();
+    contents.push_str(&format!(r##"
+                    <article class="v-article">
+                        <header class="v-article-header">
+                            <h2 class="v-article-title"><a href="/article?aid={aid}">{title}</a></h2>
+                            <div class="row">
+                                <date class="v-article-date" datetime="{date_machine}">{date}</date>
+                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
+                                <div class="col-md v-article-tags">Tags:{tags}</div>
+                            </div>
+                        </header>
+                        <p>
+                            {body}
+                        </p>
+                    </article>
+"##, aid=article.aid, title=article.title, date_machine=article.posted.format("%Y-%m-%dT%H:%M:%S"), date=article.posted.format("%Y-%m-%d @ %I:%M%P"), body=article.body, tags=link_tags(&article.tags)));
     contents
 }
 
-pub fn template_list_articles(articles: Vec<u64>, title: String) -> Html<String> {
+pub fn full_template_article(article: &Article, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
+    let mut contents: String = String::from(HEADER);
+    contents.push_str(&template_article(article, is_admin, is_user, username));
+    contents.push_str(FOOTER);
+    Html(contents)
+}
+
+pub fn template_articles(articles: Vec<Article>, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
+    let mut contents: String = String::from(HEADER);
+    for a in articles {
+        contents.push_str(&template_article(&a, is_admin, is_user, username.clone()));
+    }
+    contents.push_str(FOOTER);
+    Html(contents)
+}
+
+pub fn template_list_articles(articles: &Vec<u32>, title: String) -> Html<String> {
     // lookup each aid and return author,
     // the title shortened to 128 characters, 
     // and body shortened to 512 characters)
     unimplemented!()
 }
 
-pub fn template_login_user() -> &'static str {
-    USER_LOGIN_FULL
-}
+// pub fn template_login_user() -> &'static str {
+//     let mut contents = String::from(HEADER);
+//     contents.push_str();
+//     contents.push_str(FOOTER);
+//     USER_LOGIN_FULL
+// }
 
-pub fn template_login_admin() -> &'static str {
-    ADMIN_LOGIN_FULL
-}
+// pub fn template_login_admin() -> &'static str {
+//     ADMIN_LOGIN_FULL
+// }
 
 pub fn template_header() -> &'static str {
     HEADER
