@@ -349,6 +349,9 @@ fn insert_form(user: Option<AdminCookie>) -> Html<String> {
             <input type="text" name="tags" placeholder="Comma, Separated, Tags"><br>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
+        <script>
+        StartText();
+        </script>
         "##;
     } else {
         content = UNAUTHORIZED_POST_MESSAGE;

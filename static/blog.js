@@ -177,3 +177,34 @@ function validate_form() {
         return false;
     }
 }
+
+// https://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize
+// https://stackoverflow.com/a/25621277/7891095
+function ChangeHeight() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+}
+
+function StartText() {
+    var txt = document.getElementsByTagName('textarea');
+    for (var i = 0; i < txt.length; i++) {
+        txt[i].setAttribute('style', 'height:' + (txt[i].scrollHeight) + 'px;overflow-y:hidden;');
+        txt[i].addEventListener("input", ChangeHeight, false);
+    }
+}
+function StartTextJQuery() {
+    $('textarea').each(function () {
+      this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+    }).on('input', function () {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+}
+
+
+
+
+
+
+
+
