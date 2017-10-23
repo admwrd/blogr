@@ -223,12 +223,12 @@ impl Article {
         let mut qrystr: String = if let Some(summary) = description {
             if summary < 1 {
                 show_desc = true;
-                format!("SELECT aid, title, posted, LEFT(body, {}) as body, tags, description FROM articles", DESC_LIMIT)
+                format!("SELECT aid, title, posted, LEFT(body, {}) as body, tag, description FROM articles", DESC_LIMIT)
             } else {
-                format!("SELECT aid, title, posted, LEFT(body, {}) AS body, tags, description FROM articles", summary)
+                format!("SELECT aid, title, posted, LEFT(body, {}) AS body, tag, description FROM articles", summary)
             }
         } else {
-            String::from("SELECT aid, title, posted, body, tags, description FROM articles")
+            String::from("SELECT aid, title, posted, body, tag, description FROM articles")
         };
         // let mut qrystr: String = String::from("SELECT aid, title, posted, body, tags FROM articles");
         if min_date.is_some() || max_date.is_some() || (tag.is_some() && get_len(&tag) != 0) || (search.is_some() && get_len(&search) != 0) {
@@ -277,6 +277,18 @@ impl Article {
         if let Ok(result) = qryrst {
             let mut articles: Vec<Article> = Vec::new();
             for row in &result {
+                let tagraw: Option<Result<Vec<String>, _>> = row.get_opt(4); // tag array
+                // let tagvec = tagraw.unwrap_or(Ok(Vec::new())).unwrap_or(Vec::new());
+                // let tagvec = tagraw.unwrap_or(Ok(Vec::new())).unwrap_or(Vec::new());
+                // let tagvec = row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim_matches('\'').to_string()).collect();
+                
+                let tagstr = row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new());
+                println!("Tags: {:?}", tagstr);
+                // let tagvec = tagstr.into_iter().map(|s| s[1..s.len()-1].to_string()).collect();
+                let tagvec = tagstr.into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect();
+                // let tagvec = row.get_opt(4).filter_map(|r| r);
+                // let tagvec: Vec<String> = tagstr[1..(tagstr.len()-1usize)].split(',').map(|s| s.to_string()).collect();
+                // let tagvec: Vec<String> = &tagstr[1..tagstr.len()-1].split(',').map(|t| t.trim_matches('\'')).collect();
                 let a = Article {
                     aid: row.get(0),
                     title: row.get(1),
@@ -286,7 +298,8 @@ impl Article {
                             if &d == "" { row.get(3) }
                             else { d }
                         } else { row.get(3) },
-                    tags: split_tags(row.get(4)),
+                    // tags: split_tags(row.get(4)),
+                    tags: tagvec,
                     // description: if show_desc { String::new() } else { String::new() },
                     // show_desc moves the description to the body
                     description: if show_desc { 

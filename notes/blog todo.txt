@@ -1,14 +1,13 @@
 
 Blogr
-	Add Description field
-	
-	Only show a shortened body or description for tag and view pages
+	Change tags from text to character varying[] (array of varchars)
+		Make a tag column that will be the new tags
 
 	Maybe remove all the is_admin is_user username fields for the article templates
 		Use javascript to add the edit/delete options
 		But in the route check the correct cookie is set for that action
 	
-	Display a page the lists the tags, maybe even sort by number of posts each has
+	Display a page that lists the tags, maybe even sort by number of posts each has
 	
 	Add unique visitors
 
@@ -16,6 +15,8 @@ Blogr
 
 	Change validation to use jQuery and Bootstrap - looks sooo pretty
 
+	CONVERT TO HANDLEBARS OR MUSTACHE TEMPLATES
+	Customize the navigation link
 	Make the menu link to:
 	view
 	tags - create new page that list the unique tags, maybe even sort by number of posts each has
@@ -26,7 +27,9 @@ Blogr
 	
 	Eventually change the index page to list blog articles and show a login link elsewhere like in the nav
 
-
+	Add custom <title> tag text for each page??
+		Replace the title with a page specific one
+		For /article?<aid> make the title equal to VishusBlog: <article title>
 
 	Add a method/helper function to retrieve an article and user from a qry
 		retrieve the data from the raw qry
@@ -101,6 +104,10 @@ Done
 	Called init_pg_pool in main on program startup to avoid the extra 80ms delay it takes
 	Changed user parameter from Option<UserCookie> to AdminCookie
 	Added unauthorized_post()
+
+	Add Description field
+	
+	Only show a shortened body or description for tag and view pages
 
 	Make the template() function take a String instead of a &str
 		The String will not be used anymore so its ok to move its ownership
