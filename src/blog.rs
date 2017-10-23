@@ -1,4 +1,6 @@
 
+use std::fmt::Display;
+
 use rocket;
 use ::rocket::request::{FromRequest, FromForm, FormItems};
 use ::rocket::Request;
@@ -35,6 +37,7 @@ pub struct Article {
     pub posted: NaiveDateTime,
     pub body: String,
     pub tags: Vec<String>,
+    pub description: String,
 }
 
 
@@ -46,6 +49,7 @@ pub struct ArticleForm {
     pub title: String,
     pub body: String,
     pub tags: String,
+    pub description: String,
 }
 
 pub struct Search {
@@ -55,6 +59,7 @@ pub struct Search {
 #[derive(FromForm)]
 pub struct ViewPage {
     pub page: u32,
+    // Articles Per Page
     pub app: Option<u8>,
 }
 
@@ -74,29 +79,26 @@ pub struct User {
     pub is_admin: bool,
 }
 
-impl ArticleForm {
-    pub fn to_article(&self) -> Article {
-        // get next aid
-        let next_aid = 0;
-        Article {
-            aid: next_aid,
-            title: sanitize_title(self.title.clone()),
-            posted: Local::now().naive_local(), // This fn is only used when saving new articles
-            body: sanitize_body(self.body.clone()),
-            tags: split_tags(sanitize_tags(self.tags.clone())),
-        }
+pub const DESC_LIMIT: usize = 300;
+
+pub fn opt_col<T>(rst: Option<Result<T, T>>) -> T where T: Display + Default {
+    match rst {
+        Some(Ok(d)) => d,
+        Some(Err(e)) => { println!("Encountered an error retrieving the description. Error: {}", e); T::default() },
+        None => T::default(),
     }
 }
-
 
 impl ArticleId {
     pub fn exists(&self) -> bool {
         unimplemented!()
     }
+    // Retrieve with a new connection - not a pooled connection
+    //   Do not use unless you have to - unless you have no db connection
     pub fn retrieve(&self) -> Option<Article> {
         // unimplemented!()
         let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -107,24 +109,30 @@ impl ArticleId {
                     posted: row.get(2),
                     body: row.get(3), // Todo: call sanitize body here
                     tags: Article::split_tags(row.get(4)),
+                    // description: opt_col(row.get_opt(5)),
+                    description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                 })
             } else { None }
         } else { None }
     }
+    // Prefer to use this over retrieve()
     pub fn retrieve_with_conn(&self, pgconn: DbConn) -> Option<Article> {
         // unimplemented!()
         // let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
                 let row = aqry.get(0); // get first row
+                
+                
                 Some( Article {
                     aid: row.get(0),
                     title: row.get(1), // todo: call sanitize title here
                     posted: row.get(2),
                     body: row.get(3), // Todo: call sanitize body here
                     tags: Article::split_tags(row.get(4)),
+                    description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                 })
             } else { None }
         } else { None }
@@ -186,7 +194,7 @@ impl Article {
     pub fn retrieve(aid: u32) -> Option<Article> {
         // unimplemented!()
         let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags FROM articles WHERE aid = {id}", id=aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tags, description FROM articles WHERE aid = {id}", id=aid), &[]);
         if let Ok(aqry) = rawqry {
             // println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -197,19 +205,30 @@ impl Article {
                     posted: row.get(2),
                     body: row.get(3), // Todo: call sanitize body here
                     tags: Article::split_tags(row.get(4)),
+                    description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                 })
             } else { None }
         } else { None }
     }
     pub fn info(&self) -> String {
-        format!("Aid: {aid}, Title: {title}, Posted on: {posted}, Body:<br>\n{body}<br>\ntags: {tags:#?}", aid=self.aid, title=self.title, posted=self.posted, body=self.body, tags=self.tags)
+        format!("Aid: {aid}, Title: {title}, Posted on: {posted}, Description:<br>\n{desc}<br>\nBody:<br>\n{body}<br>\ntags: {tags:#?}", aid=self.aid, title=self.title, posted=self.posted, body=self.body, tags=self.tags, desc=self.description)
     }
     
-    pub fn retrieve_all(pgconn: DbConn, limit: u32, description: Option<u32>, min_date: Option<NaiveDate>, max_date: Option<NaiveDate>, tag: Option<Vec<String>>, search: Option<Vec<String>>) -> Vec<Article> {
+    
+    // Description: Some(50) displays 50 characters of body text
+    //              Some(-1) displays the description field as the body
+    //              None displays all of the body text
+    pub fn retrieve_all(pgconn: DbConn, limit: u32, description: Option<i32>, min_date: Option<NaiveDate>, max_date: Option<NaiveDate>, tag: Option<Vec<String>>, search: Option<Vec<String>>) -> Vec<Article> {
+        let mut show_desc = false;
         let mut qrystr: String = if let Some(summary) = description {
-            format!("SELECT aid, title, posted, LEFT(body, {}) AS body, tags FROM articles", summary)
+            if summary < 1 {
+                show_desc = true;
+                format!("SELECT aid, title, posted, LEFT(body, {}) as body, tags, description FROM articles", DESC_LIMIT)
+            } else {
+                format!("SELECT aid, title, posted, LEFT(body, {}) AS body, tags, description FROM articles", summary)
+            }
         } else {
-            String::from("SELECT aid, title, posted, body, tags FROM articles")
+            String::from("SELECT aid, title, posted, body, tags, description FROM articles")
         };
         // let mut qrystr: String = String::from("SELECT aid, title, posted, body, tags FROM articles");
         if min_date.is_some() || max_date.is_some() || (tag.is_some() && get_len(&tag) != 0) || (search.is_some() && get_len(&search) != 0) {
@@ -262,8 +281,19 @@ impl Article {
                     aid: row.get(0),
                     title: row.get(1),
                     posted: row.get(2),
-                    body: row.get(3),
+                    body: if show_desc {  // show the truncated body if there is no description when show_desc is true
+                            let d = row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new());
+                            if &d == "" { row.get(3) }
+                            else { d }
+                        } else { row.get(3) },
                     tags: split_tags(row.get(4)),
+                    // description: if show_desc { String::new() } else { String::new() },
+                    // show_desc moves the description to the body
+                    description: if show_desc { 
+                            String::new() 
+                        } else { 
+                            row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()) 
+                        },
                 };
                 articles.push(a);
             }
@@ -277,12 +307,13 @@ impl Article {
 }
 
 impl ArticleForm {
-    pub fn new(title: String, body: String, tags: String) -> ArticleForm {
+    pub fn new(title: String, body: String, tags: String, description: String) -> ArticleForm {
         ArticleForm {
             // userid: 0,
             title,
             body,
             tags,
+            description,
         }
     }
     // Removed userid from ArticleForm and no userid exists in Article
@@ -293,13 +324,25 @@ impl ArticleForm {
     //         .. new
     //     }
     // }
+    pub fn to_article(&self) -> Article {
+        // get next aid
+        let next_aid = 0;
+        Article {
+            aid: next_aid,
+            title: sanitize_title(self.title.clone()),
+            posted: Local::now().naive_local(), // This fn is only used when saving new articles
+            body: sanitize_body(self.body.clone()),
+            tags: split_tags(sanitize_tags(self.tags.clone())),
+            description: sanitize_body(self.description.clone()),
+        }
+    }
     pub fn save(&self, conn: &DbConn) -> Result<Article, String> {
         // unimplemented!()
         let now = Local::now().naive_local();
         // return both id and posted date
         // let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid, posted",
-        let qrystr = format!("INSERT INTO articles (title, posted, body, tags) VALUES ('{title}', '{posted}', '{body}', '{tags}') RETURNING aid",
-            title=self.title, posted=now, body=self.body, tags=self.tags);
+        let qrystr = format!("INSERT INTO articles (title, posted, body, tags, description) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}') RETURNING aid",
+            title=self.title, posted=now, body=self.body, tags=self.tags, desc=self.description);
         // let rawqry = conn.prepare(&qrystr).expect("Could not prepare query successfully");
         // println!("Insert query: {}", qrystr);
         let result = conn.query(&qrystr, &[]);
@@ -318,6 +361,7 @@ impl ArticleForm {
                         posted: now,
                         body: self.body.clone(),
                         tags: Article::split_tags(self.tags.clone()),
+                        description: self.description.clone(),
                     })
                 } else if qry.is_empty() {
                     Err("Error inserting article, result is empty.".to_string())
@@ -418,19 +462,21 @@ impl<'f> FromForm<'f> for ArticleForm {
         let mut title: String = String::new();
         let mut body: String = String::new();
         let mut tags: String = String::new();
+        let mut description: String = String::new();
         
         for (field, value) in form_items {
             match field.as_str() {
                 "title" => { title = sanitize_title(value.url_decode().expect("URL Decode failed")) },
                 "body" => { body = sanitize_body(value.url_decode().expect("URL Decode failed")) },
                 "tags" => { tags = sanitize_tags(value.url_decode().expect("URL Decode failed")) },
+                "description" => { description = sanitize_body(value.url_decode().expect("URL Decode failed")) },
                 _ => {},
             }
         }
         if title == "" || body == "" {
             Err("Missing a required field.")
         } else {
-            Ok( ArticleForm::new(title, body, tags) )
+            Ok( ArticleForm::new(title, body, tags, description) )
         }
     }
 }

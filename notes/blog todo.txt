@@ -1,16 +1,15 @@
 
 Blogr
-	Make the template() function take a String instead of a &str
-		The String will not be used anymore so its ok to move its ownership
-		The &str needed to be converted to a String anyways
-		NEVERMIND - passing in a &str is better
-			Passing as a string needs to pass it as a reference anyways
-			Only thing it does it erase the passed in variable when it doesnt need to
+	Add Description field
 	
+	Only show a shortened body or description for tag and view pages
+
+	Maybe remove all the is_admin is_user username fields for the article templates
+		Use javascript to add the edit/delete options
+		But in the route check the correct cookie is set for that action
+
 	Add unique visitors
 
-	Style the insert form with bootstrap forms
-	
 	Authenticate user properly with a database query
 
 	Change validation to use jQuery and Bootstrap - looks sooo pretty
@@ -25,17 +24,6 @@ Blogr
 	
 	Eventually change the index page to list blog articles and show a login link elsewhere like in the nav
 
-	Maybe add a number of tabs at the beginning of each line of body text in the template() function
-		The number of tabs to be determined by the layout
-	
-	IMPORTANT
-	url_decode() the strings FromForm implementation for ArticleForm
-		They are being saved as url_encoded() strings in the database
-
-	JAVASCRIPT
-	Add a second password box that has no placeholder text and has display: none
-		when form is submitted set display: none to current password box and enable the hdiden one
-	Also set submit button to disablabled after validating
 
 
 	Add a method/helper function to retrieve an article and user from a qry
@@ -91,8 +79,31 @@ Research Futures
 
 
 Done
+
+	Maybe add a number of tabs at the beginning of each line of body text in the template() function
+		The number of tabs to be determined by the layout
+	
+	IMPORTANT
+	url_decode() the strings FromForm implementation for ArticleForm
+		They are being saved as url_encoded() strings in the database
+
+	JAVASCRIPT
+	Add a second password box that has no placeholder text and has display: none
+		when form is submitted set display: none to current password box and enable the hdiden one
+	Also set submit button to disablabled after validating
+
+	Style the insert form with bootstrap forms
+	
 	Auto resize the article body text box height when text height is larger than the box's
 
 	Called init_pg_pool in main on program startup to avoid the extra 80ms delay it takes
 	Changed user parameter from Option<UserCookie> to AdminCookie
 	Added unauthorized_post()
+
+	Make the template() function take a String instead of a &str
+		The String will not be used anymore so its ok to move its ownership
+		The &str needed to be converted to a String anyways
+		NEVERMIND - passing in a &str is better
+			Passing as a string needs to pass it as a reference anyways
+			Only thing it does it erase the passed in variable when it doesnt need to
+	

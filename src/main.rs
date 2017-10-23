@@ -245,7 +245,7 @@ fn view_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<Use
     let output: Html<String>;
     // limit, # body chars, min date, max date, tags, strings
     let tags = Some(split_tags(tag.tag));
-    let results = Article::retrieve_all(conn, 0, None, None, None, tags, None);
+    let results = Article::retrieve_all(conn, 0, Some(-1), None, None, tags, None);
     if results.len() != 0 {
         let is_admin = if admin.is_some() { true } else { false };
         let is_user = if user.is_some() { true } else { false };
@@ -298,9 +298,10 @@ fn article_not_found() -> Html<String> {
     let start = Instant::now();
     let mut content = String::from("The article you have specified does not exist.");
     
+    let output = template(&content);
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    template(&content)
+    output
 }
 
 #[post("/article", data = "<form>")]
@@ -312,7 +313,7 @@ fn post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Ht
     // let mut content = String::new();
     let result = form.into_inner().save(&conn);
     let output: Html<String>;
-    match result {
+    match result { 
         Ok(article) => {
             // article, admin, user, username
             // let is_admin = if admin.is_some() { true } else { false };
@@ -359,32 +360,14 @@ fn insert_form(user: Option<AdminCookie>) -> Html<String> {
         // StartText();
         // </script>
         // "##;
-        content = format!(r##"
-            <form method="post" action="{url}article" name="insert_form">
-                            <div class="form-group">
-                                <label for="inputTitle" class="v-form-label">Title</label>
-                                    <input name="title" type="text" class="v-form-control form-control" id="inputTitle" placeholder="Title">
-                            </div>
-                            <div class="form-group">
-                                <label for="input_body" class="v-form-label">Contents</label>
-                                <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputTags" class="v-form-label">Tags -Comma Separated</label>
-                                    <input name="tags" type="text" class="v-form-control form-control" id="inputTags" placeholder="Tags">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
-                        <script>
-                            StartText();
-                        </script>
-        "##, url=BLOG_URL);
+        content = template_create_article(BLOG_URL);
     } else {
         content = UNAUTHORIZED_POST_MESSAGE.to_string();
     }
+    let output = template(&content);
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    template(&content)
+    output
 }
 
 #[get("/search")]

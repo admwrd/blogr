@@ -46,32 +46,37 @@ a:active {
 }
 .v-article-header {
 }
-.v-article-header a {
-    color: #ffffff;
-    text-decoration: none;
-}
-
-.v-article-header a:link {
-    color: #ffffff;
-}
-.v-article-header a:hover {
-    color: #bd67fd;
-}
-.v-article-header a:visted {
-    color: #eeeeee;
-}
 .v-article-title {
-    font-size: 1.25em;
+    font-size: 1.5em;
     /* Candara, Calibri, Segoe, "Segoe Ui", Optima, Arial, sans-serif */
     /*font-family: Segoe, "Segoe Ui", Optima, Candara, Calibri, Arial, sans-serif;*/
     /*font-family: Trebuchet, Tahoma, Arial, sans-serif;*/
     /*font-family: vishusBlogTitle, 'Century Gothic', 'Franklin Gothic Book', Trebuchet, Tahoma, Arial, sans-serif;*/
     font-family: Tahoma, Verdana, Geneva;
     font-weight: bold;
+    text-align: center;
 }
+
+.v-article-title a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.v-article-title a:link {
+    color: #ffffff;
+}
+.v-article-title a:hover {
+    color: #bd67fd;
+}
+.v-article-title a:visted {
+    color: #eeeeee;
+}
+
 .v-article-date {
     margin: 0px 0px 0px 1em;
     color: #aaa;
+    width: 100%;
+    text-align: center;
 }
 .v-article-tags {
     /*display: inline;*/
@@ -157,7 +162,8 @@ a:active {
 @media (min-width: 768px) {
     .v-article {  }
     .v-article-header {
-        margin: 0px 3em 1em 3em;
+        /*margin: 0px 3em 1em 3em;*/
+        margin: 0px;
     }
     .v-article-title {
         /* Candara, Calibri, Segoe, "Segoe Ui", Optima, Arial, sans-serif */
@@ -167,6 +173,7 @@ a:active {
         margin: 0px;
     }
     .v-article-tags {
+        text-align: right;
         /*display: inline;*/
         /*margin: 0px 0px 0px 2em;*/
     }

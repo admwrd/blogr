@@ -106,10 +106,37 @@ pub fn template(body: &str) -> Html<String> {
 pub fn link_tags(tags: &Vec<String>) -> String {
     let mut contents = String::new();
     for t in tags {
-        contents.push_str(&format!(" <a href=\"{url}?tag={tag}\">{tag}</a>", url=BLOG_URL, tag=t));
+        contents.push_str(&format!(" <a href=\"{url}tag?tag={tag}\">{tag}</a>", url=BLOG_URL, tag=t));
         // contents.push_str("<a href=\"");  contents.push_str(BLOG_URL);  contents.push_str("tag?tag=");  contents.push_str(&t);  contents.push_str("\">");  contents.push_str(&t);  contents.push_str("</a>");
     }
     contents
+}
+
+pub fn template_create_article(url: &str) -> String {
+    format!(r##"
+            <form method="post" action="{url}article" name="insert_form">
+                            <div class="form-group">
+                                <label for="inputTitle" class="v-form-label">Title</label>
+                                <input name="title" type="text" class="v-form-control form-control" id="inputTitle" placeholder="Title">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputDesc" class="v-form-label">Description</label>
+                                <input name="description" type="text" class="v-form-control form-control" id="inputDesc" placeholder="Description">
+                            </div>
+                            <div class="form-group">
+                                <label for="input_body" class="v-form-label">Contents</label>
+                                <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputTags" class="v-form-label">Tags -Comma Separated</label>
+                                <input name="tags" type="text" class="v-form-control form-control" id="inputTags" placeholder="Tags">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                        <script>
+                            StartText();
+                        </script>
+        "##, url=url)
 }
 
 pub fn full_template_article_new(article: &Article, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
@@ -125,7 +152,7 @@ pub fn template_article(article: &Article, is_admin: bool, is_user: bool, userna
     // let mut contents = String::from("You are viewing article ");
     // contents.push_str(&format!("{}<br>\n", article.aid));
     // contents.push_str(&article.info());
-    let mut contents = String::new();
+    let mut contents = String::with_capacity(article.body.len() + 50);
     let mut bodytxt = if article.body.trim().starts_with("<") {
         article.body.clone()
     } else {
@@ -135,7 +162,7 @@ pub fn template_article(article: &Article, is_admin: bool, is_user: bool, userna
         bt.push_str("</p>");
         bt
     };
-    let mut indented = String::new();
+    // let mut indented = String::new();
     // // ensure correct tab formatting
     // // extremely needless but it's removable
     // for line in bodytxt.lines() {
@@ -156,12 +183,10 @@ pub fn template_article(article: &Article, is_admin: bool, is_user: bool, userna
                             <div class="row">
                                 <date class="v-article-date" datetime="{date_machine}">{date}</date>
                                 <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
-                                <div class="col-md v-article-tags">Tags:{tags}</div>
                             </div>
                         </header>
-                        <p>
-                            {body}
-                        </p>
+                        {body}
+                        <div class="v-article-tags">Tags:{tags}</div>
                     </article>
 "##, aid=article.aid, title=titlecase(&article.title), date_machine=article.posted.format("%Y-%m-%dT%H:%M:%S"), date=article.posted.format("%Y-%m-%d @ %I:%M%P"), body=bodytxt, tags=link_tags(&article.tags)));
     contents
