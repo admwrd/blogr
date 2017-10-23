@@ -29,6 +29,12 @@ a:active {
     font-size: 1.15em;
 }
 
+.v-form-label {
+    /*width: 100%;*/
+}
+.v-form-control {
+    /*width: 100%;*/
+}
 .v-article {
     border: 1px solid #aaa;
     border-radius: 10px;

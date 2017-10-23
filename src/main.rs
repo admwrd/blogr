@@ -309,8 +309,9 @@ fn article_not_found() -> Html<String> {
 fn post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
     let start = Instant::now();
     
-    let mut content = String::new();
+    // let mut content = String::new();
     let result = form.into_inner().save(&conn);
+    let output: Html<String>;
     match result {
         Ok(article) => {
             // article, admin, user, username
@@ -318,16 +319,21 @@ fn post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Ht
             // let is_user = if user.is_some() { true } else { false };
             // let username: Option<String> = if is_user { Some(user.unwrap().username) } else if is_admin { Some(admin.unwrap().username) } else { None };
             // content.push_str(&template_article( &article, is_admin, is_user, username) );
-            content.push_str(&template_article( &article, true, true, Some(admin.username) ));
+            // content.push_str(&template_article( &article, true, true, Some(admin.username) ));
+            
+            // output = full_template_article_new( &article, true, true, Some(admin.username) );
+            output = full_template_article(&article, true, true, Some(admin.username));
         },
         Err(why) => {
-            content.push_str(&format!("Could not post the blog article.  Reason: {}", why))
+            output = template(&format!("Could not post the blog article.  Reason: {}", why));
+            // content.push_str(&format!("Could not post the blog article.  Reason: {}", why))
         },
     }
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    template(&content)
+    // template(&content)
+    output
 }
 #[post("/article", rank=2)]
 fn unauthorized_post() -> Html<String> {
@@ -342,19 +348,39 @@ fn insert_form(user: Option<AdminCookie>) -> Html<String> {
     let content;
     if let Some(admin) = user {
         // let content = format!("Insert an article.");
-        content = r##"
-        <form method="post" action="http://localhost:8000/article" name="insert_form">
-            <input type="text" name="title" placeholder="Title"><br>
-            <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea><br>
-            <input type="text" name="tags" placeholder="Comma, Separated, Tags"><br>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-        <script>
-        StartText();
-        </script>
-        "##;
+        // content = r##"
+        // <form method="post" action="http://localhost:8000/article" name="insert_form">
+        //     <input type="text" name="title" placeholder="Title"><br>
+        //     <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea><br>
+        //     <input type="text" name="tags" placeholder="Comma, Separated, Tags"><br>
+        //     <button type="submit" class="btn btn-primary">Submit</button>
+        // </form>
+        // <script>
+        // StartText();
+        // </script>
+        // "##;
+        content = format!(r##"
+            <form method="post" action="{url}article" name="insert_form">
+                            <div class="form-group">
+                                <label for="inputTitle" class="v-form-label">Title</label>
+                                    <input name="title" type="text" class="v-form-control form-control" id="inputTitle" placeholder="Title">
+                            </div>
+                            <div class="form-group">
+                                <label for="input_body" class="v-form-label">Contents</label>
+                                <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputTags" class="v-form-label">Tags -Comma Separated</label>
+                                    <input name="tags" type="text" class="v-form-control form-control" id="inputTags" placeholder="Tags">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                        <script>
+                            StartText();
+                        </script>
+        "##, url=BLOG_URL);
     } else {
-        content = UNAUTHORIZED_POST_MESSAGE;
+        content = UNAUTHORIZED_POST_MESSAGE.to_string();
     }
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
