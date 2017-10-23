@@ -30,6 +30,9 @@ a:active {
 }
 
 .v-article {
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    
     margin: 1em 0px 2em 0px;
     line-height: 1.5;
     background: #212529 url('../sphere-trans2.png') no-repeat bottom right;
@@ -67,7 +70,21 @@ a:active {
     /*display: inline;*/
     /*margin: 0px 0px 0px 2em;*/
 }
-
+#v-footer {
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    margin: 0em 0px 1em 0px;
+    text-align: center;
+    background-color: #212529;
+    padding: 0.5em;
+}
+.v-content {
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    margin: 0em 0px 1em 0px;
+    background-color: #212529;
+    padding: 2em 1em 1em 1em;
+}
 #header {
     font-family: vishusBlog;
     font-size: 250%;
