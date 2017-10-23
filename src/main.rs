@@ -196,15 +196,35 @@ fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> Logi
 
 
 #[get("/view")]
-fn all_articles() -> Html<String> {
+fn all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
     let start = Instant::now();
+    // let mut content = String::from("You are viewing all of the articles.");
+    let output: Html<String>;
+    let results = Article::retrieve_all(conn, 20, Some(300), None, None, None, None);
+    if results.len() != 0 {
+        let is_admin = if admin.is_some() { true } else { false };
+        let is_user = if user.is_some() { true } else { false };
+        let username: Option<String> = if let Some(a_user) = admin { Some(a_user.username) } else if let Some(u_user) = user { Some(u_user.username) } else { None };
+        output = template_articles(results, is_admin, is_user, username);
+    } else {
+        if admin.is_some() {
+            output = template(r##"
+            <div class="alert alert-danger" role="alert">
+                There are no articles.<br>
+                <a href="/insert">Create Article</a>
+            </div>"##);
+        } else {
+            output = template(r##"
+            <div class="alert alert-danger" role="alert">
+                There are no articles.
+            </div>"##);
+        }
+    }
     
-    let mut content = String::from("You are viewing all of the articles.");
-    
+    // template(&content)
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    
-    template(&content)
+    output
 }
 
 #[get("/tag?<tag>", rank = 2)]
@@ -213,9 +233,9 @@ fn view_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<Use
     let start = Instant::now();
     
     let output: Html<String>;
-    // limit, min date, max date, tags, strings
+    // limit, # body chars, min date, max date, tags, strings
     let tags = Some(split_tags(tag.tag));
-    let results = Article::retrieve_all(conn, 0, None, None, tags, None);
+    let results = Article::retrieve_all(conn, 0, None, None, None, tags, None);
     if results.len() != 0 {
         let is_admin = if admin.is_some() { true } else { false };
         let is_user = if user.is_some() { true } else { false };

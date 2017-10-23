@@ -7,6 +7,7 @@ Blogr
 			Passing as a string needs to pass it as a reference anyways
 			Only thing it does it erase the passed in variable when it doesnt need to
 	
+	Capitalize titles, capitalize each word
 	Auto resize the article body text box height when text height is larger than the box's
 	Style the insert form with bootstrap forms
 	Add pagination

@@ -198,8 +198,12 @@ impl Article {
         format!("Aid: {aid}, Title: {title}, Posted on: {posted}, Body:<br>\n{body}<br>\ntags: {tags:#?}", aid=self.aid, title=self.title, posted=self.posted, body=self.body, tags=self.tags)
     }
     
-    pub fn retrieve_all(pgconn: DbConn, limit: u32, min_date: Option<NaiveDate>, max_date: Option<NaiveDate>, tag: Option<Vec<String>>, search: Option<Vec<String>>) -> Vec<Article> {
-        let mut qrystr = String::from("SELECT aid, title, posted, body, tags FROM articles");
+    pub fn retrieve_all(pgconn: DbConn, limit: u32, description: Option<u32>, min_date: Option<NaiveDate>, max_date: Option<NaiveDate>, tag: Option<Vec<String>>, search: Option<Vec<String>>) -> Vec<Article> {
+        let mut qrystr: String = if let Some(summary) = description {
+            format!("SELECT aid, title, posted, LEFT(body, {}) AS body, tags FROM articles", summary)
+        } else {
+            String::from("SELECT aid, title, posted, body, tags FROM articles")
+        };
         if min_date.is_some() || max_date.is_some() || (tag.is_some() && get_len(&tag) != 0) || (search.is_some() && get_len(&search) != 0) {
             qrystr.push_str(" WHERE");
             let mut where_str = String::from("");
