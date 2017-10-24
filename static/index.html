@@ -131,11 +131,11 @@
                         </form>
                     </div>
                     
-                    <div class="container v-content">
+                    <div class="v-content">
                         <form id="needs-validation" action="http://localhost:8000/admin" name="login_form" method="post" novalidate>
                             <div class="form-group" id="userGroup">
                                 <label for="usernameField">Email Address</label>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-9 mb-3">
                                     <input type="text" name="username" value="" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username" required>
                                     <div class="invalid-feedback">
                                         Please specify a username
@@ -145,7 +145,7 @@
                             </div>
                             <div class="form-group" id="passGroup">
                                 <label for="passwordField">Password</label>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-9 mb-3">
                                     <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
                                     <div class="invalid-feedback">
                                         A password is requierd.
@@ -160,15 +160,21 @@
                     </div>
                     <div class="v-content">
                         <form method="post" action="http://lcalhost:8000/insert" name="insert_form">
-                            <div class="form-group">
-                                <label for="inputTitle" class="v-form-label">Title</label>
-                                    <input name="title" type="text" class="v-form-control form-control" id="inputTitle" placeholder="Title">
+                            <div class="col-md-6 mx-auto">
+                                <div class="row">
+                                    <div class="col-2">
+                                        <label for="inputTitle" class="center-label v-form-label">Title</label>
+                                    </div>
+                                    <div class="col-10">
+                                        <input name="title" type="text" class="v-form-control form-control" id="inputTitle" placeholder="Title">
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="input_body" class="v-form-label">Contents</label>
                                 <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
                             </div>
-                            <div class="form-group">
+                            <div class="col-md-">
                                 <label for="inputTags" class="v-form-label">Tags -Comma Separated</label>
                                     <input name="tags" type="text" class="v-form-control form-control" id="inputTags" placeholder="Tags">
                             </div>

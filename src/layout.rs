@@ -31,19 +31,31 @@ const TABS: &'static str = "\t\t\t\t\t\t\t";
 
 pub fn login_form(url: &str) -> String {
     format!(r##"
-            <form action="{url}" name="login_form" method="post" onsubmit="return validate_form()">
-                <div class="form-group" id="userGroup">
-                    <label for="usernameField">Email Address</label>
-                    <input type="text" name="username" value="" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username">
-                    <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
-                </div>
-                <div class="form-group" id="passGroup">
-                    <label for="passwordField">Password</label>
-                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
-                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
-                </div>
-                <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
-            </form>
+                    <div class="v-content">
+                        <form id="needs-validation" action="{url}" name="login_form" method="post" novalidate>
+                            <div class="form-group" id="userGroup">
+                                <label for="usernameField">Email Address</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="text" name="username" value="" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username" required>
+                                    <div class="invalid-feedback">
+                                        Please specify a username
+                                    </div>
+                                </div>
+                                <!-- <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small> -->
+                            </div>
+                            <div class="form-group" id="passGroup">
+                                <label for="passwordField">Password</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
+                                    <div class="invalid-feedback">
+                                        A password is requierd.
+                                    </div>
+                                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                        </form>
+                    </div>
 "##, url=url)
 }
 
@@ -53,19 +65,31 @@ pub fn login_form_fail(url: &str, user: &str, why: &str) -> String {
             <div class="alert alert-danger" role="alert">
                 Login failed: {why}
             </div>
-            <form action="{url}" name="login_form" method="post" onsubmit="return validate_form()">
-                <div class="form-group" id="userGroup">
-                    <label for="usernameField">Email Address</label>
-                    <input type="text" name="username" value="{user}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username">
-                    <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small>
-                </div>
-                <div class="form-group" id="passGroup">
-                    <label for="passwordField">Password</label>
-                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password">
-                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
-                </div>
-                <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
-            </form>
+            <div class="v-content">
+                        <form id="needs-validation" action="{url}" name="login_form" method="post" novalidate>
+                            <div class="form-group" id="userGroup">
+                                <label for="usernameField">Email Address</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="text" name="username" value="{user}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username" required>
+                                    <div class="invalid-feedback">
+                                        Please specify a username
+                                    </div>
+                                </div>
+                                <!-- <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small> -->
+                            </div>
+                            <div class="form-group" id="passGroup">
+                                <label for="passwordField">Password</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
+                                    <div class="invalid-feedback">
+                                        A password is requierd.
+                                    </div>
+                                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                        </form>
+                    </div>
 "##, url=url, user=user, why=why)
 }
 

@@ -99,9 +99,15 @@ a:active {
 }
 
 
+
 /* input:-webkit-autofill:hover */
 /* input:-webkit-autofill:focus */
-
+.center-label {
+    /*display: block;*/
+    /*text-align: center;*/
+    display: inline;
+    float: left;
+}
 
 input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px #363636 inset !important;
