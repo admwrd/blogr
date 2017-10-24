@@ -1,0 +1,14 @@
+div col-md-6 mb-3
+	input .form-control:invalid
+	div .invalid-feedback
+
+
+
+
+
+
+
+
+
+
+

@@ -1,2 +1,6 @@
 %Y-%m-%dT%H:%M:%S
 %Y-%m-%d @ %I:%M%P
+
+
+
+8 nanos = hundreths of a milisecond

@@ -114,7 +114,7 @@ pub fn link_tags(tags: &Vec<String>) -> String {
 
 pub fn template_create_article(url: &str) -> String {
     format!(r##"
-            <form method="post" action="{url}article" name="insert_form">
+                        <form method="post" action="{url}article" name="insert_form">
                             <div class="form-group">
                                 <label for="inputTitle" class="v-form-label">Title</label>
                                 <input name="title" type="text" class="v-form-control form-control" id="inputTitle" placeholder="Title">

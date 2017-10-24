@@ -1,8 +1,5 @@
 
 Blogr
-	Change tags from text to character varying[] (array of varchars)
-		Make a tag column that will be the new tags
-
 	Maybe remove all the is_admin is_user username fields for the article templates
 		Use javascript to add the edit/delete options
 		But in the route check the correct cookie is set for that action
@@ -93,6 +90,9 @@ Research Futures
 
 
 Done
+
+	Change tags from text to character varying[] (array of varchars)
+		Make a tag column that will be the new tags
 
 	Maybe add a number of tabs at the beginning of each line of body text in the template() function
 		The number of tabs to be determined by the layout

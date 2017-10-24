@@ -93,6 +93,70 @@
                       </div>
                     -->
                     <div class="v-content">
+                        <form class="" novalidate>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom01">First name</label>
+                                    <input type="text" class="form-control" id="validationCustom01" placeholder="First name" value="Mark" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom02">Last name</label>
+                                    <input type="text" class="form-control" id="validationCustom02" placeholder="Last name" value="Otto" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom03">City</label>
+                                    <input type="text" class="form-control" id="validationCustom03" placeholder="City" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid city.
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="validationCustom04">State</label>
+                                    <input type="text" class="form-control" id="validationCustom04" placeholder="State" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid state.
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="validationCustom05">Zip</label>
+                                    <input type="text" class="form-control" id="validationCustom05" placeholder="Zip" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid zip.
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Submit form</button>
+                        </form>
+                    </div>
+                    
+                    <div class="container v-content">
+                        <form id="needs-validation" action="http://localhost:8000/admin" name="login_form" method="post" novalidate>
+                            <div class="form-group" id="userGroup">
+                                <label for="usernameField">Email Address</label>
+                                <div class="col-md-6 mb-3">
+                                    <input type="text" name="username" value="" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username" required>
+                                    <div class="invalid-feedback">
+                                        Please specify a username
+                                    </div>
+                                </div>
+                                <!-- <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small> -->
+                            </div>
+                            <div class="form-group" id="passGroup">
+                                <label for="passwordField">Password</label>
+                                <div class="col-md-6 mb-3">
+                                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
+                                    <div class="invalid-feedback">
+                                        A password is requierd.
+                                    </div>
+                                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="submit-button-id">Submit</button>
+                        </form>
+                    </div>
+                    <div class="v-content">
                         <form method="post" action="http://lcalhost:8000/insert" name="insert_form">
                             <div class="form-group">
                                 <label for="inputTitle" class="v-form-label">Title</label>
@@ -112,7 +176,6 @@
                             StartText();
                         </script>
                     </div>
-                    
                     <article class="v-article">
                         <header class="v-article-header">
                             <h2 class="v-article-title"><a href="/article?aid=1">Lorem Ipsum</a></h2>
@@ -202,7 +265,45 @@
         <!-- Custom JavaScript -->
         <!-- <script src="sha256.js"></script> -->
         <!-- <script src="blog.js"></script> -->
-        <script type="text/javascript">
+        <script>
+            
+            (function() {
+                'use strict';
+                window.addEventListener('load', function() {
+                    var form = document.getElementById('needs-validation');
+                    form.addEventListener('submit', function(event) {
+                        $(".form-control:valid + .invalid-feedback").css("display", "none");
+                        $(".form-control:invalid + .invalid-feedback").css("display", "block");
+                        
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        } else {
+                            $("button[type=submit]").attr("disabled", "disabled");
+                            var pwd1 = document.getElementById("passwordField");
+                            var pwd2 = document.getElementById("passwordHidden");
+                            if (pwd1 && pwd2) {
+                                pwd1.style.display = 'none';
+                                pwd2.style.display = 'block';
+                                pwd1.value = Sha256.hash(pwd1.value);
+                            }
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                    
+                    // form.addEventListener('submit', function(event) {
+                    //     insta_valid();
+                    // }, false);
+                }, false);
+            })();
+            // function insta_valid() {
+            //     var form = document.getElementById("validate-me");
+            // }
+            function insta_valid() {
+                $(".form-control:valid + .invalid-feedback").css("display", "none");
+                $(".form-control:invalid + .invalid-feedback").css("display", "block");
+            }
+            
         </script>
         
     </body>

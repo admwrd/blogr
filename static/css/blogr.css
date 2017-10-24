@@ -97,6 +97,35 @@ a:active {
     background-color: #212529;
     padding: 1em 1em 1em 1em;
 }
+.v-content input, .v-content textarea {
+    background-color: #444444;
+    color: #eeeeee;
+    border-radius: .8em;
+}
+input:focus, textarea:focus {
+    background-color: #eee !important;
+    color: #000000 !important;
+}
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: #dddddd;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color: #dddddd;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color: #dddddd;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color: #dddddd;
+}
+::-ms-input-placeholder { /* Microsoft Edge */
+   color: #dddddd;
+}
+/* .form-control:valid + .invalid-feedback {
+    display: none;
+} */
 #header {
     font-family: vishusBlog;
     font-size: 250%;
