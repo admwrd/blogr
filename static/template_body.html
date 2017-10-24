@@ -1,12 +1,117 @@
 
                     
+                    <!-- 
+                     <div class="form-group">
+                        <label for="inputAddress">Address</label>
+                        <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+                      </div>
+                      <div class="form-group">
+                        <label for="inputAddress2">Address 2</label>
+                        <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+                      </div>
+                    -->
+                    <div class="v-content">
+                        <form class="" novalidate>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom01">First name</label>
+                                    <input type="text" class="form-control" id="validationCustom01" placeholder="First name" value="Mark" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom02">Last name</label>
+                                    <input type="text" class="form-control" id="validationCustom02" placeholder="Last name" value="Otto" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom03">City</label>
+                                    <input type="text" class="form-control" id="validationCustom03" placeholder="City" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid city.
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="validationCustom04">State</label>
+                                    <input type="text" class="form-control" id="validationCustom04" placeholder="State" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid state.
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="validationCustom05">Zip</label>
+                                    <input type="text" class="form-control" id="validationCustom05" placeholder="Zip" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid zip.
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Submit form</button>
+                        </form>
+                    </div>
+                    
+                    
+                    <div class="v-content">
+                        <form id="needs-validation" action="http://localhost:8000/admin" name="login_form" method="post" novalidate>
+                            <div class="form-group" id="userGroup">
+                                <label for="usernameField">Email Address</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="text" name="username" value="" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username" required>
+                                    <div class="invalid-feedback">
+                                        Please specify a username
+                                    </div>
+                                </div>
+                                <!-- <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small> -->
+                            </div>
+                            <div class="form-group" id="passGroup">
+                                <label for="passwordField">Password</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
+                                    <div class="invalid-feedback">
+                                        A password is requierd.
+                                    </div>
+                                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
+                                </div>
+                            </div>
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                            </div>
+                            <!-- <button type="submit" class="btn btn-faded" id="submit-button-id">Login</button> -->
+                            <!-- <button type="submit" class="btn btn-dark" id="submit-button-id">Login</button> -->
+                            <!-- <button type="submit" class="btn btn-success" id="submit-button-id">Login</button> -->
+                        </form>
+                    </div>
+                    
+                    
+                    <div class="v-content">
+                        <form method="post" action="http://lcalhost:8000/insert" name="insert_form">
+                            <div class="col-md-7 mx-auto mb-3">
+                                <input name="title" type="text" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">
+                            </div>
+                            <div class="form-group">
+                                <label for="input_body" class="v-form-label">Contents</label>
+                                <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-8 mx-auto">
+                                <label for="inputTags" class="v-center-label v-form-label">Tags -Comma Separated</label>
+                                    <input name="tags" type="text" class="v-centered-input v-form-control form-control" id="inputTags" placeholder="Tags">
+                            </div>
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary">Create Article</button>
+                            </div>
+                        </form>
+                        <script>
+                            StartText();
+                        </script>
+                    </div>
+                    
+                    
                     <article class="v-article">
                         <header class="v-article-header">
                             <h2 class="v-article-title"><a href="/article?aid=1">Lorem Ipsum</a></h2>
                             <div class="row">
                                 <date class="v-article-date" datetime="2017-22-10">10/22/2017</date>
                                 <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
-                                <div class="col-md v-article-tags">Tags: <a href="/tags?tag=programming">Programming</a> <a href="/tags?tag=code">Code</a> <a href="/tags?tag=examples">Examples</a> <a href="/tags?tag=projects">Projects</a></div>
+                                
                             </div>
                         </header>
                         <p>
@@ -18,6 +123,9 @@
                         <p>
                             Duis consequat nisi turpis, vel tincidunt turpis ornare sit amet. Cras sapien tellus, dapibus vel metus vel, placerat vehicula turpis. Donec est odio, convallis ut tincidunt non, vestibulum vel justo. Pellentesque commodo id dolor sed tincidunt. Quisque dictum commodo fermentum. Ut consequat nibh elit, id venenatis mauris vestibulum non. Cras consequat, quam a tincidunt mollis, augue metus consectetur ligula, quis lacinia mi ipsum vel massa. Donec bibendum sed leo at congue. Quisque eros neque, ullamcorper non interdum in, gravida nec lectus.
                         </p>
+                        <div class="v-article-tags">
+                            <a href="/tags?tag=programming">Programming</a> <a href="/tags?tag=code">Code</a> <a href="/tags?tag=examples">Examples</a> <a href="/tags?tag=projects">Projects</a>
+                        </div>
                     </article>
                     
                     <article class="v-article">
