@@ -50,6 +50,7 @@ pub struct ArticleForm {
     pub description: String,
 }
 
+#[derive(FromForm)]
 pub struct Search {
     pub q: String,
 }

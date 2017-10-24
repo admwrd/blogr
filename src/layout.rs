@@ -15,6 +15,44 @@ const GENERIC_PAGE_START: &'static str = "<div class=\"v-content\">\n\t\t\t\t\t\
 const GENERIC_PAGE_END: &'static str = "\n\t\t\t\t\t</div>";
 const TABS: &'static str = "\t\t\t\t\t\t\t";
 
+
+pub fn admin_nav_username(username: &str) -> String {
+    format!(r##"
+                        <li class="v-nav-item nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {user}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/insert">New Article</a>
+                                <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout">Logout</a>
+                            </div>
+                        </li>
+"##, user=username)
+}
+
+pub fn admin_nav() -> &'static str {
+    r##"
+                        <li class="v-nav-item nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {user}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/insert">New Article</a>
+                                <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout">Logout</a>
+                            </div>
+                        </li>
+"##
+}
+
+pub fn admin_nav_login() -> &'static str {
+    r##"<li class="v-nav-item nav-item"><a class="nav-link" href="/admin">Login</a></li>"##
+}
+
+
 pub fn alert_danger(msg: &str) -> String {
     format!(r##"
                         <div class="v-centered-msg alert alert-danger" role="alert">

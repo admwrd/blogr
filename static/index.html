@@ -36,28 +36,26 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
-                        <li class="v-nav-item nav-item active">
-                            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="v-nav-item nav-item"><a class="nav-link" href="/view">View Posts</a></li>
+                        <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
+                        <li class="v-nav-item nav-item active"><a class="nav-link" href="/">Home</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/about">About</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/all_tags">View Tags</a></li>
                         <li class="v-nav-item nav-item"><a class="nav-link" href="/admin">Login</a></li>
                         <li class="v-nav-item nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Dropdown
+                                Administrator
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="/insert">New Article</a>
-                                <a class="dropdown-item" href="#">Another action</a>
+                                <!-- <a class="dropdown-item" href="#">Something else here</a> -->
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item" href="/logout">Logout</a>
                             </div>
                         </li>
-                        <li class="v-nav-item nav-item">
-                            <a class="nav-link disabled" href="#">Disabled</a>
-                        </li>
+                        <!-- <li class="v-nav-item nav-item"><a class="nav-link disabled" href="#">Disabled</a></li> -->
                     </ul>
-                    <form id="search-form" class="form-inline my-2 my-lg-0">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <form id="search-form" action="/search" method="get" class="form-inline my-2 my-lg-0">
+                        <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
                     </form>
                 </div>

@@ -221,6 +221,13 @@ fn view_page(page: ViewPage, conn: DbConn, admin: Option<AdminCookie>, user: Opt
     template("You are viewing paginated articles.")
 }
 
+
+#[get("/all_tags")]
+fn all_tags() -> Html<String> {
+    template("All tags page is not yet implemented.")
+}
+
+
 #[get("/tag?<tag>", rank = 2)]
 fn view_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
     let start = Instant::now();
@@ -332,9 +339,20 @@ fn logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cookies: Coo
 }
 
 #[get("/search")]
-fn search_results() -> Html<String> {
+fn search_page() -> Html<String> {
     // unimplemented!()
     template("The search page has not been implemented yet.")
+}
+
+#[get("/search?<search>")]
+fn search_results(search: Search, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
+    // unimplemented!()
+    template("The search results page has not been implemented yet.")
+}
+
+#[get("/about")]
+fn about() -> Html<String> {
+    template("This is the about page.")
 }
 
 #[get("/")]
@@ -395,14 +413,20 @@ fn main() {
             user_process,
             
             all_articles,
-            // view_category,
-            view_tag,
             view_page,
+            all_tags,
+            view_tag,
+            // view_category,
             view_article,
             article_not_found,
             post_article,
             insert_form,
             unauthorized_post,
+            
+            search_page,
+            search_results,
+            
+            about,
             
             logout,
             index,
