@@ -98,15 +98,22 @@ a:active {
     padding: 1em 1em 1em 1em;
 }
 
-
+.v-submit {
+    margin: 1.5em 1em 0em 1em;
+    text-align: right;
+}
 
 /* input:-webkit-autofill:hover */
 /* input:-webkit-autofill:focus */
-.center-label {
+.v-center-label {
     /*display: block;*/
     /*text-align: center;*/
-    display: inline;
-    float: left;
+    display: block;
+    text-align: center;
+}
+
+.v-centered-input {
+    text-align: center;
 }
 
 input:-webkit-autofill {

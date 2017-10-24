@@ -31,7 +31,6 @@ const TABS: &'static str = "\t\t\t\t\t\t\t";
 
 pub fn login_form(url: &str) -> String {
     format!(r##"
-                    <div class="v-content">
                         <form id="needs-validation" action="{url}" name="login_form" method="post" novalidate>
                             <div class="form-group" id="userGroup">
                                 <label for="usernameField">Email Address</label>
@@ -53,19 +52,22 @@ pub fn login_form(url: &str) -> String {
                                     <input type="password" id="passwordHidden" class="hidden-pass form-control">
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                            </div>
+                            <!-- <button type="submit" class="btn btn-faded" id="submit-button-id">Login</button> -->
+                            <!-- <button type="submit" class="btn btn-dark" id="submit-button-id">Login</button> -->
+                            <!-- <button type="submit" class="btn btn-success" id="submit-button-id">Login</button> -->
                         </form>
-                    </div>
 "##, url=url)
 }
 
 // http://localhost:8000/admin
 pub fn login_form_fail(url: &str, user: &str, why: &str) -> String {
     format!(r##"
-            <div class="alert alert-danger" role="alert">
-                Login failed: {why}
-            </div>
-            <div class="v-content">
+                        <div class="alert alert-danger" role="alert">
+                            Login failed: {why}
+                        </div>
                         <form id="needs-validation" action="{url}" name="login_form" method="post" novalidate>
                             <div class="form-group" id="userGroup">
                                 <label for="usernameField">Email Address</label>
@@ -87,9 +89,13 @@ pub fn login_form_fail(url: &str, user: &str, why: &str) -> String {
                                     <input type="password" id="passwordHidden" class="hidden-pass form-control">
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                            </div>
+                            <!-- <button type="submit" class="btn btn-faded" id="submit-button-id">Login</button> -->
+                            <!-- <button type="submit" class="btn btn-dark" id="submit-button-id">Login</button> -->
+                            <!-- <button type="submit" class="btn btn-success" id="submit-button-id">Login</button> -->
                         </form>
-                    </div>
 "##, url=url, user=user, why=why)
 }
 
@@ -137,25 +143,23 @@ pub fn link_tags(tags: &Vec<String>) -> String {
 }
 
 pub fn template_create_article(url: &str) -> String {
+    // Do not add the <div class="v-content">  line as GENERIC_PAGE_START does this
     format!(r##"
-                        <form method="post" action="{url}article" name="insert_form">
-                            <div class="form-group">
-                                <label for="inputTitle" class="v-form-label">Title</label>
-                                <input name="title" type="text" class="v-form-control form-control" id="inputTitle" placeholder="Title">
-                            </div>
-                            <div class="form-group">
-                                <label for="inputDesc" class="v-form-label">Description</label>
-                                <input name="description" type="text" maxlength="250" class="v-form-control form-control" id="inputDesc" placeholder="Description">
+                        <form method="post" action="{url}insert" name="insert_form">
+                            <div class="col-md-7 mx-auto mb-3">
+                                <input name="title" type="text" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">
                             </div>
                             <div class="form-group">
                                 <label for="input_body" class="v-form-label">Contents</label>
                                 <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
                             </div>
-                            <div class="form-group">
-                                <label for="inputTags" class="v-form-label">Tags -Comma Separated</label>
-                                <input name="tags" type="text" class="v-form-control form-control" id="inputTags" placeholder="Tags">
+                            <div class="col-md-8 mx-auto">
+                                <label for="inputTags" class="v-center-label v-form-label">Tags -Comma Separated</label>
+                                    <input name="tags" type="text" class="v-centered-input v-form-control form-control" id="inputTags" placeholder="Tags">
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary">Create Article</button>
+                            </div>
                         </form>
                         <script>
                             StartText();
