@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Vishus Blog</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        
+        <!-- Font Awesome -->
+        <!-- <link rel="stylesheet" href="css/font-awesome.min.css"> -->
+        
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+        
+        <!-- Custom CSS -->
+        <!-- <link id="pageStyleSheet" type="text/css" href="css/blog.css" rel="stylesheet" /> -->
+        <link id="pageStyleSheet" type="text/css" href="css/blogr.css" rel="stylesheet" />
+        
+        <!-- JavaScript -->
+        <!-- <script src="js-head.js"></script>  -->
+        <script src="sha256.js"></script>
+        <script src="blog.js"></script>
+        
+        <style>
+        
+        </style>
+    </head>
+    <body>
+        <div id="mainWrapper" class="main-wrapper">
+            
+            <nav class="v-nav-bar sticky-top navbar navbar-expand-lg navbar-dark bg-dark">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="blog-logo navbar-brand" href="#">Vishus Blog</a>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="v-nav navbar-nav mr-auto">
+                        <li class="v-nav-item nav-item active">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="v-nav-item nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="v-nav-item nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dropdown
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">Action</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                        </li>
+                        <li class="v-nav-item nav-item">
+                            <a class="nav-link disabled" href="#">Disabled</a>
+                        </li>
+                    </ul>
+                    <form id="search-form" class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+            </nav>
+            <div id="v-main">
+                <div id="v-menu">
+                    <ul>
+                        <li>Home</li>
+                        <li>View Tags</li>
+                        <li>View by Date</li>
+                        <li>Search</li>
+                        <li>Item</li>
+                        <li>Item</li>
+                        <li>Item</li>
+                        <li>Item</li>
+                        <li>Item</li>
+                    </ul>
+                    
+                </div>
+                <div id="v-body">
+                    
+                    <!-- ---------- -->
+                    
+                    <!-- 
+                     <div class="form-group">
+                        <label for="inputAddress">Address</label>
+                        <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+                      </div>
+                      <div class="form-group">
+                        <label for="inputAddress2">Address 2</label>
+                        <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+                      </div>
+                    -->
+                    <div class="v-content">
+                        <form class="" novalidate>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom01">First name</label>
+                                    <input type="text" class="form-control" id="validationCustom01" placeholder="First name" value="Mark" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom02">Last name</label>
+                                    <input type="text" class="form-control" id="validationCustom02" placeholder="Last name" value="Otto" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom03">City</label>
+                                    <input type="text" class="form-control" id="validationCustom03" placeholder="City" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid city.
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="validationCustom04">State</label>
+                                    <input type="text" class="form-control" id="validationCustom04" placeholder="State" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid state.
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="validationCustom05">Zip</label>
+                                    <input type="text" class="form-control" id="validationCustom05" placeholder="Zip" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid zip.
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Submit form</button>
+                        </form>
+                    </div>
+                    
+                    <div class="container v-content">
+                        <form id="needs-validation" action="http://localhost:8000/admin" name="login_form" method="post" novalidate>
+                            <div class="form-group" id="userGroup">
+                                <label for="usernameField">Email Address</label>
+                                <div class="col-md-6 mb-3">
+                                    <input type="text" name="username" value="" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username" required>
+                                    <div class="invalid-feedback">
+                                        Please specify a username
+                                    </div>
+                                </div>
+                                <!-- <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small> -->
+                            </div>
+                            <div class="form-group" id="passGroup">
+                                <label for="passwordField">Password</label>
+                                <div class="col-md-6 mb-3">
+                                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
+                                    <div class="invalid-feedback">
+                                        A password is requierd.
+                                    </div>
+                                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                            <button type="submit" class="btn btn-faded" id="submit-button-id">Login</button>
+                            <button type="submit" class="btn btn-success" id="submit-button-id">Login</button>
+                        </form>
+                    </div>
+                    <div class="v-content">
+                        <form method="post" action="http://lcalhost:8000/insert" name="insert_form">
+                            <div class="form-group">
+                                <label for="inputTitle" class="v-form-label">Title</label>
+                                    <input name="title" type="text" class="v-form-control form-control" id="inputTitle" placeholder="Title">
+                            </div>
+                            <div class="form-group">
+                                <label for="input_body" class="v-form-label">Contents</label>
+                                <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputTags" class="v-form-label">Tags -Comma Separated</label>
+                                    <input name="tags" type="text" class="v-form-control form-control" id="inputTags" placeholder="Tags">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                        <script>
+                            StartText();
+                        </script>
+                    </div>
+                    <article class="v-article">
+                        <header class="v-article-header">
+                            <h2 class="v-article-title"><a href="/article?aid=1">Lorem Ipsum</a></h2>
+                            <div class="row">
+                                <date class="v-article-date" datetime="2017-22-10">10/22/2017</date>
+                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
+                                
+                            </div>
+                        </header>
+                        <p>
+                            Etiam a elit felis. Nunc libero quam, ultricies ut egestas vel, faucibus non sapien. Quisque finibus diam ut metus faucibus posuere. Aliquam lorem ex, maximus at libero eu, faucibus sollicitudin nisi. Quisque vitae enim sapien. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ex nulla, lobortis eu varius sit amet, pretium sed tellus. Donec tincidunt vel ipsum quis hendrerit. Cras dolor sapien, hendrerit vitae nibh ut, consectetur sodales sem. Ut accumsan eu massa sed pulvinar. Pellentesque sed ante nec quam maximus facilisis.
+                        </p>
+                        <p>
+                            Proin lacinia mattis metus. Duis sed egestas tortor. Nunc sed feugiat neque. Nulla nec turpis consectetur, mollis quam ornare, pellentesque risus. Suspendisse tempus sit amet est at sodales. Nunc a magna sed augue tempus lobortis vitae et lectus. Fusce vel libero felis. Etiam id dictum purus, quis finibus felis. In a euismod massa, et ultricies augue.
+                        </p>
+                        <p>
+                            Duis consequat nisi turpis, vel tincidunt turpis ornare sit amet. Cras sapien tellus, dapibus vel metus vel, placerat vehicula turpis. Donec est odio, convallis ut tincidunt non, vestibulum vel justo. Pellentesque commodo id dolor sed tincidunt. Quisque dictum commodo fermentum. Ut consequat nibh elit, id venenatis mauris vestibulum non. Cras consequat, quam a tincidunt mollis, augue metus consectetur ligula, quis lacinia mi ipsum vel massa. Donec bibendum sed leo at congue. Quisque eros neque, ullamcorper non interdum in, gravida nec lectus.
+                        </p>
+                        <div class="v-article-tags">
+                            <a href="/tags?tag=programming">Programming</a> <a href="/tags?tag=code">Code</a> <a href="/tags?tag=examples">Examples</a> <a href="/tags?tag=projects">Projects</a>
+                        </div>
+                    </article>
+                    
+                    <article class="v-article">
+                        <header class="v-article-header">
+                            <h2 class="v-article-title"><a href="/article?aid=1">Lorem Ipsum</a></h2>
+                            <div class="row">
+                                <date class="v-article-date" datetime="2017-22-10">10/22/2017</date>
+                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
+                                <div class="col-md v-article-tags">Tags: <a href="/tags?tag=programming">Programming</a> <a href="/tags?tag=code">Code</a> <a href="/tags?tag=examples">Examples</a> <a href="/tags?tag=projects">Projects</a></div>
+                            </div>
+                        </header>
+                        <p>
+                            Phasellus accumsan luctus dolor vel bibendum. Nunc eros leo, interdum vitae purus vel, rhoncus porta massa. Vivamus laoreet pretium felis nec cursus. Ut dictum lectus non est egestas, at fermentum ligula imperdiet. Aenean quis sem eget eros aliquet laoreet ac nec diam. Proin convallis nibh sed metus imperdiet, quis dictum ligula euismod. In pharetra leo sed ligula efficitur viverra. Curabitur id arcu massa.
+                        </p>
+                        <p>
+                            Pellentesque ac rhoncus lacus, semper tempor neque. Praesent vel velit nibh. Proin laoreet a diam eget sollicitudin. Cras eget quam eget nunc commodo scelerisque. Curabitur vehicula scelerisque enim, vel congue libero consectetur iaculis. Proin id ex laoreet, vulputate ante eu, placerat mauris. Sed pretium ornare turpis quis volutpat. Vivamus ac cursus magna, nec dapibus enim. Nam sit amet arcu diam.
+                        </p>
+                        <p>
+                            Morbi vestibulum, elit et vulputate pulvinar, ante elit interdum nunc, ut ultrices sem enim vel risus. Maecenas pellentesque lobortis libero, ut tempus libero maximus at. Nunc sit amet volutpat ante. Sed id ipsum eros. Mauris ullamcorper a sem eu consectetur. Integer fringilla sollicitudin massa at porta. Morbi justo sapien, tincidunt id nibh in, viverra lacinia tortor. Etiam pellentesque elit eros, non gravida nulla hendrerit ac. Aliquam turpis nisl, scelerisque iaculis tempus eu, tempor a sem. Aliquam tempor tempor iaculis. Quisque velit magna, rutrum et accumsan ut, gravida a libero. Donec et accumsan nisl, in consectetur urna. Phasellus tincidunt lacus non erat varius semper. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                        </p>
+                    </article>
+                    
+                    
+                    <article class="v-article">
+                        <header class="v-article-header">
+                            <h2 class="v-article-title"><a href="/article?aid=1">Lorem Ipsum</a></h2>
+                            <div class="row">
+                                <date class="v-article-date" datetime="2017-22-10">10/22/2017</date>
+                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
+                                <div class="col-md v-article-tags">Tags: <a href="/tags?tag=programming">Programming</a> <a href="/tags?tag=code">Code</a> <a href="/tags?tag=examples">Examples</a> <a href="/tags?tag=projects">Projects</a></div>
+                            </div>
+                        </header>
+                        <p>
+                            Morbi vestibulum, elit et vulputate pulvinar, ante elit interdum nunc, ut ultrices sem enim vel risus. Maecenas pellentesque lobortis libero, ut tempus libero maximus at. Nunc sit amet volutpat ante. Sed id ipsum eros. Mauris ullamcorper a sem eu consectetur. Integer fringilla sollicitudin massa at porta. Morbi justo sapien, tincidunt id nibh in, viverra lacinia tortor. Etiam pellentesque elit eros, non gravida nulla hendrerit ac. Aliquam turpis nisl, scelerisque iaculis tempus eu, tempor a sem. Aliquam tempor tempor iaculis. Quisque velit magna, rutrum et accumsan ut, gravida a libero. Donec et accumsan nisl, in consectetur urna. Phasellus tincidunt lacus non erat varius semper. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                        </p>
+                        <p>
+                            Integer tempor varius scelerisque. Proin sit amet dapibus neque, ac dignissim felis. Pellentesque ultricies facilisis quam, et mollis leo posuere non. Nulla ullamcorper, sapien quis pellentesque ultricies, tellus est semper velit, pellentesque maximus augue arcu sit amet nulla. Nullam velit ex, bibendum vel odio at, feugiat auctor lectus. Sed vel auctor sem, ac rutrum sapien. Praesent ac pharetra nibh. Vivamus sed lorem tortor. Nullam luctus massa a mauris venenatis gravida. Nullam nec facilisis nisi.
+                        </p>
+                        <p>
+                            Cras arcu velit, dapibus vitae congue vitae, blandit et massa. Phasellus non fringilla tortor, at ultrices dolor. Duis tincidunt pulvinar eros in pellentesque. Ut ut turpis interdum, vestibulum tortor vel, gravida sapien. Quisque aliquam porta enim vel vulputate. Pellentesque vitae ultricies lorem. Sed convallis in lacus sit amet viverra. Pellentesque porta dui eget tempor tincidunt.
+                        </p>
+                    </article>
+                    
+                    <div class="v-content">
+                        <p>
+                            Integer tempor varius scelerisque. Proin sit amet dapibus neque, ac dignissim felis. Pellentesque ultricies facilisis quam, et mollis leo posuere non. Nulla ullamcorper, sapien quis pellentesque ultricies, tellus est semper velit, pellentesque maximus augue arcu sit amet nulla. Nullam velit ex, bibendum vel odio at, feugiat auctor lectus. Sed vel auctor sem, ac rutrum sapien. Praesent ac pharetra nibh. Vivamus sed lorem tortor. Nullam luctus massa a mauris venenatis gravida. Nullam nec facilisis nisi.
+                        </p>
+                        <p>
+                            Cras arcu velit, dapibus vitae congue vitae, blandit et massa. Phasellus non fringilla tortor, at ultrices dolor. Duis tincidunt pulvinar eros in pellentesque. Ut ut turpis interdum, vestibulum tortor vel, gravida sapien. Quisque aliquam porta enim vel vulputate. Pellentesque vitae ultricies lorem. Sed convallis in lacus sit amet viverra. Pellentesque porta dui eget tempor tincidunt.
+                        </p>
+                    </div>
+                    
+<!-- ---------- -->
+                    
+                    <footer id="v-footer">&copy; 2017 Andrew Prindle</footer>
+                </div>
+            </div>
+            
+            
+        </div>
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+        
+        <!-- Custom JavaScript -->
+        <!-- <script src="sha256.js"></script> -->
+        <!-- <script src="blog.js"></script> -->
+        <script>
+            
+        </script>
+        
+    </body>
+</html>
