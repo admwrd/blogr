@@ -117,7 +117,6 @@ impl<'a, 'r> FromRequest<'a, 'r> for RegularUser {
     type Error = ();
     
     fn from_request(request: &'a Request<'r>) -> rocket::request::Outcome<RegularUser, Self::Error> {
-        // let cid = cookies::get_cookie_identifier();
         let cid = RegularUser::get_cookie_id();
         let mut cookies = request.cookies();
         

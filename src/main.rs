@@ -58,12 +58,13 @@ use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 
-use rocket::response::{content, NamedFile, Redirect};
+use rocket::response::{content, NamedFile, Redirect, Flash};
 use rocket::{Request, Data, Outcome};
+use rocket::request::FlashMessage;
 use rocket::data::FromData;
 use rocket::response::content::Html;
 use rocket::request::Form;
-use rocket::http::Cookies;
+use rocket::http::{Cookie, Cookies};
 
 use auth::userpass::UserPass;
 use auth::status::{LoginStatus,LoginRedirect};
@@ -116,7 +117,6 @@ fn admin_page(data: AdminCookie) -> Html<String> {
 fn admin_login() -> Html<String> {
     let start = Instant::now();
 
-    // let output = Html(template_login_admin());
     let output = template(&login_form(ADMIN_LOGIN_URL));
         
     let end = start.elapsed();
@@ -126,7 +126,6 @@ fn admin_login() -> Html<String> {
 
 #[get("/admin?<fail>")]
 fn admin_retry(fail: AuthFailure) -> Html<String> {
-    // template( &template_admin_login_fail(&fail.user, &fail.msg) )
     template(&login_form_fail(ADMIN_LOGIN_URL, &fail.user, &fail.msg))
 }
 
@@ -163,15 +162,10 @@ fn user_page(data: UserCookie) -> Html<String> {
 #[get("/user", rank = 2)]
 fn user_login() -> Html<String> {
     template( &login_form(USER_LOGIN_URL) )
-    // Html(template_login_user())
 }
 
 #[get("/user?<fail>")]
-// #[get("/user/?<user>&<msg>")]
-// #[get("/user/<user>/<msg>")]
-// fn user_retry(user: String, msg: String) -> Html<String> {
 fn user_retry(fail: AuthFailure) -> Html<String> {
-    // template( &template_user_login_fail(&fail.user, &fail.msg) )
     template(&login_form_fail(USER_LOGIN_URL, &fail.user, &fail.msg))
 }
 
@@ -198,11 +192,9 @@ fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> Logi
 
 
 
-
 #[get("/view")]
 fn all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
     let start = Instant::now();
-    // let mut content = String::from("You are viewing all of the articles.");
     let output: Html<String>;
     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
     if results.len() != 0 {
@@ -212,20 +204,12 @@ fn all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCooki
         output = template_articles(results, is_admin, is_user, username);
     } else {
         if admin.is_some() {
-            output = template(r##"
-            <div class="alert alert-danger" role="alert">
-                There are no articles.<br>
-                <a href="/insert">Create Article</a>
-            </div>"##);
+            output = template( &alert_danger("There are no articles<br>\n<a href =\"/insert\">Create Article</a>") );
         } else {
-            output = template(r##"
-            <div class="alert alert-danger" role="alert">
-                There are no articles.
-            </div>"##);
+            output = template( &alert_danger("There are no articles.") );
         }
     }
     
-    // template(&content)
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
@@ -239,7 +223,6 @@ fn view_page(page: ViewPage, conn: DbConn, admin: Option<AdminCookie>, user: Opt
 
 #[get("/tag?<tag>", rank = 2)]
 fn view_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
-    // find articles where tag LIKE '%<tag.tag>%'
     let start = Instant::now();
     
     let output: Html<String>;
@@ -253,44 +236,31 @@ fn view_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<Use
         output = template_articles(results, is_admin, is_user, username);
         
     } else {
-        output = template(r##"
-            <div class="alert alert-danger" role="alert">
-                Could not find any articles with the specified tag.
-            </div>"##);
+        output = template( &alert_danger("Could not find any articles with the specified tag.") );
     }
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    // template(&content)
     output
 }
 
 #[get("/article?<aid>")]
-// #[get("/article?<aid>")]
-// fn view_article(aid: ArticleId) -> Html<String> {
 fn view_article(aid: ArticleId, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
     let start = Instant::now();
-    // let article: Article = aid.retrieve();
-    // let mut content = String::new();
-    // content.push_str("You have reached the article page.<br>\n");
-    // let rst = aid.retrieve(); // retrieve result
     let rst = aid.retrieve_with_conn(conn); // retrieve result
     let mut output: Html<String>; 
     if let Some(article) = rst {
-        // admin, user, username
         let is_admin = if admin.is_some() { true } else { false };
         let is_user = if user.is_some() { true } else { false };
         let username: Option<String> = if let Some(a_user) = admin { Some(a_user.username) } else if let Some(u_user) = user { Some(u_user.username) } else { None };
         output = full_template_article(&article, is_admin, is_user, username)
-        // content.push_str(&format!("You are viewing article #{id}.<br>\nInfo:<br>\n", id=aid.aid));
-        // content.push_str(&article.info());
     } else {
-        output =  template(&format!("Article #{id} could not be retrieved.", id=aid.aid))
+        // output =  template(&format!("Article #{id} could not be retrieved.", id=aid.aid))
+        output =  template(&alert_danger(&format!("Article {id} could not be found.", id=aid.aid)))
     }
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
-    // template(&content)
 }
 
 #[get("/article")]
@@ -305,35 +275,22 @@ fn article_not_found() -> Html<String> {
 }
 
 #[post("/article", data = "<form>")]
-
-// fn post_article(user: Option<UserCookie>, admin: Option<AdminCookie>, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
 fn post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
     let start = Instant::now();
     
-    // let mut content = String::new();
     let result = form.into_inner().save(&conn);
     let output: Html<String>;
     match result { 
         Ok(article) => {
-            // article, admin, user, username
-            // let is_admin = if admin.is_some() { true } else { false };
-            // let is_user = if user.is_some() { true } else { false };
-            // let username: Option<String> = if is_user { Some(user.unwrap().username) } else if is_admin { Some(admin.unwrap().username) } else { None };
-            // content.push_str(&template_article( &article, is_admin, is_user, username) );
-            // content.push_str(&template_article( &article, true, true, Some(admin.username) ));
-            
-            // output = full_template_article_new( &article, true, true, Some(admin.username) );
             output = full_template_article(&article, true, true, Some(admin.username));
         },
         Err(why) => {
             output = template(&format!("Could not post the blog article.  Reason: {}", why));
-            // content.push_str(&format!("Could not post the blog article.  Reason: {}", why))
         },
     }
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    // template(&content)
     output
 }
 #[post("/article", rank=2)]
@@ -348,18 +305,6 @@ fn insert_form(user: Option<AdminCookie>) -> Html<String> {
     
     let content;
     if let Some(admin) = user {
-        // let content = format!("Insert an article.");
-        // content = r##"
-        // <form method="post" action="http://localhost:8000/article" name="insert_form">
-        //     <input type="text" name="title" placeholder="Title"><br>
-        //     <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea><br>
-        //     <input type="text" name="tags" placeholder="Comma, Separated, Tags"><br>
-        //     <button type="submit" class="btn btn-primary">Submit</button>
-        // </form>
-        // <script>
-        // StartText();
-        // </script>
-        // "##;
         content = template_create_article(BLOG_URL);
     } else {
         content = UNAUTHORIZED_POST_MESSAGE.to_string();
@@ -370,15 +315,56 @@ fn insert_form(user: Option<AdminCookie>) -> Html<String> {
     output
 }
 
+#[get("/logout")]
+fn logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+    if admin.is_some() || user.is_some() {
+        if let Some(a) = admin {
+            cookies.remove_private(Cookie::named(AdminCookie::get_cid()));
+            // cookies.remove_private(Cookie::named("user_id"));
+        }
+        if let Some(u) = user {
+            cookies.remove_private(Cookie::named(UserCookie::get_cid()));
+        }
+        Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
+    } else {
+        Err(Redirect::to("/admin"))
+    }
+}
+
 #[get("/search")]
 fn search_results() -> Html<String> {
-    unimplemented!()
+    // unimplemented!()
+    template("The search page has not been implemented yet.")
 }
 
 #[get("/")]
-fn index() -> Html<String> {
-    let body = r#"Hello! This is a blog.<br><a href="/user">User page</a><br><a href="/admin">Go to admin page</a>"#;
-    template(&body)
+fn index(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>) -> Html<String> {
+    // let body = r#"Hello! This is a blog.<br><a href="/user">User page</a><br><a href="/admin">Go to admin page</a>"#;
+    // template(body)
+    let start = Instant::now();
+    let mut output: Html<String> = Html(String::new());
+    if let Some(flashmsg) = flash {
+        // let output: Html<String>;
+        let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
+        if results.len() != 0 {
+            let is_admin = if admin.is_some() { true } else { false };
+            let is_user = if user.is_some() { true } else { false };
+            let username: Option<String> = if let Some(a_user) = admin { Some(a_user.username) } else if let Some(u_user) = user { Some(u_user.username) } else { None };
+            
+            output = template_articles_msg(&alert_success("You have been logged out."), false, results, is_admin, is_user, username);
+        } else {
+            if admin.is_some() {
+                output = template( &alert_danger("There are no articles<br>\n<a href =\"/insert\">Create Article</a>") );
+            } else {
+                output = template( &alert_danger("There are no articles.") );
+            }
+        }
+    } else {
+        output = all_articles(conn, admin, user);
+    }
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
 }
 
 #[get("/<file..>", rank=10)]
@@ -418,10 +404,10 @@ fn main() {
             insert_form,
             unauthorized_post,
             
+            logout,
             index,
             static_files
         ])
-        // .manage(data::pg_conn_pool())
         .launch();
 }
 

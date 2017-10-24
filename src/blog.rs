@@ -42,8 +42,6 @@ pub struct Article {
 
 
 #[derive(Debug, Clone)]
-// #[derive(Debug, Clone, Insertable)]
-// #[table_name="posts"]
 pub struct ArticleForm {
     // pub userid: u32,
     pub title: String,
@@ -96,7 +94,6 @@ impl ArticleId {
     // Retrieve with a new connection - not a pooled connection
     //   Do not use unless you have to - unless you have no db connection
     pub fn retrieve(&self) -> Option<Article> {
-        // unimplemented!()
         let pgconn = establish_connection();
         let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
@@ -117,8 +114,6 @@ impl ArticleId {
     }
     // Prefer to use this over retrieve()
     pub fn retrieve_with_conn(&self, pgconn: DbConn) -> Option<Article> {
-        // unimplemented!()
-        // let pgconn = establish_connection();
         let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
             println!("Querying articles: found {} rows", aqry.len());
@@ -184,7 +179,6 @@ pub fn get_len<T>(input: &Option<Vec<T>>) -> usize {
 impl Article {
     pub fn split_tags(string: String) -> Vec<String> {
         // Todo: call sanitize tags before splitting:
-        // let tags: Vec<String> = sanitize_tags(string).split(',')...
         let tags: Vec<String> = string.split(',')
             .map(|s| s.trim().to_string())
             .filter(|s| s.as_str() != "" && s.as_str() != " ")
@@ -192,7 +186,6 @@ impl Article {
         tags
     }
     pub fn retrieve(aid: u32) -> Option<Article> {
-        // unimplemented!()
         let pgconn = establish_connection();
         let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=aid), &[]);
         if let Ok(aqry) = rawqry {
@@ -215,9 +208,9 @@ impl Article {
     }
     
     
-    // Description: Some(50) displays 50 characters of body text
-    //              Some(-1) displays the description field as the body
-    //              None displays all of the body text
+    /// Description: Some(50) displays 50 characters of body text
+    ///              Some(-1) displays the description field as the body
+    ///              None displays all of the body text
     pub fn retrieve_all(pgconn: DbConn, limit: u32, description: Option<i32>, min_date: Option<NaiveDate>, max_date: Option<NaiveDate>, tag: Option<Vec<String>>, search: Option<Vec<String>>) -> Vec<Article> {
         let mut show_desc = false;
         let mut qrystr: String = if let Some(summary) = description {
@@ -230,7 +223,6 @@ impl Article {
         } else {
             String::from("SELECT aid, title, posted, body, tag, description FROM articles")
         };
-        // let mut qrystr: String = String::from("SELECT aid, title, posted, body, tags FROM articles");
         if min_date.is_some() || max_date.is_some() || (tag.is_some() && get_len(&tag) != 0) || (search.is_some() && get_len(&search) != 0) {
             qrystr.push_str(" WHERE");
             let mut where_str = String::from("");
@@ -269,20 +261,9 @@ impl Article {
         if limit != 0 { qrystr.push_str(&format!(" LIMIT {}", limit)); }
         println!("Query: {}", qrystr);
         let qryrst = pgconn.query(&qrystr, &[]);
-        // if let Ok(aqry) = qryrst {
-        //     println!("Query found {} rows", aqry.len());
-        //     if !aqry.is_empty() && aqry.len() != 0 {
-                
-        //     }
-        // }
         if let Ok(result) = qryrst {
             let mut articles: Vec<Article> = Vec::new();
             for row in &result {
-                // let tagstr = row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new());
-                // println!("Tags: {:?}", tagstr);
-                // let tagvec = tagstr.into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect();
-                
-                // let vectag = row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect();
                 let a = Article {
                     aid: row.get(0),
                     title: row.get(1),
@@ -292,7 +273,6 @@ impl Article {
                             if &d == "" { row.get(3) }
                             else { d }
                         } else { row.get(3) },
-                    // tags: split_tags(row.get(4)),
                     tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     // description: if show_desc { String::new() } else { String::new() },
                     // show_desc moves the description to the body
@@ -316,21 +296,12 @@ impl Article {
 impl ArticleForm {
     pub fn new(title: String, body: String, tags: String, description: String) -> ArticleForm {
         ArticleForm {
-            // userid: 0,
             title,
             body,
             tags,
             description,
         }
     }
-    // Removed userid from ArticleForm and no userid exists in Article
-    // pub fn author(self, userid: u32) -> ArticleForm {
-    //     let new: ArticleForm = self.clone();
-    //     ArticleForm {
-    //         userid,
-    //         .. new
-    //     }
-    // }
     pub fn to_article(&self) -> Article {
         // get next aid
         let next_aid = 0;
@@ -344,39 +315,25 @@ impl ArticleForm {
         }
     }
     pub fn save(&self, conn: &DbConn) -> Result<Article, String> {
-        // unimplemented!()
         let now = Local::now().naive_local();
-        // return both id and posted date
         
         // take blah, blah2, blah3 and convert into {'blah', 'blah2', 'blah3'}
-        
         let tagstr = format!( "{{{}}}", self.tags.clone().split(',').map(|s| format!("\"{}\"", s.trim())).collect::<Vec<_>>().join(","));
-        // let mut tagstr = self.tags.clone();
-        // tagstr.replace(",", "','");
-        // tagstr.insert(0, '\'');
-        // let tlen = tagstr.len();
-        // tagstr.insert(tlen, '\'');
-        
             
+        //  can return both id and posted date
         // let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid, posted",
         let qrystr = format!("INSERT INTO articles (title, posted, body, tag, description) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}') RETURNING aid",
-            // title=self.title, posted=now, body=self.body, tags=self.tags, desc=self.description);
             title=self.title, posted=now, body=self.body, tags=tagstr, desc=self.description);
-        // let rawqry = conn.prepare(&qrystr).expect("Could not prepare query successfully");
         println!("Insert query: {}", qrystr);
         let result = conn.query(&qrystr, &[]);
         match result {
-            // Ok(ref qry) if qry.is_empty() => Err("Error inserting article, result is empty.".to_string()),
-            // Ok(ref qry) if !qry.is_empty() && qry.len() > 1 => Err(format!("Error inserting article, returned {} rows.", qry.len())),
             Err(err) => Err(format!("Could not insert article. Error: {}", err)),
-            // Ok(qry) if !qry.is_empty() && qry.len() == 1 => {
             Ok(qry)  => {
                 if !qry.is_empty() && qry.len() == 1 {
                     let row = qry.get(0);
                     Ok( Article {
                         aid: row.get(0),
                         title: self.title.clone(),
-                        // posted: row.get(1),
                         posted: now,
                         body: self.body.clone(),
                         tags: Article::split_tags(self.tags.clone()),
@@ -390,10 +347,7 @@ impl ArticleForm {
                     Err("Unknown error inserting article.".to_string())
                 }
             },
-            // Ok(_) => Err("Unknown error inserting article.".to_string()),
         }
-        // let id: i32 = stmt.query(&[])
-            // .expect("Died for this reason").().iter().next().unwrap().get(0);
     }
 }
 

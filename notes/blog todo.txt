@@ -3,14 +3,13 @@ Blogr
 	Maybe remove all the is_admin is_user username fields for the article templates
 		Use javascript to add the edit/delete options
 		But in the route check the correct cookie is set for that action
+
 	
 	Display a page that lists the tags, maybe even sort by number of posts each has
 	
 	Add unique visitors
 
 	Authenticate user properly with a database query
-
-	Change validation to use jQuery and Bootstrap - looks sooo pretty
 
 	Posting articles: maybe add a javascript function to alert the user when spaces are detected in the tag field but no commas are found
 		Display: Did you mean to use commas instead of spaces?
@@ -90,6 +89,11 @@ Research Futures
 
 
 Done
+	
+	Reduce margins for mobiles
+	if landscape reduce nav brand font size
+
+	Change validation to use jQuery and Bootstrap - looks sooo pretty
 
 	Change tags from text to character varying[] (array of varchars)
 		Make a tag column that will be the new tags

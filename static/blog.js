@@ -51,7 +51,19 @@ function StartText() {
     }
 }
 
+// document.getElementById("insert-tags").onchange = "";
 
+function checkTags() {
+    // var tagform = document.getElementById();
+    var tagform = document.forms.insert_form.elements["tags"];
+    var tagmsg = document.getElementById("tag-msg");
+    if (tagform.value.indexOf(' ') != -1 && tagform.value.indexOf(',') == -1) {
+        tagmsg.style.display = "block";
+    } else {
+        tagmsg.style.display = "none";
+    }
+    
+}
 
 
 

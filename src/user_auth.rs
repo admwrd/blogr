@@ -64,6 +64,9 @@ impl Authenticator for  UserAuth {
 }
 
 impl CookieId for UserAuth {
+    fn get_cid() -> &'static str {
+        "usid"
+    }
     fn get_cookie_config() -> Config {
         Config::build(Environment::active().unwrap())
             // .secret_key(SECRET_KEY)

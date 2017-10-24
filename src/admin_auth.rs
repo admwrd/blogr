@@ -64,6 +64,9 @@ impl Authenticator for  AdminAuth {
 }
 
 impl CookieId for AdminAuth {
+    fn get_cid() -> &'static str {
+        "asid"
+    }
     fn get_cookie_config() -> Config {
         Config::build(Environment::active().unwrap())
             // .secret_key(SECRET_KEY)

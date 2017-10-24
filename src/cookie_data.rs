@@ -22,6 +22,7 @@ pub(crate) const SECRET_KEY: &'static str = "8Xui8SN4mI+7egV/9dlfYYLGQJeEx4+DwmS
 pub trait CookieId {
     // fn get_cookie_config(&self) -> Config;
     // fn get_cookie_id(&self) -> String;
+    fn get_cid() -> &'static str;
     fn get_cookie_config() -> Config;
     fn get_cookie_id() -> String;
     fn cookie_username(&self) -> String;
@@ -40,6 +41,9 @@ impl AdminCookie {
 }
 
 impl CookieId for AdminCookie {
+    fn get_cid() -> &'static str {
+        "asid"
+    }
     fn get_cookie_config() -> Config {
         Config::build(Environment::active().unwrap())
             // .secret_key(SECRET_KEY)
@@ -87,6 +91,9 @@ impl UserCookie {
 
 
 impl CookieId for UserCookie {
+    fn get_cid() -> &'static str {
+        "usid"
+    }
     fn get_cookie_config() -> Config {
         Config::build(Environment::active().unwrap())
             // .secret_key(SECRET_KEY)

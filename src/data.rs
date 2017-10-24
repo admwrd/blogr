@@ -47,21 +47,15 @@ use dotenv::dotenv;
 
 /// Type alias for the r2d2 connection pool. Use this as a State<T> parameter
 /// in handlers that need a database connection.
-
 // pub type ConnectionPool = r2d2::Pool<r2d2_diesel::ConnectionManager<diesel::pg::PgConnection>>;
+
 
 type Pool = r2d2::Pool<PostgresConnectionManager>;
 
 /// Creates the database connection pool
-// pub fn pg_conn_pool() -> ConnectionPool {
-// pub fn pg_conn_pool() -> r2d2::Pool<r2d2_postgres::PostgresConnectionManager> {
-// pub fn init_pg_pool() -> r2d2::Pool<r2d2_postgres::PostgresConnectionManager> {
 pub fn init_pg_pool() -> Pool {
     // let conn_str = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let config = r2d2::Config::default();
-    // let connection_manager = r2d2_diesel::ConnectionManager::<diesel::pg::PgConnection>::new( std::env::var("DATABASE_URL" ).unwrap());
-    
-    // let manager = PostgresConnectionManager::new(&conn_str, SslMode: None).unwrap()
     let manager = PostgresConnectionManager::new("postgres://postgres:andrew@localhost/blog", TlsMode::None).unwrap();
     
     r2d2::Pool::new(config, manager).expect("Could not create database pool")
@@ -69,16 +63,10 @@ pub fn init_pg_pool() -> Pool {
 
 pub fn init_pg_conn() -> Connection {
     // let conn_str = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    // PgConnection::establish(&database_url).unwrap()
     Connection::connect("postgres://postgres:andrew@localhost/blog", postgres::TlsMode::None).unwrap()
 }
 
-// Connection request guard type: a wrapper around an r2d2 pooled connection.
-// pub struct DbConn(pub r2d2::PooledConnection<ConnectionManager<SqliteConnection>>);
-
 pub struct DbConn(
-    // pub r2d2::PooledConnection<ConnectionManager<SqliteConnection>>
-    // pub r2d2::PooledConnection<ConnectionManager<Connection>>
     pub r2d2::PooledConnection<PostgresConnectionManager>
 );
 
@@ -112,19 +100,14 @@ pub fn establish_connection() -> Connection {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     // PgConnection::establish(&database_url).expect("Error connecting to {}", database_url);
-     // Connection::connect("postgres://postgres@localhost:5433", TlsMode::None).unwrap()
-     Connection::connect(database_url, postgres::TlsMode::None).unwrap()
+    // Connection::connect("postgres://postgres@localhost:5433", TlsMode::None).unwrap()
+    Connection::connect(database_url, postgres::TlsMode::None).unwrap()
 }
-// pub fn establish_connection() -> Connection {
-//     dotenv().ok();
-//     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-//      // Connection::connect(database_url, TlsMode::None).unwrap()
-//      let params = ConnectParams::builder()
-//         .user("postgres", Some("andrew"))
-//         // .build(Host::Unix(some_crazy_path));
-//         .build(Host::Tcp("postgres".to_string()));
-//     Connection::connect(params, postgres::TlsMode::None).unwrap()
-// }
+pub fn establish_connection_dotenv() -> Connection {
+    dotenv().ok();
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    Connection::connect(database_url, postgres::TlsMode::None).unwrap()
+}
 
 
 pub trait HasUsername {

@@ -37,17 +37,16 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
                         <li class="v-nav-item nav-item active">
-                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                         </li>
-                        <li class="v-nav-item nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                        </li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/view">View Posts</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/admin">Login</a></li>
                         <li class="v-nav-item nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Dropdown
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Action</a>
+                                <a class="dropdown-item" href="/insert">New Article</a>
                                 <a class="dropdown-item" href="#">Another action</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#">Something else here</a>
@@ -63,21 +62,6 @@
                     </form>
                 </div>
             </nav>
-            <div id="v-main">
-                <div id="v-menu">
-                    <ul>
-                        <li>Home</li>
-                        <li>View Tags</li>
-                        <li>View by Date</li>
-                        <li>Search</li>
-                        <li>Item</li>
-                        <li>Item</li>
-                        <li>Item</li>
-                        <li>Item</li>
-                        <li>Item</li>
-                    </ul>
-                    
-                </div>
                 <div id="v-body">
                     
 <!-- ---------- -->
@@ -175,7 +159,10 @@
                             </div>
                             <div class="col-md-8 mx-auto">
                                 <label for="inputTags" class="v-center-label v-form-label">Tags -Comma Separated</label>
-                                    <input name="tags" type="text" class="v-centered-input v-form-control form-control" id="inputTags" placeholder="Tags">
+                                    <input name="tags" id="insert-tags" type="text" class="v-centered-input v-form-control form-control" id="inputTags" placeholder="Tags">
+                                    <div class="v-form-message" id="tag-msg">
+                                        Did you mean to <b>Comma Separate</b> the tags?
+                                    </div>
                             </div>
                             <div class="v-submit">
                                 <button type="submit" class="btn btn-primary">Create Article</button>
@@ -276,6 +263,7 @@
         <!-- Custom JavaScript -->
         <!-- <script src="sha256.js"></script> -->
         <!-- <script src="blog.js"></script> -->
+        <script src="blog_after.js"></script>
         <script>
             
         </script>
