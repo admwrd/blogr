@@ -35,7 +35,8 @@
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate rocket_simpleauth as auth;
-
+extern crate serde;
+#[macro_use] extern crate serde_derive;
 
 extern crate chrono;
 #[macro_use] extern crate lazy_static;
@@ -361,8 +362,19 @@ fn about() -> Html<String> {
 }
 
 #[get("/template")]
-fn template_testing() -> Template {
-    
+fn template_testing(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+    hbs_template(TemplateBody::General("This is some content."), Some("Article Page"), admin, user, None)
+}
+
+#[get("/template2")]
+fn template_testing2(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+    let aid = ArticleId { aid: 9 };
+    let result = aid.retrieve_with_conn(conn);
+    if let Some(article) = result {
+        hbs_template(TemplateBody::Article(&article), Some(&format!("VishusBlog::{}", article.title)), admin, user, None)
+    } else {
+        hbs_template(TemplateBody::General("Could not find article 9"), Some("VishusBlog::Invalid Article"), admin, user, None)
+    }
 }
 
 #[get("/")]
@@ -440,6 +452,7 @@ fn main() {
             about,
             
             template_testing,
+            template_testing2,
             
             logout,
             index,

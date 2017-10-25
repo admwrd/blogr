@@ -40,6 +40,16 @@ pub struct Article {
     pub description: String,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct ArticleDisplay {
+    pub aid: u32,
+    pub title: String,
+    pub posted_machine: String,
+    pub posted_human: String,
+    pub body: String,
+    pub tags: Vec<String>,
+    pub description: String,
+}
 
 #[derive(Debug, Clone)]
 pub struct ArticleForm {
@@ -142,6 +152,7 @@ impl ArticleId {
     
 }
 
+
 impl Search {
     pub fn search() -> Vec<Article> {
         unimplemented!()
@@ -178,6 +189,17 @@ pub fn get_len<T>(input: &Option<Vec<T>>) -> usize {
 }
 
 impl Article {
+    pub fn to_display(&self) -> ArticleDisplay {
+        ArticleDisplay {
+            aid: self.aid.clone(),
+            title: self.title.clone(),
+            posted_machine: self.posted.format("%Y-%m-%dT%H:%M:%S").to_string(),
+            posted_human: self.posted.format("%Y-%m-%d @ %I:%M%P").to_string(),
+            body: self.body.clone(),
+            tags: self.tags.clone(),
+            description: self.description.clone(),
+        }
+    }
     pub fn split_tags(string: String) -> Vec<String> {
         // Todo: call sanitize tags before splitting:
         let tags: Vec<String> = string.split(',')
