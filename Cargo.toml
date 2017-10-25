@@ -28,3 +28,8 @@ rocket_codegen = "0.3.3"
 # serde_derive = "1.0.11"
 time = "0.1"
 titlecase = "0.10.0"
+
+[dependencies.rocket_contrib]
+version = "*"
+default-features = false
+features = ["handlebars_templates"]

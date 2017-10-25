@@ -23,12 +23,40 @@ Blogr
 	login - for users who are not logged in
 		if user either admin or regular user do not display login, whichever cookie is set determines the userlevel
 	signup - create signup page
-	
-	Eventually change the index page to list blog articles and show a login link elsewhere like in the nav
 
-	Add custom <title> tag text for each page??
-		Replace the title with a page specific one
-		For /article?<aid> make the title equal to VishusBlog: <article title>
+		Add dropdown menu for admin
+			New Article
+			Logout
+		Add dropdown menu for user
+			My Info
+			My Comments
+				for each artile the user has commented on:
+					shows article title (that links to the article)
+					a list of comments made by the user
+					an edit/delete button for that comment
+
+			Logout
+
+		Add custom <title> tag text for each page??
+			Replace the title with a page specific one
+			For /article?<aid> make the title equal to VishusBlog: <article title>
+
+	GET /users
+	GET /user?<userid> - userid: UserId
+	POST /user	// saves changes to display email and any other properties
+	Create a Users page that shows all users with public profiles
+		add a is_public bool to the user table in the database
+	Create a show user page that displays user information
+		create a UserId struct with a single username attribute
+		if the user has is_public set to false only admins can see it
+		Show Username link, and emai
+		if the viewer is an admin show a checkbox to change the is_admin field
+		if the logged in user/admin is viewing their own page
+			allow them to edit their information
+				allow password to be changed
+				add a hidden username form field
+	Create a 
+	Create a signup page
 
 	Add a method/helper function to retrieve an article and user from a qry
 		retrieve the data from the raw qry
@@ -90,6 +118,8 @@ Research Futures
 
 Done
 	
+	Eventually change the index page to list blog articles and show a login link elsewhere like in the nav
+
 	Reduce margins for mobiles
 	if landscape reduce nav brand font size
 

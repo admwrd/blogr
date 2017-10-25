@@ -33,7 +33,9 @@
 
 // extern crate multipart;
 extern crate rocket;
+extern crate rocket_contrib;
 extern crate rocket_simpleauth as auth;
+
 
 extern crate chrono;
 #[macro_use] extern crate lazy_static;
@@ -58,6 +60,7 @@ use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 
+use rocket_contrib::Template;
 use rocket::response::{content, NamedFile, Redirect, Flash};
 use rocket::{Request, Data, Outcome};
 use rocket::request::FlashMessage;
@@ -85,6 +88,7 @@ mod users;
 mod login_form_status;
 mod blog;
 mod data;
+mod templates;
 
 use layout::*;
 use cookie_data::*;
@@ -95,6 +99,7 @@ use login_form_status::*;
 use login_form_status::LoginFormRedirect;
 use blog::*;
 use data::*;
+use templates::*;
 
 pub const BLOG_URL: &'static str = "http://localhost:8000/";
 pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
@@ -355,6 +360,11 @@ fn about() -> Html<String> {
     template("This is the about page.")
 }
 
+#[get("/template")]
+fn template_testing() -> Template {
+    
+}
+
 #[get("/")]
 fn index(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>) -> Html<String> {
     // let body = r#"Hello! This is a blog.<br><a href="/user">User page</a><br><a href="/admin">Go to admin page</a>"#;
@@ -401,6 +411,7 @@ fn main() {
     
     rocket::ignite()
         .manage(data::init_pg_pool())
+        .attach(Template::fairing())
         .mount("/", routes![
             admin_page,
             admin_login,
@@ -427,6 +438,8 @@ fn main() {
             search_results,
             
             about,
+            
+            template_testing,
             
             logout,
             index,

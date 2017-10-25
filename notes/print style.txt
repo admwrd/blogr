@@ -1,0 +1,5 @@
+PRINT
+	remove input borders
+	remove v-content and article borders
+	change text color in articles and v-content and title and date
+		make it black, #000000

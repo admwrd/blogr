@@ -131,6 +131,37 @@ input:-webkit-autofill {
     background: #363636 !important;
 }
 
+nav input, nav textarea {
+    background-color: #222 !important;
+    color: #eee;
+    border: 2px solid #343a40 !important;
+    border-radius: .8em !important;
+}
+nav input::-webkit-input-placeholder,
+nav textarea::-webkit-input-placeholder {
+  color: #ccc !important;
+}
+nav input:-moz-placeholder,
+nav textarea:-moz-placeholder {
+  color: #ccc !important;
+}
+nav input::-moz-placeholder,
+nav textarea::-moz-placeholder {
+  color: #ccc !important;
+}
+nav input:-ms-input-placeholder,
+nav textarea:-ms-input-placeholder {
+  color: #ccc !important;
+}
+
+
+nav input:focus, nav textarea:focus {
+    background-color: #ddd !important;
+    color: #222 !important;
+    border: 2px solid #5bc0de;
+    /*border: 2px solid #5bc0de;*/
+    /*border: 2px solid #5bc0de;*/
+}
 .v-content input, .v-content textarea {
     background-color: #363636 !important;
     color: #eeeeee;
@@ -138,12 +169,16 @@ input:-webkit-autofill {
     border-radius: .8em;
 }
 input:focus, textarea:focus {
-    background-color: #585858 !important;
-    color: #eee !important;
+    /*background-color: #585858 !important;
+    color: #eee !important;*/
+    background-color: #ddd !important;
+    color: #222 !important;
     border: 2px solid #5bc0de;
     /*border: 2px solid #5bc0de;*/
     /*border: 2px solid #5bc0de;*/
 }
+
+
 .v-content ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
     color: #aaa;
 }
