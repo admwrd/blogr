@@ -2,7 +2,7 @@
 use std::collections::{HashMap, BTreeMap};
 use rocket_contrib::Template;
 use chrono::{NaiveDate, NaiveDateTime};
-// use serde::ser::Serialize;
+use titlecase::titlecase;
 
 use blog::*;
 use layout::*;
@@ -20,49 +20,49 @@ use users::*;
 // }
 
 #[derive(Debug, Clone)]
-pub enum TemplateBody<'g, 's, 'm> {
-    General(&'g str),
-    Article(&'s Article),
-    Articles(&'m Vec<Article>),
+pub enum TemplateBody {
+    General(String),
+    Article(Article),
+    Articles(Vec<Article>),
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct TemplateInfo<'t, 'u, 'j> {
-    pub title: &'t str,
+pub struct TemplateInfo {
+    pub title: String,
     pub logged_in: bool,
     pub is_admin: bool,
     pub is_user: bool,
-    pub username: &'u str,
-    pub js: &'j str,
+    pub username: String,
+    pub js: String,
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct TemplateGeneral<'b, 't, 'u, 'j> {
-    pub body: &'b str,
-    pub info: TemplateInfo<'t, 'u, 'j>,
+pub struct TemplateGeneral {
+    pub body: String,
+    pub info: TemplateInfo,
 
 }
 #[derive(Debug, Clone, Serialize)]
-pub struct TemplateArticle<'t, 'u, 'j> {
+pub struct TemplateArticle {
     pub body: ArticleDisplay,
-    pub info: TemplateInfo<'t, 'u, 'j>,
+    pub info: TemplateInfo,
 
 }
 #[derive(Debug, Clone, Serialize)]
-pub struct TemplateArticles<'t, 'u, 'j> {
+pub struct TemplateArticles {
     pub body: Vec<ArticleDisplay>,
-    pub info: TemplateInfo<'t, 'u, 'j>,
+    pub info: TemplateInfo,
 
 }
 
-impl<'t, 'u, 'j> TemplateInfo<'t, 'u, 'j> {
-    pub fn new<'p, 's>(title: Option<&'p str>, admin: Option<AdminCookie>, user: Option<UserCookie>, js: &'s str) -> TemplateInfo<'t, 'u, 'j> {
+impl TemplateInfo {
+    pub fn new(title: Option<String>, admin: Option<AdminCookie>, user: Option<UserCookie>, js: String) -> TemplateInfo {
         TemplateInfo {
-            title: if let Some(t) = title { t } else { "" },
+            title: if let Some(t) = title { t } else { String::new() },
             logged_in: if admin.is_some() || user.is_some() { true } else { false },
             is_admin: if admin.is_some() { true } else { false },
             is_user: if user.is_some() { true } else { false },
-            username: if let Some(a) = admin { &a.username } else if let Some(u) = user { &u.username } else { "" },
+            username: if let Some(a) = admin { titlecase(&a.username.clone()) } else if let Some(u) = user { titlecase(&u.username.clone()) } else { String::new() },
             js,
         }
     }
@@ -74,24 +74,24 @@ impl<'t, 'u, 'j> TemplateInfo<'t, 'u, 'j> {
 // body: if let TemplateBody::Article(article) = content { contents } else { Article {aid: 0, title: String::from("Invalid Article"), Local::now().naive_local(), body: String::from("Invalid template contents."), Vec::new(), String::from("Invalid article template.")} },
 // body: if let TemplateBody::Article(article) = content { contents } else { Article {aid: 0, title: String::from("Invalid Article"), Local::now().naive_local(), body: String::from("Invalid template contents."), Vec::new(), String::from("Invalid article template.")} },
 
-impl<'b, 't, 'u, 'j> TemplateGeneral<'b, 't, 'u, 'j>  {
-    pub fn new<'c>(content: &'c str, info: TemplateInfo) -> TemplateGeneral<'b, 't, 'u, 'j> {
+impl TemplateGeneral  {
+    pub fn new(content: String, info: TemplateInfo) -> TemplateGeneral {
         TemplateGeneral {
             body: content,
             info
         }
     }
 }
-impl<'t, 'u, 'j> TemplateArticle<'t, 'u, 'j>  {
-    pub fn new<'d>(content: &'d Article, info: TemplateInfo) -> TemplateArticle<'t, 'u, 'j> {
+impl TemplateArticle {
+    pub fn new(content: Article, info: TemplateInfo) -> TemplateArticle {
         TemplateArticle {
             body: content.to_display(),
             info,
         }
     }
 }
-impl<'t, 'u, 'j> TemplateArticles<'t, 'u, 'j>  {
-    pub fn new<'e>(content: &'e Vec<Article>, info: TemplateInfo) -> TemplateArticles<'t, 'u, 'j> {
+impl TemplateArticles {
+    pub fn new(content: Vec<Article>, info: TemplateInfo) -> TemplateArticles {
         let mut articles: Vec<ArticleDisplay> = content.iter().map(|a| a.to_display()).collect();
         TemplateArticles {
             body: articles,
@@ -100,14 +100,14 @@ impl<'t, 'u, 'j> TemplateArticles<'t, 'u, 'j>  {
     }
 }
 
-pub fn hbs_template<'a, 'b>(content: TemplateBody, title: Option<&'b str>, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<&str>) -> Template {
+pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>) -> Template {
     // let mut context: HashMap<&str> = HashMap::new();
     // context.insert();
-    let js = if let Some(j) = javascript { j } else { "" }; 
+    let js = if let Some(j) = javascript { j } else { "".to_string() }; 
     let info = TemplateInfo::new(title, admin_opt, user_opt, js);
     match content {
         TemplateBody::General(contents) => {
-            let context = TemplateGeneral::new(content, info);
+            let context = TemplateGeneral::new(contents, info);
             Template::render("general-template", &context)
         },
         TemplateBody::Article(article) => {
@@ -115,10 +115,10 @@ pub fn hbs_template<'a, 'b>(content: TemplateBody, title: Option<&'b str>, admin
             Template::render("article-template", &context)
         },
         TemplateBody::Articles(articles) => {
-            // let context = TemplateArticles::new(articles, info);
-            // Template::render("articles-template", &context)
-            let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.", info);
-            Template::render("general-template", &context)
+            let context = TemplateArticles::new(articles, info);
+            Template::render("articles-template", &context)
+            // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
+            // Template::render("general-template", &context)
         },
     }
     

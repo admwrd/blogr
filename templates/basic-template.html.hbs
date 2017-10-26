@@ -3,7 +3,7 @@
     <head>
         {{#if info.title}}
         <title>{{info.title}}</title>
-        {{#else}}
+        {{else}}
         <title>Vishus Blog</title>
         {{/if}}
         
@@ -50,7 +50,7 @@
                         {{/unless}}
                         {{#if info.is_admin}}
                         <li class="v-nav-item nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="v-nav-login nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {{info.username}}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -74,24 +74,7 @@
                     
 <!-- ---------- -->
                     
-                    
-                    <article class="v-article">
-                        <header class="v-article-header">
-                            <h2 class="v-article-title"><a href="/article?aid={{body.aid}}">{{body.title}}</a></h2>
-                            <div class="row">
-                                <date class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</date>
-                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
-                            </div>
-                        </header>
-                        <p>
-                            {{{body.body}}}
-                        </p>
-                        <div class="v-article-tags">
-                            {{#each body.tags}}
-                            <a href="/tags?tag={{this}}">{{this}}</a>
-                            {{/each}}
-                        </div>
-                    </article>
+                    {{{body}}}
                     
 <!-- ---------- -->
 
@@ -111,11 +94,6 @@
         <!-- <script src="sha256.js"></script> -->
         <!-- <script src="blog.js"></script> -->
         <script src="blog_after.js"></script>
-        <script>
-            {{#if info.js}}
-            {{{info.js}}}
-            {{/if}}
-        </script>
         
     </body>
 </html>

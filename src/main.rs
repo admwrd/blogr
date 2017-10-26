@@ -363,18 +363,48 @@ fn about() -> Html<String> {
 
 #[get("/template")]
 fn template_testing(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
-    hbs_template(TemplateBody::General("This is some content."), Some("Article Page"), admin, user, None)
+    let output: Template;
+    let start = Instant::now();
+    
+    output = hbs_template(TemplateBody::General("This is some content.".to_string()), Some("Article Page".to_string()), admin, user, None);
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
 }
 
 #[get("/template2")]
 fn template_testing2(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+    let start = Instant::now();
+    let output: Template;
     let aid = ArticleId { aid: 9 };
     let result = aid.retrieve_with_conn(conn);
     if let Some(article) = result {
-        hbs_template(TemplateBody::Article(&article), Some(&format!("VishusBlog::{}", article.title)), admin, user, None)
+        let a_title = article.title.clone();
+        output = hbs_template(TemplateBody::Article(article), Some(format!("VishusBlog::{}", a_title)), admin, user, None);
     } else {
-        hbs_template(TemplateBody::General("Could not find article 9"), Some("VishusBlog::Invalid Article"), admin, user, None)
+        output = hbs_template(TemplateBody::General("Could not find article 9".to_string()), Some("VishusBlog::Invalid Article".to_string()), admin, user, None);
     }
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
+}
+
+#[get("/template3")]
+fn template_testing3(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+    let start = Instant::now();
+    let output: Template;
+    let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
+    if results.len() != 0 {
+        output = hbs_template(TemplateBody::Articles(results), Some("VishusBlog::Viewing All Articles".to_string()), admin, user, None);
+    } else {
+        output = hbs_template(TemplateBody::General("Could not find any articles.".to_string()), Some("VishusBlog::Invalid Articles".to_string()), admin, user, None);
+    }
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
 }
 
 #[get("/")]
@@ -453,6 +483,7 @@ fn main() {
             
             template_testing,
             template_testing2,
+            template_testing3,
             
             logout,
             index,

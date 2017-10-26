@@ -193,8 +193,8 @@ pub fn template_create_article(url: &str) -> String {
                                 <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
                             </div>
                             <div class="col-md-8 mx-auto">
-                                <label for="inputTags" class="v-center-label v-form-label">Tags -Comma Separated</label>
-                                    <input name="tags" id="insert-tags" type="text" class="v-centered-input v-form-control form-control" id="inputTags" placeholder="Tags">
+                                <label for="insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
+                                    <input name="tags" id="insert-tags" type="text" class="v-centered-input v-form-control form-control" placeholder="Tags">
                                     <div class="v-form-message" id="tag-msg">
                                         Did you mean to <b>Comma Separate</b> the tags?
                                     </div>
