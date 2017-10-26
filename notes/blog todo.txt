@@ -1,5 +1,8 @@
 
 Blogr
+	Change description in insert form to text input box with maxlength=250
+		Change maxlength in database as well
+	
 	Maybe add a page option in the hbs_template() function
 		indicates which page should be highlighted in the nav bar
 
@@ -109,6 +112,7 @@ Design:
 			only the content boxes moves, allowing their inside to display the image
 
 Future Todo:
+	Look into Handlebar Helper functions using Rocket_Contrib's Templates
 	IMPORTANT
 	Research NoSQL databases which could be faster
 		Maybe even redis

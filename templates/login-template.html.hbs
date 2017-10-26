@@ -76,9 +76,7 @@
 <!-- ---------- -->
                         
                         {{#if msg}}
-                        <div class="v-centered-msg alert alert-danger" role="alert">
-                            {{msg}}
-                        </div>
+                            {{{msg}}}
                         {{/if}}
                         <form id="needs-validation" action="{{action_url}}" name="login_form" method="post" novalidate>
                             <div class="form-group" id="userGroup">

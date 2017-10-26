@@ -75,6 +75,9 @@
                     
 <!-- ---------- -->
                         
+                        {{#if msg}}
+                            {{{msg}}}
+                        {{/if}}
                         <form method="post" action="{{action_url}}" name="insert_form">
                             <div class="col-md-7 mx-auto mb-3">
                                 <input name="title" type="text" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">

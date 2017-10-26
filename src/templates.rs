@@ -22,15 +22,15 @@ use users::*;
 
 #[derive(Debug, Clone)]
 pub enum TemplateBody {
-    General(String),
-    Article(Article),
+    General(String, Option<String>),
+    Article(Article, Option<String>),
     Articles(Vec<Article>, Option<String>), // articles and an optional message
     Login (
         String, // Form Action URL
         Option<String>, // username that was entered
         Option<String>, // fail message
     ),
-    Create(String),
+    Create(String, Option<String>),
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -68,18 +68,21 @@ pub struct TemplateLogin {
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateCreate {
     pub action_url: String,
+    pub msg: String,
     pub info: TemplateInfo,
 }
 
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateGeneral {
     pub body: String,
+    pub msg: String,
     pub info: TemplateInfo,
 
 }
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateArticle {
     pub body: ArticleDisplay,
+    pub msg: String,
     pub info: TemplateInfo,
 
 }
@@ -118,17 +121,19 @@ impl TemplateInfo {
 // body: if let TemplateBody::Article(article) = content { contents } else { Article {aid: 0, title: String::from("Invalid Article"), Local::now().naive_local(), body: String::from("Invalid template contents."), Vec::new(), String::from("Invalid article template.")} },
 
 impl TemplateGeneral  {
-    pub fn new(content: String, info: TemplateInfo) -> TemplateGeneral {
+    pub fn new(content: String, msg: Option<String>, info: TemplateInfo) -> TemplateGeneral {
         TemplateGeneral {
             body: content,
+            msg: if let Some(m) = msg { m } else { String::new() },
             info
         }
     }
 }
 impl TemplateArticle {
-    pub fn new(content: Article, info: TemplateInfo) -> TemplateArticle {
+    pub fn new(content: Article, msg: Option<String>, info: TemplateInfo) -> TemplateArticle {
         TemplateArticle {
             body: content.to_display(),
+            msg: if let Some(m) = msg { m } else { String::new() },
             info,
         }
     }
@@ -155,9 +160,10 @@ impl TemplateLogin {
 }
 
 impl TemplateCreate {
-        pub fn new(action_url: String, info: TemplateInfo) -> TemplateCreate {
+        pub fn new(action_url: String, msg: Option<String>, info: TemplateInfo) -> TemplateCreate {
         TemplateCreate {
             action_url,
+            msg: if let Some(m) = msg { m } else { String::new() },
             info,
         }
     }
@@ -169,12 +175,12 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Opt
     let js = if let Some(j) = javascript { j } else { "".to_string() }; 
     let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
     match content {
-        TemplateBody::General(contents) => {
-            let context = TemplateGeneral::new(contents, info);
+        TemplateBody::General(contents, msg) => {
+            let context = TemplateGeneral::new(contents, msg, info);
             Template::render("general-template", &context)
         },
-        TemplateBody::Article(article) => {
-            let context = TemplateArticle::new(article, info);
+        TemplateBody::Article(article, msg) => {
+            let context = TemplateArticle::new(article, msg, info);
             Template::render("article-template", &context)
         },
         TemplateBody::Articles(articles, msg) => {
@@ -187,8 +193,8 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Opt
             let context = TemplateLogin::new(action, tried, fail, info);
             Template::render("login-template", &context)
         },
-        TemplateBody::Create(action) => {
-            let context = TemplateCreate::new(action, info);
+        TemplateBody::Create(action, msg) => {
+            let context = TemplateCreate::new(action, msg, info);
             Template::render("create-template", &context)
         },
     }

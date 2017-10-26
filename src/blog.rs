@@ -320,11 +320,12 @@ impl ArticleForm {
         let now = Local::now().naive_local();
         
         // take blah, blah2, blah3 and convert into {'blah', 'blah2', 'blah3'}
-        let tagstr = format!( "{{{}}}", self.tags.clone().
-            split(',')
+        let tagstr = format!( 
+            "{{{}}}", self.tags.clone()
+            .split(',')
             .map(
                 |s| format!("\"{}\"", s.trim().to_lowercase())
-            .collect::<Vec<_>>()
+            ).collect::<Vec<_>>()
             .join(",")
             // .replace(",''")
         );
