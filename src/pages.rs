@@ -58,16 +58,16 @@ something(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) ->
 */
 
 // escapes html tags and special characters
-pub fn input_sanitize(string: String) -> String {
+pub fn hbs_input_sanitize(string: String) -> String {
     string
 }
 // removes non-word characters
-pub fn strict_sanitize(string: String) -> String {
+pub fn hbs_strict_sanitize(string: String) -> String {
     // use lazy_static! to make a regexp to remove everything but word characters
     string
 }
 // leaves spaces, commas, hyphens, and underscores but removes all other non-word characters
-pub fn medium_sanitize(string: String) -> String {
+pub fn hbs_medium_sanitize(string: String) -> String {
     
 }
 
@@ -164,7 +164,7 @@ pub fn hbs_user_retry(conn: DbConn, admin: Option<AdminCookie>, fail: AuthFailur
 }
 
 #[post("/user", data = "<form>")]
-fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> LoginFormRedirect {
+pub fn hbs_user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> LoginFormRedirect {
     let start = Instant::now();
     
     let inside = form.into_inner();
@@ -187,13 +187,13 @@ fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> Logi
 
 
 #[get("/view")]
-fn all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     let output: Template;
     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
     
     if results.len() != 0 {
-        output = hbs_template(TemplateBody::Articles(results), Some("Viewing All Articles".to_string()), admin, user, None, Some(start));
+        output = hbs_template(TemplateBody::Articles(results, None), Some("Viewing All Articles".to_string()), admin, user, None, Some(start));
     } else {
         if admin.is_some() {
             output = hbs_template(TemplateBody::General("There are no articles<br>\n<a href =\"/insert\">Create Article</a>".to_string()), Some("Viewing All Articles".to_string()), admin, user, None, Some(start));
@@ -208,7 +208,7 @@ fn all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCooki
 }
 
 #[get("/view?<page>")]
-fn articles_page(page: ViewPage, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_articles_page(page: ViewPage, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
     
@@ -222,7 +222,7 @@ fn articles_page(page: ViewPage, conn: DbConn, admin: Option<AdminCookie>, user:
 
 
 #[get("/all_tags")]
-fn tags_all(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_tags_all(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     
     let output: Template = hbs_template(TemplateBody::General("The all tags page is not implemented yet.".to_string()), Some("Viewing All Tags".to_string()), admin, user, None, Some(start));
@@ -234,7 +234,7 @@ fn tags_all(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) 
 
 
 #[get("/tag?<tag>", rank = 2)]
-fn articles_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_articles_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     
     let output: Template;
@@ -242,7 +242,7 @@ fn articles_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option
     // limit, # body chars, min date, max date, tags, strings
     let results = Article::retrieve_all(conn, 0, Some(-1), None, None, tags, None);
     if results.len() != 0 {
-        hbs_template(TemplateBody::Articles(results), Some(format!("Viewing Articles with Tags: {}", tag.tag)), admin, user, None, Some(start));
+        hbs_template(TemplateBody::Articles(results, None), Some(format!("Viewing Articles with Tags: {}", tag.tag)), admin, user, None, Some(start));
     } else {
         output = template( &alert_danger("Could not find any articles with the specified tag.") );
     }
@@ -253,7 +253,7 @@ fn articles_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option
 }
 
 #[get("/article?<aid>")]
-fn article_view(aid: ArticleId, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_article_view(aid: ArticleId, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     let rst = aid.retrieve_with_conn(conn); // retrieve result
     let mut output: Template; 
@@ -269,7 +269,7 @@ fn article_view(aid: ArticleId, conn: DbConn, admin: Option<AdminCookie>, user: 
 }
 
 #[get("/article")]
-fn article_not_found() -> Template {
+pub fn hbs_article_not_found() -> Template {
     let start = Instant::now();
     let output: Template = hbs_template(TemplateBody::General(alert_danger("Article not found")), Some("Article not found".to_string()), admin, user, None, Some(start));
     let end = start.elapsed();
@@ -278,8 +278,8 @@ fn article_not_found() -> Template {
 }
 
 #[post("/article", data = "<form>")]
-fn article_process(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
-// fn post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
+pub fn hbs_article_process(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+// pub fn hbs_post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
     let start = Instant::now();
     
     let output: Template;
@@ -300,7 +300,7 @@ fn article_process(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCo
     output
 }
 #[post("/article", rank=2)]
-fn create_unauthorized(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_create_unauthorized(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     
     let output: Template = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE)), Some("Not Authorized".to_string()), admin, user, None, Some(start));
@@ -311,7 +311,7 @@ fn create_unauthorized(conn: DbConn, admin: Option<AdminCookie>, user: Option<Us
 }
 
 #[get("/insert")]
-fn create_form(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_create_form(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     
     let output: Template;
@@ -327,7 +327,7 @@ fn create_form(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie
 }
 
 #[get("/logout")]
-fn logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+pub fn hbs_logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
     if admin.is_some() || user.is_some() {
         if let Some(a) = admin {
             cookies.remove_private(Cookie::named(AdminCookie::get_cid()));
@@ -343,49 +343,46 @@ fn logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cookies: Coo
 }
 
 #[get("/search")]
-fn search_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_search_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     // unimplemented!()
     // don't forget to put the start Instant in the hbs_template() function
     hbs_template(TemplateBody::General("Search page not implemented yet".to_string()), Some("Search".to_string()), admin, user, None, None)
 }
 
 #[get("/search?<search>")]
-fn search_results(search: Search, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_search_results(search: Search, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     // unimplemented!()
     // don't forget to put the start Instant in the hbs_template() function
     hbs_template(TemplateBody::General("Search results page not implemented yet.".to_string()), Some("Search Results".to_string()), admin, user, None, None)
 }
 
 #[get("/about")]
-fn about(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_about(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     hbs_template(TemplateBody::General("This page is not implemented yet.  Soon it will tell a little about me.".to_string()), Some("About Me".to_string()), admin, user, None, Some(start))
 }
 
 #[get("/")]
-fn index(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>) -> Html<String> {
+pub fn hbs_index(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>) -> Html<String> {
     // let body = r#"Hello! This is a blog.<br><a href="/user">User page</a><br><a href="/admin">Go to admin page</a>"#;
     // template(body)
     let start = Instant::now();
-    let mut output: Html<String> = Html(String::new());
+    // let mut output: Html<String> = Html(String::new());
+    let output: Template;
+    let flashmsg: Option<String>;
     if let Some(flashmsg) = flash {
-        // let output: Html<String>;
-        let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
-        if results.len() != 0 {
-            let is_admin = if admin.is_some() { true } else { false };
-            let is_user = if user.is_some() { true } else { false };
-            let username: Option<String> = if let Some(a_user) = admin { Some(a_user.username) } else if let Some(u_user) = user { Some(u_user.username) } else { None };
-            
-            output = template_articles_msg(&alert_success("You have been logged out."), false, results, is_admin, is_user, username);
-        } else {
-            if admin.is_some() {
-                output = template( &alert_danger("There are no articles<br>\n<a href =\"/insert\">Create Article</a>") );
-            } else {
-                output = template( &alert_danger("There are no articles.") );
-            }
-        }
+        flashmsg = Some(flashmsg);
     } else {
-        output = all_articles(conn, admin, user);
+        flashmsg = None;
     }
+    let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
+    if results.len() != 0 {
+        output = hbs_template(TemplateBody::Articles(, ), Some("".to_string()), admin, user, None, Some(start));
+    } else if admin.is_some() {
+        output = hbs_template(TemplateBody::General("There are no articles.<br>\n<a href =\"/insert\">Create Article</a>"), None, admin, user, None, Some(start));
+    } else {
+        output = hbs_template(TemplateBody::General("There are no articles."), None, admin, user, None, Some(start));
+    }
+    
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
