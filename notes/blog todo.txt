@@ -1,5 +1,11 @@
 
 Blogr
+	Add messages (msg) to general-template, article-template
+	
+	When creating a blog post fails for reasons other than unauthorized
+		(or maybe even if its unauthorized)
+		redirect back to create page with all of the form data filled in
+
 	test:
 		localhost:8000/tag?tag=
 

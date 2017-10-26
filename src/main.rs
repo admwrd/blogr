@@ -130,9 +130,6 @@ fn main() {
         .attach(Template::fairing())
         .mount("/", routes![
             
-            pages::hbs_input_sanitize,
-            pages::hbs_strict_sanitize,
-            pages::hbs_medium_sanitize,
             pages::hbs_admin_page,
             pages::hbs_admin_login,
             pages::hbs_admin_retry,
