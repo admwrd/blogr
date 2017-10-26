@@ -3,6 +3,7 @@ use std::collections::{HashMap, BTreeMap};
 use rocket_contrib::Template;
 use chrono::{NaiveDate, NaiveDateTime};
 use titlecase::titlecase;
+use std::time::{Instant, Duration};
 
 use blog::*;
 use layout::*;
@@ -24,6 +25,12 @@ pub enum TemplateBody {
     General(String),
     Article(Article),
     Articles(Vec<Article>),
+    Login (
+        String, // Form Action URL
+        Option<String>, // username that was entered
+        Option<String>, // fail message
+    ),
+    Create(String),
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -34,6 +41,34 @@ pub struct TemplateInfo {
     pub is_user: bool,
     pub username: String,
     pub js: String,
+    pub gentime: String,
+}
+
+// #[derive(Debug, Clone, Serialize)]
+// pub struct TemplateLogin {
+//     pub tried_user: String,
+//     pub msg: String,
+//     pub title: String,
+//     pub logged_in: bool,
+//     pub is_admin: bool,
+//     pub is_user: bool,
+//     pub username: String,
+//     pub js: String,
+//     pub gentime: String,
+// }
+
+#[derive(Debug, Clone, Serialize)]
+pub struct TemplateLogin {
+    pub action_url: String,
+    pub tried_user: String,
+    pub msg: String,
+    pub info: TemplateInfo,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct TemplateCreate {
+    pub action_url: String,
+    pub info: TemplateInfo,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -55,8 +90,11 @@ pub struct TemplateArticles {
 
 }
 
+// let end = start.elapsed();
+// println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+
 impl TemplateInfo {
-    pub fn new(title: Option<String>, admin: Option<AdminCookie>, user: Option<UserCookie>, js: String) -> TemplateInfo {
+    pub fn new(title: Option<String>, admin: Option<AdminCookie>, user: Option<UserCookie>, js: String, gen: Option<Instant>) -> TemplateInfo {
         TemplateInfo {
             title: if let Some(t) = title { t } else { String::new() },
             logged_in: if admin.is_some() || user.is_some() { true } else { false },
@@ -64,6 +102,10 @@ impl TemplateInfo {
             is_user: if user.is_some() { true } else { false },
             username: if let Some(a) = admin { titlecase(&a.username.clone()) } else if let Some(u) = user { titlecase(&u.username.clone()) } else { String::new() },
             js,
+            gentime: if let Some(inst) = gen {
+                let end = inst.elapsed();
+                format!("{}.{:08}", end.as_secs(), end.subsec_nanos())
+            } else { String::new() },
         }
     }
     
@@ -99,12 +141,31 @@ impl TemplateArticles {
         }
     }
 }
+impl TemplateLogin {
+        pub fn new(action_url: String, tried: Option<String>, fail: Option<String>, info: TemplateInfo) -> TemplateLogin {
+        TemplateLogin {
+            action_url,
+            tried_user: if let Some(tuser) = tried { tuser } else { String::new() },
+            msg: if let Some(fmsg) = fail { fmsg } else { String::new() },
+            info,
+        }
+    }
+}
 
-pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>) -> Template {
+impl TemplateCreate {
+        pub fn new(action_url: String, info: TemplateInfo) -> TemplateCreate {
+        TemplateCreate {
+            action_url,
+            info,
+        }
+    }
+}
+
+pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
     // let mut context: HashMap<&str> = HashMap::new();
     // context.insert();
     let js = if let Some(j) = javascript { j } else { "".to_string() }; 
-    let info = TemplateInfo::new(title, admin_opt, user_opt, js);
+    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
     match content {
         TemplateBody::General(contents) => {
             let context = TemplateGeneral::new(contents, info);
@@ -120,10 +181,21 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Opt
             // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
             // Template::render("general-template", &context)
         },
+        TemplateBody::Login(action, tried, fail) => {
+            let context = TemplateLogin::new(action, tried, fail, info);
+            Template::render("login-template", &context)
+        },
+        TemplateBody::Create(action) => {
+            let context = TemplateCreate::new(action, info);
+            Template::render("create-template", &context)
+        },
     }
     
 }
 
+// pub fn hbs_login(tried_user: Option<String>, fail_msg: Option<String>, title: Option<String>, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
+    
+// }
 
 
 

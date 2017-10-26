@@ -94,7 +94,12 @@
                     
 <!-- ---------- -->
 
-                    <footer id="v-footer">&copy; 2017 Andrew Prindle</footer>
+                    <footer id="v-footer">
+                        <div class="v-copyright">&copy; 2017 Andrew Prindle</div>
+                        {{#if gentime}}
+                        <div class="v-generation-time">Generated in {{info.gentime}} seconds</div>
+                        {{/if}}
+                    </footer>
                 </div>
             </div>
             

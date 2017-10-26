@@ -105,6 +105,7 @@ use templates::*;
 pub const BLOG_URL: &'static str = "http://localhost:8000/";
 pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
 pub const ADMIN_LOGIN_URL: &'static str = "http://localhost:8000/admin";
+pub const CREATE_FORM_URL: &'static str = "http://localhost:8000/insert";
 
 
 #[get("/admin")]
@@ -366,7 +367,7 @@ fn template_testing(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserC
     let output: Template;
     let start = Instant::now();
     
-    output = hbs_template(TemplateBody::General("This is some content.".to_string()), Some("Article Page".to_string()), admin, user, None);
+    output = hbs_template(TemplateBody::General("This is some content.".to_string()), Some("Article Page".to_string()), admin, user, None, Some(start));
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
@@ -381,9 +382,9 @@ fn template_testing2(conn: DbConn, admin: Option<AdminCookie>, user: Option<User
     let result = aid.retrieve_with_conn(conn);
     if let Some(article) = result {
         let a_title = article.title.clone();
-        output = hbs_template(TemplateBody::Article(article), Some(format!("VishusBlog::{}", a_title)), admin, user, None);
+        output = hbs_template(TemplateBody::Article(article), Some(format!("VishusBlog::{}", a_title)), admin, user, None, Some(start));
     } else {
-        output = hbs_template(TemplateBody::General("Could not find article 9".to_string()), Some("VishusBlog::Invalid Article".to_string()), admin, user, None);
+        output = hbs_template(TemplateBody::General("Could not find article 9".to_string()), Some("VishusBlog::Invalid Article".to_string()), admin, user, None, Some(start));
     }
     
     let end = start.elapsed();
@@ -397,9 +398,36 @@ fn template_testing3(conn: DbConn, admin: Option<AdminCookie>, user: Option<User
     let output: Template;
     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
     if results.len() != 0 {
-        output = hbs_template(TemplateBody::Articles(results), Some("VishusBlog::Viewing All Articles".to_string()), admin, user, None);
+        output = hbs_template(TemplateBody::Articles(results), Some("VishusBlog::Viewing All Articles".to_string()), admin, user, None, Some(start));
     } else {
-        output = hbs_template(TemplateBody::General("Could not find any articles.".to_string()), Some("VishusBlog::Invalid Articles".to_string()), admin, user, None);
+        output = hbs_template(TemplateBody::General("Could not find any articles.".to_string()), Some("VishusBlog::Invalid Articles".to_string()), admin, user, None, Some(start));
+    }
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
+}
+
+#[get("/login")]
+fn login_admin(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+    let output: Template;
+    let start = Instant::now();
+    
+    output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, None), Some("Administrator Login".to_string()), admin, user, None, Some(start));
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
+}
+
+#[get("/create")]
+fn create_post(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+    let start = Instant::now();
+    let output: Template;
+    if admin.is_some() {
+        output = hbs_template(TemplateBody::Create(CREATE_FORM_URL.to_string()), Some("New Post".to_string()), admin, user, None, Some(start));
+    } else {
+        output = hbs_template(TemplateBody::General(UNAUTHORIZED_POST_MESSAGE.to_string()), Some("VishusBlog::Not Authorized".to_string()), admin, user, None, Some(start));
     }
     
     let end = start.elapsed();
@@ -480,6 +508,9 @@ fn main() {
             search_results,
             
             about,
+            
+            login_admin,
+            create_post,
             
             template_testing,
             template_testing2,

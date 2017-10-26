@@ -70,31 +70,44 @@
                 </div>
             </nav>
                 <div id="v-body">
+                    <div class="v-content">
                     
 <!-- ---------- -->
-                    
-                    {{#each body}}
-                    <article class="v-article">
-                        <header class="v-article-header">
-                            <h2 class="v-article-title"><a href="/article?aid={{this.aid}}">{{this.title}}</a></h2>
-                            <div class="row">
-                                <date class="v-article-date" datetime="{{this.posted_machine}}">{{this.posted_human}}</date>
-                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
-                            </div>
-                        </header>
-                        <p>
-                            {{{this.body}}}
-                        </p>
-                        <div class="v-article-tags">
-                            {{#each this.tags}}
-                            <a href="/tag?tag={{this}}">{{this}}</a>
-                            {{/each}}
+                        
+                        {{#if msg}}
+                        <div class="v-centered-msg alert alert-danger" role="alert">
+                            {{msg}}
                         </div>
-                    </article>
-                    {{/each}}
+                        {{/if}}
+                        <form id="needs-validation" action="{{action_url}}" name="login_form" method="post" novalidate>
+                            <div class="form-group" id="userGroup">
+                                <label for="usernameField">Email Address</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="text" name="username" value="{{#if tried_user}}{{tried_user}}{{/if}}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username" required>
+                                    <div class="invalid-feedback">
+                                        Please specify a username
+                                    </div>
+                                </div>
+                                <!-- <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small> -->
+                            </div>
+                            <div class="form-group" id="passGroup">
+                                <label for="passwordField">Password</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
+                                    <div class="invalid-feedback">
+                                        A password is requierd.
+                                    </div>
+                                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
+                                </div>
+                            </div>
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                            </div>
+                        </form>
                     
 <!-- ---------- -->
 
+                    </div>
                     <footer id="v-footer">
                         <div class="v-copyright">&copy; 2017 Andrew Prindle</div>
                         {{#if gentime}}
