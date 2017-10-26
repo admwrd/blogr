@@ -91,23 +91,25 @@ mod blog;
 mod data;
 mod templates;
 mod pages;
+mod sanitize;
 
-use layout::*;
-use cookie_data::*;
-use admin_auth::*;
-use user_auth::*;
-use users::*;
-use login_form_status::*;
-use login_form_status::LoginFormRedirect;
-use blog::*;
+// use layout::*;
+// use cookie_data::*;
+// use admin_auth::*;
+// use user_auth::*;
+// use users::*;
+// use login_form_status::*;
+// use login_form_status::LoginFormRedirect;
+// use blog::*;
+// use templates::*;
 use data::*;
-use templates::*;
 use pages::*;
+
 
 pub const BLOG_URL: &'static str = "http://localhost:8000/";
 pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
 pub const ADMIN_LOGIN_URL: &'static str = "http://localhost:8000/admin";
-pub const CREATE_FORM_URL: &'static str = "http://localhost:8000/insert";
+pub const CREATE_FORM_URL: &'static str = "http://localhost:8000/create";
 
 
 

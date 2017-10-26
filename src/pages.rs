@@ -30,6 +30,7 @@ use login_form_status::LoginFormRedirect;
 use blog::*;
 use data::*;
 use templates::*;
+use sanitize::*;
 
 /*
 
@@ -57,19 +58,6 @@ something(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) ->
 
 */
 
-// escapes html tags and special characters
-pub fn input_sanitize(string: String) -> String {
-    string
-}
-// removes non-word characters
-pub fn strict_sanitize(string: String) -> String {
-    // use lazy_static! to make a regexp to remove everything but word characters
-    string
-}
-// leaves spaces, commas, hyphens, and underscores but removes all other non-word characters
-pub fn medium_sanitize(string: String) -> String {
-    string
-}
 
 
 
@@ -282,7 +270,7 @@ pub fn hbs_article_not_found(conn: DbConn, admin: Option<AdminCookie>, user: Opt
     output
 }
 
-#[post("/article", data = "<form>")]
+#[post("/create", data = "<form>")]
 pub fn hbs_article_process(form: Form<ArticleForm>, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
 // pub fn hbs_post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
     let start = Instant::now();
@@ -303,7 +291,7 @@ pub fn hbs_article_process(form: Form<ArticleForm>, conn: DbConn, admin: Option<
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
 }
-#[post("/article", rank=2)]
+#[post("/create", rank=2)]
 pub fn hbs_create_unauthorized(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     
@@ -314,7 +302,7 @@ pub fn hbs_create_unauthorized(conn: DbConn, admin: Option<AdminCookie>, user: O
     output
 }
 
-#[get("/insert")]
+#[get("/create")]
 pub fn hbs_create_form(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     
@@ -375,7 +363,7 @@ pub fn hbs_index(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCook
     let output: Template;
     let fmsg: Option<String>;
     if let Some(flashmsg) = flash {
-        fmsg = Some(flashmsg.msg().to_string());
+        fmsg = Some(alert_info( flashmsg.msg() ));
     } else {
         fmsg = None;
     }

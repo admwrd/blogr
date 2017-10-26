@@ -16,7 +16,7 @@ use postgres::{Connection};
 
 use users::*;
 use data::*;
-
+use sanitize::*;
 
 // type ArticleId = u32;
 #[derive(Debug, Clone)]
@@ -157,27 +157,6 @@ impl Search {
     pub fn search() -> Vec<Article> {
         unimplemented!()
     }
-}
-
-pub fn sanitize_body(string: String) -> String {
-    // escape html entities/elements
-    // unimplemented!()
-    string
-}
-
-pub fn sanitize_title(string: String) -> String {
-    // set max length to 120 characters
-    string
-    // unimplemented!()
-}
-
-pub fn sanitize_tags(string: String) -> String {
-    string
-    // unimplemented!()
-}
-pub fn split_tags(string: String) -> Vec<String> {
-    let tags: Vec<String> = string.split(',').filter(|t| t != &"").map(|t| t.to_string()).collect();
-    tags
 }
 
 pub fn get_len<T>(input: &Option<Vec<T>>) -> usize {

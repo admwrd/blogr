@@ -54,7 +54,8 @@
                                 {{info.username}}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/insert">New Article</a>
+                                <a class="dropdown-item" href="/admin">Admin Dashboard</a>
+                                <a class="dropdown-item" href="/create">New Article</a>
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="/logout">Logout</a>
@@ -77,6 +78,10 @@
                         <form method="post" action="{{action_url}}" name="insert_form">
                             <div class="col-md-7 mx-auto mb-3">
                                 <input name="title" type="text" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">
+                            </div>
+                            <div class="form-group">
+                                <label for="input_description" class="v-form-label">Description</label>
+                                <textarea class="form-control" name="description" id="insert_desc" rows="2"></textarea>
                             </div>
                             <div class="form-group">
                                 <label for="input_body" class="v-form-label">Contents</label>
@@ -102,7 +107,7 @@
                     </div>
                     <footer id="v-footer">
                         <div class="v-copyright">&copy; 2017 Andrew Prindle</div>
-                        {{#if gentime}}
+                        {{#if info.gentime}}
                         <div class="v-generation-time">Generated in {{info.gentime}} seconds</div>
                         {{/if}}
                     </footer>
