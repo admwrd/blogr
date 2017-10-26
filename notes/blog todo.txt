@@ -1,5 +1,13 @@
 
 Blogr
+	test:
+		localhost:8000/tag?tag=
+
+	sanitize:
+		login rety (admin and user): username and failmsg
+		tag?<tag>: sanitize split_tags
+
+
 	Maybe remove all the is_admin is_user username fields for the article templates
 		Use javascript to add the edit/delete options
 		But in the route check the correct cookie is set for that action

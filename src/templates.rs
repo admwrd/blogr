@@ -24,7 +24,7 @@ use users::*;
 pub enum TemplateBody {
     General(String),
     Article(Article),
-    Articles(Vec<Article>),
+    Articles(Vec<Article>, Option<String>), // articles and an optional message
     Login (
         String, // Form Action URL
         Option<String>, // username that was entered
@@ -86,6 +86,7 @@ pub struct TemplateArticle {
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateArticles {
     pub body: Vec<ArticleDisplay>,
+    pub msg: String,
     pub info: TemplateInfo,
 
 }
@@ -133,10 +134,11 @@ impl TemplateArticle {
     }
 }
 impl TemplateArticles {
-    pub fn new(content: Vec<Article>, info: TemplateInfo) -> TemplateArticles {
+    pub fn new(content: Vec<Article>, msg: Option<String>, info: TemplateInfo) -> TemplateArticles {
         let mut articles: Vec<ArticleDisplay> = content.iter().map(|a| a.to_display()).collect();
         TemplateArticles {
             body: articles,
+            msg: if let Some(m) = msg { m } else { String::new() },
             info,
         }
     }
@@ -175,8 +177,8 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Opt
             let context = TemplateArticle::new(article, info);
             Template::render("article-template", &context)
         },
-        TemplateBody::Articles(articles) => {
-            let context = TemplateArticles::new(articles, info);
+        TemplateBody::Articles(articles, msg) => {
+            let context = TemplateArticles::new(articles, msg, info);
             Template::render("articles-template", &context)
             // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
             // Template::render("general-template", &context)

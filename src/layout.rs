@@ -6,7 +6,7 @@ use titlecase::titlecase;
 
 use super::{BLOG_URL, USER_LOGIN_URL, ADMIN_LOGIN_URL};
 
-pub const UNAUTHORIZED_POST_MESSAGE: &'static str = "You are not authorized to post.  Please login as an administrator.<br><a href=\"http://localhost:8000/admin\">Admin Login</a>";
+pub const UNAUTHORIZED_POST_MESSAGE: &'static str = "You are not authorized to post articles.  Please login as an administrator.<br><a href=\"http://localhost:8000/admin\">Admin Login</a>";
 
 
 const HEADER: &'static str = include_str!("../static/template_header.html");

@@ -363,7 +363,7 @@ fn about() -> Html<String> {
 }
 
 #[get("/template")]
-fn template_testing(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+fn template_testing(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let output: Template;
     let start = Instant::now();
     
@@ -375,7 +375,7 @@ fn template_testing(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserC
 }
 
 #[get("/template2")]
-fn template_testing2(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+fn template_testing2(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     let output: Template;
     let aid = ArticleId { aid: 9 };
@@ -393,7 +393,7 @@ fn template_testing2(conn: DbConn, admin: Option<AdminCookie>, user: Option<User
 }
 
 #[get("/template3")]
-fn template_testing3(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+fn template_testing3(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     let output: Template;
     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
@@ -409,7 +409,7 @@ fn template_testing3(conn: DbConn, admin: Option<AdminCookie>, user: Option<User
 }
 
 #[get("/login")]
-fn login_admin(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+fn login_admin(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let output: Template;
     let start = Instant::now();
     
@@ -421,7 +421,7 @@ fn login_admin(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie
 }
 
 #[get("/create")]
-fn create_post(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, ) -> Template {
+fn create_post(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     let output: Template;
     if admin.is_some() {
