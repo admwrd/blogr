@@ -125,7 +125,8 @@ fn main() {
     //     pg_conn;
     //     // (*pg_conn).connect();
     // }
-    init_pg_pool().get();
+    
+    // init_pg_pool().get();
     
     rocket::ignite()
         .manage(data::init_pg_pool())

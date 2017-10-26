@@ -320,7 +320,14 @@ impl ArticleForm {
         let now = Local::now().naive_local();
         
         // take blah, blah2, blah3 and convert into {'blah', 'blah2', 'blah3'}
-        let tagstr = format!( "{{{}}}", self.tags.clone().split(',').map(|s| format!("\"{}\"", s.trim())).collect::<Vec<_>>().join(","));
+        let tagstr = format!( "{{{}}}", self.tags.clone().
+            split(',')
+            .map(
+                |s| format!("\"{}\"", s.trim().to_lowercase())
+            .collect::<Vec<_>>()
+            .join(",")
+            // .replace(",''")
+        );
             
         //  can return both id and posted date
         // let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid, posted",
