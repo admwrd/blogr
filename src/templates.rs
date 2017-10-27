@@ -30,6 +30,12 @@ pub enum TemplateBody {
     Create(String, Option<String>),
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct TemplateMenu {
+    pub name: String,
+    pub url: String,
+}
+
 /// The TemplateInfo struct contains page metadata
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateInfo {
@@ -40,6 +46,8 @@ pub struct TemplateInfo {
     pub username: String,
     pub js: String,
     pub gentime: String,
+    pub page: String,
+    pub pages: Vec<TemplateMenu>,
 }
 
 // START TEMPLATEBODY STRUCTURES
@@ -85,7 +93,18 @@ pub struct TemplateArticles {
 // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
 
 impl TemplateInfo {
-    pub fn new(title: Option<String>, admin: Option<AdminCookie>, user: Option<UserCookie>, js: String, gen: Option<Instant>) -> TemplateInfo {
+    pub fn new( title: Option<String>, 
+                admin: Option<AdminCookie>, 
+                user: Option<UserCookie>, 
+                js: String, 
+                gen: Option<Instant>, 
+                page: String
+              ) -> TemplateInfo {
+        // let page = String::from("About");
+        let mut pages: Vec<TemplateMenu> = Vec::new();
+        pages.push( TemplateMenu { name: "About".to_string(), url: "localhost/about_page".to_string(), } );
+        pages.push( TemplateMenu { name: "Logout".to_string(), url: "localhost/logout_page".to_string(), } );
+        
         TemplateInfo {
             title: if let Some(t) = title { t } else { String::new() },
             logged_in: if admin.is_some() || user.is_some() { true } else { false },
@@ -97,6 +116,8 @@ impl TemplateInfo {
                 let end = inst.elapsed();
                 format!("{}.{:08}", end.as_secs(), end.subsec_nanos())
             } else { String::new() },
+            page,
+            pages,
         }
     }
     
@@ -160,7 +181,8 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Opt
     // let mut context: HashMap<&str> = HashMap::new();
     // context.insert();
     let js = if let Some(j) = javascript { j } else { "".to_string() }; 
-    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
+    // let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
+    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, String::from("About"));
     match content {
         TemplateBody::General(contents, msg) => {
             let context = TemplateGeneral::new(contents, msg, info);

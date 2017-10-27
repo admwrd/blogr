@@ -84,6 +84,13 @@
 
                     </div>
                     <footer id="v-footer">
+                        {{#each info.pages}}
+                            {{#is-current-page ../info.page this.name}}
+                            <div class="bg-success">{{this.name}} is the current page {{../info.page}}</div>
+                            {{else}}
+                            <div class="bg-warning">{{this.name}} <b>not</b> the current page {{../info.page}}</div>
+                            {{/is-current-page}}
+                        {{/each}}
                         <div class="v-copyright">&copy; 2017 Andrew Prindle</div>
                         {{#if info.gentime}}
                         <div class="v-generation-time">Generated in {{info.gentime}} seconds</div>
