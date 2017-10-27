@@ -44,7 +44,7 @@
                         <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
                         
                         {{#each info.pages}}
-                          {{#is-current-page ../info.page this.name}}
+                          {{#is-current-page ../info.page this.url}}
                             <li class="v-nav-item nav-item active"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
                           {{else}}
                             <li class="v-nav-item nav-item"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
@@ -61,7 +61,7 @@
                               {{#if this.separator}}
                                   <div class="dropdown-divider"></div>
                               {{else}}
-                                {{#is-current-page ../info.page this.name}}
+                                {{#is-current-page ../info.page this.url}}
                                   <a class="dropdown-item active" href="{{this.url}}">{{this.name}}</a>
                                 {{else}}
                                   <a class="dropdown-item" href="{{this.url}}">{{this.name}}</a>

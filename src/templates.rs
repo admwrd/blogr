@@ -207,7 +207,7 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Opt
     let mut pages: Vec<TemplateMenu> = vec![
         TemplateMenu::new(String::from("Home"), String::from("/")),
         TemplateMenu::new(String::from("About"), String::from("/about")),
-        TemplateMenu::new(String::from("All tags"), String::from("/all_tags")),
+        TemplateMenu::new(String::from("View Tags"), String::from("/all_tags")),
     ];
     
     let mut admin_pages: Vec<TemplateMenu> = Vec::new();
@@ -221,7 +221,7 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Opt
         pages.push( TemplateMenu::new(String::from("Login"), String::from("/admin")) );
     }
     
-    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, String::from("About"), pages, admin_pages);
+    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, String::new(), pages, admin_pages);
     
     match content {
         TemplateBody::General(contents, msg) => {
