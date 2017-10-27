@@ -49,12 +49,12 @@ extern crate r2d2_postgres;
 
 extern crate titlecase;
 
+extern crate handlebars;
+#[macro_use] extern crate serde_json;
+
+use handlebars::Handlebars;
 use titlecase::titlecase;
-
 use regex::Regex;
-// use chrono::prelude::*;
-// use multipart::server::Multipart;
-
 use std::time::Instant;
 
 use std::{env, str, io};
@@ -69,12 +69,13 @@ use rocket::data::FromData;
 use rocket::response::content::Html;
 use rocket::request::Form;
 use rocket::http::{Cookie, Cookies};
-
 use auth::userpass::UserPass;
 use auth::status::{LoginStatus,LoginRedirect};
 use auth::dummy::DummyAuthenticator;
 use auth::authenticator::Authenticator;
 
+// use chrono::prelude::*;
+// use multipart::server::Multipart;
 // #[macro_use] extern crate diesel;
 // #[macro_use] extern crate diesel_codegen;
 extern crate dotenv;

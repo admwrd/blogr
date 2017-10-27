@@ -1,25 +1,22 @@
 
-use std::collections::{HashMap, BTreeMap};
 use rocket_contrib::Template;
+use handlebars::Handlebars;
+
+use std::collections::{HashMap, BTreeMap};
 use chrono::{NaiveDate, NaiveDateTime};
 use titlecase::titlecase;
 use std::time::{Instant, Duration};
-
-use blog::*;
-use layout::*;
 
 use cookie_data::*;
 use admin_auth::*;
 use user_auth::*;
 
+use blog::*;
+use layout::*;
 use users::*;
 
-// #[derive(Serialize)]
-// pub struct TemplateMenu {
-//     pub link_title: &'a str,
-//     pub link_url: &'b str,
-// }
 
+/// The TemplateBody struct determines which template is used and what info is passed to it
 #[derive(Debug, Clone)]
 pub enum TemplateBody {
     General(String, Option<String>),
@@ -33,6 +30,7 @@ pub enum TemplateBody {
     Create(String, Option<String>),
 }
 
+/// The TemplateInfo struct contains page metadata
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateInfo {
     pub title: String,
@@ -44,18 +42,7 @@ pub struct TemplateInfo {
     pub gentime: String,
 }
 
-// #[derive(Debug, Clone, Serialize)]
-// pub struct TemplateLogin {
-//     pub tried_user: String,
-//     pub msg: String,
-//     pub title: String,
-//     pub logged_in: bool,
-//     pub is_admin: bool,
-//     pub is_user: bool,
-//     pub username: String,
-//     pub js: String,
-//     pub gentime: String,
-// }
+// START TEMPLATEBODY STRUCTURES
 
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateLogin {
@@ -71,7 +58,6 @@ pub struct TemplateCreate {
     pub msg: String,
     pub info: TemplateInfo,
 }
-
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateGeneral {
     pub body: String,
@@ -91,8 +77,9 @@ pub struct TemplateArticles {
     pub body: Vec<ArticleDisplay>,
     pub msg: String,
     pub info: TemplateInfo,
-
 }
+
+// END TEMPLATEBODY STRUCTS
 
 // let end = start.elapsed();
 // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
