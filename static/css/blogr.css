@@ -255,6 +255,35 @@ input:focus, textarea:focus {
 }
 
 
+.v-tag-size-6 {
+    font-size: 130%;
+    font-weight: 900;
+}
+.v-tag-size-5 {
+    font-size: 125%;
+    font-weight: 800;
+}
+.v-tag-size-4 {
+    font-size: 120%;
+    font-weight: 700;
+}
+.v-tag-size-3 {
+    font-size: 115%;
+    font-weight: 600;
+}
+.v-tag-size-2 {
+    font-size: 110%;
+    font-weight: 500;
+}
+.v-tag-size-1 {
+    font-size: 105%;
+    font-weight: 400;
+}
+.v-tag-size-0 {
+    font-size: 100%;
+    font-weight: 300;
+}
+
 /* .form-control:valid + .invalid-feedback {
     display: none;
 } */
