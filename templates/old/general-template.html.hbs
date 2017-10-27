@@ -42,33 +42,23 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
                         <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
-                        
-                        {{#each info.pages}}
-                          {{#is-current-page ../info.page this.name}}
-                            <li class="v-nav-item nav-item active"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
-                          {{else}}
-                            <li class="v-nav-item nav-item"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
-                          {{/is-current-page}}
-                        {{/each}}
-                        
+                        <li class="v-nav-item nav-item active"><a class="nav-link" href="/">Home</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/about">About</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/all_tags">View Tags</a></li>
+                        {{#unless info.logged_in}}
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/admin">Login</a></li>
+                        {{/unless}}
                         {{#if info.is_admin}}
                         <li class="v-nav-item nav-item dropdown">
                             <a class="v-nav-login nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {{info.username}}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            {{#each info.admin_pages}}
-                              {{#if this.separator}}
-                                  <div class="dropdown-divider"></div>
-                              {{else}}
-                                {{#is-current-page ../info.page this.name}}
-                                  <a class="dropdown-item active" href="{{this.url}}">{{this.name}}</a>
-                                {{else}}
-                                  <a class="dropdown-item" href="{{this.url}}">{{this.name}}</a>
-                                {{/is-current-page}}
-                              {{/if}}
-                            {{/each}}
+                                <a class="dropdown-item" href="/admin">Admin Dashboard</a>
+                                <a class="dropdown-item" href="/create">New Article</a>
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout">Logout</a>
                             </div>
                         </li>
                         {{/if}}
@@ -94,6 +84,13 @@
 
                     </div>
                     <footer id="v-footer">
+                        {{#each info.pages}}
+                            {{#is-current-page ../info.page this.name}}
+                            <div class="bg-success">{{this.name}} is the current page {{../info.page}}</div>
+                            {{else}}
+                            <div class="bg-warning">{{this.name}} <b>not</b> the current page {{../info.page}}</div>
+                            {{/is-current-page}}
+                        {{/each}}
                         <div class="v-copyright">&copy; 2017 Andrew Prindle</div>
                         {{#if info.gentime}}
                         <div class="v-generation-time">Generated in {{info.gentime}} seconds</div>

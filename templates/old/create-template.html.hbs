@@ -42,33 +42,23 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
                         <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
-                        
-                        {{#each info.pages}}
-                          {{#is-current-page ../info.page this.name}}
-                            <li class="v-nav-item nav-item active"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
-                          {{else}}
-                            <li class="v-nav-item nav-item"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
-                          {{/is-current-page}}
-                        {{/each}}
-                        
+                        <li class="v-nav-item nav-item active"><a class="nav-link" href="/">Home</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/about">About</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/all_tags">View Tags</a></li>
+                        {{#unless info.logged_in}}
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/admin">Login</a></li>
+                        {{/unless}}
                         {{#if info.is_admin}}
                         <li class="v-nav-item nav-item dropdown">
                             <a class="v-nav-login nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {{info.username}}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            {{#each info.admin_pages}}
-                              {{#if this.separator}}
-                                  <div class="dropdown-divider"></div>
-                              {{else}}
-                                {{#is-current-page ../info.page this.name}}
-                                  <a class="dropdown-item active" href="{{this.url}}">{{this.name}}</a>
-                                {{else}}
-                                  <a class="dropdown-item" href="{{this.url}}">{{this.name}}</a>
-                                {{/is-current-page}}
-                              {{/if}}
-                            {{/each}}
+                                <a class="dropdown-item" href="/admin">Admin Dashboard</a>
+                                <a class="dropdown-item" href="/create">New Article</a>
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout">Logout</a>
                             </div>
                         </li>
                         {{/if}}
@@ -84,11 +74,36 @@
                     <div class="v-content">
                     
 <!-- ---------- -->
-                    
-                    {{#if msg}}
-                        {{{msg}}}
-                    {{/if}}
-                    {{{body}}}
+                        
+                        {{#if msg}}
+                            {{{msg}}}
+                        {{/if}}
+                        <form method="post" action="{{action_url}}" name="insert_form">
+                            <div class="col-md-7 mx-auto mb-3">
+                                <input name="title" type="text" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">
+                            </div>
+                            <div class="form-group">
+                                <label for="input_description" class="v-form-label">Description</label>
+                                <textarea class="form-control" name="description" id="insert_desc" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="input_body" class="v-form-label">Contents</label>
+                                <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-8 mx-auto">
+                                <label for="insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
+                                    <input name="tags" type="text" class="v-centered-input v-form-control form-control" id="insert-tags" placeholder="Tags">
+                                    <div class="v-form-message" id="tag-msg">
+                                        Did you mean to <b>Comma Separate</b> the tags?
+                                    </div>
+                            </div>
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary">Create Article</button>
+                            </div>
+                        </form>
+                        <script>
+                            StartText();
+                        </script>
                     
 <!-- ---------- -->
 

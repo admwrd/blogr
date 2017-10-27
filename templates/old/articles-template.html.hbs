@@ -42,33 +42,23 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
                         <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
-                        
-                        {{#each info.pages}}
-                          {{#is-current-page ../info.page this.name}}
-                            <li class="v-nav-item nav-item active"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
-                          {{else}}
-                            <li class="v-nav-item nav-item"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
-                          {{/is-current-page}}
-                        {{/each}}
-                        
+                        <li class="v-nav-item nav-item active"><a class="nav-link" href="/">Home</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/about">About</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/all_tags">View Tags</a></li>
+                        {{#unless info.logged_in}}
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/admin">Login</a></li>
+                        {{/unless}}
                         {{#if info.is_admin}}
                         <li class="v-nav-item nav-item dropdown">
                             <a class="v-nav-login nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {{info.username}}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            {{#each info.admin_pages}}
-                              {{#if this.separator}}
-                                  <div class="dropdown-divider"></div>
-                              {{else}}
-                                {{#is-current-page ../info.page this.name}}
-                                  <a class="dropdown-item active" href="{{this.url}}">{{this.name}}</a>
-                                {{else}}
-                                  <a class="dropdown-item" href="{{this.url}}">{{this.name}}</a>
-                                {{/is-current-page}}
-                              {{/if}}
-                            {{/each}}
+                                <a class="dropdown-item" href="/admin">Admin Dashboard</a>
+                                <a class="dropdown-item" href="/create">New Article</a>
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout">Logout</a>
                             </div>
                         </li>
                         {{/if}}
@@ -81,18 +71,34 @@
                 </div>
             </nav>
                 <div id="v-body">
-                    <div class="v-content">
                     
 <!-- ---------- -->
                     
                     {{#if msg}}
-                        {{{msg}}}
+                    {{{msg}}}
                     {{/if}}
-                    {{{body}}}
+                    {{#each body}}
+                    <article class="v-article">
+                        <header class="v-article-header">
+                            <h2 class="v-article-title"><a href="/article?aid={{this.aid}}">{{this.title}}</a></h2>
+                            <div class="row">
+                                <date class="v-article-date" datetime="{{this.posted_machine}}">{{this.posted_human}}</date>
+                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
+                            </div>
+                        </header>
+                        <p>
+                            {{{this.body}}}
+                        </p>
+                        <div class="v-article-tags">
+                            {{#each this.tags}}
+                            <a href="/tag?tag={{this}}">{{this}}</a>
+                            {{/each}}
+                        </div>
+                    </article>
+                    {{/each}}
                     
 <!-- ---------- -->
 
-                    </div>
                     <footer id="v-footer">
                         <div class="v-copyright">&copy; 2017 Andrew Prindle</div>
                         {{#if info.gentime}}

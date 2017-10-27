@@ -105,7 +105,7 @@ mod sanitize;
 // use templates::*;
 use data::*;
 use pages::*;
-
+use templates::TemplateMenu;
 
 pub const BLOG_URL: &'static str = "http://localhost:8000/";
 pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";

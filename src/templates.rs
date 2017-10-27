@@ -32,6 +32,7 @@ pub enum TemplateBody {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateMenu {
+    pub separator: bool,
     pub name: String,
     pub url: String,
 }
@@ -48,6 +49,7 @@ pub struct TemplateInfo {
     pub gentime: String,
     pub page: String,
     pub pages: Vec<TemplateMenu>,
+    pub admin_pages: Vec<TemplateMenu>,
 }
 
 // START TEMPLATEBODY STRUCTURES
@@ -92,18 +94,37 @@ pub struct TemplateArticles {
 // let end = start.elapsed();
 // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
 
+impl TemplateMenu {
+    pub fn new(name: String, url: String) -> TemplateMenu {
+        TemplateMenu {
+            separator: false,
+            name,
+            url,
+        }
+    }
+    pub fn separator() -> TemplateMenu {
+        TemplateMenu {
+            separator: true,
+            name: String::new(),
+            url: String::new(),
+        }
+    }
+}
+
 impl TemplateInfo {
     pub fn new( title: Option<String>, 
                 admin: Option<AdminCookie>, 
                 user: Option<UserCookie>, 
                 js: String, 
                 gen: Option<Instant>, 
-                page: String
+                page: String,
+                pages: Vec<TemplateMenu>,
+                admin_pages: Vec<TemplateMenu>,
               ) -> TemplateInfo {
         // let page = String::from("About");
-        let mut pages: Vec<TemplateMenu> = Vec::new();
-        pages.push( TemplateMenu { name: "About".to_string(), url: "localhost/about_page".to_string(), } );
-        pages.push( TemplateMenu { name: "Logout".to_string(), url: "localhost/logout_page".to_string(), } );
+        // let mut pages: Vec<TemplateMenu> = Vec::new();
+        // pages.push( TemplateMenu { name: "About".to_string(), url: "localhost/about_page".to_string(), } );
+        // pages.push( TemplateMenu { name: "Logout".to_string(), url: "localhost/logout_page".to_string(), } );
         
         TemplateInfo {
             title: if let Some(t) = title { t } else { String::new() },
@@ -118,9 +139,9 @@ impl TemplateInfo {
             } else { String::new() },
             page,
             pages,
+            admin_pages,
         }
     }
-    
 }
 
 // pub fn new(content: &'a str, title: Option<&'b str>, admin: Option<AdminCookie>, user: Option<UserCookie>, menu: Vec<(&str, &str)>, admin_menu: Vec<(&str, &str)>) -> TemplateItems {
@@ -182,7 +203,26 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Opt
     // context.insert();
     let js = if let Some(j) = javascript { j } else { "".to_string() }; 
     // let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
-    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, String::from("About"));
+    
+    let mut pages: Vec<TemplateMenu> = vec![
+        TemplateMenu::new(String::from("Home"), String::from("/")),
+        TemplateMenu::new(String::from("About"), String::from("/about")),
+        TemplateMenu::new(String::from("All tags"), String::from("/all_tags")),
+    ];
+    
+    let mut admin_pages: Vec<TemplateMenu> = Vec::new();
+    if admin_opt.is_some() {
+        admin_pages.push( TemplateMenu::new(String::from("Admin Dashboard"), String::from("/admin")) );
+        admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create")) );
+        admin_pages.push( TemplateMenu::separator() );
+        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/logout")) );
+        
+    } else {
+        pages.push( TemplateMenu::new(String::from("Login"), String::from("/admin")) );
+    }
+    
+    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, String::from("About"), pages, admin_pages);
+    
     match content {
         TemplateBody::General(contents, msg) => {
             let context = TemplateGeneral::new(contents, msg, info);
