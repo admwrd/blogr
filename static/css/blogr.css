@@ -72,6 +72,7 @@ a:active {
     line-height: 1.5;
     background: #212529 url('../sphere-trans2.png') no-repeat bottom right;
     padding: 1em 0.5em 1em 0.5em;
+    text-align: justify;
 }
 .v-article-header {
 }
@@ -125,6 +126,22 @@ a:active {
     margin: 1em 0px 1em 0px;
     background-color: #212529;
     padding: 1em 0.5em 1em 0.5em;
+    text-align: justify;
+}
+
+.v-all-tags {
+    text-align: left !important;
+}
+
+.v-all-tags ul {
+    padding: 0px;
+    margin: .5em 0px;
+}
+
+.v-all-tags li {
+    
+    display: block;
+    list-style-type: none;
 }
 
 .v-submit {
@@ -309,7 +326,9 @@ input:focus, textarea:focus {
 }
 
 @media (min-width: 768px) {
-    .v-article {  }
+    .v-article, .v-content {
+        padding: 1em 1.5em 1em 1.5em;
+    }
     .v-article-header {
         /*margin: 0px 3em 1em 3em;*/
         margin: 0px;
@@ -340,6 +359,9 @@ input:focus, textarea:focus {
     }
 }
 @media (min-width: 978px) {
+    .v-article, .v-content {
+        padding: 1em 2em 1em 2em;
+    }
     #v-nav-main {
         /*display: none;*/
     }
@@ -352,6 +374,9 @@ input:focus, textarea:focus {
     }
 }
 @media (min-width: 1170px) {
+    .v-article, .v-content {
+        padding: 1em 2.5em 1em 2.5em;
+    }
     #v-nav-main {
         /*display: none;*/
     }

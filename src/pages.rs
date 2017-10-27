@@ -218,7 +218,29 @@ pub fn hbs_articles_page(page: ViewPage, conn: DbConn, admin: Option<AdminCookie
 pub fn hbs_tags_all(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     let start = Instant::now();
     
-    let output: Template = hbs_template(TemplateBody::General("The all tags page is not implemented yet.".to_string(), None), Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start));
+    // let qrystr = "SELECT COUNT(*) as cnt, unnest(tag) as untag FROM articles GROUP BY untag;";
+    let qrystr = "SELECT COUNT(*) as cnt, unnest(tag) as untag FROM articles GROUP BY untag ORDER BY cnt DESC;";
+    let qry = conn.query(qrystr, &[]);
+    // let tags: Vec<TagCount> = if !qry.is_empty() && qry.len() != 0 {
+    let mut tags: Vec<TagCount> = Vec::new();
+    if let Ok(result) = qry {
+        for row in &result {
+            let c: i64 = row.get(0);
+            let t: String = row.get(1);
+            let t2: String = t.trim_matches('\'').to_string();
+            let tagcount = TagCount { 
+                // tag: titlecase(t.trim_matches('\'')), 
+                url: t2.clone(), 
+                tag: titlecase(&t2), 
+                count: c as u32 
+            };
+            tags.push(tagcount);
+        }
+    }
+    
+    
+    // let output: Template = hbs_template(TemplateBody::General("The all tags page is not implemented yet.".to_string(), None), Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start));
+    let output: Template = hbs_template(TemplateBody::Tags(tags, None), Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start));
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());

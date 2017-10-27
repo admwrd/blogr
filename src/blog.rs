@@ -14,6 +14,7 @@ use chrono::{NaiveDate, NaiveDateTime};
 
 use postgres::{Connection};
 
+use super::{MAX_CREATE_TITLE, MAX_CREATE_DESCRIPTION, MAX_CREATE_TAGS};
 use users::*;
 use data::*;
 use sanitize::*;
@@ -455,6 +456,15 @@ impl<'f> FromForm<'f> for ArticleForm {
                 "description" => { description = sanitize_body(value.url_decode().expect("URL Decode failed")) },
                 _ => {},
             }
+        }
+        if title.len() > MAX_CREATE_TITLE {
+            title = title[..MAX_CREATE_TITLE].to_string();
+        }
+        if tags.len() > MAX_CREATE_TAGS {
+            tags = tags[..MAX_CREATE_TAGS].to_string();
+        }
+        if description.len() > MAX_CREATE_DESCRIPTION {
+            description = description[..MAX_CREATE_DESCRIPTION].to_string();
         }
         if title == "" || body == "" {
             Err("Missing a required field.")

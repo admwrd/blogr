@@ -15,6 +15,12 @@ use blog::*;
 use layout::*;
 use users::*;
 
+#[derive(Debug, Clone, Serialize)]
+pub struct TagCount {
+    pub tag: String,
+    pub url: String,
+    pub count: u32,
+}
 
 /// The TemplateBody struct determines which template is used and what info is passed to it
 #[derive(Debug, Clone)]
@@ -28,6 +34,7 @@ pub enum TemplateBody {
         Option<String>, // fail message
     ),
     Create(String, Option<String>),
+    Tags(Vec<TagCount>, Option<String>),
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -85,6 +92,12 @@ pub struct TemplateArticle {
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateArticles {
     pub body: Vec<ArticleDisplay>,
+    pub msg: String,
+    pub info: TemplateInfo,
+}
+#[derive(Debug, Clone, Serialize)]
+pub struct TemplateTags {
+    pub tags: Vec<TagCount>,
     pub msg: String,
     pub info: TemplateInfo,
 }
@@ -197,6 +210,15 @@ impl TemplateCreate {
         }
     }
 }
+impl TemplateTags {
+    pub fn new(tags: Vec<TagCount>, msg: Option<String>, info: TemplateInfo) -> TemplateTags {
+        TemplateTags {
+            tags,
+            msg: if let Some(m) = msg { m } else { String::new() },
+            info,
+        }
+    }
+}
 
 pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
     // let mut context: HashMap<&str> = HashMap::new();
@@ -245,6 +267,10 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
         TemplateBody::Create(action, msg) => {
             let context = TemplateCreate::new(action, msg, info);
             Template::render("create-template", &context)
+        },
+        TemplateBody::Tags(tags, msg) => {
+            let context = TemplateTags::new(tags, msg, info);
+            Template::render("tags-template", &context)
         },
     }
     

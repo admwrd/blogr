@@ -10,8 +10,6 @@ Blogr
 		set a var called something like is_focused = true after first field
 		to prevent others from being focused
 
-	Add messages (msg) to general-template, article-template
-	
 	When creating a blog post fails for reasons other than unauthorized
 		(or maybe even if its unauthorized)
 		redirect back to create page with all of the form data filled in
@@ -25,47 +23,13 @@ Blogr
 		login rety (admin and user): username and failmsg
 		tag?<tag>: sanitize split_tags
 
-
-	Maybe remove all the is_admin is_user username fields for the article templates
-		Use javascript to add the edit/delete options
-		But in the route check the correct cookie is set for that action
-
-	
 	Display a page that lists the tags, maybe even sort by number of posts each has
 	
 	Add unique visitors
+		Maybe create a file or in-memory list of ip addresses
+			every once and a while write them to database
 
 	Authenticate user properly with a database query
-
-	Posting articles: maybe add a javascript function to alert the user when spaces are detected in the tag field but no commas are found
-		Display: Did you mean to use commas instead of spaces?
-
-	CONVERT TO HANDLEBARS OR MUSTACHE TEMPLATES
-	Customize the navigation link
-	Make the menu link to:
-	view
-	tags - create new page that list the unique tags, maybe even sort by number of posts each has
-	insert - for admins
-	login - for users who are not logged in
-		if user either admin or regular user do not display login, whichever cookie is set determines the userlevel
-	signup - create signup page
-
-		Add dropdown menu for admin
-			New Article
-			Logout
-		Add dropdown menu for user
-			My Info
-			My Comments
-				for each artile the user has commented on:
-					shows article title (that links to the article)
-					a list of comments made by the user
-					an edit/delete button for that comment
-
-			Logout
-
-		Add custom <title> tag text for each page??
-			Replace the title with a page specific one
-			For /article?<aid> make the title equal to VishusBlog: <article title>
 
 	GET /users
 	GET /user?<userid> - userid: UserId
@@ -83,6 +47,8 @@ Blogr
 				add a hidden username form field
 	Create a 
 	Create a signup page
+
+	Make a page that lists articles by date, group by month maybe
 
 	Add a method/helper function to retrieve an article and user from a qry
 		retrieve the data from the raw qry
@@ -145,6 +111,38 @@ Research Futures
 
 Done
 	
+	Posting articles: maybe add a javascript function to alert the user when spaces are detected in the tag field but no commas are found
+		Display: Did you mean to use commas instead of spaces?
+
+	CONVERT TO HANDLEBARS OR MUSTACHE TEMPLATES
+	Customize the navigation link
+	Make the menu link to:
+	view
+	tags - create new page that list the unique tags, maybe even sort by number of posts each has
+	insert - for admins
+	login - for users who are not logged in
+		if user either admin or regular user do not display login, whichever cookie is set determines the userlevel
+	signup - create signup page
+
+		Add dropdown menu for admin
+			New Article
+			Logout
+		Add dropdown menu for user
+			My Info
+			My Comments
+				for each artile the user has commented on:
+					shows article title (that links to the article)
+					a list of comments made by the user
+					an edit/delete button for that comment
+
+			Logout
+
+		Add custom <title> tag text for each page??
+			Replace the title with a page specific one
+			For /article?<aid> make the title equal to VishusBlog: <article title>
+
+	Add messages (msg) to general-template, article-template
+	
 	Eventually change the index page to list blog articles and show a login link elsewhere like in the nav
 
 	Reduce margins for mobiles
@@ -186,3 +184,13 @@ Done
 			Passing as a string needs to pass it as a reference anyways
 			Only thing it does it erase the passed in variable when it doesnt need to
 	
+
+
+
+
+	Maybe remove all the is_admin is_user username fields for the article templates
+		Use javascript to add the edit/delete options
+		But in the route check the correct cookie is set for that action
+
+	
+

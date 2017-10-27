@@ -2,26 +2,27 @@
     'use strict';
     window.addEventListener('load', function() {
         var form = document.getElementById('needs-validation');
-        form.addEventListener('submit', function(event) {
-            $(".form-control:valid + .invalid-feedback").css("display", "none");
-            $(".form-control:invalid + .invalid-feedback").css("display", "block");
-            
-            if (form.checkValidity() === false) {
-                event.preventDefault();
-                event.stopPropagation();
-            } else {
-                $("button[type=submit]").attr("disabled", "disabled");
-                var pwd1 = document.getElementById("passwordField");
-                var pwd2 = document.getElementById("passwordHidden");
-                if (pwd1 && pwd2) {
-                    pwd1.style.display = 'none';
-                    pwd2.style.display = 'block';
-                    pwd1.value = Sha256.hash(pwd1.value);
+        if(form) {
+            form.addEventListener('submit', function(event) {
+                $(".form-control:valid + .invalid-feedback").css("display", "none");
+                $(".form-control:invalid + .invalid-feedback").css("display", "block");
+                
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    $("button[type=submit]").attr("disabled", "disabled");
+                    var pwd1 = document.getElementById("passwordField");
+                    var pwd2 = document.getElementById("passwordHidden");
+                    if (pwd1 && pwd2) {
+                        pwd1.style.display = 'none';
+                        pwd2.style.display = 'block';
+                        pwd1.value = Sha256.hash(pwd1.value);
+                    }
                 }
-            }
-            form.classList.add('was-validated');
-        }, false);
-        
+                form.classList.add('was-validated');
+            }, false);
+        }
         // form.addEventListener('submit', function(event) {
         //     insta_valid();
         // }, false);

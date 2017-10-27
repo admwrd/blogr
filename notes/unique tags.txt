@@ -1,0 +1,80 @@
+Counts Number Occurences
+SELECT COUNT(*) as cnt, unnest(tag2) as untag FROM articles GROUP BY untag;
+
+Better
+SELECT DISTINCT unnest(tag2) FROM articles;
+
+Works:
+SELECT unnest(tag2) FROM articles;
+
+
+List all articles with all tags
+SELECT *, unnest(tag2) FROM articles;
+
+
+
+
+Returns list of tags with only aid = 12
+SELECT * FROM (SELECT unnest(tag2) as untag FROM articles) t JOIN articles a ON (untag = ANY(a.tag2));
+
+SELECT * FROM articles WHERE 'admin' = ANY (tag2);
+
+Find item in array and show aid
+SELECT * FROM
+   (SELECT aid, tag2,
+           generate_subscripts(tag2, 1) AS s
+      FROM articles) AS untag
+ WHERE tag2[s] = 'cool';
+
+Find item in array
+SELECT * FROM
+   (SELECT tag2,
+           generate_subscripts(tag2, 1) AS s
+      FROM articles) AS untag
+ WHERE tag2[s] = 'admin';
+
+
+
+SELECT DISTINCT tag FROM articles; 
+SELECT ARRAY_AGG(DISTINCT tag) AS tag FROM articles;
+
+SELECT array_unique(tag) FROM articles;
+
+
+
+create or replace function public.array_unique(arr anyarray)
+returns anyarray as $body$
+    select array( select distinct unnest($1) )
+$body$ language 'sql';
+
+
+
+select unnest(ports) as port, count(*) from foo group by port;
+
+SELECT port, count(*) AS ct
+FROM   tbl t, unnest(t.ports) AS port  -- implicit LATERAL join
+GROUP  BY port;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
