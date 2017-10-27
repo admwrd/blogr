@@ -198,7 +198,7 @@ impl TemplateCreate {
     }
 }
 
-pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
+pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
     // let mut context: HashMap<&str> = HashMap::new();
     // context.insert();
     let js = if let Some(j) = javascript { j } else { "".to_string() }; 
@@ -221,7 +221,7 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, admin_opt: Opt
         pages.push( TemplateMenu::new(String::from("Login"), String::from("/admin")) );
     }
     
-    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, String::new(), pages, admin_pages);
+    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, page, pages, admin_pages);
     
     match content {
         TemplateBody::General(contents, msg) => {
