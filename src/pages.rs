@@ -240,29 +240,50 @@ pub fn hbs_tags_all(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserC
             };
             tags.push(tagcount);
         }
-        if sizes.len() > 4 {
-            let top = if sizes.len() > 7 { 6 } else { 3 };
+        if tags.len() > 4 {
+            // let top = if tags.len() > 7 { 6 } else { 3 };
             // sizes.sort();
-            sizes.sort_by(|a, b| a.cmp(b).reverse());
+            // println!("Top: {:?}", top);
+            // {
+                // sizes.sort_by(|a, b| a.cmp(b).reverse());
+            // }
+            // println!("Sorting tag sizes: {:?}", top);
+            if tags.len() > 7 {
+                // for (i, mut v) in &mut tags[0..6].iter().enumerate() {
+                let mut i = 0u16;
+                for mut v in &mut tags[0..6] {
+                    v.size = 6-i;
+                    i += 1;
+                }
+                
+            } else {
+                // for mut i in &mut tags[0..3].iter().enumerate() {
+                let mut i = 0u16;
+                for mut v in &mut tags[0..3] {
+                    v.size = (3-i)*2;
+                }
+            }
+            tags.sort_by(|a, b| a.tag.cmp(&b.tag));
+            
             // let topx: Vec<u32> = sizes.iter().position(|n| tags[..top].contains(tag.count)).expect("Iterator failed.").collect();
             // for t in &topx {
                 
             // }
-            for mut tag in &mut tags {
-                // let tpos = sizes.iter().position(|n| tags[..top].contains(tag.count));
+            // for mut tag in &mut tags {
+            //     // let tpos = sizes.iter().position(|n| tags[..top].contains(tag.count));
                 
-                if sizes[..top].contains(&(tag.count as u16)) {
-                    let mut s = 0;
-                    // for (i, cnt) in sizes[(sizes.len()-top)..].iter().enumerate() {
-                    for (i, cnt) in sizes[..top].iter().enumerate() {
-                        if tag.count == i as u32 {
-                            // double the size if there is fewer tags
-                            tag.size = if top == 3 { ((top-i)*2) as u16 } else { (top-i) as u16 };
-                            break;
-                        }
-                    }
-                }
-            }
+            //     if sizes[..top].contains(&(tag.count as u16)) {
+            //         let mut s = 0;
+            //         // for (i, cnt) in sizes[(sizes.len()-top)..].iter().enumerate() {
+            //         for (i, cnt) in sizes[..top].iter().enumerate() {
+            //             if tag.count == i as u32 {
+            //                 // double the size if there is fewer tags
+            //                 tag.size = if top == 3 { ((top-i)*2) as u16 } else { (top-i) as u16 };
+            //                 break;
+            //             }
+            //         }
+            //     }
+            // }
         }
         
     }
@@ -285,7 +306,7 @@ pub fn hbs_articles_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user
     // limit, # body chars, min date, max date, tags, strings
     let results = Article::retrieve_all(conn, 0, Some(-1), None, None, tags, None);
     if results.len() != 0 {
-        output = hbs_template(TemplateBody::Articles(results, None), Some(format!("Viewing Articles with Tags: {}", tag.tag)), String::from("/tag"), admin, user, None, Some(start));
+        output = hbs_template(TemplateBody::Articles(results, None), Some(format!("Viewing Articles with Tags: {}", tag.tag)), String::from("/all_tags"), admin, user, None, Some(start));
     } else {
         output = hbs_template(TemplateBody::General(alert_danger("Could not find any articles with the specified tag."), None), Some(format!("Could not find any articles with the tag(s): {}", medium_sanitize(tag.tag) )), String::from("/tag"), admin, user, None, Some(start));
     }

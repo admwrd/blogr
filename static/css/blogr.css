@@ -139,9 +139,12 @@ a:active {
 }
 
 .v-all-tags li {
-    
-    display: block;
+    display: inline-block;
     list-style-type: none;
+    margin: 0px .5em;
+}
+.v-all-tags li a {
+    padding: .4em;
 }
 
 .v-submit {

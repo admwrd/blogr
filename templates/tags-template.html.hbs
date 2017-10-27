@@ -85,11 +85,11 @@
                         {{#if msg}}
                         {{{msg}}}
                         {{/if}}
-                    
+                        
                         <div class="v-article-tags v-all-tags">
                             <ul>
                         {{#each tags}}
-                            <li><a href="/tag?tag={{this.url}}">{{this.tag}}</a> - {{this.count}} Articles - size {{this.size}}</li>
+                            <li><a href="/tag?tag={{this.url}}">{{this.tag}} ({{this.count}})</a> - {{this.size}}</li>
                         {{/each}}
                             </ul>
                         </div>
