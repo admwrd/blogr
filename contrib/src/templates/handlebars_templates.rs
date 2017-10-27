@@ -123,6 +123,11 @@ impl Engine for Handlebars {
         //     error!("Error registering helper `current_page`");
         //     return None;
         // }
+        // hb.register_helper("size-tag",
+        // Box::new(|helper: &Helper, hbars: &Handlebars, render_ctx: &mut RenderContext| -> Result<(), RenderError> {
+            
+        // } );
+            
         hb.register_helper("is-current-page",
         Box::new(|helper: &Helper, hbars: &Handlebars, render_ctx: &mut RenderContext| -> Result<(), RenderError> {
             let page_opt = helper.param(0);

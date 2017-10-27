@@ -20,6 +20,7 @@ pub struct TagCount {
     pub tag: String,
     pub url: String,
     pub count: u32,
+    pub size: u16,
 }
 
 /// The TemplateBody struct determines which template is used and what info is passed to it

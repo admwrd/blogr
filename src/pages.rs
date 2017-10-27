@@ -224,20 +224,48 @@ pub fn hbs_tags_all(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserC
     // let tags: Vec<TagCount> = if !qry.is_empty() && qry.len() != 0 {
     let mut tags: Vec<TagCount> = Vec::new();
     if let Ok(result) = qry {
+        let mut sizes: Vec<u16> = Vec::new();
         for row in &result {
             let c: i64 = row.get(0);
+            let c2: u32 = c as u32;
+            sizes.push(c2 as u16);
             let t: String = row.get(1);
             let t2: String = t.trim_matches('\'').to_string();
             let tagcount = TagCount { 
                 // tag: titlecase(t.trim_matches('\'')), 
                 url: t2.clone(), 
                 tag: titlecase(&t2), 
-                count: c as u32 
+                count: c2,
+                size: 0,
             };
             tags.push(tagcount);
         }
+        if sizes.len() > 4 {
+            let top = if sizes.len() > 7 { 6 } else { 3 };
+            // sizes.sort();
+            sizes.sort_by(|a, b| a.cmp(b).reverse());
+            // let topx: Vec<u32> = sizes.iter().position(|n| tags[..top].contains(tag.count)).expect("Iterator failed.").collect();
+            // for t in &topx {
+                
+            // }
+            for mut tag in &mut tags {
+                // let tpos = sizes.iter().position(|n| tags[..top].contains(tag.count));
+                
+                if sizes[..top].contains(&(tag.count as u16)) {
+                    let mut s = 0;
+                    // for (i, cnt) in sizes[(sizes.len()-top)..].iter().enumerate() {
+                    for (i, cnt) in sizes[..top].iter().enumerate() {
+                        if tag.count == i as u32 {
+                            // double the size if there is fewer tags
+                            tag.size = if top == 3 { ((top-i)*2) as u16 } else { (top-i) as u16 };
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
     }
-    
     
     // let output: Template = hbs_template(TemplateBody::General("The all tags page is not implemented yet.".to_string(), None), Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start));
     let output: Template = hbs_template(TemplateBody::Tags(tags, None), Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start));
