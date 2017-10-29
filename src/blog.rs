@@ -6,6 +6,8 @@ use ::rocket::request::{FromRequest, FromForm, FormItems};
 use ::rocket::Request;
 use ::rocket::outcome::Outcome;
 use ::rocket::config::{Config, Environment};
+use rocket::request::FromFormValue;
+use rocket::http::RawStr;
 
 use titlecase::titlecase;
 use regex::Regex;
@@ -61,15 +63,57 @@ pub struct ArticleForm {
     pub description: String,
 }
 
-#[derive(FromForm)]
+#[derive(Debug, Clone, FromForm)]
 pub struct Search {
     pub limit: Option<u16>, // use u16 as limit as u16 does not implement FromSql
     pub o: Option<String>, // opposite / negated
     pub p: Option<String>, // possible words, or'd
     pub q: Option<String>, // query, and'd together
-    pub min: Option<NaiveDateTime>, // min
-    pub max: Option<NaiveDateTime>, // max
+    pub min: Option<NaiveDateTimeWrapper>, // min
+    pub max: Option<NaiveDateTimeWrapper>, // min
 }
+
+#[derive(Serialize)]
+pub struct SearchDisplay {
+    pub limit: u16,
+    pub q: String,
+    pub min: String,
+    pub max: String,
+}
+
+impl SearchDisplay {
+    pub fn default() -> SearchDisplay {
+        SearchDisplay {
+            limit: 0,
+            q: String::new(),
+            min: String::new(),
+            max: String::new(),
+        }
+    }
+}
+
+impl Search {
+    pub fn to_display(&self) -> SearchDisplay {
+        SearchDisplay {
+            limit: if let Some(limit) = self.limit { limit } else { 0 },
+            q: if let Some(ref q) = self.q { q.to_string() } else { String::new() },
+            min: if let Some(ref min) = self.min { format!("{}", min.0.format("%Y-%m-%d %H:%M:%S")) } else { String::new() },
+            max: if let Some(ref max) = self.max { format!("{}", max.0.format("%Y-%m-%d %H:%M:%S")) } else { String::new() },
+        }
+    }
+    pub fn default() -> Search {
+        Search {
+            limit: None,
+            o: None,
+            p: None,
+            q: None,
+            min: None,
+            max: None,
+        }
+    }
+}
+
+
 
 #[derive(FromForm)]
 pub struct ViewPage {
@@ -479,3 +523,19 @@ impl<'f> FromForm<'f> for ArticleForm {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct NaiveDateTimeWrapper(pub NaiveDateTime);
+
+impl<'v> FromFormValue<'v> for NaiveDateTimeWrapper {
+    type Error = ();
+
+    // fn from_form_value(form_value: &'v RawStr) -> Result<NaiveDateTime, &'v RawStr> {
+    fn from_form_value(form_value: &'v RawStr) -> Result<NaiveDateTimeWrapper, ()> {
+        let val = form_value.as_str();
+        // match NaiveDateTime::from_str(val) {
+        match val.parse::<NaiveDateTime>() {
+            Ok(date) => Ok(NaiveDateTimeWrapper(date)),
+            Err(e) => Err(()),
+        }
+    }
+}

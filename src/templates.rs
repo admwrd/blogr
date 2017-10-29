@@ -23,12 +23,15 @@ pub struct TagCount {
     pub size: u16,
 }
 
+
 /// The TemplateBody struct determines which template is used and what info is passed to it
 #[derive(Debug, Clone)]
 pub enum TemplateBody {
     General(String, Option<String>),
     Article(Article, Option<String>),
     Articles(Vec<Article>, Option<String>), // articles and an optional message
+    // Search(Vec<Article>, Option<String>, Option<String>), // articles and an optional message
+    Search(Vec<Article>, Option<Search>, Option<String>), // articles and an optional message
     Login (
         String, // Form Action URL
         Option<String>, // username that was entered
@@ -93,6 +96,20 @@ pub struct TemplateArticle {
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateArticles {
     pub body: Vec<ArticleDisplay>,
+    pub msg: String,
+    pub info: TemplateInfo,
+}
+// #[derive(Debug, Clone, Serialize)]
+// pub struct TemplateSearch {
+//     pub body: Vec<ArticleDisplay>,
+//     pub qry: String,
+//     pub msg: String,
+//     pub info: TemplateInfo,
+// }
+#[derive(Serialize)]
+pub struct TemplateSearch {
+    pub body: Vec<ArticleDisplay>,
+    pub search: SearchDisplay,
     pub msg: String,
     pub info: TemplateInfo,
 }
@@ -191,6 +208,28 @@ impl TemplateArticles {
         }
     }
 }
+// impl TemplateSearch {
+//     pub fn new(content: Vec<Article>, qry: Option<String>, msg: Option<String>, info: TemplateInfo) -> TemplateSearch {
+//         let mut articles: Vec<ArticleDisplay> = content.iter().map(|a| a.to_display()).collect();
+//         TemplateSearch {
+//             body: articles,
+//             qry: if let Some(q) = qry { q } else { String::new() },
+//             msg: if let Some(m) = msg { m } else { String::new() },
+//             info,
+//         }
+//     }
+// }
+impl TemplateSearch {
+    pub fn new(content: Vec<Article>, search: Option<Search>, msg: Option<String>, info: TemplateInfo) -> TemplateSearch {
+        let mut articles: Vec<ArticleDisplay> = content.iter().map(|a| a.to_display()).collect();
+        TemplateSearch {
+            body: articles,
+            search: if let Some(s) = search { s.to_display() } else { SearchDisplay::default() },
+            msg: if let Some(m) = msg { m } else { String::new() },
+            info,
+        }
+    }
+}
 impl TemplateLogin {
         pub fn new(action_url: String, tried: Option<String>, fail: Option<String>, info: TemplateInfo) -> TemplateLogin {
         TemplateLogin {
@@ -201,7 +240,6 @@ impl TemplateLogin {
         }
     }
 }
-
 impl TemplateCreate {
         pub fn new(action_url: String, msg: Option<String>, info: TemplateInfo) -> TemplateCreate {
         TemplateCreate {
@@ -257,6 +295,18 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
         },
         TemplateBody::Articles(articles, msg) => {
             let context = TemplateArticles::new(articles, msg, info);
+            Template::render("articles-template", &context)
+            // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
+            // Template::render("general-template", &context)
+        },
+        // TemplateBody::Search(articles, qry, msg) => {
+        //     let context = TemplateArticles::new(articles, qry, msg, info);
+        //     Template::render("articles-template", &context)
+        //     // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
+        //     // Template::render("general-template", &context)
+        // },
+        TemplateBody::Search(articles, search, msg) => {
+            let context = TemplateSearch::new(articles, search, msg, info);
             Template::render("articles-template", &context)
             // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
             // Template::render("general-template", &context)

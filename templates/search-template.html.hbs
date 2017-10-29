@@ -73,50 +73,40 @@
                         <!-- <li class="v-nav-item nav-item"><a class="nav-link disabled" href="#">Disabled</a></li> -->
                     </ul>
                     <form id="search-form" action="/search" method="get" class="form-inline my-2 my-lg-0">
-                        <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" value="{{#if search.qry}}{{search.qry}}{{/if}}" aria-label="Search">
                         <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
                     </form>
                 </div>
             </nav>
                 <div id="v-body">
-                    <div class="v-content">
                     
 <!-- ---------- -->
-                        
-                        {{#if msg}}
-                            {{{msg}}}
-                        {{/if}}
-                        <form method="post" action="{{action_url}}" name="insert_form">
-                            <div class="col-md-7 mx-auto mb-3">
-                                <input name="title" type="text" maxlength="120" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">
+                    
+                    {{#if msg}}
+                    {{{msg}}}
+                    {{/if}}
+                    {{#each body}}
+                    <article class="v-article">
+                        <header class="v-article-header">
+                            <h2 class="v-article-title"><a href="/article?aid={{this.aid}}">{{this.title}}</a></h2>
+                            <div class="row">
+                                <date class="v-article-date" datetime="{{this.posted_machine}}">{{this.posted_human}}</date>
+                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
                             </div>
-                            <div class="form-group">
-                                <label for="input_description" class="v-form-label">Description</label>
-                                <textarea class="form-control" name="description" id="insert_desc" maxlength="400" rows="2"></textarea>
-                                <!-- <input name="description" type="text" class="v-form-control form-control" maxlength="250" id="insert-desc" placeholder="Description"> -->
-                            </div>
-                            <div class="form-group">
-                                <label for="input_body" class="v-form-label">Contents</label>
-                                <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
-                            </div>
-                            <div class="col-md-8 mx-auto">
-                                <label for="insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
-                                    <input name="tags" type="text" maxlength="250" class="v-centered-input v-form-control form-control" id="insert-tags" placeholder="Tags">
-                                    <div class="v-form-message" id="tag-msg">
-                                        Did you mean to <b>Comma Separate</b> the tags?
-                                    </div>
-                            </div>
-                            <div class="v-submit">
-                                <button type="submit" class="btn btn-primary">Create Article</button>
-                            </div>
-                        </form>
-                        <script>
-                            StartText();
-                        </script>
+                        </header>
+                        <p>
+                            {{{this.body}}}
+                        </p>
+                        <div class="v-article-tags">
+                            {{#each this.tags}}
+                            <a href="/tag?tag={{this}}">{{this}}</a>
+                            {{/each}}
+                        </div>
+                    </article>
+                    {{/each}}
                     
 <!-- ---------- -->
 
-                    </div>
                     <footer id="v-footer">
                         <div class="v-copyright">&copy; 2017 Andrew Prindle</div>
                         {{#if info.gentime}}

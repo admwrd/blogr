@@ -425,7 +425,7 @@ pub fn hbs_search_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<Us
 
 #[get("/search?<search>")]
 pub fn hbs_search_results(search: Search, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
-    // unimplemented!()
+    let start = Instant::now();
     // don't forget to put the start Instant in the hbs_template() function
     
     /*
@@ -434,14 +434,14 @@ pub fn hbs_search_results(search: Search, conn: DbConn, admin: Option<AdminCooki
             a.title, 
             a.posted,
             a.tag, 
-            ts_rank(a.fulltxt, fqry, 1) AS rank, 
+            ts_rank(a.fulltxt, fqry, 32) AS rank, 
             ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body
         FROM 
             articles a, 
             plainto_tsquery('pg_catalog.english', 'handlebars or hello') fqry
         WHERE 
             fqry @@ a.fulltxt
-                AND
+                OR
             'cool' = ANY(a.tag)
                 AND
             a.posted > '2017-01-01'
@@ -454,8 +454,11 @@ pub fn hbs_search_results(search: Search, conn: DbConn, admin: Option<AdminCooki
     
     // full-text search: title, description, body
     // entirety match 'each word' = ANY(tag)
+    
+    println!("Search parameters:\n{:?}", search);
+    
     let mut qrystr = String::with_capacity(750);
-    qrystr.push(r#"SELECT a.aid, a.title, a.posted, a.tag, ts_rank(a.fulltxt, fqry, 1) AS rank, ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body
+    qrystr.push_str(r#"SELECT a.aid, a.title, a.posted, a.tag, ts_rank(a.fulltxt, fqry, 32) AS rank, ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body
 FROM articles a, 
 plainto_tsquery('pg_catalog.english', '"#);
     
@@ -463,6 +466,7 @@ plainto_tsquery('pg_catalog.english', '"#);
     // qrystr.push_str(r#"SELECT ts_headline('english', body) FROM articles"#);
     
     let mut wherestr = String::new();
+    let original = search.clone();
     
     let mut tags: Option<String> = None;
     if let Some(mut q) = search.q {
@@ -476,51 +480,64 @@ plainto_tsquery('pg_catalog.english', '"#);
             qrystr.push_str(sanitized);
             // do a full-text search on title, description, and body fields
             // for each word add: 'word' = ANY(tag)
-            let ts = q.split(" ").map(|s| format!("'{}' = ANY(a.tag)", s)).collect::<Vec<_>>().join(" AND ");
+            let ts = sanitized.split(" ").map(|s| format!("'{}' = ANY(a.tag)", s)).collect::<Vec<_>>().join(" OR ");
             tags = if &ts != "" { Some(ts) } else { None };
-            wherestr.push_str(&tags);
+            // wherestr.push_str(&tags);
         }
     }
     qrystr.push_str("') fqry WHERE fqry @@ a.fulltxt");
     if let Some(t) = tags {
-        qrystr.push_str(" AND ");
+        qrystr.push_str(" OR ");
         qrystr.push_str(&t);
     }
     if let Some(min) = search.min {
         // after min
-        if &wherestr != "" {
-            wherestr.push(" AND a.posted > '");
-            wherestr.push(&min.format("%Y-%m-%d %H:%M:%S"));
-            wherestr.push("'");
-        } else {
-            wherestr.push(" a.posted > '");
-            wherestr.push(&min.format("%Y-%m-%d %H:%M:%S"));
-            wherestr.push("'");
-        }
-    } else if Some(max) = search.max {
-        // before max
-        if &wherestr != "" {
-            wherestr.push(" AND a.posted < '");
-            wherestr.push(&max.format("%Y-%m-%d %H:%M:%S"));
-            wherestr.push("'");
-        } else {
-            wherestr.push(" a.posted < '");
-            wherestr.push(&max.format("%Y-%m-%d %H:%M:%S"));
-            wherestr.push("'");
-        }
+        qrystr.push_str(" AND a.posted > '");
+        qrystr.push_str(&format!("{}", min.0.format("%Y-%m-%d %H:%M:%S")));
+        qrystr.push_str("'");
     }
+    if let Some(max) = search.max {
+        // before max
+        qrystr.push_str(" AND a.posted < '");
+        qrystr.push_str(&format!("{}", max.0.format("%Y-%m-%d %H:%M:%S")));
+        qrystr.push_str("'");
+    }
+    qrystr.push_str(" ORDER BY rank DESC");
     if let Some(limit) = search.limit {
-        if str_is_numeric(limit) {
-            qrystr.push_str(&format!(" LIMIT {}", limit));
+        // if str_is_numeric(limit) {
+        if limit <= 50 {
+        qrystr.push_str(&format!(" LIMIT {}", limit));
         } else {
-            qrystr.push_str("LIMIT 40");
+            qrystr.push_str(" LIMIT 50");
         }
     } else {
-        qrystr.push_str("LIMIT 40");
+        qrystr.push_str(" LIMIT 40");
     }
-    qrystr.push_str("ORDER BY rank DESC LIMIT ");
+    println!("Generated the following SQL Query:\n{}", qrystr);
     
-    hbs_template(TemplateBody::General("Search results page not implemented yet.".to_string(), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, None)
+    let mut articles: Vec<Article> = Vec::new();
+    let qry = conn.query(&qrystr, &[]);
+    let output: Template;
+    if let Ok(result) = qry {
+        for row in &result {
+            let a = Article {
+                aid: row.get(0),
+                title: row.get(1),
+                posted: row.get(2),
+                tags: row.get_opt(3).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()),
+                body: row.get(5),
+                description: String::new(),
+            };
+            articles.push(a);
+        }
+        output = hbs_template(TemplateBody::Search(articles, Some(original), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start));
+    } else {
+        println!("Query failed. Query: {}", qrystr);
+        output = hbs_template(TemplateBody::General(alert_danger("No results were found."), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start));
+    }
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
 }
 
 
