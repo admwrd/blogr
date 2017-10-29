@@ -51,6 +51,8 @@ extern crate titlecase;
 
 extern crate handlebars;
 #[macro_use] extern crate serde_json;
+extern crate htmlescape;
+
 
 use handlebars::Handlebars;
 use titlecase::titlecase;

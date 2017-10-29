@@ -13,6 +13,7 @@ use titlecase::titlecase;
 use regex::Regex;
 use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
+use htmlescape::*;
 
 use postgres::{Connection};
 
@@ -63,7 +64,7 @@ pub struct ArticleForm {
     pub description: String,
 }
 
-#[derive(Debug, Clone, FromForm)]
+#[derive(Debug, Clone)]
 pub struct Search {
     pub limit: Option<u16>, // use u16 as limit as u16 does not implement FromSql
     pub o: Option<String>, // opposite / negated
@@ -463,6 +464,47 @@ impl<'a, 'r> FromRequest<'a, 'r> for Tag {
         unimplemented!()
     }
 }
+
+
+impl<'f> FromForm<'f> for Search {
+    type Error = &'static str;
+    fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
+        let mut tag: String = String::new();
+        let mut limit: Option<u16> = None;
+        let mut o: Option<String> = None;
+        let mut p: Option<String> = None;
+        let mut q: Option<String> = None;
+        let mut min: Option<NaiveDateTimeWrapper> = None;
+        let mut max: Option<NaiveDateTimeWrapper> = None;
+        for (field, value) in form_items {
+            match field.as_str() {
+                "limit" => { limit = Some(value.parse::<u16>().unwrap_or(0)) },
+                "o" => { o = Some(encode_attribute(&value.url_decode().unwrap_or(String::new())) ) },
+                "p" => { p = Some(encode_attribute(&value.url_decode().unwrap_or(String::new())) ) },
+                "q" => { q = Some(encode_attribute(&value.url_decode().unwrap_or(String::new())) ) },
+                "min" => { min = if let Ok(m) = value.as_str().parse::<NaiveDateTime>() { Some(NaiveDateTimeWrapper(m)) } else { None } },
+                "max" => { max = if let Ok(m) = value.as_str().parse::<NaiveDateTime>() { Some(NaiveDateTimeWrapper(m)) } else { None } },
+                _ => {},
+            }
+        }
+        Ok(Search {
+            limit,
+            o,
+            p,
+            q,
+            min,
+            max,
+        })
+        // if &tag == ""  {
+            // Err("No tag specified")
+        // } else {
+            // Ok( Tag{ tag } )
+        // }
+    }
+}
+
+
+
 impl<'f> FromForm<'f> for Tag {
     type Error = &'static str;
     fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {

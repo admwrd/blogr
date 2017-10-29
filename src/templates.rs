@@ -307,7 +307,7 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
         // },
         TemplateBody::Search(articles, search, msg) => {
             let context = TemplateSearch::new(articles, search, msg, info);
-            Template::render("articles-template", &context)
+            Template::render("search-template", &context)
             // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
             // Template::render("general-template", &context)
         },
