@@ -405,9 +405,20 @@ pub fn hbs_logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cook
     }
 }
 
+
+// Do a full-text search on the body and title fields
+//   on the tag field match each word against a tag,
+//   this will only match complete word matches
+//     research using array_to_tsvector() in the future
+// https://www.postgresql.org/docs/current/static/functions-textsearch.html
+
 #[get("/search")]
 pub fn hbs_search_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     // unimplemented!()
+    
+    //show an advanced search form
+     
+    
     // don't forget to put the start Instant in the hbs_template() function
     hbs_template(TemplateBody::General("Search page not implemented yet".to_string(), None), Some("Search".to_string()), String::from("/search"), admin, user, None, None)
 }
@@ -416,8 +427,102 @@ pub fn hbs_search_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<Us
 pub fn hbs_search_results(search: Search, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     // unimplemented!()
     // don't forget to put the start Instant in the hbs_template() function
+    
+    /*
+        SELECT  
+            a.aid, 
+            a.title, 
+            a.posted,
+            a.tag, 
+            ts_rank(a.fulltxt, fqry, 1) AS rank, 
+            ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body
+        FROM 
+            articles a, 
+            plainto_tsquery('pg_catalog.english', 'handlebars or hello') fqry
+        WHERE 
+            fqry @@ a.fulltxt
+                AND
+            'cool' = ANY(a.tag)
+                AND
+            a.posted > '2017-01-01'
+                AND
+            a.posted < '2018-01-01'
+        ORDER BY 
+            rank DESC
+        LIMIT 20
+    */
+    
+    // full-text search: title, description, body
+    // entirety match 'each word' = ANY(tag)
+    let mut qrystr = String::with_capacity(750);
+    qrystr.push(r#"SELECT a.aid, a.title, a.posted, a.tag, ts_rank(a.fulltxt, fqry, 1) AS rank, ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body
+FROM articles a, 
+plainto_tsquery('pg_catalog.english', '"#);
+    
+    // ts_headline([ config regconfig, ] document text, query tsquery [, options text ]) returns text
+    // qrystr.push_str(r#"SELECT ts_headline('english', body) FROM articles"#);
+    
+    let mut wherestr = String::new();
+    
+    let mut tags: Option<String> = None;
+    if let Some(mut q) = search.q {
+        if &q != "" {
+            // prevent most attacks on length and complexity of the sql query
+            if q.len() > 200 {
+                q = q[..200].to_string();
+            }
+            // WHERE to_tsvector('english', body) @@ to_tsquery('english', 'friend');
+            let sanitized = &sanitize_sql(q);
+            qrystr.push_str(sanitized);
+            // do a full-text search on title, description, and body fields
+            // for each word add: 'word' = ANY(tag)
+            let ts = q.split(" ").map(|s| format!("'{}' = ANY(a.tag)", s)).collect::<Vec<_>>().join(" AND ");
+            tags = if &ts != "" { Some(ts) } else { None };
+            wherestr.push_str(&tags);
+        }
+    }
+    qrystr.push_str("') fqry WHERE fqry @@ a.fulltxt");
+    if let Some(t) = tags {
+        qrystr.push_str(" AND ");
+        qrystr.push_str(&t);
+    }
+    if let Some(min) = search.min {
+        // after min
+        if &wherestr != "" {
+            wherestr.push(" AND a.posted > '");
+            wherestr.push(&min.format("%Y-%m-%d %H:%M:%S"));
+            wherestr.push("'");
+        } else {
+            wherestr.push(" a.posted > '");
+            wherestr.push(&min.format("%Y-%m-%d %H:%M:%S"));
+            wherestr.push("'");
+        }
+    } else if Some(max) = search.max {
+        // before max
+        if &wherestr != "" {
+            wherestr.push(" AND a.posted < '");
+            wherestr.push(&max.format("%Y-%m-%d %H:%M:%S"));
+            wherestr.push("'");
+        } else {
+            wherestr.push(" a.posted < '");
+            wherestr.push(&max.format("%Y-%m-%d %H:%M:%S"));
+            wherestr.push("'");
+        }
+    }
+    if let Some(limit) = search.limit {
+        if str_is_numeric(limit) {
+            qrystr.push_str(&format!(" LIMIT {}", limit));
+        } else {
+            qrystr.push_str("LIMIT 40");
+        }
+    } else {
+        qrystr.push_str("LIMIT 40");
+    }
+    qrystr.push_str("ORDER BY rank DESC LIMIT ");
+    
     hbs_template(TemplateBody::General("Search results page not implemented yet.".to_string(), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, None)
 }
+
 
 #[get("/about")]
 pub fn hbs_about(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {

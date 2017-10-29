@@ -287,6 +287,12 @@ nav input .active {
     font-weight: 300;
 }
 
+/* Highlighted word - search terms are highlighted with this */
+mark, .v-term {
+    font-weight: 700;
+    background-color: #fd0;
+}
+
 /* .form-control:valid + .invalid-feedback {
     display: none;
 } */

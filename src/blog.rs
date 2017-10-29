@@ -63,7 +63,12 @@ pub struct ArticleForm {
 
 #[derive(FromForm)]
 pub struct Search {
-    pub q: String,
+    pub limit: Option<u16>, // use u16 as limit as u16 does not implement FromSql
+    pub o: Option<String>, // opposite / negated
+    pub p: Option<String>, // possible words, or'd
+    pub q: Option<String>, // query, and'd together
+    pub min: Option<NaiveDateTime>, // min
+    pub max: Option<NaiveDateTime>, // max
 }
 
 #[derive(FromForm)]

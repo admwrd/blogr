@@ -1,0 +1,120 @@
+CREATE INDEX pgweb_idx ON pgweb USING GIN (to_tsvector('english', title || ' ' || body));
+
+
+Add a separate column to store the ts_vector so that even if description is null everything is still indexed
+ALTER TABLE articles ADD COLUMN fulltxt tsvector;
+UPDATE articles SET fulltxt =
+     to_tsvector('english', title || ' ' || coalesce(description,'') || ' ' || body);
+
+CREATE INDEX fulltxt_idx ON articles USING GIN (fulltxt);
+
+
+
+Example Trigger to Update Fulltext Column
+CREATE TRIGGER fulltxt_update_articles BEFORE INSERT OR UPDATE
+ON articles FOR EACH ROW EXECUTE PROCEDURE
+tsvector_update_trigger(tsv, 'pg_catalog.english', title, body);
+
+Example2 - Custom Trigger to Update Fulltext Column 
+CREATE FUNCTION messages_trigger() RETURNS trigger AS $$
+begin
+  new.tsv :=
+     setweight(to_tsvector('pg_catalog.english', coalesce(new.title,'')), 'A') ||
+     setweight(to_tsvector('pg_catalog.english', coalesce(new.body,'')), 'D');
+  return new;
+end
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
+    ON messages FOR EACH ROW EXECUTE PROCEDURE messages_trigger();
+
+
+Custom
+
+CREATE TRIGGER fulltxt_update_articles BEFORE INSERT OR UPDATE
+ON articles FOR EACH ROW EXECUTE PROCEDURE
+tsvector_update_trigger(tsv, 'pg_catalog.english', title, coalesce(description,''), body);
+
+OR
+
+CREATE FUNCTION fulltxt_articles_update() RETURNS trigger AS $$
+begin
+  new.fulltxt :=
+    title || ' ' coalesce(description,'') || body;
+  return new;
+end
+$$ LANGUAGE plpgsql;
+
+
+
+
+Create Column and Index and Trigger:
+
+ALTER TABLE articles ADD COLUMN fulltxt tsvector;
+
+UPDATE articles SET fulltxt =
+	to_tsvector('english', title || ' ' || coalesce(description,'') || ' ' || body);
+UPDATE articles SET fulltxt =
+	setweight(to_tsvector('pg_catalog.english', title), 'A') || 
+	setweight(to_tsvector('pg_catalog.english', coalesce(description,'')), 'B') || 
+	setweight(to_tsvector('pg_catalog.english', body), 'C');
+
+
+CREATE INDEX fulltxt_idx ON articles USING GIN (fulltxt);
+
+CREATE OR REPLACE FUNCTION fulltxt_articles_update() RETURNS trigger AS $$
+begin
+  new.fulltxt := setweight(to_tsvector('pg_catalog.english', title), 'A') || 
+		 setweight(to_tsvector('pg_catalog.english', coalesce(description,'')), 'B') || 
+		 setweight(to_tsvector('pg_catalog.english', body), 'C');
+  return new;
+end
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_articles BEFORE INSERT OR UPDATE
+    ON articles FOR EACH ROW EXECUTE PROCEDURE fulltxt_articles_update();
+
+
+
+
+Full-text searching
+ts_headline([ config regconfig, ] document text, query tsquery [, options text ])
+to_tsquery([config regconfig , ] query text)
+to_tsvector([config regconfig , ] document text)
+ts_rank([ weights float4[], ] vector tsvector, query tsquery [, normalization integer ])
+ts_rank_cd([ weights float4[], ] vector tsvector, query tsquery [, normalization integer ])
+	cd (cover density) takes into account the placement of the lexemes (keywords) relative to each other
+
+
+SELECT * FROM articles WHERE textsearchable_index_col @@ to_tsquery('something & else') ORDER BY posted LIMIT 10;
+
+SELECT plainto_tsquery('hello handlebars descriptive');
+
+SELECT *, ts_rank(a.fulltxt, fqry, 1) AS rank
+FROM articles a, to_tsquery('pg_catalog.english', 'descriptive | hello') fqry
+WHERE fqry @@ a.fulltxt
+
+
+SELECT 	
+	a.aid, 
+	a.title, 
+	a.posted,
+	a.tag, 
+	ts_rank(a.fulltxt, fqry, 1) AS rank, 
+	ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body
+FROM 
+	articles a, 
+	plainto_tsquery('pg_catalog.english', 'handlebars or hello') fqry
+WHERE 
+	fqry @@ a.fulltxt
+ORDER BY 
+	rank DESC
+LIMIT 50
+
+
+
+
+
+
+
+

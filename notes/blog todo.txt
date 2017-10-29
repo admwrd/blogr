@@ -1,8 +1,11 @@
 
 Blogr
-	Change description in insert form to text input box with maxlength=250
-		Change maxlength in database as well
+	Add RSS feed (add link in footer)
+		Maybe add clipboard.js to copy the link when clicked
 	
+	Maybe add a preview as a popup modal
+		display single article template in the modal template? (just the <article> and <script> tags)
+
 	Maybe add a page option in the hbs_template() function
 		indicates which page should be highlighted in the nav bar
 
@@ -71,11 +74,22 @@ Blogr
 	Finish implementing the Usertype module, make it an enum that holds whatever?
 
 
+
+
+
+
+
 Design:
 	Figure out a way to make the middle box backgrounds transparent and the outside black still
 		This allows a static background to be placed that will move with the page, 
 			staying in the same position on the screen at all times
 			only the content boxes moves, allowing their inside to display the image
+
+
+
+
+
+
 
 Future Todo:
 	Look into Handlebar Helper functions using Rocket_Contrib's Templates
@@ -109,7 +123,20 @@ Research Futures
 
 
 
+
+
+
+
+
+
+
+
+
+
 Done
+	
+	Change description in insert form to text input box with maxlength=250
+		Change maxlength in database as well
 	
 	Posting articles: maybe add a javascript function to alert the user when spaces are detected in the tag field but no commas are found
 		Display: Did you mean to use commas instead of spaces?

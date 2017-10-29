@@ -1,0 +1,27 @@
+GIN index
+CREATE INDEX idx_scores ON students USING GIN(scores); -- GIN Index (array)  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

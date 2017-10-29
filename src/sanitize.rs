@@ -14,7 +14,22 @@ pub fn medium_sanitize(string: String) -> String {
     string
 }
 
+pub fn sanitize_sql(string: String) -> String {
+    lazy_static! {
+        static ref CLEAN_SQL: Regex = Regex::new(r#"(['"\\])"#).unwrap();
+    }
+    CLEAN_SQL.replace_all(string, r"\\$1");
+    // string.replace("'", "\'")
+    // .replace(r"\", r"\\");
+    // .replace(r#"""#, r#"\""#);
+}
 
+pub fn str_is_numeric(string: String) -> bool {
+    lazy_static! {
+        static ref NUMERIC: Regex = Regex::new("^\d+$").unwrap();
+    }
+    NUMERIC.is_match(string)
+}
 
 pub fn sanitize_body(string: String) -> String {
     // escape html entities/elements
