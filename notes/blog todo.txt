@@ -1,17 +1,12 @@
 
 Blogr
+	Allow admin to delete posts and edit them
+
 	Add RSS feed (add link in footer)
 		Maybe add clipboard.js to copy the link when clicked
 	
 	Maybe add a preview as a popup modal
 		display single article template in the modal template? (just the <article> and <script> tags)
-
-	Maybe add a page option in the hbs_template() function
-		indicates which page should be highlighted in the nav bar
-
-	Maybe when validating forms, set focus to first invalid form field
-		set a var called something like is_focused = true after first field
-		to prevent others from being focused
 
 	When creating a blog post fails for reasons other than unauthorized
 		(or maybe even if its unauthorized)
@@ -19,8 +14,6 @@ Blogr
 		change the insert form template to include if statements to show msg
 			{{#if info.msg}}{{{info.msg}}}{{/if}}
 
-	test:
-		localhost:8000/tag?tag=
 
 	sanitize:
 		login rety (admin and user): username and failmsg
@@ -114,6 +107,13 @@ Future Todo:
 	Display a form allowing users to make new comments and edit and maybe delete their own
 
 
+	Maybe when validating forms, set focus to first invalid form field
+		set a var called something like is_focused = true after first field
+		to prevent others from being focused
+
+
+
+
 
 Research Futures
 	try to implement caching by calling a function that returns a string and schedules an async function
@@ -135,6 +135,12 @@ Research Futures
 
 Done
 	
+	DOES NOT WORK: localhost:8000/tag?tag=
+		But should it??? Not really...
+
+	Maybe add a page option in the hbs_template() function
+		indicates which page should be highlighted in the nav bar
+
 	Change description in insert form to text input box with maxlength=250
 		Change maxlength in database as well
 	

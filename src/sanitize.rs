@@ -1,6 +1,7 @@
 
 
 use regex::Regex;
+use htmlescape::*;
 
 // escapes html tags and special characters
 pub fn input_sanitize(string: String) -> String {
@@ -9,11 +10,14 @@ pub fn input_sanitize(string: String) -> String {
 // removes non-word characters
 pub fn strict_sanitize(string: String) -> String {
     // use lazy_static! to make a regexp to remove everything but word characters
-    string
+    lazy_static! {
+        static ref STRICT: Regex = Regex::new(r#"\W+"#).unwrap();
+    }
+    STRICT.replace_all(&string, "").into_owned()
 }
 // leaves spaces, commas, hyphens, and underscores but removes all other non-word characters
 pub fn medium_sanitize(string: String) -> String {
-    string
+    encode_minimal(&string)
 }
 
 pub fn sanitize_sql(string: String) -> String {
@@ -33,20 +37,24 @@ pub fn str_is_numeric(string: String) -> bool {
     NUMERIC.is_match(&string)
 }
 
+pub fn sanitize_attribute(string: String) -> String {
+    encode_attribute(&string)
+}
+
 pub fn sanitize_body(string: String) -> String {
     // escape html entities/elements
     // unimplemented!()
-    string
+    encode_minimal(&string)
 }
 
 pub fn sanitize_title(string: String) -> String {
     // set max length to 120 characters
-    string
+    encode_minimal(&string)
     // unimplemented!()
 }
 
 pub fn sanitize_tags(string: String) -> String {
-    string
+    encode_minimal(&string)
     // unimplemented!()
 }
 pub fn split_tags(string: String) -> Vec<String> {
