@@ -1,6 +1,8 @@
 
 Blogr
-
+	Change search, article, and articles templates to show an author.
+		Update the database to link each article to an author
+		Update the RSS page to reflect the author for each article, use a join query to get the author
 
 	Allow admin to delete posts and edit them
 
@@ -13,6 +15,7 @@ Blogr
 		change the insert form template to include if statements to show msg
 			{{#if info.msg}}{{{info.msg}}}{{/if}}
 
+	Throttle brute force login attempts
 
 	sanitize:
 		login rety (admin and user): username and failmsg

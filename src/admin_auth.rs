@@ -50,7 +50,7 @@ impl AdminAuth {
         // } else {
         //     Err( AdminAuth::error(username.to_string(), "Invalid username.".to_string()) )
         // }
-        let qrystr = format!("SELECT userid FROM users WHERE username = '{user}' AND password = '{pass}'", user=username, pass=password);
+        let qrystr = format!("SELECT userid FROM users WHERE username = '{user}' AND password = '{pass}' AND is_admin = true", user=username, pass=password);
         let conn = PGCONN.lock().unwrap();
         let qry = conn.query(&qrystr, &[]);
         if let Ok(result) = qry {

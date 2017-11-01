@@ -64,9 +64,9 @@ CREATE INDEX fulltxt_idx ON articles USING GIN (fulltxt);
 
 CREATE OR REPLACE FUNCTION fulltxt_articles_update() RETURNS trigger AS $$
 begin
-  new.fulltxt := setweight(to_tsvector('pg_catalog.english', title), 'A') || 
-		 setweight(to_tsvector('pg_catalog.english', coalesce(description,'')), 'B') || 
-		 setweight(to_tsvector('pg_catalog.english', body), 'C');
+  new.fulltxt := setweight(to_tsvector('pg_catalog.english', new.title), 'A') || 
+		 setweight(to_tsvector('pg_catalog.english', coalesce(new.description,'')), 'B') || 
+		 setweight(to_tsvector('pg_catalog.english', new.body), 'C');
   return new;
 end
 $$ LANGUAGE plpgsql;
