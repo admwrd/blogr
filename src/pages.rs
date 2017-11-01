@@ -11,7 +11,7 @@ use rocket::request::FlashMessage;
 use rocket::data::FromData;
 use rocket::response::content::Html;
 use rocket::request::Form;
-use rocket::http::{Cookie, Cookies};
+use rocket::http::{Cookie, Cookies, RawStr};
 use auth::userpass::UserPass;
 use auth::status::{LoginStatus,LoginRedirect};
 use auth::dummy::DummyAuthenticator;
@@ -315,6 +315,13 @@ pub fn hbs_articles_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
+}
+
+// #[get("/<title>/article?<aid>")]
+#[get("/<aid>/<title>")]
+
+pub fn hbs_article_title(aid: ArticleId, title: Option<&RawStr>, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+    hbs_article_view(aid, conn, admin, user)
 }
 
 #[get("/article?<aid>")]

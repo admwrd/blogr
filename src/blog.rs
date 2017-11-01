@@ -2,12 +2,12 @@
 use std::fmt::Display;
 
 use rocket;
-use ::rocket::request::{FromRequest, FromForm, FormItems};
 use ::rocket::Request;
+use ::rocket::request::{FromRequest, FromForm, FormItems, FromFormValue, FromParam};
 use ::rocket::outcome::Outcome;
 use ::rocket::config::{Config, Environment};
-use rocket::request::FromFormValue;
 use rocket::http::RawStr;
+// use rocket::request::{FromFormValue, FromParam};
 
 use titlecase::titlecase;
 use regex::Regex;
@@ -581,3 +581,38 @@ impl<'v> FromFormValue<'v> for NaiveDateTimeWrapper {
         }
     }
 }
+
+
+
+
+impl<'r> FromParam<'r> for ArticleId {
+    type Error = &'r str;
+
+    fn from_param(param: &'r RawStr) -> Result<Self, Self::Error> {
+        // https://api.rocket.rs/rocket/request/trait.FromParam.html
+        // let (key, val_str) = match param.find(':') {
+        //     Some(i) if i > 0 => (&param[..i], &param[(i + 1)..]),
+        //     _ => return Err(param)
+        // };
+
+        // if !key.chars().all(|c| (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+        //     return Err(param);
+        // }
+        // if !key.chars().all(|c| (c >= '0' && c <= '9') {
+        //     return Err(param);
+        // }
+
+        // val_str.parse().map(|value| {
+        //     ArticleId {
+        //         key: key,
+        //     }
+        // }).map_err(|_| param)
+        
+        match param.parse::<u32>() {
+            Ok(i) => Ok(ArticleId { aid: i }),
+            Err(e) => Err("Could not convert id.")
+        }
+    }
+}
+
+
