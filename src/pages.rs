@@ -19,8 +19,8 @@ use auth::authenticator::Authenticator;
 use regex::Regex;
 use titlecase::titlecase;
 
-use super::{BLOG_URL, ADMIN_LOGIN_URL, USER_LOGIN_URL, CREATE_FORM_URL, RSS_MEDIA, RSS_CONTENT};
-use super::RssContent;
+use super::{BLOG_URL, ADMIN_LOGIN_URL, USER_LOGIN_URL, CREATE_FORM_URL};
+// use super::RssContent;
 use layout::*;
 use cookie_data::*;
 use admin_auth::*;
@@ -543,9 +543,9 @@ plainto_tsquery('pg_catalog.english', '"#);
 
 // application/rss+xml
 // make a handlebars template
-#[get("/rss")]
-pub fn hbs_rss(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> RssContent<String> {
-    use rss::{Channel, ChannelBuilder, Guid, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};
+#[get("/rss.xml")]
+pub fn rss_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> String {
+    use rss::{Channel, ChannelBuilder, Guid, GuidBuilder, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};
     use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
     /*
         let item = ItemBuilder::default()
@@ -594,15 +594,19 @@ pub fn hbs_rss(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie
                 }
             };
             
-            let guid = Guid::default().set_value(link);
+            // let guid = Guid::default().set_value(link);
+            let guid = GuidBuilder::default()
+                .value(link.clone())
+                .build()
+                .expect("Could not create article guid.");
             
             let date_posted = DateTime::<Utc>::from_utc(article.posted, Utc).to_rfc2822();
             
             let item =ItemBuilder::default()
-                .title(article.title)
+                .title(article.title.clone())
                 .link(link)
-                .description(desc)
-                .author("Andrew Prindle")
+                .description(desc.to_string())
+                .author("Andrew Prindle".to_string())
                 // .categories()
                 .guid(guid)
                 .pub_date(date_posted)
@@ -610,7 +614,7 @@ pub fn hbs_rss(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie
                 
             match item {
                 Ok(i) => article_items.push(i),
-                Err(e) => println!("Could not create rss article {}.  Error: {}", article.aid, e);
+                Err(e) => println!("Could not create rss article {}.  Error: {}", article.aid, e),
             }
         }
         // Items:
@@ -633,18 +637,21 @@ pub fn hbs_rss(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie
             .title("Vishus Blog")
             .link(BLOG_URL)
             .description("A programming and development blog about Rust, Javascript, and Web Development.")
-            .langugae("en-us")
-            .copyright("2017 Andrew Prindle")
-            .ttl(720) // half a day, 1440 minutes in a day
+            .language("en-us".to_string())
+            .copyright("2017 Andrew Prindle".to_string())
+            .ttl(720.to_string()) // half a day, 1440 minutes in a day
             .items(article_items)
             .text_input(searchbox)
             .build()
             .expect("Could not create RSS channel.");
         
-        RssContent(channel.to_string())
-        
+        let rss_output = channel.to_string();
+        let mut output = String::with_capacity(rss_output.len() + 30);
+        output.push_str(r#"<?xml version="1.0"?>"#);
+        output.push_str(&rss_output);
+        output
     } else {
-        RssContent(String::from("Could not create RSS feed."))
+        String::from("Could not create RSS feed.")
     }
     
     

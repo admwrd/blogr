@@ -1,6 +1,6 @@
 [package]
 name = "blogr"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["Andrew Prindle <prindle.andrew@gmail.com>"]
 
 [dependencies]

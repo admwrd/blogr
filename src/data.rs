@@ -73,10 +73,10 @@ pub struct DbConn(
 impl DbConn {
     pub fn articles(&self, qrystr: &str) -> Option<Vec<Article>> {
         
-        let qryrst = if qrystr != "" {
-            self.query(qrystr, &[]);
+        let qryrst: Result<_, _> = if qrystr != "" {
+            self.query(qrystr, &[])
         } else {
-            self.query("SELECT aid, title, posted, body, tag, description FROM articles", &[]);
+            self.query("SELECT aid, title, posted, body, tag, description FROM articles", &[])
         };
         if let Ok(result) = qryrst {
             let mut articles: Vec<Article> = Vec::new();
@@ -86,7 +86,7 @@ impl DbConn {
                     title: row.get(1),
                     posted: row.get(2),
                     body: row.get(3),
-                    tag: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
+                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                 };
                 articles.push(a);

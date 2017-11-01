@@ -65,12 +65,12 @@ use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 
 use rocket_contrib::Template;
-use rocket::{Request, Data, Outcome};
-use rocket::response::{content, NamedFile, Redirect, Flash};
+use rocket::{Request, Data, Outcome, Response};
+use rocket::response::{content, NamedFile, Redirect, Flash, Responder, Content};
 use rocket::response::content::Html;
 use rocket::data::FromData;
 use rocket::request::{FlashMessage, Form};
-use rocket::http::{Cookie, Cookies, MediaType, ContentType};
+use rocket::http::{Cookie, Cookies, MediaType, ContentType, Status};
 use auth::userpass::UserPass;
 use auth::status::{LoginStatus,LoginRedirect};
 use auth::dummy::DummyAuthenticator;
@@ -125,19 +125,30 @@ fn static_files(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("static/").join(file)).ok()
 }
 
-pub static RSS_MEDIA = MediaType::new("application", "rss+xml");
-pub static RSS_CONTENT = ContentType::new("application", "rss+xml");
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct RssContent<R>(pub R);
+// pub const $name: MediaType = MediaType {
+//                 // source: Source::Known(concat!($t, "/", $s, $("; ", $k, "=", $v),*)),
+//                 source: MediaType::Source::Custom(),
+//                 top: media_str!($t),
+//                 sub: media_str!($s),
+//                 params: MediaParams::Static(&[$((media_str!($k), media_str!($v))),*])
+//             };
+// pub const RssContent: ContentType = ContentType(MediaType::RssMedia);
 
-/// Sets the Content-Type of the response then delegates the
-/// remainder of the response to the wrapped responder.
-impl<'r, R: Responder<'r>> Responder<'r> for RssContent<R> {
-    fn respond_to(self, req: &Request) -> Result<Response<'r>, Status> {
-        Content(RSS_CONTENT, self.0).respond_to(req)
-    }
-}
+
+// // pub static RSS_MEDIA: MediaType = MediaType::new("application", "rss+xml");
+// // pub static RSS_CONTENT: ContentType = ContentType::new("application", "rss+xml");
+
+// #[derive(Debug, Clone, PartialEq)]
+// pub struct RssContent<R>(pub R);
+
+// /// Sets the Content-Type of the response then delegates the
+// /// remainder of the response to the wrapped responder.
+// impl<'r, R: Responder<'r>> Responder<'r> for RssContent<R> {
+//     fn respond_to(self, req: &Request) -> Result<Response<'r>, Status> {
+//         Content(ContentType::new("application", "rss+xml"), self.0).respond_to(req)
+//     }
+// }
 
 fn main() {
     // env_logger::init();
@@ -178,6 +189,7 @@ fn main() {
             pages::hbs_search_page,
             pages::hbs_search_results,
             pages::hbs_about,
+            pages::rss_page,
             pages::hbs_index,
             
             static_files
