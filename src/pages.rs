@@ -542,39 +542,11 @@ plainto_tsquery('pg_catalog.english', '"#);
 }
 
 // application/rss+xml
-// make a handlebars template
 #[get("/rss.xml")]
 pub fn rss_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> String {
     use rss::{Channel, ChannelBuilder, Guid, GuidBuilder, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};
     use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
-    /*
-        let item = ItemBuilder::default()
-            .itunes_ext(extension::itunes::ITunesItemExtension::default())
-            .dublin_core_ext(extension::dublincore::DublinCoreExtension::default())
-            .build()
-            .unwrap();
 
-        let mut namespaces: HashMap<String, String> = HashMap::new();
-        namespaces.insert("ext".to_string(), "http://example.com/".to_string());
-
-        let channel = ChannelBuilder::default()
-            .title("Title")
-            .link("http://example.com/")
-            .description("Description")
-            .items(vec![item])
-            .namespaces(namespaces)
-            .build()
-            .unwrap();
-
-        let output = include_str!("data/verify_write_format.xml")
-            .replace("\n", "")
-            .replace("\t", "");
-
-        assert_eq!(channel.to_string(), output);
-    */
-
-    // pub fn retrieve_all(pgconn: DbConn, limit: u32, description: Option<i32>, min_date: Option<NaiveDate>, max_date: Option<NaiveDate>, tag: Option<Vec<String>>, search: Option<Vec<String>>) -> Vec<Article> {
-     
     let result = conn.articles("");
     if let Some(articles) = result {
         let mut article_items: Vec<Item> = Vec::new();
@@ -594,7 +566,6 @@ pub fn rss_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCooki
                 }
             };
             
-            // let guid = Guid::default().set_value(link);
             let guid = GuidBuilder::default()
                 .value(link.clone())
                 .build()

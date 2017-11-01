@@ -126,29 +126,6 @@ fn static_files(file: PathBuf) -> Option<NamedFile> {
 }
 
 
-// pub const $name: MediaType = MediaType {
-//                 // source: Source::Known(concat!($t, "/", $s, $("; ", $k, "=", $v),*)),
-//                 source: MediaType::Source::Custom(),
-//                 top: media_str!($t),
-//                 sub: media_str!($s),
-//                 params: MediaParams::Static(&[$((media_str!($k), media_str!($v))),*])
-//             };
-// pub const RssContent: ContentType = ContentType(MediaType::RssMedia);
-
-
-// // pub static RSS_MEDIA: MediaType = MediaType::new("application", "rss+xml");
-// // pub static RSS_CONTENT: ContentType = ContentType::new("application", "rss+xml");
-
-// #[derive(Debug, Clone, PartialEq)]
-// pub struct RssContent<R>(pub R);
-
-// /// Sets the Content-Type of the response then delegates the
-// /// remainder of the response to the wrapped responder.
-// impl<'r, R: Responder<'r>> Responder<'r> for RssContent<R> {
-//     fn respond_to(self, req: &Request) -> Result<Response<'r>, Status> {
-//         Content(ContentType::new("application", "rss+xml"), self.0).respond_to(req)
-//     }
-// }
 
 fn main() {
     // env_logger::init();
@@ -159,9 +136,6 @@ fn main() {
     // }
     
     // init_pg_pool().get();
-    
-    // let rssMedia = MediaType::new("application", "rss+xml");
-    // let rssContent = ContentType::new("application", "rss+xml");
     
     rocket::ignite()
         .manage(data::init_pg_pool())
