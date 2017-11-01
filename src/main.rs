@@ -126,7 +126,6 @@ fn static_files(file: PathBuf) -> Option<NamedFile> {
 }
 
 
-
 fn main() {
     // env_logger::init();
     // init_pg_pool();
