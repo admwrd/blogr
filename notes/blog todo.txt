@@ -1,5 +1,9 @@
 
 Blogr
+	Add the article title in the url when possible
+		change the links to the articles to include a substring of the title
+		change the article page route to have a segment that ignores the title?
+	
 	Allow admin to delete posts and edit them
 
 	Add RSS feed (add link in footer)

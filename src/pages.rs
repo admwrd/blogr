@@ -19,7 +19,8 @@ use auth::authenticator::Authenticator;
 use regex::Regex;
 use titlecase::titlecase;
 
-use super::{BLOG_URL, ADMIN_LOGIN_URL, USER_LOGIN_URL, CREATE_FORM_URL};
+use super::{BLOG_URL, ADMIN_LOGIN_URL, USER_LOGIN_URL, CREATE_FORM_URL, RSS_MEDIA, RSS_CONTENT};
+use super::RssContent;
 use layout::*;
 use cookie_data::*;
 use admin_auth::*;
@@ -538,6 +539,115 @@ plainto_tsquery('pg_catalog.english', '"#);
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
+}
+
+// application/rss+xml
+// make a handlebars template
+#[get("/rss")]
+pub fn hbs_rss(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> RssContent<String> {
+    use rss::{Channel, ChannelBuilder, Guid, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};
+    use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
+    /*
+        let item = ItemBuilder::default()
+            .itunes_ext(extension::itunes::ITunesItemExtension::default())
+            .dublin_core_ext(extension::dublincore::DublinCoreExtension::default())
+            .build()
+            .unwrap();
+
+        let mut namespaces: HashMap<String, String> = HashMap::new();
+        namespaces.insert("ext".to_string(), "http://example.com/".to_string());
+
+        let channel = ChannelBuilder::default()
+            .title("Title")
+            .link("http://example.com/")
+            .description("Description")
+            .items(vec![item])
+            .namespaces(namespaces)
+            .build()
+            .unwrap();
+
+        let output = include_str!("data/verify_write_format.xml")
+            .replace("\n", "")
+            .replace("\t", "");
+
+        assert_eq!(channel.to_string(), output);
+    */
+
+    // pub fn retrieve_all(pgconn: DbConn, limit: u32, description: Option<i32>, min_date: Option<NaiveDate>, max_date: Option<NaiveDate>, tag: Option<Vec<String>>, search: Option<Vec<String>>) -> Vec<Article> {
+     
+    let result = conn.articles("");
+    if let Some(articles) = result {
+        let mut article_items: Vec<Item> = Vec::new();
+        for article in &articles {
+            let mut link = String::with_capacity(BLOG_URL.len()+20);
+            link.push_str(BLOG_URL);
+            link.push_str("article?aid=");
+            link.push_str(&article.aid.to_string());
+            
+            let desc: &str = if &article.description != "" {
+                &article.description
+            } else {
+                if article.body.len() > DESC_LIMIT {
+                    &article.body[..200]
+                } else {
+                    &article.body[..]
+                }
+            };
+            
+            let guid = Guid::default().set_value(link);
+            
+            let date_posted = DateTime::<Utc>::from_utc(article.posted, Utc).to_rfc2822();
+            
+            let item =ItemBuilder::default()
+                .title(article.title)
+                .link(link)
+                .description(desc)
+                .author("Andrew Prindle")
+                // .categories()
+                .guid(guid)
+                .pub_date(date_posted)
+                .build();
+                
+            match item {
+                Ok(i) => article_items.push(i),
+                Err(e) => println!("Could not create rss article {}.  Error: {}", article.aid, e);
+            }
+        }
+        // Items:
+        // title    link    description author  categories  guid    pub_date
+        // Channels:
+        // title    link    description categories  language    copyright   rating  ttl
+        let mut search_link = String::with_capacity(BLOG_URL.len()+10);
+        search_link.push_str(BLOG_URL);
+        search_link.push_str("search");
+        
+        let searchbox = TextInputBuilder::default()
+            .title("Search")
+            .name("q")
+            .description("Search articles")
+            .link(search_link)
+            .build()
+            .expect("Could not create text input item in RSS channel.");
+        
+        let channel = ChannelBuilder::default()
+            .title("Vishus Blog")
+            .link(BLOG_URL)
+            .description("A programming and development blog about Rust, Javascript, and Web Development.")
+            .langugae("en-us")
+            .copyright("2017 Andrew Prindle")
+            .ttl(720) // half a day, 1440 minutes in a day
+            .items(article_items)
+            .text_input(searchbox)
+            .build()
+            .expect("Could not create RSS channel.");
+        
+        RssContent(channel.to_string())
+        
+    } else {
+        RssContent(String::from("Could not create RSS feed."))
+    }
+    
+    
 }
 
 

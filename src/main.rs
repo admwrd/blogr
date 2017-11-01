@@ -52,6 +52,7 @@ extern crate titlecase;
 extern crate handlebars;
 #[macro_use] extern crate serde_json;
 extern crate htmlescape;
+extern crate rss;
 
 
 use handlebars::Handlebars;
@@ -64,17 +65,17 @@ use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 
 use rocket_contrib::Template;
-use rocket::response::{content, NamedFile, Redirect, Flash};
 use rocket::{Request, Data, Outcome};
-use rocket::request::FlashMessage;
-use rocket::data::FromData;
+use rocket::response::{content, NamedFile, Redirect, Flash};
 use rocket::response::content::Html;
-use rocket::request::Form;
-use rocket::http::{Cookie, Cookies};
+use rocket::data::FromData;
+use rocket::request::{FlashMessage, Form};
+use rocket::http::{Cookie, Cookies, MediaType, ContentType};
 use auth::userpass::UserPass;
 use auth::status::{LoginStatus,LoginRedirect};
 use auth::dummy::DummyAuthenticator;
 use auth::authenticator::Authenticator;
+// use rocket::request::FlashMessage;
 
 // use chrono::prelude::*;
 // use multipart::server::Multipart;
@@ -109,6 +110,7 @@ use data::*;
 use pages::*;
 use templates::TemplateMenu;
 
+// BLOG_URL MUST HAVE A TRAILING FORWARD SLASH /
 pub const BLOG_URL: &'static str = "http://localhost:8000/";
 pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
 pub const ADMIN_LOGIN_URL: &'static str = "http://localhost:8000/admin";
@@ -123,6 +125,20 @@ fn static_files(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("static/").join(file)).ok()
 }
 
+pub static RSS_MEDIA = MediaType::new("application", "rss+xml");
+pub static RSS_CONTENT = ContentType::new("application", "rss+xml");
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct RssContent<R>(pub R);
+
+/// Sets the Content-Type of the response then delegates the
+/// remainder of the response to the wrapped responder.
+impl<'r, R: Responder<'r>> Responder<'r> for RssContent<R> {
+    fn respond_to(self, req: &Request) -> Result<Response<'r>, Status> {
+        Content(RSS_CONTENT, self.0).respond_to(req)
+    }
+}
+
 fn main() {
     // env_logger::init();
     // init_pg_pool();
@@ -132,6 +148,9 @@ fn main() {
     // }
     
     // init_pg_pool().get();
+    
+    // let rssMedia = MediaType::new("application", "rss+xml");
+    // let rssContent = ContentType::new("application", "rss+xml");
     
     rocket::ignite()
         .manage(data::init_pg_pool())

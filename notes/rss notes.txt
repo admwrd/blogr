@@ -1,0 +1,31 @@
+content type: application/rss+xml
+extension: .rss/.xml
+
+CHANNELS: title	link	description	categories	language	copyright	rating	ttl
+title
+link
+description
+categories	categories the channel belongs to
+language
+copyright
+rating		pics rating
+ttl		minutes the channel can be cached before refreshing
+
+
+
+ITEMS:	title	link	description	author	categories	guid	pub_date
+title		title
+link		BLOG_URL+"aid?aid=0"
+description	description
+author		
+categories	tags
+guid		aid
+pub_date	posted (string) RFC 2822 (not RFC822) Timestamp: Tue, 25 Jul 2006 20:19:57 +0000
+content		html contents??? Not sure if should include this
+
+Tue, 1 Jul 2003 10:52:37 +0200
+
+
+CATEGORIES:
+nname	name of category
+domain	domain of category

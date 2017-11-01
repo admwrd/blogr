@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"MAX",
+				"MAX_CREATE_DESCRIPTION"
+			],
+			[
+				"MAX_CREATE_",
+				"MAX_CREATE_TITLE"
+			],
+			[
+				"GENERIC_PAGE",
+				"GENERIC_PAGE_START"
+			],
+			[
 				"Postgres",
 				"PostgresConnectionManager"
 			],
@@ -51,16 +63,16 @@
 			"file": "src/main.rs",
 			"settings":
 			{
-				"buffer_size": 9447,
+				"buffer_size": 19424,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/data.rs",
+			"file": "src/pages.rs",
 			"settings":
 			{
-				"buffer_size": 5077,
+				"buffer_size": 28218,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -69,8 +81,85 @@
 			"file": "src/blog.rs",
 			"settings":
 			{
-				"buffer_size": 10475,
+				"buffer_size": 21994,
 				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/templates.rs",
+			"settings":
+			{
+				"buffer_size": 12327,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "contrib/src/templates/handlebars_templates.rs",
+			"settings":
+			{
+				"buffer_size": 6933,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/sanitize.rs",
+			"settings":
+			{
+				"buffer_size": 1762,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/layout.rs",
+			"settings":
+			{
+				"buffer_size": 14558,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/data.rs",
+			"settings":
+			{
+				"buffer_size": 5044,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/code/lang/Rust/proj/projman/src/configuration/mod.rs",
+			"settings":
+			{
+				"buffer_size": 2460,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/code/lang/Rust/proj/projman/src/run.rs",
+			"settings":
+			{
+				"buffer_size": 7806,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/code/lang/Rust/proj/projman/src/configuration/storable.rs",
+			"settings":
+			{
+				"buffer_size": 9321,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/code/lang/Rust/proj/projman/src/configuration/storage.rs",
+			"settings":
+			{
+				"buffer_size": 32844,
 				"line_ending": "Windows"
 			}
 		},
@@ -92,13 +181,10 @@
 			}
 		},
 		{
-			"contents": "\nuse rocket;\n\nuse ::rocket::request::FromRequest;\nuse ::rocket::Request;\nuse ::rocket::outcome::Outcome;\nuse ::rocket::config::{Config, Environment};\nuse login_form_status::AuthFail;\n\nuse auth::userpass::*;\nuse auth::authenticator::Authenticator;\n\n\npub trait UserType : Authenticator + CookieId + AuthFail + FromRequest +  {\n    fn new(String, String) -> Self;\n    fn error(String, String) -> Self;\n    fn authenticate(&str, &str) -> Result<Self, Self>;\n    fn new_cookie()\n    // AuthFail\n    // fn reason(&self) -> String;\n    \n    // CookieId\n    // fn get_cookie_config() -> Config;\n    // fn get_cookie_id() -> String;\n    // fn cookie_username(&self) -> String;\n    \n    // Authenticator\n    // fn user(&self) -> String;\n    // fn check_credentials(String, String) -> Result<Self, Self>;\n    \n}\n\n// Inevestigate using UserPass<RegularUser> instead\n//      or maybe implementing ToString/FromString for RegularUser\n\npub enum UserRegular\n\npub struct RegularUser {\n    pub username: String,\n    pub userid: u32,\n    password: String,\n    pub failreason: Option<String>,\n}\n\nimpl UserType for RegularUser {\n    fn new(username: String, password: String) -> Self {\n        RegularUser {\n            username,\n            userid: 666,\n            password,\n            failreason: None,\n        }\n    }\n    fn new_cookie(username: String) -> Self {\n        RegularUser {\n            username,\n            userid: 666,\n            password: String::new(),\n            failreason: None,\n        }\n    }\n    fn error(username: String, failreason: String) -> Self {\n        RegularUser {\n            username,\n            userid: 0,\n            password: String::new(),\n            failreason: Some(failreason),\n        }\n    }\n    fn authenticate(username: &str, password: &str) -> Result<Self, Self> {\n        if password.len() != 64 {\n            Err( RegularUser::error(username.to_string(), format!(\"Invalid password: expected a SHA-256 hashed string, received: {} character long string\", password.len())) )\n        } else if &username == \"andrew\" {\n            Ok(RegularUser::new(username.to_string(), password.to_string()))\n        } else {\n            Err( RegularUser::error(username.to_string(), format!(\"Invalid username\")) )\n        }\n    }\n}\n\nimpl Authenticator for RegularUser {\n    type User = String;\n    fn user(&self) -> String {\n        self.username.clone()\n    }\n    fn check_credentials(username: String, password: String) -> Result<Self, Self> {\n        RegularUser::authenticate(&username, &password)\n    }\n}\n\nimpl AutoFail for RegularUser {\n    fn reason(&self) -> String {\n        if let Some(ref msg) = self.failreason {\n            msg.clone()\n        } else {\n            String::new()\n        }\n    }\n}\n\nimpl CookieId for RegularUser {\n    fn get_cookie_config() -> Config {\n        Config::build(Environment::active().unwrap())\n            .extra(\"regular_user_id\", \"ruid\")\n            .unwrap()\n    }\n    fn get_cookie_id() -> String {\n        let config = Self::get_cookie_config();\n        config.get_str(\"user_cookie_identifier\").unwrap().to_owned()\n    }\n    fn cookie_username(&self) -> String {\n        self.username.clone()\n    }\n}\n\nimpl<'a, 'r> FromRequest<'a, 'r> for RegularUser {\n    type Error = ();\n    \n    fn from_request(request: &'a Request<'r>) -> rocket::request::Outcome<RegularUser, Self::Error> {\n        // let cid = cookies::get_cookie_identifier();\n        let cid = RegularUser::get_cookie_id();\n        let mut cookies = request.cookies();\n        \n        match cookies.get_private(&cid) {\n            Some(cookie) => Outcome::Success(RegularUser::new(cookie.value().to_string())),\n            None => Outcome::Forward(()),\n        }\n    }\n}\n\n\n\n\n",
 			"file": "src/usertype.rs",
-			"file_size": 3826,
-			"file_write_time": 131528818621669193,
 			"settings":
 			{
-				"buffer_size": 3702,
+				"buffer_size": 3647,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -107,34 +193,26 @@
 			"file": "src/admin_auth.rs",
 			"settings":
 			{
-				"buffer_size": 2182,
+				"buffer_size": 2238,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "static/template.html",
+			"file": "src/user_auth.rs",
 			"settings":
 			{
-				"buffer_size": 3193,
+				"buffer_size": 2217,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "static/footer.html",
+			"file": "src/cookie_data.rs",
 			"settings":
 			{
-				"buffer_size": 910,
+				"buffer_size": 3423,
 				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "static/header.html",
-			"settings":
-			{
-				"buffer_size": 923,
 				"line_ending": "Windows"
 			}
 		},
@@ -142,16 +220,7 @@
 			"file": "static/blog.js",
 			"settings":
 			{
-				"buffer_size": 6206,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "static/css/blog.css",
-			"settings":
-			{
-				"buffer_size": 200,
+				"buffer_size": 2529,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -160,19 +229,25 @@
 			"file": "Cargo.toml",
 			"settings":
 			{
-				"buffer_size": 734,
+				"buffer_size": 995,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "notes/Diesel Error Message.log",
+			"file": "contrib/Cargo.toml",
 			"settings":
 			{
-				"buffer_size": 9690,
-				"encoding": "UTF-8",
-				"line_ending": "Windows",
-				"name": "= note: LINK : fatal error LNK1181: cannot open"
+				"buffer_size": 1247,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/Cargo.toml",
+			"settings":
+			{
+				"buffer_size": 1278,
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -186,15 +261,6 @@
 			}
 		},
 		{
-			"file": "src/layout.rs",
-			"settings":
-			{
-				"buffer_size": 10772,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "src/login_form_status.rs",
 			"settings":
 			{
@@ -204,224 +270,81 @@
 			}
 		},
 		{
-			"file": "src/cookie_data.rs",
+			"file": "templates/login-template.html.hbs",
 			"settings":
 			{
-				"buffer_size": 3277,
+				"buffer_size": 8030,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "src/user_auth.rs",
+			"file": "templates/create-template.html.hbs",
 			"settings":
 			{
-				"buffer_size": 2161,
+				"buffer_size": 8216,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/code/lang/Rust/proj/apps/auth-rs/example/src/main.rs",
+			"file": "templates/search-template.html.hbs",
 			"settings":
 			{
-				"buffer_size": 1421,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/apps/auth-rs/example/Cargo.toml",
-			"settings":
-			{
-				"buffer_size": 204,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/status.rs",
-			"settings":
-			{
-				"buffer_size": 3186,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/userpass.rs",
-			"settings":
-			{
-				"buffer_size": 1062,
+				"buffer_size": 7059,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/authenticator.rs",
+			"file": "templates/general-template.html.hbs",
 			"settings":
 			{
-				"buffer_size": 983,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/config.rs",
-			"settings":
-			{
-				"buffer_size": 665,
+				"buffer_size": 6149,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/dummy/mod.rs",
+			"file": "templates/article-template.html.hbs",
 			"settings":
 			{
-				"buffer_size": 343,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/lib.rs",
-			"settings":
-			{
-				"buffer_size": 185,
+				"buffer_size": 6954,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/code/lang/Rust/proj/apps/auth-rs/Cargo.toml",
+			"file": "templates/articles-template.html.hbs",
 			"settings":
 			{
-				"buffer_size": 368,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/apps/auth-rs/README.md",
-			"settings":
-			{
-				"buffer_size": 1166,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog/src/main.rs",
-			"settings":
-			{
-				"buffer_size": 2525,
+				"buffer_size": 7015,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog/src/article.rs",
-			"settings":
-			{
-				"buffer_size": 74,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/code/lang/Rust/proj/blog/src/cookie_data.rs",
+			"contents": "<!doctype html>\n<html lang=\"en\">\n    <head>\n        {{#if info.title}}\n        <title>{{info.title}}</title>\n        {{else}}\n        <title>Vishus Blog</title>\n        {{/if}}\n        \n        <!-- Required meta tags -->\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">\n        \n        <!-- Font Awesome -->\n        <!-- <link rel=\"stylesheet\" href=\"css/font-awesome.min.css\"> -->\n        \n        <!-- Bootstrap CSS -->\n        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css\" integrity=\"sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M\" crossorigin=\"anonymous\">\n        \n        <!-- Custom CSS -->\n        <!-- <link id=\"pageStyleSheet\" type=\"text/css\" href=\"css/blog.css\" rel=\"stylesheet\" /> -->\n        <link id=\"pageStyleSheet\" type=\"text/css\" href=\"css/blogr.css\" rel=\"stylesheet\" />\n        \n        <!-- JavaScript -->\n        <!-- <script src=\"js-head.js\"></script>  -->\n        <script src=\"sha256.js\"></script>\n        <script src=\"blog.js\"></script>\n        \n        <style>\n        \n        </style>\n    </head>\n    <body>\n        <div id=\"mainWrapper\" class=\"main-wrapper\">\n            \n            <nav class=\"v-nav-bar sticky-top navbar navbar-expand-lg navbar-dark bg-dark\">\n                <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarSupportedContent\" aria-controls=\"navbarSupportedContent\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n                    <span class=\"navbar-toggler-icon\"></span>\n                </button>\n                <a class=\"blog-logo navbar-brand\" href=\"#\">Vishus Blog</a>\n\n                <div class=\"collapse navbar-collapse\" id=\"navbarSupportedContent\">\n                    <ul class=\"v-nav navbar-nav mr-auto\">\n                        <!-- <li class=\"v-nav-item nav-item active\"><a class=\"nav-link\" href=\"\">Home <span class=\"sr-only\">(current)</span></a></li> -->\n                        {{#each info.pages}}\n                          {{#is-current-page ../info.page this.url}}\n                            <li class=\"v-nav-item nav-item active\"><a class=\"nav-link\" href=\"{{this.url}}\">{{this.name}}</a></li>\n                          {{else}}\n                            <li class=\"v-nav-item nav-item\"><a class=\"nav-link\" href=\"{{this.url}}\">{{this.name}}</a></li>\n                          {{/is-current-page}}\n                        {{/each}}\n                        {{#if info.is_admin}}\n                        <li class=\"v-nav-item nav-item dropdown\">\n                            <a class=\"v-nav-login nav-link dropdown-toggle\" href=\"#\" id=\"navbarDropdown\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n                                {{info.username}}\n                            </a>\n                            <div class=\"dropdown-menu\" aria-labelledby=\"navbarDropdown\">\n                            {{#each info.admin_pages}}\n                              {{#if this.separator}}\n                                  <div class=\"dropdown-divider\"></div>\n                              {{else}}\n                                {{#is-current-page ../info.page this.url}}\n                                  <a class=\"dropdown-item active\" href=\"{{this.url}}\">{{this.name}}</a>\n                                {{else}}\n                                  <a class=\"dropdown-item\" href=\"{{this.url}}\">{{this.name}}</a>\n                                {{/is-current-page}}\n                              {{/if}}\n                            {{/each}}\n                                <!-- <a class=\"dropdown-item\" href=\"#\">Something else here</a> -->\n                            </div>\n                        </li>\n                        {{/if}}\n                        <!-- <li class=\"v-nav-item nav-item\"><a class=\"nav-link disabled\" href=\"#\">Disabled</a></li> -->\n                    </ul>\n                    <form id=\"search-form\" action=\"/search\" method=\"get\" class=\"form-inline my-2 my-lg-0\">\n                        <input name=\"q\" class=\"form-control mr-sm-2\" type=\"search\" placeholder=\"Search\" aria-label=\"Search\">\n                        <button class=\"btn btn-outline-primary my-2 my-sm-0\" type=\"submit\">Search</button>\n                    </form>\n                </div>\n            </nav>\n                <div id=\"v-body\">\n                    \n<!-- ---------- -->\n                    \n                    {{#if msg}}\n                    {{{msg}}}\n                    {{/if}}\n                    {{#each body}}\n                    <article class=\"v-article\">\n                        <header class=\"v-article-header\">\n                            <h2 class=\"v-article-title\"><a href=\"/article?aid={{this.aid}}\">{{this.title}}</a></h2>\n                            <div class=\"row\">\n                                <date class=\"v-article-date\" datetime=\"{{this.posted_machine}}\">{{this.posted_human}}</date>\n                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->\n                            </div>\n                        </header>\n                        <p>\n                            {{{this.body}}}\n                        </p>\n                        <div class=\"v-article-tags\">\n                            {{#each this.tags}}\n                            <a href=\"/tag?tag={{this}}\">{{this}}</a>\n                            {{/each}}\n                        </div>\n                    </article>\n                    {{/each}}\n                    \n<!-- ---------- -->\n\n                    <footer id=\"v-footer\">\n                        <div class=\"v-copyright\">&copy; 2017 Andrew Prindle</div>\n                        {{#if info.gentime}}\n                        <div class=\"v-generation-time\">Generated in {{info.gentime}} seconds</div>\n                        {{/if}}\n                    </footer>\n                </div>\n            </div>\n            \n            \n        </div>\n        <!-- jQuery first, then Popper.js, then Bootstrap JS -->\n        <script src=\"https://code.jquery.com/jquery-3.2.1.slim.min.js\" integrity=\"sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN\" crossorigin=\"anonymous\"></script>\n        <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js\" integrity=\"sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4\" crossorigin=\"anonymous\"></script>\n        <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js\" integrity=\"sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1\" crossorigin=\"anonymous\"></script>\n        \n        <!-- Custom JavaScript -->\n        <!-- <script src=\"sha256.js\"></script> -->\n        <!-- <script src=\"blog.js\"></script> -->\n        <script src=\"blog_after.js\"></script>\n        <script>\n            {{#if info.js}}\n            {{{info.js}}}\n            {{/if}}\n        </script>\n        \n    </body>\n</html>",
 			"settings":
 			{
-				"buffer_size": 1473,
+				"buffer_size": 7015,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/code/lang/Rust/proj/blog/src/cookies.rs",
+			"file": "templates/tags-template.html.hbs",
 			"settings":
 			{
-				"buffer_size": 645,
+				"buffer_size": 6529,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/code/lang/Rust/proj/blog/src/layout.rs",
+			"file": "old/static/old-blog.js",
 			"settings":
 			{
-				"buffer_size": 7796,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog/src/login.rs",
-			"settings":
-			{
-				"buffer_size": 2542,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog/src/permissions.rs",
-			"settings":
-			{
-				"buffer_size": 181,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog/src/user_data.rs",
-			"settings":
-			{
-				"buffer_size": 167,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog/src/user_form_data.rs",
-			"settings":
-			{
-				"buffer_size": 3323,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog/Cargo.toml",
-			"settings":
-			{
-				"buffer_size": 339,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog_old/src/main.rs",
-			"settings":
-			{
-				"buffer_size": 3163,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog_old/src/layout.rs",
-			"settings":
-			{
-				"buffer_size": 2742,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog_old/src/blog.rs",
-			"settings":
-			{
-				"buffer_size": 353,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/blog_old/src/authentication.rs",
-			"settings":
-			{
-				"buffer_size": 4078,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/projman/src/run.rs",
-			"settings":
-			{
-				"buffer_size": 7806,
+				"buffer_size": 7586,
 				"line_ending": "Windows"
 			}
 		},
@@ -429,247 +352,17 @@
 			"file": "/C/code/lang/Rust/proj/traitstr/src/main.rs",
 			"settings":
 			{
-				"buffer_size": 12796,
+				"buffer_size": 12948,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/C/code/lang/Rust/proj/refs/src/main.rs",
+			"file": "/C/code/lang/Rust/code/Snippets/Snippet Collection.rs",
 			"settings":
 			{
-				"buffer_size": 3981,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/splitter/src/main.rs",
-			"settings":
-			{
-				"buffer_size": 5827,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/splitter/Named Split String.txt",
-			"settings":
-			{
-				"buffer_size": 136,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/recipes/src/autoinc.rs",
-			"settings":
-			{
-				"buffer_size": 1766,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/recipes/src/entries.rs",
-			"settings":
-			{
-				"buffer_size": 10551,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/recipes/src/helpers.rs",
-			"settings":
-			{
-				"buffer_size": 5625,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/recipes/src/people.rs",
-			"settings":
-			{
-				"buffer_size": 4634,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/randproj/src/genproj.rs",
-			"settings":
-			{
-				"buffer_size": 6475,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/passgen/src/dict_helpers.rs",
-			"settings":
-			{
-				"buffer_size": 9166,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/projman/src/configuration/mod.rs",
-			"settings":
-			{
-				"buffer_size": 2460,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/projman/src/behavior/mod.rs",
-			"settings":
-			{
-				"buffer_size": 15388,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/projman/src/manager/mod.rs",
-			"settings":
-			{
-				"buffer_size": 17364,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/projman/src/structures/autorun.rs",
-			"settings":
-			{
-				"buffer_size": 3419,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/projman/src/structures/defaults.rs",
-			"settings":
-			{
-				"buffer_size": 589,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/projman/src/structures/executables.rs",
-			"settings":
-			{
-				"buffer_size": 9007,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/projman/src/structures/mod.rs",
-			"settings":
-			{
-				"buffer_size": 10367,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/projman/src/structures/var_str.rs",
-			"settings":
-			{
-				"buffer_size": 17330,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/projman/src/helpers.rs",
-			"settings":
-			{
-				"buffer_size": 2834,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/passgen/src/passwords.rs",
-			"settings":
-			{
-				"buffer_size": 16083,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/hashers_metrohash/src/lib.rs",
-			"settings":
-			{
-				"buffer_size": 2853,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/hashers/src/dict.rs",
-			"settings":
-			{
-				"buffer_size": 1197436,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/hashers/src/lib.rs",
-			"settings":
-			{
-				"buffer_size": 4691,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/hashers/src/benches/bench.rs",
-			"settings":
-			{
-				"buffer_size": 2702,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/csort/src/color.rs",
-			"settings":
-			{
-				"buffer_size": 7040,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/csort/src/colorhsl.rs",
-			"settings":
-			{
-				"buffer_size": 7236,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/csort/src/main.rs",
-			"settings":
-			{
-				"buffer_size": 6234,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/csort/src/page.rs",
-			"settings":
-			{
-				"buffer_size": 23156,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/csort/src/sort_hsl.rs",
-			"settings":
-			{
-				"buffer_size": 8334,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/csort/src/upload.rs",
-			"settings":
-			{
-				"buffer_size": 7413,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/code/lang/Rust/proj/colors/src/color.rs",
-			"settings":
-			{
-				"buffer_size": 9835,
+				"buffer_size": 30551,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		}
@@ -698,7 +391,7 @@
 	"command_palette":
 	{
 		"height": 392.0,
-		"last_filter": "package",
+		"last_filter": "",
 		"selected_items":
 		[
 			[
@@ -730,7 +423,7 @@
 				"Package Control: Enable Package"
 			]
 		],
-		"width": 552.0
+		"width": 540.0
 	},
 	"console":
 	{
@@ -751,8 +444,95 @@
 	},
 	"file_history":
 	[
-		"/C/code/lang/Rust/proj/blogr/.env",
+		"/C/code/lang/Rust/proj/strtest/src/main.rs",
+		"/C/code/lang/Rust/proj/blogr/src/pages.rs",
+		"/C/code/lang/Rust/proj/blogr/notes/blogr_db_post_tag2_and_all-tags.sql",
+		"/C/code/lang/Rust/proj/blogr/templates/general-template.html.hbs",
+		"/C/code/lang/Rust/proj/blogr/contrib/src/templates/handlebars_templates.rs",
 		"/C/Users/Andrew/AppData/Roaming/Sublime Text 3/Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+		"/C/code/lang/Rust/proj/blogr/src/templates.rs",
+		"/C/code/lang/Rust/proj/blogr/src/blog.rs",
+		"/C/code/lang/Rust/proj/blogr/static/template_footer.html",
+		"/C/code/lang/Rust/proj/blogr/static/template_body.html",
+		"/C/code/lang/Rust/proj/blogr/static/template_header.html",
+		"/C/code/lang/Rust/code/convert collection of values into incrementing hashmap.rs",
+		"/C/code/lang/Rust/code/MsgPack Serialization Deserialization.rs",
+		"/C/code/lang/Rust/proj/blogr/handlebars_templates.rs",
+		"/C/code/lang/Rust/proj/blogr/contrib/src/templates/context.rs",
+		"/C/code/lang/Rust/proj/blogr/contrib/src/templates/mod.rs",
+		"/C/code/lang/Rust/proj/blogr/contrib/src/templates/engine.rs",
+		"/C/code/lang/Rust/proj/blogr/static/blog_after.js",
+		"/C/code/lang/Rust/proj/blogr/src/main.rs",
+		"/C/code/lang/Rust/proj/blogr/static/hbs-template.html",
+		"/C/code/lang/Rust/proj/blogr/templates/basic-template.html.hbs",
+		"/C/code/lang/Rust/proj/blogr/static/template_form.html",
+		"/C/code/lang/Rust/proj/blogr/static/article-template.hbs",
+		"/C/code/lang/Rust/proj/blogr/static/general-template.hbs",
+		"/C/code/lang/Rust/proj/recipes/src/recipe_structs.rs",
+		"/C/code/lang/Rust/proj/blogr/static/sha256.js",
+		"/C/code/lang/Rust/proj/blogr/src/user_auth.rs",
+		"/C/code/lang/Rust/proj/blogr/src/cookie_data.rs",
+		"/C/code/lang/Rust/proj/apps/auth-rs/example/src/main.rs",
+		"/C/code/lang/Rust/proj/apps/auth-rs/example/Cargo.toml",
+		"/C/code/lang/Rust/proj/apps/auth-rs/src/status.rs",
+		"/C/code/lang/Rust/proj/apps/auth-rs/src/userpass.rs",
+		"/C/code/lang/Rust/proj/apps/auth-rs/src/authenticator.rs",
+		"/C/code/lang/Rust/proj/apps/auth-rs/src/config.rs",
+		"/C/code/lang/Rust/proj/apps/auth-rs/src/lib.rs",
+		"/C/code/lang/Rust/proj/apps/auth-rs/src/dummy/mod.rs",
+		"/C/code/lang/Rust/proj/apps/auth-rs/Cargo.toml",
+		"/C/code/lang/Rust/proj/apps/auth-rs/README.md",
+		"/C/code/lang/Rust/proj/blog/src/main.rs",
+		"/C/code/lang/Rust/proj/blog/src/article.rs",
+		"/C/code/lang/Rust/proj/blog_old/src/main.rs",
+		"/C/code/lang/Rust/proj/blog/Cargo.toml",
+		"/C/code/lang/Rust/proj/blog/src/user_form_data.rs",
+		"/C/code/lang/Rust/proj/blog/src/user_data.rs",
+		"/C/code/lang/Rust/proj/blog/src/permissions.rs",
+		"/C/code/lang/Rust/proj/blog/src/layout.rs",
+		"/C/code/lang/Rust/proj/blog/src/login.rs",
+		"/C/code/lang/Rust/proj/blog/src/cookies.rs",
+		"/C/code/lang/Rust/proj/blog/src/cookie_data.rs",
+		"/C/code/lang/Rust/proj/blog_old/src/layout.rs",
+		"/C/code/lang/Rust/proj/blog_old/src/blog.rs",
+		"/C/code/lang/Rust/proj/blog_old/src/authentication.rs",
+		"/C/code/lang/Rust/proj/projman/src/run.rs",
+		"/C/code/lang/Rust/proj/refs/src/main.rs",
+		"/C/code/lang/Rust/proj/splitter/src/main.rs",
+		"/C/code/lang/Rust/proj/splitter/Named Split String.txt",
+		"/C/code/lang/Rust/proj/recipes/src/autoinc.rs",
+		"/C/code/lang/Rust/proj/recipes/src/entries.rs",
+		"/C/code/lang/Rust/proj/recipes/src/helpers.rs",
+		"/C/code/lang/Rust/proj/recipes/src/people.rs",
+		"/C/code/lang/Rust/proj/randproj/src/genproj.rs",
+		"/C/code/lang/Rust/proj/passgen/src/dict_helpers.rs",
+		"/C/code/lang/Rust/proj/projman/src/configuration/mod.rs",
+		"/C/code/lang/Rust/proj/projman/src/behavior/mod.rs",
+		"/C/code/lang/Rust/proj/projman/src/manager/mod.rs",
+		"/C/code/lang/Rust/proj/projman/src/structures/autorun.rs",
+		"/C/code/lang/Rust/proj/projman/src/structures/defaults.rs",
+		"/C/code/lang/Rust/proj/projman/src/structures/executables.rs",
+		"/C/code/lang/Rust/proj/projman/src/structures/mod.rs",
+		"/C/code/lang/Rust/proj/projman/src/structures/var_str.rs",
+		"/C/code/lang/Rust/proj/projman/src/helpers.rs",
+		"/C/code/lang/Rust/proj/passgen/src/passwords.rs",
+		"/C/code/lang/Rust/proj/hashers_metrohash/src/lib.rs",
+		"/C/code/lang/Rust/proj/hashers/src/dict.rs",
+		"/C/code/lang/Rust/proj/hashers/src/lib.rs",
+		"/C/code/lang/Rust/proj/hashers/src/benches/bench.rs",
+		"/C/code/lang/Rust/proj/csort/src/color.rs",
+		"/C/code/lang/Rust/proj/csort/src/colorhsl.rs",
+		"/C/code/lang/Rust/proj/csort/src/main.rs",
+		"/C/code/lang/Rust/proj/csort/src/page.rs",
+		"/C/code/lang/Rust/proj/csort/src/sort_hsl.rs",
+		"/C/code/lang/Rust/proj/csort/src/upload.rs",
+		"/C/code/lang/Rust/proj/colors/src/color.rs",
+		"/C/code/lang/Rust/proj/blogr/notes/Diesel Error Message.log",
+		"/C/code/lang/Rust/proj/blogr/static/css/blog.css",
+		"/C/code/lang/Rust/proj/blogr/static/header.html",
+		"/C/code/lang/Rust/proj/blogr/static/footer.html",
+		"/C/code/lang/Rust/proj/blogr/static/template.html",
+		"/C/code/lang/Rust/proj/blogr/.env",
 		"/C/code/lang/Rust/proj/passgen/src/main.rs",
 		"/C/code/lang/Rust/proj/cmds/src/table.rs",
 		"/C/code/lang/Rust/proj/cmds/src/cmdlist.rs",
@@ -772,9 +552,7 @@
 		"/C/code/lang/Rust/proj/words/src/dict.rs",
 		"/C/code/lang/Rust/proj/wordsort/src/main.rs",
 		"/C/code/lang/Rust/proj/splitter/sorters.txt",
-		"/C/code/lang/Rust/proj/splitter/Named Split String.txt",
 		"/C/code/lang/Rust/proj/entropy2/src/main.rs",
-		"/C/code/lang/Rust/proj/csort/src/color.rs",
 		"/C/code/lang/Rust/proj/colors/src/main.rs",
 		"/C/code/lang/Rust/proj/cmds/src/config.rs",
 		"/C/code/lang/Rust/proj/rocket/src/main.rs",
@@ -782,103 +560,18 @@
 		"/C/code/lang/Rust/proj/projman/src/configuration/storage.rs",
 		"/C/code/lang/Rust/proj/projman/src/configuration/storable.rs",
 		"/C/code/lang/Rust/proj/color_sorter/src/main.rs",
-		"/C/code/lang/Rust/proj/csort/src/main.rs",
 		"/C/code/lang/Rust/proj/blogr/src/view.rs",
 		"/C/code/lang/Rust/proj/blogr/src/articles.rs",
 		"/C/code/lang/Rust/proj/blogr/notes/tags.sql",
 		"/C/code/lang/Rust/proj/blogr/notes/users.sql",
 		"/C/code/lang/Rust/proj/blogr/notes/categories.sql",
-		"/C/code/lang/Rust/proj/blogr/static/header.html",
 		"/C/code/lang/Rust/proj/blogr/Error 422 log.log",
 		"/C/code/lang/Rust/proj/numconv/Cargo.toml",
 		"/C/code/lang/Rust/proj/numconv/src/main.rs",
 		"/C/code/lang/Rust/proj/blogr/static/blog.js",
-		"/C/code/lang/Rust/proj/blogr/static/template.html",
 		"/C/code/lang/Rust/proj/traitstr/src/main.rs",
 		"/C/code/lang/Rust/proj/blogr/Cargo.toml",
-		"/C/code/lang/Rust/proj/blogr/src/cookies.rs",
-		"/C/code/lang/Rust/proj/blogr/src/user_auth.rs",
-		"/C/code/lang/Rust/proj/apps/auth-rs/example/src/main.rs",
-		"/C/code/lang/Rust/proj/apps/auth-rs/src/status.rs",
-		"/C/code/lang/Rust/proj/apps/auth-rs/src/userpass.rs",
-		"/C/code/lang/Rust/proj/apps/auth-rs/src/config.rs",
-		"/C/code/lang/Rust/proj/apps/auth-rs/src/authenticator.rs",
-		"/C/code/lang/Rust/proj/apps/auth-rs/src/dummy/mod.rs",
-		"/C/code/lang/Rust/proj/apps/auth-rs/src/lib.rs",
-		"/C/code/lang/Rust/proj/blog_old/src/main.rs",
-		"/C/code/lang/Rust/proj/blog_old/src/authentication.rs",
-		"/C/code/lang/Rust/proj/blog_old/src/blog.rs",
-		"/C/code/lang/Rust/proj/blog_old/Cargo.toml",
-		"/C/code/lang/Rust/proj/blog_old/src/layout.rs",
-		"/C/code/lang/Rust/proj/examples/rocketauth/Cargo.toml",
-		"/C/code/lang/Rust/proj/examples/rocketauth/src/main.rs",
-		"/C/code/lang/Rust/proj/csort/src/template_footer.html",
-		"/C/code/lang/Rust/proj/csort/src/template_header.html",
-		"/C/code/lang/Rust/proj/csort/src/page.rs",
-		"/C/code/lang/Rust/proj/csort/src/upload.rs",
-		"/C/code/lang/Rust/proj/csort/src/upload_example.rs",
-		"/C/code/lang/Rust/proj/csort/src/rocket_example.rs",
-		"/C/code/lang/Rust/proj/csort/Cargo.toml",
-		"/C/code/lang/Rust/proj/csort/Rocket.toml",
-		"/C/code/lang/Rust/proj/blog/src/main.rs",
-		"/C/code/lang/Rust/proj/blog/src/login.rs",
-		"/C/code/lang/Rust/proj/blog/src/user_form_data.rs",
-		"/C/code/lang/Rust/proj/blog/src/cookie_data.rs",
-		"/C/code/lang/Rust/proj/blog/src/user_data.rs",
-		"/C/code/lang/Rust/proj/blog/src/layout.rs",
-		"/C/code/lang/Rust/proj/blog/static/template.html",
-		"/C/code/lang/Rust/proj/blog/src/permissions.rs",
-		"/C/code/lang/Rust/proj/blog/src/cookies.rs",
-		"/C/code/lang/Rust/proj/blog/Cargo.toml",
-		"/C/code/lang/Rust/proj/blog/src/article.rs",
-		"/C/code/lang/Rust/proj/blog/src/admin_login.rs",
-		"/C/code/lang/Rust/proj/blog/src/articles.rs",
-		"/C/code/lang/Rust/proj/blog/src/entry.rs",
-		"/C/code/lang/Rust/proj/blog/src/userdata.rs",
-		"/C/Users/Andrew/AppData/Roaming/Sublime Text 3/Packages/User/NewThemes/Calydon.tmTheme",
-		"/C/code/lang/Rust/proj/splitter/src/main.rs",
-		"/C/code/lang/Rust/proj/blog/static/css/blog.css",
-		"/C/code/lang/Rust/proj/blog/static/sha256.js",
-		"/C/code/lang/Rust/proj/blog/static/blog.js",
-		"/C/code/lang/Rust/proj/blog/.env",
-		"/C/code/lang/Rust/proj/blog/src/authentication.rs",
-		"/C/code/lang/Rust/proj/blog/src/blog.rs",
-		"/C/Users/Andrew/Documents/Me - Personal/Demos/dev demos/register/register.js",
-		"/C/Users/Andrew/Documents/Me - Personal/Demos/dev demos/register/register.html",
-		"/C/code/lang/Rust/proj/blog/template.html",
-		"/C/Users/Andrew/Documents/Me - Personal/Demos/dev demos/dynEditor/form_editor_test_page.html",
-		"/C/Users/Andrew/Documents/Me - Personal/Demos/dev demos/dynEditor/form_editor.js",
-		"/C/code/lang/Rust/proj/blog/static/js-head.js",
-		"/C/code/lang/Rust/proj/blog/.gitignore",
-		"/C/code/lang/Rust/proj/csort/,,.",
-		"/C/Users/Andrew/AppData/Roaming/Sublime Text 3/Packages/User/JavaScript.sublime-settings",
-		"/C/code/lang/Rust/proj/alex/grift/src/src/iter.rs",
-		"/C/code/lang/Rust/proj/alex/grift/src/src/loc.rs",
-		"/C/code/lang/Rust/proj/alex/grift/src/src/mod.rs",
-		"/C/code/lang/Rust/proj/alex/grift/src/src/span.rs",
-		"/C/code/lang/Rust/proj/alex/grift/src/ast/parse.rs",
-		"/C/code/lang/Rust/proj/alex/grift/src/ast/mod.rs",
-		"/C/code/lang/Rust/proj/alex/grift/src/lib.rs",
-		"/C/code/lang/Rust/proj/alex/grift/src/token/iter.rs",
-		"/C/code/lang/Rust/proj/alex/grift/src/src/cite.rs",
-		"/C/code/lang/Rust/proj/alex/grift/src/token/mod.rs",
-		"/C/code/lang/Rust/proj/alex/grift/src/token/tokenize.rs",
-		"/C/code/lang/Rust/proj/randproj/src/genproj.rs",
-		"/C/code/lang/Rust/proj/recipes/src/entries.rs",
-		"/C/code/lang/Rust/proj/recipes/src/helpers.rs",
-		"/C/code/lang/Rust/proj/hashers/src/lib.rs",
-		"/C/code/lang/Rust/proj/hashers/src/benches/bench.rs",
-		"/C/code/lang/Rust/proj/hashers/src/dict.rs",
-		"/C/code/lang/Rust/proj/projman/src/manager/mod.rs",
-		"/C/code/lang/Rust/proj/projman/src/structures/mod.rs",
-		"/C/code/lang/Rust/proj/projman/src/structures/var_str.rs",
-		"/C/code/lang/Rust/proj/projman/src/structures/defaults.rs",
-		"/C/code/lang/Rust/proj/projman/src/structures/autorun.rs",
-		"/C/code/lang/Rust/proj/projman/src/configuration/mod.rs",
-		"/C/code/lang/Rust/proj/projman/src/behavior/rust.rs",
-		"/C/code/lang/Rust/proj/projman/src/behavior/mod.rs",
-		"/C/code/lang/Rust/proj/projman/src/run.rs",
-		"/C/code/lang/Rust/proj/projman/src/main.rs"
+		"/C/code/lang/Rust/proj/blogr/src/cookies.rs"
 	],
 	"find":
 	{
@@ -902,6 +595,68 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"split_tags",
+			"sanitize_tags",
+			"parse",
+			"NaiveDateTimeWrapper",
+			"Option",
+			"date",
+			"lazy_static",
+			"250",
+			"MAX_CREATE_TAGS",
+			"500",
+			"save",
+			"\n        /// register the helper\n        if let Err(e) = handlebars.register_helper(\"menu_item\", Box::new(menu_helper)) {\n            error!(\"Error in helper `menu_item`: '{}'\", e);\n            return None;\n        }\n        ",
+			"engine",
+			"hb",
+			"handlebars",
+			"String",
+			"hbs_template\\(",
+			"TemplateBody::Login",
+			"titlecase",
+			"to_lowercase",
+			"db",
+			"pool",
+			"save(",
+			"AuthFailure",
+			"AuthFail",
+			"hbs_medium_sanitize",
+			"\\[post",
+			"(hbs.*)",
+			"pub fn (hbs_.*)\\(.*",
+			"pub fn hbs_(.*)\\(.*",
+			"pub fn (hbs_.*)\\(.*",
+			"pub fn hbs_(.*)\\(.*",
+			"\\n+",
+			"^(?!pub fn hbs_).*",
+			"^(?!pub fn hbs_)",
+			"pub fn (?!hbs_)",
+			"pub pub fn",
+			"fn ",
+			"^fn ",
+			"TemplateBody::Articles",
+			"pgconn",
+			"{{",
+			"inputTags",
+			"insert-tags",
+			"inputTags",
+			"input-tags",
+			"titlecase",
+			"{{",
+			"log",
+			"header",
+			"HEADER",
+			"alltags",
+			"all.tags",
+			"all_tags",
+			"text",
+			"form",
+			"login_form_fail",
+			"tags",
+			"link_tags",
+			"opt_col(row.get_opt(5))",
+			"  ",
+			"<button type=\"submit\" class=\"btn btn-primary\">Submit</button>",
 			"is_user",
 			"value",
 			"to_string",
@@ -967,69 +722,7 @@
 			"#fff",
 			"#FFE337",
 			"#FFEA6B",
-			"impl",
-			"generic",
-			">\n",
-			"string\\.",
-			"meta.function meta.",
-			"background",
-			"mutate_word | leet_speak",
-			"print(ln)?!",
-			"mutate_word",
-			"\\\\\\\"",
-			"\\\"",
-			"document.",
-			",",
-			"Exec time: \\{\\}\\.\\{:08\\}",
-			"\\|",
-			"|",
-			"comment",
-			"background",
-			"Incorrect length of",
-			"ColorHsl",
-			"Options",
-			"print(ln)?!",
-			"print",
-			"Options",
-			"page",
-			"options",
-			"println!",
-			"println!\\(\"Options:",
-			"println!(\"Options",
-			"(.*)\\n",
-			"^.*(#[A-Fa-f0-9]{6})$",
-			"#[A-Fa-f0-9]{3,6}",
-			"sort_by_hls",
-			"alert",
-			"prompt",
-			"clipboardText",
-			"parsed",
-			"\\.0",
-			"SPLIT_ARGS",
-			"splitn",
-			"split",
-			"splitn",
-			"vars",
-			"before",
-			"command",
-			"vars",
-			"RUST_",
-			"parse_vars",
-			"^(\\s*)eprint(ln?)",
-			"^\\s*eprint(?:ln?)",
-			"^\\s*eprint(:?ln?)",
-			"set_file_name",
-			"get_yaml",
-			"Option<Local>",
-			"retrieve_",
-			"retrieve_yaml",
-			"Mutex",
-			"File::open",
-			"stderr",
-			"impl Configurable",
-			"impl<'de> Configurable",
-			"impl Configurable for",
-			"type C = (.*);"
+			"impl"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1037,6 +730,18 @@
 		"regex": true,
 		"replace_history":
 		[
+			"pages::\\1",
+			"\\1,",
+			"\\1",
+			"\\n",
+			"",
+			"pub fn hbs_",
+			"pub fn",
+			"pub fn ",
+			"pub fn",
+			"row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new())",
+			"    ",
+			"<button type=\"submit\" class=\"btn btn-primary\" id=\"submit-button-id\">Submit</button>",
 			"des",
 			"Article",
 			"<div id=\"mainWrapper\" class=\"main-wrapper\">",
@@ -1152,19 +857,7 @@
 			"\\1",
 			"\\1\\r\\n",
 			"",
-			"\\n",
-			"\\r\\n",
-			"<div class=\"colorhex\" data-clipboard-text=\"\\1\">\\1</div>",
-			"\\t",
-			"'\\1',",
-			"\\t\\t\\t\\t\"\\1\",",
-			",",
-			" ",
-			"\\t\\t\\t\\t\"\\1\",",
-			" \\n\\1",
-			"\\1\\n",
-			"\\1\\r\\n",
-			"\\1"
+			"\\n"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -1175,7 +868,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -1184,20 +877,20 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9447,
+						"buffer_size": 19424,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7564,
-								7564
+								3861,
+								3861
 							]
 						],
 						"settings":
 						{
-							"color_helper.box_height": 17,
+							"color_helper.box_height": 16,
 							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
 							"color_helper.file_palette":
 							[
@@ -1210,38 +903,41 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
+							"history_list_is_closing": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3602.0,
+						"translation.y": 1700.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "src/data.rs",
+					"file": "src/pages.rs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5077,
+						"buffer_size": 28218,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								985,
-								985
+								22704,
+								22704
 							]
 						],
 						"settings":
 						{
-							"color_helper.box_height": 17,
+							"color_helper.box_height": 16,
 							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
 							"color_helper.file_palette":
 							[
@@ -1254,16 +950,17 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
+							"history_list_is_closing": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 705.0,
+						"translation.y": 8446.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -1272,15 +969,62 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10475,
+						"buffer_size": 21994,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6549,
-								6549
+								13024,
+								13024
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 16,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"history_list_is_closing": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1831.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/templates.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12327,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11305,
+								11305
 							]
 						],
 						"settings":
@@ -1298,7 +1042,52 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"history_list_is_closing": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1271.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "contrib/src/templates/handlebars_templates.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6933,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4617,
+								4767
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
@@ -1306,14 +1095,342 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2890.0,
+						"translation.y": 1792.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 5,
+					"file": "src/sanitize.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1762,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1322,
+								1322
+							],
+							[
+								1443,
+								1443
+							],
+							[
+								1547,
+								1547
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 91.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/layout.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14558,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								145,
+								145
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 429.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "src/data.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5044,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2458,
+								2523
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 918.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/C/code/lang/Rust/proj/projman/src/configuration/mod.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2460,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 23,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/C/code/lang/Rust/proj/projman/src/run.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7806,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								59,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 32,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/C/code/lang/Rust/proj/projman/src/configuration/storable.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9321,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 33,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/C/code/lang/Rust/proj/projman/src/configuration/storage.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 32844,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 34,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
 					"file": ".env",
 					"semi_transient": false,
 					"settings":
@@ -1344,7 +1461,7 @@
 								"current_ext": "",
 								"current_syntax": "Text/Plain text",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Text/Plain text.tmLanguage"
@@ -1353,11 +1470,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 13,
 					"file": "src/users.rs",
 					"semi_transient": false,
 					"settings":
@@ -1388,7 +1505,7 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax"
@@ -1397,24 +1514,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 28,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 14,
 					"file": "src/usertype.rs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3702,
+						"buffer_size": 3647,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2726,
-								2726
+								3347,
+								3347
 							]
 						],
 						"settings":
@@ -1432,33 +1549,33 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1359.0,
+						"translation.y": 436.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 27,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 15,
 					"file": "src/admin_auth.rs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2182,
+						"buffer_size": 2238,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								495,
-								495
+								1765,
+								1765
 							]
 						],
 						"settings":
@@ -1477,173 +1594,33 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 134.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "static/template.html",
+					"buffer": 16,
+					"file": "src/user_auth.rs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3193,
+						"buffer_size": 2217,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3066,
-								3066
-							]
-						],
-						"settings":
-						{
-							"auto_complete": false,
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"allowed_colors":
-								[
-									"hex_compressed",
-									"hsla",
-									"webcolors",
-									"rgba",
-									"hex",
-									"hsl",
-									"rgb"
-								],
-								"compress_hex_output": true,
-								"current_ext": ".html",
-								"current_syntax": "HTML/HTML",
-								"enabled": true,
-								"last_updated": 1508088080.31,
-								"scan_completion_scopes":
-								[
-								],
-								"scan_scopes":
-								[
-									"meta.declaration-list.css -support.type.property-name.css -comment -string",
-									"meta.property-value.css -comment -string",
-									"meta.value.css -comment -string",
-									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
-									"meta.tag.any.html meta.attribute-with-value.style.html"
-								],
-								"use_hex_argb": false
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 635.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "static/footer.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 910,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								783,
-								741
-							]
-						],
-						"settings":
-						{
-							"auto_complete": false,
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"allowed_colors":
-								[
-									"hex_compressed",
-									"hsla",
-									"webcolors",
-									"rgba",
-									"hex",
-									"hsl",
-									"rgb"
-								],
-								"compress_hex_output": true,
-								"current_ext": ".html",
-								"current_syntax": "HTML/HTML",
-								"enabled": true,
-								"last_updated": 1508088080.31,
-								"scan_completion_scopes":
-								[
-								],
-								"scan_scopes":
-								[
-									"meta.declaration-list.css -support.type.property-name.css -comment -string",
-									"meta.property-value.css -comment -string",
-									"meta.value.css -comment -string",
-									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
-									"meta.tag.any.html meta.attribute-with-value.style.html"
-								],
-								"use_hex_argb": false
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "static/header.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 923,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								418,
-								418
+								1753,
+								1753
 							]
 						],
 						"settings":
@@ -1658,61 +1635,84 @@
 							},
 							"color_helper.scan":
 							{
-								"allowed_colors":
-								[
-									"hex_compressed",
-									"hsla",
-									"webcolors",
-									"rgba",
-									"hex",
-									"hsl",
-									"rgb"
-								],
-								"compress_hex_output": true,
-								"current_ext": ".html",
-								"current_syntax": "HTML/HTML",
-								"enabled": true,
-								"last_updated": 1508088080.31,
-								"scan_completion_scopes":
-								[
-								],
-								"scan_scopes":
-								[
-									"meta.declaration-list.css -support.type.property-name.css -comment -string",
-									"meta.property-value.css -comment -string",
-									"meta.value.css -comment -string",
-									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
-									"meta.tag.any.html meta.attribute-with-value.style.html"
-								],
-								"use_hex_argb": false
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 406.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 36,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 17,
+					"file": "src/cookie_data.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3423,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1166,
+								1166
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 30,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
 					"file": "static/blog.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6206,
+						"buffer_size": 2529,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4705,
-								4705
+								2238,
+								2238
 							]
 						],
 						"settings":
@@ -1731,7 +1731,7 @@
 								"current_ext": ".js",
 								"current_syntax": "JavaScript/JavaScript",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
@@ -1739,94 +1739,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1700.0,
+						"translation.y": 214.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 60,
+					"stack_index": 31,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
-					"file": "static/css/blog.css",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 200,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								197,
-								197
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/deep_blue_see.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"allowed_colors":
-								[
-									"hex_compressed",
-									"hsla",
-									"webcolors",
-									"rgba",
-									"hex",
-									"hsl",
-									"rgb"
-								],
-								"compress_hex_output": true,
-								"current_ext": ".css",
-								"current_syntax": "CSS/CSS",
-								"enabled": true,
-								"last_updated": 1508088080.31,
-								"scan_completion_scopes":
-								[
-								],
-								"scan_scopes":
-								[
-									"meta.declaration-list.css -support.type.property-name.css -comment -string",
-									"meta.property-value.css -comment -string",
-									"meta.value.css -comment -string",
-									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
-									"meta.tag.any.html meta.attribute-with-value.style.html"
-								],
-								"use_hex_argb": false
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/CSS/CSS.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 59,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
+					"buffer": 19,
 					"file": "Cargo.toml",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 734,
+						"buffer_size": 995,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								569,
-								569
+								710,
+								710
 							]
 						],
 						"settings":
@@ -1844,7 +1777,7 @@
 								"current_ext": ".toml",
 								"current_syntax": "Text/Plain text",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Text/Plain text.tmLanguage"
@@ -1853,29 +1786,28 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
-					"file": "notes/Diesel Error Message.log",
+					"buffer": 20,
+					"file": "contrib/Cargo.toml",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9690,
+						"buffer_size": 1247,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8624,
-								8624
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"auto_name": "= note: LINK : fatal error LNK1181: cannot open",
 							"color_helper.box_height": 17,
 							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
 							"color_helper.file_palette":
@@ -1886,23 +1818,67 @@
 							},
 							"color_helper.scan":
 							{
-								"current_ext": ".log",
+								"current_ext": ".toml",
 								"current_syntax": "Text/Plain text",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1875.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 57,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 21,
+					"file": "lib/Cargo.toml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1278,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".toml",
+								"current_syntax": "Text/Plain text",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
 					"file": "Rocket.toml",
 					"semi_transient": false,
 					"settings":
@@ -1934,7 +1910,7 @@
 								"current_ext": ".toml",
 								"current_syntax": "Text/Plain text",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Text/Plain text.tmLanguage"
@@ -1943,7 +1919,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 35,
 					"type": "text"
 				}
 			]
@@ -1953,71 +1929,25 @@
 			"sheets":
 			[
 				{
-					"buffer": 15,
-					"file": "src/layout.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10772,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								57,
-								57
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
 					"buffer": 2,
 					"file": "src/blog.rs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10475,
+						"buffer_size": 21994,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								9662,
+								9662
 							]
 						],
 						"settings":
 						{
-							"color_helper.box_height": 17,
+							"color_helper.box_height": 16,
 							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
 							"color_helper.file_palette":
 							[
@@ -2030,22 +1960,70 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
+							"history_list_is_closing": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 85.0,
+						"translation.y": 4180.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 0,
+					"file": "src/main.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 19424,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5703,
+								5703
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 16,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1508562186.47
+							},
+							"git_gutter_is_enabled": true,
+							"history_list_is_closing": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1140.0,
+						"translation.y": 1815.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 23,
 					"file": "src/login_form_status.rs",
 					"semi_transient": false,
 					"settings":
@@ -2057,8 +2035,8 @@
 						"selection":
 						[
 							[
-								5231,
-								5231
+								418,
+								418
 							]
 						],
 						"settings":
@@ -2076,7 +2054,7 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
@@ -2084,528 +2062,34 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2375.0,
+						"translation.y": 820.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "src/cookie_data.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3277,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								353,
-								353
-							]
-						],
-						"settings":
-						{
-							"auto_name": "",
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 1138.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 18,
-					"file": "src/user_auth.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2161,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								40,
-								1
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 229.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 19,
-					"file": "/C/code/lang/Rust/proj/apps/auth-rs/example/src/main.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1421,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								551,
-								551
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 50,
-					"type": "text"
-				},
-				{
-					"buffer": 20,
-					"file": "/C/code/lang/Rust/proj/apps/auth-rs/example/Cargo.toml",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 204,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								203,
-								203
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".toml",
-								"current_syntax": "Text/Plain text",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 63,
-					"type": "text"
-				},
-				{
-					"buffer": 21,
-					"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/status.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3186,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1552,
-								1552
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 16,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 672.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 54,
-					"type": "text"
-				},
-				{
-					"buffer": 22,
-					"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/userpass.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1062,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								18,
-								18
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 53,
-					"type": "text"
-				},
-				{
-					"buffer": 23,
-					"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/authenticator.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 983,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 16,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 55,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
 					"buffer": 24,
-					"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/config.rs",
+					"file": "templates/login-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 665,
+						"buffer_size": 8030,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								42,
-								0
+								3983,
+								3983
 							]
 						],
 						"settings":
 						{
+							"auto_complete": false,
 							"color_helper.box_height": 17,
 							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 58,
-					"type": "text"
-				},
-				{
-					"buffer": 25,
-					"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/dummy/mod.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 343,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								343,
-								343
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 16,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 56,
-					"type": "text"
-				},
-				{
-					"buffer": 26,
-					"file": "/C/code/lang/Rust/proj/apps/auth-rs/src/lib.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 185,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								172,
-								172
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 61,
-					"type": "text"
-				},
-				{
-					"buffer": 27,
-					"file": "/C/code/lang/Rust/proj/apps/auth-rs/Cargo.toml",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 368,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".toml",
-								"current_syntax": "Text/Plain text",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 70,
-					"type": "text"
-				},
-				{
-					"buffer": 28,
-					"file": "/C/code/lang/Rust/proj/apps/auth-rs/README.md",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1166,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/Theme - Dark Material/schemes/Dark-Material-Markdown.tmTheme",
 							"color_helper.file_palette":
 							[
 							],
@@ -2616,19 +2100,441 @@
 							{
 								"allowed_colors":
 								[
-									"hex_compressed",
-									"hsla",
 									"webcolors",
 									"rgba",
 									"hex",
-									"hsl",
-									"rgb"
+									"hsla",
+									"hex_compressed",
+									"rgb",
+									"hsl"
 								],
 								"compress_hex_output": true,
-								"current_ext": ".md",
-								"current_syntax": "Markdown/Markdown",
+								"current_ext": ".hbs",
+								"current_syntax": "HTML/HTML",
 								"enabled": true,
-								"last_updated": 1508088080.31,
+								"last_updated": 1508562186.47,
+								"scan_completion_scopes":
+								[
+								],
+								"scan_scopes":
+								[
+									"meta.declaration-list.css -support.type.property-name.css -comment -string",
+									"meta.property-value.css -comment -string",
+									"meta.value.css -comment -string",
+									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
+									"meta.tag.any.html meta.attribute-with-value.style.html"
+								],
+								"use_hex_argb": false
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1768.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"file": "templates/create-template.html.hbs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8216,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								8216
+							]
+						],
+						"settings":
+						{
+							"auto_complete": false,
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"allowed_colors":
+								[
+									"webcolors",
+									"rgba",
+									"hex",
+									"hsla",
+									"hex_compressed",
+									"rgb",
+									"hsl"
+								],
+								"compress_hex_output": true,
+								"current_ext": ".hbs",
+								"current_syntax": "HTML/HTML",
+								"enabled": true,
+								"last_updated": 1508562186.47,
+								"scan_completion_scopes":
+								[
+								],
+								"scan_scopes":
+								[
+									"meta.declaration-list.css -support.type.property-name.css -comment -string",
+									"meta.property-value.css -comment -string",
+									"meta.value.css -comment -string",
+									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
+									"meta.tag.any.html meta.attribute-with-value.style.html"
+								],
+								"use_hex_argb": false
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1367.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "templates/search-template.html.hbs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7059,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4228,
+								4228
+							]
+						],
+						"settings":
+						{
+							"auto_complete": false,
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"allowed_colors":
+								[
+									"webcolors",
+									"rgba",
+									"hex",
+									"hsla",
+									"hex_compressed",
+									"rgb",
+									"hsl"
+								],
+								"compress_hex_output": true,
+								"current_ext": ".hbs",
+								"current_syntax": "HTML/HTML",
+								"enabled": true,
+								"last_updated": 1508562186.47,
+								"scan_completion_scopes":
+								[
+								],
+								"scan_scopes":
+								[
+									"meta.declaration-list.css -support.type.property-name.css -comment -string",
+									"meta.property-value.css -comment -string",
+									"meta.value.css -comment -string",
+									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
+									"meta.tag.any.html meta.attribute-with-value.style.html"
+								],
+								"use_hex_argb": false
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1141.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "templates/general-template.html.hbs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6149,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4470,
+								4392
+							]
+						],
+						"settings":
+						{
+							"auto_complete": false,
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"allowed_colors":
+								[
+									"webcolors",
+									"rgba",
+									"hex",
+									"hsla",
+									"hex_compressed",
+									"rgb",
+									"hsl"
+								],
+								"compress_hex_output": true,
+								"current_ext": ".hbs",
+								"current_syntax": "HTML/HTML",
+								"enabled": true,
+								"last_updated": 1508562186.47,
+								"scan_completion_scopes":
+								[
+								],
+								"scan_scopes":
+								[
+									"meta.declaration-list.css -support.type.property-name.css -comment -string",
+									"meta.property-value.css -comment -string",
+									"meta.value.css -comment -string",
+									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
+									"meta.tag.any.html meta.attribute-with-value.style.html"
+								],
+								"use_hex_argb": false
+							},
+							"git_gutter_is_enabled": true,
+							"history_list_is_closing": true,
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 764.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "templates/article-template.html.hbs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6954,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3983,
+								3983
+							]
+						],
+						"settings":
+						{
+							"auto_complete": false,
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"allowed_colors":
+								[
+									"webcolors",
+									"rgba",
+									"hex",
+									"hsla",
+									"hex_compressed",
+									"rgb",
+									"hsl"
+								],
+								"compress_hex_output": true,
+								"current_ext": ".hbs",
+								"current_syntax": "HTML/HTML",
+								"enabled": true,
+								"last_updated": 1508562186.47,
+								"scan_completion_scopes":
+								[
+								],
+								"scan_scopes":
+								[
+									"meta.declaration-list.css -support.type.property-name.css -comment -string",
+									"meta.property-value.css -comment -string",
+									"meta.value.css -comment -string",
+									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
+									"meta.tag.any.html meta.attribute-with-value.style.html"
+								],
+								"use_hex_argb": false
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 969.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"file": "templates/articles-template.html.hbs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7015,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								7015
+							]
+						],
+						"settings":
+						{
+							"auto_complete": false,
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"allowed_colors":
+								[
+									"webcolors",
+									"rgba",
+									"hex",
+									"hsla",
+									"hex_compressed",
+									"rgb",
+									"hsl"
+								],
+								"compress_hex_output": true,
+								"current_ext": ".hbs",
+								"current_syntax": "HTML/HTML",
+								"enabled": true,
+								"last_updated": 1508562186.47,
+								"scan_completion_scopes":
+								[
+								],
+								"scan_scopes":
+								[
+									"meta.declaration-list.css -support.type.property-name.css -comment -string",
+									"meta.property-value.css -comment -string",
+									"meta.value.css -comment -string",
+									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
+									"meta.tag.any.html meta.attribute-with-value.style.html"
+								],
+								"use_hex_argb": false
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1362.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 30,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7015,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7015,
+								7015
+							]
+						],
+						"settings":
+						{
+							"auto_complete": false,
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.preview_meta":
+							{
+							},
+							"color_helper.scan":
+							{
+								"allowed_colors":
+								[
+									"webcolors",
+									"rgba",
+									"hex",
+									"hsla",
+									"hex_compressed",
+									"rgb",
+									"hsl"
+								],
+								"compress_hex_output": true,
+								"current_ext": null,
+								"current_syntax": "HTML/HTML",
+								"enabled": true,
+								"last_updated": 1508562186.47,
 								"scan_completion_scopes":
 								[
 								],
@@ -2643,124 +2549,37 @@
 								"use_hex_argb": false
 							},
 							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Markdown/Markdown.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 69,
-					"type": "text"
-				},
-				{
-					"buffer": 29,
-					"file": "/C/code/lang/Rust/proj/blog/src/main.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2525,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2499,
-								2499
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1187.0,
+						"translation.y": 1691.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 52,
-					"type": "text"
-				},
-				{
-					"buffer": 30,
-					"file": "/C/code/lang/Rust/proj/blog/src/article.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 74,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 68,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
 					"buffer": 31,
-					"file": "/C/code/lang/Rust/proj/blog/src/cookie_data.rs",
+					"file": "templates/tags-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1473,
+						"buffer_size": 6529,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								4839,
+								4839
 							]
 						],
 						"settings":
 						{
+							"auto_complete": false,
 							"color_helper.box_height": 17,
 							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
 							"color_helper.file_palette":
@@ -2771,44 +2590,68 @@
 							},
 							"color_helper.scan":
 							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
+								"allowed_colors":
+								[
+									"webcolors",
+									"rgba",
+									"hex",
+									"hsla",
+									"hex_compressed",
+									"rgb",
+									"hsl"
+								],
+								"compress_hex_output": true,
+								"current_ext": ".hbs",
+								"current_syntax": "HTML/HTML",
+								"enabled": true,
+								"last_updated": 1508562186.47,
+								"scan_completion_scopes":
+								[
+								],
+								"scan_scopes":
+								[
+									"meta.declaration-list.css -support.type.property-name.css -comment -string",
+									"meta.property-value.css -comment -string",
+									"meta.value.css -comment -string",
+									"meta.tag.inline.any.html string.quoted -constant.character.entity.html",
+									"meta.tag.any.html meta.attribute-with-value.style.html"
+								],
+								"use_hex_argb": false
 							},
 							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
 							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"translate_tabs_to_spaces": true,
+							"word_wrap": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1051.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 71,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
 					"buffer": 32,
-					"file": "/C/code/lang/Rust/proj/blog/src/cookies.rs",
+					"file": "old/static/old-blog.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 645,
+						"buffer_size": 7586,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								556,
+								565
 							]
 						],
 						"settings":
 						{
 							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/Flatland_Monokai.tmTheme",
 							"color_helper.file_palette":
 							[
 							],
@@ -2817,1041 +2660,38 @@
 							},
 							"color_helper.scan":
 							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
+								"current_ext": ".js",
+								"current_syntax": "JavaScript/JavaScript",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 72,
-					"type": "text"
-				},
-				{
-					"buffer": 33,
-					"file": "/C/code/lang/Rust/proj/blog/src/layout.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7796,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 67,
-					"type": "text"
-				},
-				{
-					"buffer": 34,
-					"file": "/C/code/lang/Rust/proj/blog/src/login.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2542,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 66,
-					"type": "text"
-				},
-				{
-					"buffer": 35,
-					"file": "/C/code/lang/Rust/proj/blog/src/permissions.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 181,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 65,
-					"type": "text"
-				},
-				{
-					"buffer": 36,
-					"file": "/C/code/lang/Rust/proj/blog/src/user_data.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 167,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 74,
-					"type": "text"
-				},
-				{
-					"buffer": 37,
-					"file": "/C/code/lang/Rust/proj/blog/src/user_form_data.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3323,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								378,
-								378
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 75,
-					"type": "text"
-				},
-				{
-					"buffer": 38,
-					"file": "/C/code/lang/Rust/proj/blog/Cargo.toml",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 339,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								339,
-								114
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".toml",
-								"current_syntax": "Text/Plain text",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 62,
-					"type": "text"
-				},
-				{
-					"buffer": 39,
-					"file": "/C/code/lang/Rust/proj/blog_old/src/main.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3163,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2554,
-								2554
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 827.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 51,
-					"type": "text"
-				},
-				{
-					"buffer": 40,
-					"file": "/C/code/lang/Rust/proj/blog_old/src/layout.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2742,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 64,
-					"type": "text"
-				},
-				{
-					"buffer": 41,
-					"file": "/C/code/lang/Rust/proj/blog_old/src/blog.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 353,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 73,
-					"type": "text"
-				},
-				{
-					"buffer": 42,
-					"file": "/C/code/lang/Rust/proj/blog_old/src/authentication.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4078,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3479,
-								3479
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1218.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 49,
-					"type": "text"
-				},
-				{
-					"buffer": 43,
-					"file": "/C/code/lang/Rust/proj/projman/src/run.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7806,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								141,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3159.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 48,
-					"type": "text"
-				},
-				{
-					"buffer": 44,
-					"file": "/C/code/lang/Rust/proj/traitstr/src/main.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 12796,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								7347,
-								7328
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4580.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 27,
-					"type": "text"
-				},
-				{
-					"buffer": 45,
-					"file": "/C/code/lang/Rust/proj/refs/src/main.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3981,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								862,
-								862
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1131.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 32,
-					"type": "text"
-				},
-				{
-					"buffer": 46,
-					"file": "/C/code/lang/Rust/proj/splitter/src/main.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5827,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5478,
-								5478
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2360.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 37,
-					"type": "text"
-				},
-				{
-					"buffer": 47,
-					"file": "/C/code/lang/Rust/proj/splitter/Named Split String.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 136,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								136,
-								136
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".txt",
-								"current_syntax": "Text/Plain text",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 38,
-					"type": "text"
-				},
-				{
-					"buffer": 48,
-					"file": "/C/code/lang/Rust/proj/recipes/src/autoinc.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1766,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								84,
-								71
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 35,
-					"type": "text"
-				},
-				{
-					"buffer": 49,
-					"file": "/C/code/lang/Rust/proj/recipes/src/entries.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10551,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3463.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 34,
-					"type": "text"
-				},
-				{
-					"buffer": 50,
-					"file": "/C/code/lang/Rust/proj/recipes/src/helpers.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5625,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								148,
-								125
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1165.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 31,
-					"type": "text"
-				},
-				{
-					"buffer": 51,
-					"file": "/C/code/lang/Rust/proj/recipes/src/people.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4634,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1641.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 33,
-					"type": "text"
-				},
-				{
-					"buffer": 52,
-					"file": "/C/code/lang/Rust/proj/randproj/src/genproj.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6475,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							],
-							[
-								4947,
-								4947
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 655.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 30,
-					"type": "text"
-				},
-				{
-					"buffer": 53,
-					"file": "/C/code/lang/Rust/proj/passgen/src/dict_helpers.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 9166,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								8370,
-								8370
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3859.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 28,
-					"type": "text"
-				},
-				{
-					"buffer": 54,
-					"file": "/C/code/lang/Rust/proj/projman/src/configuration/mod.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2460,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 994.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 29,
 					"type": "text"
 				},
 				{
-					"buffer": 55,
-					"file": "/C/code/lang/Rust/proj/projman/src/behavior/mod.rs",
+					"buffer": 33,
+					"file": "/C/code/lang/Rust/proj/traitstr/src/main.rs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 15388,
+						"buffer_size": 12948,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								10360,
+								10360
 							]
 						],
 						"settings":
@@ -3869,7 +2709,7 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
@@ -3877,27 +2717,31 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1686.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 47,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 56,
-					"file": "/C/code/lang/Rust/proj/projman/src/manager/mod.rs",
+					"buffer": 34,
+					"file": "/C/code/lang/Rust/code/Snippets/Snippet Collection.rs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 17364,
+						"buffer_size": 30551,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								29258,
+								29258
+							],
+							[
+								29571,
+								29571
 							]
 						],
 						"settings":
@@ -3915,7 +2759,7 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1508088080.31
+								"last_updated": 1508562186.47
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
@@ -3923,753 +2767,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 46,
-					"type": "text"
-				},
-				{
-					"buffer": 57,
-					"file": "/C/code/lang/Rust/proj/projman/src/structures/autorun.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3419,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 45,
-					"type": "text"
-				},
-				{
-					"buffer": 58,
-					"file": "/C/code/lang/Rust/proj/projman/src/structures/defaults.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 589,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Rust/Rust.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 44,
-					"type": "text"
-				},
-				{
-					"buffer": 59,
-					"file": "/C/code/lang/Rust/proj/projman/src/structures/executables.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 9007,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								7279,
-								7279
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3524.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 19,
-					"type": "text"
-				},
-				{
-					"buffer": 60,
-					"file": "/C/code/lang/Rust/proj/projman/src/structures/mod.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10367,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2686.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 18,
-					"type": "text"
-				},
-				{
-					"buffer": 61,
-					"file": "/C/code/lang/Rust/proj/projman/src/structures/var_str.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 17330,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 20,
-					"type": "text"
-				},
-				{
-					"buffer": 62,
-					"file": "/C/code/lang/Rust/proj/projman/src/helpers.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2834,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 21,
-					"type": "text"
-				},
-				{
-					"buffer": 63,
-					"file": "/C/code/lang/Rust/proj/passgen/src/passwords.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16083,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 7596.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 22,
-					"type": "text"
-				},
-				{
-					"buffer": 64,
-					"file": "/C/code/lang/Rust/proj/hashers_metrohash/src/lib.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2853,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 23,
-					"type": "text"
-				},
-				{
-					"buffer": 65,
-					"file": "/C/code/lang/Rust/proj/hashers/src/dict.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1197436,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 24,
-					"type": "text"
-				},
-				{
-					"buffer": 66,
-					"file": "/C/code/lang/Rust/proj/hashers/src/lib.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4691,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 454.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 25,
-					"type": "text"
-				},
-				{
-					"buffer": 67,
-					"file": "/C/code/lang/Rust/proj/hashers/src/benches/bench.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2702,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 26,
-					"type": "text"
-				},
-				{
-					"buffer": 68,
-					"file": "/C/code/lang/Rust/proj/csort/src/color.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7040,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"history_list_is_closing": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 43,
-					"type": "text"
-				},
-				{
-					"buffer": 69,
-					"file": "/C/code/lang/Rust/proj/csort/src/colorhsl.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7236,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 42,
-					"type": "text"
-				},
-				{
-					"buffer": 70,
-					"file": "/C/code/lang/Rust/proj/csort/src/main.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6234,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								322,
-								323
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 36,
-					"type": "text"
-				},
-				{
-					"buffer": 71,
-					"file": "/C/code/lang/Rust/proj/csort/src/page.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 23156,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 41,
-					"type": "text"
-				},
-				{
-					"buffer": 72,
-					"file": "/C/code/lang/Rust/proj/csort/src/sort_hsl.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8334,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 40,
-					"type": "text"
-				},
-				{
-					"buffer": 73,
-					"file": "/C/code/lang/Rust/proj/csort/src/upload.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7413,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 39,
-					"type": "text"
-				},
-				{
-					"buffer": 74,
-					"file": "/C/code/lang/Rust/proj/colors/src/color.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 9835,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								145,
-								19
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 17,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.preview_meta":
-							{
-							},
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1508088080.31
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3065.0,
+						"translation.y": 16481.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 16,
@@ -4680,7 +2778,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 43.0
+		"height": 28.0
 	},
 	"input":
 	{
@@ -4706,7 +2804,7 @@
 		"cols":
 		[
 			0.0,
-			0.545960317081,
+			0.580070134424,
 			1.0
 		],
 		"rows":
@@ -4718,7 +2816,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 35.0
+		"height": 40.0
 	},
 	"output.find_results":
 	{
@@ -4736,7 +2834,7 @@
 	"project": "",
 	"replace":
 	{
-		"height": 78.0
+		"height": 72.0
 	},
 	"save_all_on_build": true,
 	"select_file":

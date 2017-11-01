@@ -70,6 +70,34 @@ pub struct DbConn(
     pub r2d2::PooledConnection<PostgresConnectionManager>
 );
 
+impl DbConn {
+    pub fn articles(&self, qrystr: &str) -> Option<Vec<Article>> {
+        
+        let qryrst = if qrystr != "" {
+            self.query(qrystr, &[]);
+        } else {
+            self.query("SELECT aid, title, posted, body, tag, description FROM articles", &[]);
+        };
+        if let Ok(result) = qryrst {
+            let mut articles: Vec<Article> = Vec::new();
+            for row in &result {
+                let a = Article {
+                    aid: row.get(0),
+                    title: row.get(1),
+                    posted: row.get(2),
+                    body: row.get(3),
+                    tag: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
+                    description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
+                };
+                articles.push(a);
+            }
+            Some(articles)
+        } else {
+            None
+        }
+    }
+}
+
 /// Attempts to retrieve a single connection from the managed database pool. If
 /// no pool is currently managed, fails with an `InternalServerError` status. If
 /// no connections are available, fails with a `ServiceUnavailable` status.
