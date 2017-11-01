@@ -318,9 +318,14 @@ pub fn hbs_articles_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user
 }
 
 // #[get("/<title>/article?<aid>")]
-#[get("/<aid>/<title>")]
+#[get("/article/<aid>/<title>")]
 
 pub fn hbs_article_title(aid: ArticleId, title: Option<&RawStr>, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+    hbs_article_view(aid, conn, admin, user)
+}
+
+#[get("/article/<aid>")]
+pub fn hbs_article_id(aid: ArticleId, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
     hbs_article_view(aid, conn, admin, user)
 }
 

@@ -154,6 +154,7 @@ fn main() {
             pages::hbs_tags_all,
             pages::hbs_articles_tag,
             pages::hbs_article_title,
+            pages::hbs_article_id,
             pages::hbs_article_view,
             pages::hbs_article_not_found,
             pages::hbs_article_process,

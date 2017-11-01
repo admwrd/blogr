@@ -19,12 +19,12 @@
         
         <!-- Custom CSS -->
         <!-- <link id="pageStyleSheet" type="text/css" href="css/blog.css" rel="stylesheet" /> -->
-        <link id="pageStyleSheet" type="text/css" href="css/blogr.css" rel="stylesheet" />
+        <link id="pageStyleSheet" type="text/css" href="{{info.base_url}}css/blogr.css" rel="stylesheet" />
         
         <!-- JavaScript -->
         <!-- <script src="js-head.js"></script>  -->
-        <script src="sha256.js"></script>
-        <script src="blog.js"></script>
+        <script src="{{info.base_url}}sha256.js"></script>
+        <script src="{{info.base_url}}blog.js"></script>
         
         <style>
         
@@ -37,7 +37,7 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="blog-logo navbar-brand" href="#">Vishus Blog</a>
+                <a class="blog-logo navbar-brand" href="{{info.base_url}}">Vishus Blog</a>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
@@ -72,7 +72,7 @@
                         {{/if}}
                         <!-- <li class="v-nav-item nav-item"><a class="nav-link disabled" href="#">Disabled</a></li> -->
                     </ul>
-                    <form id="search-form" action="/search" method="get" class="form-inline my-2 my-lg-0">
+                    <form id="search-form" action="{{info.base_url}}search" method="get" class="form-inline my-2 my-lg-0">
                         <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
                     </form>
@@ -88,7 +88,7 @@
                     {{#each body}}
                     <article class="v-article">
                         <header class="v-article-header">
-                            <h2 class="v-article-title"><a href="/article?aid={{this.aid}}">{{this.title}}</a></h2>
+                            <h2 class="v-article-title"><a href="{{info.base_url}}article/{{this.aid}}/{{this.title}}">{{this.title}}</a></h2>
                             <div class="row">
                                 <date class="v-article-date" datetime="{{this.posted_machine}}">{{this.posted_human}}</date>
                                 <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
@@ -99,7 +99,7 @@
                         </p>
                         <div class="v-article-tags">
                             {{#each this.tags}}
-                            <a href="/tag?tag={{this}}">{{this}}</a>
+                            <a href="{{../../info.base_url}}tag?tag={{this}}">{{this}}</a>
                             {{/each}}
                         </div>
                     </article>
@@ -108,7 +108,7 @@
 <!-- ---------- -->
 
                     <footer id="v-footer">
-                        <div class="v-copyright">&copy; 2017 Andrew Prindle | <a href="/rss.xml">RSS</a></div>
+                        <div class="v-copyright">&copy; 2017 Andrew Prindle | <a href="{{info.base_url}}rss.xml">RSS</a></div>
                         {{#if info.gentime}}
                         <div class="v-generation-time">Generated in {{info.gentime}} seconds</div>
                         {{/if}}
@@ -126,7 +126,7 @@
         <!-- Custom JavaScript -->
         <!-- <script src="sha256.js"></script> -->
         <!-- <script src="blog.js"></script> -->
-        <script src="blog_after.js"></script>
+        <script src="{{info.base_url}}blog_after.js"></script>
         <script>
             {{#if info.js}}
             {{{info.js}}}

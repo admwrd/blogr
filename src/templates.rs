@@ -11,6 +11,7 @@ use cookie_data::*;
 use admin_auth::*;
 use user_auth::*;
 
+use super::BLOG_URL;
 use blog::*;
 use layout::*;
 use users::*;
@@ -61,6 +62,7 @@ pub struct TemplateInfo {
     pub page: String,
     pub pages: Vec<TemplateMenu>,
     pub admin_pages: Vec<TemplateMenu>,
+    pub base_url: &'static str,
 }
 
 // START TEMPLATEBODY STRUCTURES
@@ -171,6 +173,7 @@ impl TemplateInfo {
             page,
             pages,
             admin_pages,
+            base_url: BLOG_URL,
         }
     }
 }
