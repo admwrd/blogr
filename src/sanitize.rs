@@ -3,6 +3,34 @@
 use regex::Regex;
 use htmlescape::*;
 
+
+// used to sanitize usernames
+pub fn sanitize(string: &str) -> String {
+    lazy_static! {
+        static ref SANITARY: Regex = Regex::new(r#"^\w+$"#).unwrap();
+        static ref SANITIZE: Regex = Regex::new(r#"\W+"#).unwrap();
+    }
+    if SANITARY.is_match(string) {
+        string.to_string()
+    } else {
+        SANITIZE.replace_all(string, "").to_string()
+    }
+}
+
+// used to sanitize passwords
+pub fn sanitize_password(string: &str) -> String {
+    lazy_static! {
+        static ref SANITARY_PASSWORD: Regex = Regex::new(r#"^[A-Fa-f0-9]+$"#).unwrap();
+        static ref SANITIZE_PASSWORD: Regex = Regex::new(r#"[^A-Fa-f0-9]+"#).unwrap();
+    }
+    if SANITARY_PASSWORD.is_match(string) {
+        string.to_string()
+    } else {
+        SANITIZE_PASSWORD.replace_all(string, "").to_string()
+    }
+}
+
+
 // escapes html tags and special characters
 pub fn input_sanitize(string: String) -> String {
     string

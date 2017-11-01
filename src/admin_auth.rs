@@ -1,4 +1,6 @@
 
+use super::PGCONN;
+
 use auth::authenticator::Authenticator;
 use rocket::config::{Config, Environment};
 use cookie_data::{SECRET_KEY, CookieId};
@@ -43,10 +45,28 @@ impl AdminAuth {
         }
     }
     pub fn authenticate(username: &str, password: &str) -> Result<Self, Self> {
-        if username == "andrew" {
-            Ok(AdminAuth::new(username.to_string(), password.to_string()))
+        // if username == "andrew" {
+        //     Ok(AdminAuth::new(username.to_string(), password.to_string()))
+        // } else {
+        //     Err( AdminAuth::error(username.to_string(), "Invalid username.".to_string()) )
+        // }
+        let qrystr = format!("SELECT userid FROM users WHERE username = '{user}' AND password = '{pass}'", user=username, pass=password);
+        let conn = PGCONN.lock().unwrap();
+        let qry = conn.query(&qrystr, &[]);
+        if let Ok(result) = qry {
+            if !result.is_empty() && result.len() == 1 {
+                return Ok(AdminAuth::new(username.to_string(), password.to_string()));
+            }
+        }
+        let subqrystr = format!("SELECT userid FROM users WHERE username = '{user}'", user=username);
+        if let Ok(subrst) = conn.query(&subqrystr, &[]) {
+            if !subrst.is_empty() && subrst.len() == 1 {
+                Err( AdminAuth::error(username.to_string(), "Incorrect password.".to_string()) )
+            } else {
+                Err( AdminAuth::error(username.to_string(), "The username does not exist.".to_string()) )
+            }
         } else {
-            Err( AdminAuth::error(username.to_string(), "Invalid username.".to_string()) )
+            Err( AdminAuth::error(username.to_string(), "The login request failed.".to_string()) )
         }
     }
 }

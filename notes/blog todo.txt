@@ -1,14 +1,9 @@
 
 Blogr
-	Add the article title in the url when possible
-		change the links to the articles to include a substring of the title
-		change the article page route to have a segment that ignores the title?
-	
+
+
 	Allow admin to delete posts and edit them
 
-	Add RSS feed (add link in footer)
-		Maybe add clipboard.js to copy the link when clicked
-	
 	Maybe add a preview as a popup modal
 		display single article template in the modal template? (just the <article> and <script> tags)
 
@@ -23,8 +18,6 @@ Blogr
 		login rety (admin and user): username and failmsg
 		tag?<tag>: sanitize split_tags
 
-	Display a page that lists the tags, maybe even sort by number of posts each has
-	
 	Add unique visitors
 		Maybe create a file or in-memory list of ip addresses
 			every once and a while write them to database
@@ -50,12 +43,7 @@ Blogr
 
 	Make a page that lists articles by date, group by month maybe
 
-	Add a method/helper function to retrieve an article and user from a qry
-		retrieve the data from the raw qry
-		returns a result <Article/User, String>
-		maybe make a trait that defines methods on Strings?? for retrieving stuff like
-			.retrieve_article()
-	
+
 	Add Tls/Ssl using Let's Encrypt
 		https://mmstick.tk/post/q42
 		https://rocket.rs/guide/configuration/#configuring-tls
@@ -138,6 +126,21 @@ Research Futures
 
 
 Done
+	Add a method/helper function to retrieve an article and user from a qry
+		retrieve the data from the raw qry
+		returns a result <Article/User, String>
+		maybe make a trait that defines methods on Strings?? for retrieving stuff like
+			.retrieve_article()
+	
+	Add RSS feed (add link in footer)
+		Maybe add clipboard.js to copy the link when clicked
+	
+	Add the article title in the url when possible
+		change the links to the articles to include a substring of the title
+		change the article page route to have a segment that ignores the title?
+
+	
+	Display a page that lists the tags, maybe even sort by number of posts each has
 	
 	DOES NOT WORK: localhost:8000/tag?tag=
 		But should it??? Not really...

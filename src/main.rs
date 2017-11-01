@@ -63,6 +63,7 @@ use std::time::Instant;
 use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
+use std::sync::Mutex;
 
 use rocket_contrib::Template;
 use rocket::{Request, Data, Outcome, Response};
@@ -76,6 +77,8 @@ use auth::status::{LoginStatus,LoginRedirect};
 use auth::dummy::DummyAuthenticator;
 use auth::authenticator::Authenticator;
 // use rocket::request::FlashMessage;
+
+
 
 // use chrono::prelude::*;
 // use multipart::server::Multipart;
@@ -125,6 +128,10 @@ fn static_files(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("static/").join(file)).ok()
 }
 
+lazy_static! {
+    static ref PGCONN: Mutex<DbConn> = Mutex::new( DbConn(init_pg_pool().get().expect("Could not connect to database.")) );
+}
+
 
 fn main() {
     // env_logger::init();
@@ -134,7 +141,7 @@ fn main() {
     //     // (*pg_conn).connect();
     // }
     
-    // init_pg_pool().get();
+    init_pg_pool().get().unwrap();
     
     rocket::ignite()
         .manage(data::init_pg_pool())

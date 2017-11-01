@@ -14,6 +14,7 @@ use regex::Regex;
 
 use ::cookie_data::*;
 
+use sanitize::*;
 
 
 #[derive(FromForm)]
@@ -55,31 +56,6 @@ pub struct LoginFormRedirect(Redirect);
 
 // pub struct FallbackRedirect<'a>(&'a str);
 
-
-
-pub fn sanitize(string: &str) -> String {
-    lazy_static! {
-        static ref SANITARY: Regex = Regex::new(r#"^\w+$"#).unwrap();
-        static ref SANITIZE: Regex = Regex::new(r#"\W+"#).unwrap();
-    }
-    if SANITARY.is_match(string) {
-        string.to_string()
-    } else {
-        SANITIZE.replace_all(string, "").to_string()
-    }
-}
-
-pub fn sanitize_password(string: &str) -> String {
-    lazy_static! {
-        static ref SANITARY_PASSWORD: Regex = Regex::new(r#"^[A-Fa-f0-9]+$"#).unwrap();
-        static ref SANITIZE_PASSWORD: Regex = Regex::new(r#"[^A-Fa-f0-9]+"#).unwrap();
-    }
-    if SANITARY_PASSWORD.is_match(string) {
-        string.to_string()
-    } else {
-        SANITIZE_PASSWORD.replace_all(string, "").to_string()
-    }
-}
 
 impl<'a, A: 'a> LoginFormStatus<A> where A: Authenticator + CookieId + AuthFail {
     pub fn fail_str(&self) -> String {
