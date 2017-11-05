@@ -19,6 +19,7 @@ postgres = { version = "0.15.1", features = ["with-chrono"] }
 r2d2 = "0.7.4"
 r2d2_postgres = "0.13.0"
 regex = "0.2.2"
+rmp-serde = "0.13.7"
 rocket-simpleauth = {path = "auth-rs"}
 # rocket = "0.3.3"
 # rocket_codegen = "0.3.3"

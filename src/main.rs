@@ -117,6 +117,7 @@ use templates::TemplateMenu;
 pub const BLOG_URL: &'static str = "http://localhost:8000/";
 pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
 pub const ADMIN_LOGIN_URL: &'static str = "http://localhost:8000/admin";
+pub const TEST_LOGIN_URL: &'static str = "http://localhost:8000/login";
 pub const CREATE_FORM_URL: &'static str = "http://localhost:8000/create";
 pub const MAX_CREATE_TITLE: usize = 120;
 pub const MAX_CREATE_DESCRIPTION: usize = 400;

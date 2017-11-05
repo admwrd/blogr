@@ -71,7 +71,7 @@ impl UserAuth {
     }
 }
 
-impl Authenticator for  UserAuth {
+impl Authenticator for UserAuth {
     type User = String;
     
     fn user(&self) -> String {
@@ -100,5 +100,11 @@ impl CookieId for UserAuth {
     fn cookie_username(&self) -> String {
         self.username.clone()
     }
+    // fn decode_cookie(string: String) -> Self {
+    //     Self::new(string, String::new())
+    // }
+    // fn encode_cookie(&self) -> String {
+    //     self.username.clone()
+    // }
 }
 

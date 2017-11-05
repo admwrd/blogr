@@ -33,6 +33,8 @@ use data::*;
 use templates::*;
 use sanitize::*;
 
+use authorize::*;
+
 /*
 
 pub fn hbs_(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
@@ -58,6 +60,77 @@ something(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) ->
 
 
 */
+
+#[get("/login")]
+pub fn hbs_test_login_dashboard(conn: DbConn, admin: AdminAuthCookie) -> Template {
+    let start = Instant::now();
+    
+    // let username = admin.username.clone();
+    let output: Template = hbs_template(TemplateBody::General(format!("Welcome.  You are viewing the administrator dashboard page."), None), Some("Admin Dashboard".to_string()), String::from("/dashboard"), None, None, None, Some(start));
+        
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
+}
+
+#[get("/login", rank = 2)]
+pub fn hbs_test_login_form(conn: DbConn, ) -> Template {
+    let start = Instant::now();
+    
+    let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), None, None), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
+        
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
+}
+
+#[get("/login?<fail>")]
+pub fn hbs_test_login_retry(conn: DbConn, user: Option<AuthContainer<Administrator>>, fail: AuthFailure) -> Template {
+    let start = Instant::now();
+    
+    let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
+    let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
+    let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), clean_user, clean_msg), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
+        
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
+}
+
+#[derive(FromForm)]
+pub struct FailMsg {
+    msg: String,
+}
+
+#[post("/login", data = "<form>")]
+// pub fn hbs_test_process_login(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
+pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+    let start = Instant::now();
+    
+    let login_form = form.into_inner();
+    
+    
+    
+    // let inside = form.into_inner();
+    // let failuser = inside.user_str();
+    // let failmsg = inside.fail_str();
+    // let mut failurl = TEST_LOGIN_URL.to_string();
+    // if failmsg != "" && failmsg != " " {
+        // failurl.push_str("?user=");
+        // failurl.push_str(&failuser);
+        // failurl.push_str("&msg=");
+        // failurl.push_str(&failmsg);
+    // }
+    
+    let end = start.elapsed();
+    println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    
+    login_form.redirect("/login", "/login", cookies)
+    
+    // inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
+}
+
+
 
 
 
@@ -637,6 +710,18 @@ pub fn rss_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCooki
         String::from("Could not create RSS feed.")
     }
     
+    
+}
+
+
+#[get("/author/<authorid>")]
+pub fn hbs_author(authorid: u32, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+    unimplemented!()
+}
+
+#[get("/author/<authorid>/<authorname>")]
+pub fn hbs_author_display(authorid: u32, authorname: Option<String>, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+    unimplemented!()
     
 }
 

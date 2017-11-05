@@ -9,6 +9,7 @@ use login_form_status::AuthFail;
 pub struct AdminAuth {
     pub username: String,
     password: String,
+    pub userid: u32,
     pub failreason: Option<String>,
 }
 
@@ -30,10 +31,11 @@ impl AuthFail for AdminAuth {
 }
 
 impl AdminAuth {
-    pub fn new(username: String, password: String) -> AdminAuth {
+    pub fn new(username: String, password: String, userid: u32) -> AdminAuth {
         AdminAuth {
             username,
             password,
+            userid,
             failreason: None,
         }
     }
@@ -41,6 +43,7 @@ impl AdminAuth {
         AdminAuth {
             username,
             password: String::new(),
+            userid: 0,
             failreason: if &reason != "" { Some(reason) } else { None },
         }
     }
@@ -55,7 +58,8 @@ impl AdminAuth {
         let qry = conn.query(&qrystr, &[]);
         if let Ok(result) = qry {
             if !result.is_empty() && result.len() == 1 {
-                return Ok(AdminAuth::new(username.to_string(), password.to_string()));
+                let uid = result.get(0).get(0);
+                return Ok(AdminAuth::new(username.to_string(), password.to_string(), uid));
             }
         }
         let subqrystr = format!("SELECT userid FROM users WHERE username = '{user}'", user=username);
@@ -100,6 +104,22 @@ impl CookieId for AdminAuth {
     fn cookie_username(&self) -> String {
         self.username.clone()
     }
+    // fn decode_cookie(string: String) -> AdminAuth {
+    //     let userid = &string[..10];
+    //     let username = &string[10..];
+    //     AdminAuth {
+    //         userid,
+    //         password: String::new(),
+    //         username,
+    //         failreason: None,
+    //     }
+    // }
+    // fn encode_cookie(&self) -> String {
+    //     let mut encoded = String::with_capacity(self.username.len()+12);
+    //     encoded.push_str(&format!("{:0>10}", self.userid));
+    //     encoded.push_str(&self.username);
+    //     encoded
+    // }
 }
 
 

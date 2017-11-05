@@ -65,8 +65,9 @@ a:active {
     /*width: 100%;*/
 }
 .v-article {
-    border: 1px solid #aaa;
-    border-radius: 10px;
+    /*border: 1px solid #aaa;*/
+    border: 1px solid #555;
+    border-radius: 1em;
     
     margin: 1em 0px 2em 0px;
     line-height: 1.5;
@@ -114,15 +115,16 @@ a:active {
 }
 #v-footer {
     border: 1px solid #aaa;
-    border-radius: 10px;
+    border-radius: 1em;
     margin: 0em 0px 1em 0px;
     text-align: center;
     background-color: #212529;
     padding: 0.5em;
 }
 .v-content {
-    border: 1px solid #aaa;
-    border-radius: 10px;
+    /*border: 1px solid #aaa;*/
+    border: 1px solid #555;
+    border-radius: 1em;
     margin: 1em 0px 1em 0px;
     background-color: #212529;
     padding: 1em 0.5em 1em 0.5em;
@@ -170,6 +172,16 @@ a:active {
 .v-centered-msg {
     margin-top: 1em;
     text-align: center;
+}
+
+.v-input-separator {
+    background-color: #363636;
+    color: #eee;
+    border-top: 0px;
+    border-bottom: 0px;
+    border-left: 1px solid #666 !important;
+    border-right: 1px solid #666 !important;
+    margin: 2px 0px 2px 0px;
 }
 
 input:-webkit-autofill {

@@ -2,7 +2,6 @@
 <html lang="en">
     <head>
         <title>Vishus Blog</title>
-        
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -33,46 +32,38 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="blog-logo navbar-brand" href="">Vishus Blog</a>
+                <a class="blog-logo navbar-brand" href="#">Vishus Blog</a>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
                         <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
-
                         <li class="v-nav-item nav-item active"><a class="nav-link" href="/">Home</a></li>
-                        <li class="v-nav-item nav-item"><a class="nav-link" href="/tags">Tags</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/about">About</a></li>
+                        <li class="v-nav-item nav-item"><a class="nav-link" href="/all_tags">View Tags</a></li>
                         <li class="v-nav-item nav-item"><a class="nav-link" href="/admin">Login</a></li>
-                            
-                            
                         <li class="v-nav-item nav-item dropdown">
                             <a class="v-nav-login nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                User Name
+                                Administrator
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                
-                                  <a class="dropdown-item active" href="/admin">Admin Dashboard</a>
-                                  <a class="dropdown-item" href="/create">New Post</a>
-                                  <div class="dropdown-divider"></div>
-                                  <a class="dropdown-item" href="/logout">Logout</a>
+                                <a class="dropdown-item" href="/insert">New Article</a>
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout">Logout</a>
                             </div>
                         </li>
-                        
-                        
                         <!-- <li class="v-nav-item nav-item"><a class="nav-link disabled" href="#">Disabled</a></li> -->
                     </ul>
-                    <form id="search-form" action="search" method="get" class="form-inline my-2 my-lg-0">
+                    <form id="search-form" action="/search" method="get" class="form-inline my-2 my-lg-0">
                         <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
                     </form>
                 </div>
             </nav>
                 <div id="v-body">
-                <!-- <div class="v-content"> -->
                     
 <!-- ---------- -->
                     
-
                     <!-- 
                      <div class="form-group">
                         <label for="inputAddress">Address</label>
@@ -83,7 +74,79 @@
                         <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
                       </div>
                     -->
-
+                    <div class="v-content">
+                        <form name="search-form" id="search-form" class="" action="" method="get">
+                            <div class="form-group" id="userGroup">
+                                <label for="usernameField">Email Address</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="text" name="username" value="" class="form-control" id="usernameField" placeholder="Username" required>
+                                    <div class="invalid-feedback">
+                                        Please specify a username
+                                    </div>
+                                </div>
+                                <!-- <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small> -->
+                            </div>
+                            <div class="form-group" id="passGroup">
+                                <label for="passwordField">Password</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
+                                    <div class="invalid-feedback">
+                                        A password is requierd.
+                                    </div>
+                                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
+                                </div>
+                            </div>
+                            <div class="input-daterange input-group" id="datepicker">
+                                <input type="text" placeholder="Minimum Date" class="input-sm form-control" name="start" />
+                                <span class="input-group-addon">to</span>
+                                <input type="text" placeholder="Maximum Date" class="input-sm form-control" name="end" />
+                            </div>
+                            
+                            
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary">Search Articles</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="v-content">
+                        <form class="" novalidate>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom01">First name</label>
+                                    <input type="text" class="form-control" id="validationCustom01" placeholder="First name" value="Mark" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom02">Last name</label>
+                                    <input type="text" class="form-control" id="validationCustom02" placeholder="Last name" value="Otto" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="validationCustom03">City</label>
+                                    <input type="text" class="form-control" id="validationCustom03" placeholder="City" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid city.
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="validationCustom04">State</label>
+                                    <input type="text" class="form-control" id="validationCustom04" placeholder="State" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid state.
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="validationCustom05">Zip</label>
+                                    <input type="text" class="form-control" id="validationCustom05" placeholder="Zip" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid zip.
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Submit form</button>
+                        </form>
+                    </div>
                     
                     
                     <div class="v-content">
@@ -167,85 +230,6 @@
                         </div>
                     </article>
                     
-                    
-                    <div class="v-content">
-                        <form name="search-form" id="search-form" class="" action="" method="get">
-                            <div class="form-group" id="userGroup">
-                                <label for="usernameField">Email Address</label>
-                                <div class="col-md-6 mb-3">
-                                    <input type="text" name="username" value="" class="form-control" id="usernameField" placeholder="Username" required>
-                                    <div class="invalid-feedback">
-                                        Please specify a username
-                                    </div>
-                                </div>
-                                <!-- <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small> -->
-                            </div>
-                            <div class="form-group" id="passGroup">
-                                <label for="passwordField">Password</label>
-                                <div class="col-md-6 mb-3">
-                                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
-                                    <div class="invalid-feedback">
-                                        A password is requierd.
-                                    </div>
-                                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="min-date"></label>
-                                <div class="input-daterange input-group" id="datepicker">
-                                    <input type="text" id="min-date" placeholder="Minimum Date" class="input-sm form-control border-right-0" name="start" />
-                                    <span class="input-group-addon v-input-separator">to</span>
-                                    <input type="text" id="max-date" placeholder="Maximum Date" class="input-sm form-control border-left-0" name="end" />
-                                </div>
-                            </div>
-                            
-                            
-                            <div class="v-submit">
-                                <button type="submit" class="btn btn-primary">Search Articles</button>
-                            </div>
-                        </form>
-                    </div>
-                    
-                    <div class="v-content">
-                        <form class="" novalidate>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="validationCustom01">First name</label>
-                                    <input type="text" class="form-control" id="validationCustom01" placeholder="First name" value="Mark" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="validationCustom02">Last name</label>
-                                    <input type="text" class="form-control" id="validationCustom02" placeholder="Last name" value="Otto" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="validationCustom03">City</label>
-                                    <input type="text" class="form-control" id="validationCustom03" placeholder="City" required>
-                                    <div class="invalid-feedback">
-                                        Please provide a valid city.
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label for="validationCustom04">State</label>
-                                    <input type="text" class="form-control" id="validationCustom04" placeholder="State" required>
-                                    <div class="invalid-feedback">
-                                        Please provide a valid state.
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label for="validationCustom05">Zip</label>
-                                    <input type="text" class="form-control" id="validationCustom05" placeholder="Zip" required>
-                                    <div class="invalid-feedback">
-                                        Please provide a valid zip.
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary" type="submit">Submit form</button>
-                        </form>
-                    </div>
-                    
-                    
                     <article class="v-article">
                         <header class="v-article-header">
                             <h2 class="v-article-title"><a href="/article?aid=1">Lorem Ipsum</a></h2>
@@ -296,19 +280,17 @@
                         </p>
                     </div>
                     
-                    
 <!-- ---------- -->
-
-                    <!-- </div> -->
+                    
                     <footer id="v-footer">
-                        <div class="v-copyright">&copy; 2017 Andrew Prindle | <a href="rss.xml">RSS</a></div>
-                        <div class="v-generation-time">Generated in {{info.gentime}} seconds</div>
+                        <div class="v-copyright">&copy; 2017 Andrew Prindle</div>
+                        <div class="v-generation-time">Generated in {{gentime}}</div>
                     </footer>
                 </div>
             </div>
             
             
-        <!-- </div> -->
+        </div>
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
@@ -319,9 +301,13 @@
         <!-- <script src="blog.js"></script> -->
         <script src="blog_after.js"></script>
         <script>
-            // {{#if info.js}}
-            // {{{info.js}}}
-            // {{/if}}
+            $('#sandbox-container .input-daterange').datepicker({
+                startView: 1,
+                maxViewMode: 2,
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                todayHighlight: true
+            });
         </script>
         
     </body>

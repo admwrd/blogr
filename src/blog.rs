@@ -42,6 +42,8 @@ pub struct Article {
     pub body: String,
     pub tags: Vec<String>,
     pub description: String,
+    // pub author_id: u32,
+    // pub author_name: String,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -53,6 +55,8 @@ pub struct ArticleDisplay {
     pub body: String,
     pub tags: Vec<String>,
     pub description: String,
+    // pub author_id: u32,
+    // pub author_name: String,
 }
 
 #[derive(Debug, Clone)]
@@ -62,6 +66,8 @@ pub struct ArticleForm {
     pub body: String,
     pub tags: String,
     pub description: String,
+    // pub author_id: u32,
+    // pub author_name: String,
 }
 
 #[derive(Debug, Clone)]
@@ -137,6 +143,7 @@ pub struct User {
     pub email: Option<String>,
     pub password: String,
     pub is_admin: bool,
+    pub is_public: bool,
 }
 
 pub const DESC_LIMIT: usize = 300;
@@ -157,7 +164,8 @@ impl ArticleId {
     //   Do not use unless you have to - unless you have no db connection
     pub fn retrieve(&self) -> Option<Article> {
         let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -170,18 +178,20 @@ impl ArticleId {
                     tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     // description: opt_col(row.get_opt(5)),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
+                    // author_id: row.get(6),
+                    // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
                 })
             } else { None }
         } else { None }
     }
     // Prefer to use this over retrieve()
     pub fn retrieve_with_conn(&self, pgconn: DbConn) -> Option<Article> {
-        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
                 let row = aqry.get(0); // get first row
-                
                 
                 Some( Article {
                     aid: row.get(0),
@@ -190,6 +200,8 @@ impl ArticleId {
                     body: row.get(3), // Todo: call sanitize body here
                     tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
+                    // author_id: row.get(6),
+                    // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
                 })
             } else { None }
         } else { None }
@@ -228,6 +240,8 @@ impl Article {
             body: self.body.clone(),
             tags: self.tags.clone(),
             description: self.description.clone(),
+            // author_id: self.author_id,
+            // author_name: self.author_name.clone(),
         }
     }
     pub fn split_tags(string: String) -> Vec<String> {

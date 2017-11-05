@@ -1,5 +1,8 @@
 
 Blogr
+	Does blogr search page show a form with the date range?
+		
+
 	Change search, article, and articles templates to show an author.
 		Update the database to link each article to an author
 		Update the RSS page to reflect the author for each article, use a join query to get the author
@@ -43,6 +46,7 @@ Blogr
 				add a hidden username form field
 	Create a 
 	Create a signup page
+		ensure the user enters a password with a min length etc
 
 	Make a page that lists articles by date, group by month maybe
 

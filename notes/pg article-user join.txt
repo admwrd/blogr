@@ -1,0 +1,1 @@
+SELECT * FROM articles a JOIN users u ON (a.author = u.userid)
