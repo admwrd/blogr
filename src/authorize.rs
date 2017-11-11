@@ -36,6 +36,12 @@ use sanitize::*;
 // FromRequest - retrieve cookie data
 // FromForm - retrieve login data and authenticate and create cookie if authenticated
 
+#[derive(Debug, Clone, FromForm)]
+pub struct UserQuery {
+    pub user: String,
+}
+
+
 /// When using it for checking if a user is an administrator
 /// use: AuthContainer::CookieData<Administrator> where Administrator is a
 /// data structure that contains the administrator cookie data
@@ -121,15 +127,40 @@ pub trait AuthorizeForm : CookieId {
     /// 
     fn authenticate(&self) -> Result<Self::CookieType, (String, String)>;
     
+    
+    fn new_form(user: &str, pass: &str) -> Self;
+    
+    
     /// Creates a url that the user should be directed to when the login fails
     /// The authenticate method will return an error message, this is passed to fail_url()
     /// This only creates the "?some=thing" part, the "/page?" part is created by caller function
     // fn fail_url(&self, &str) -> String;
-    fn fail_url(&str, &str) -> String;
     
-    fn new_form(user: &str, pass: &str) -> Self;
+    // fn fail_url(&str, &str) -> String;
+    // Make fail_url a default implementation
+    fn fail_url(user: &str, msg: &str) -> String {
+        let mut output = String::from(msg);
+        output.push_str("?user=");
+        // output.push_str(&self.username);
+        output.push_str(user);
+        output
+    }
+    
+    
+    fn flash_redirect(&self, redir_to: &str) -> Result<Redirect, Flash<Redirect>> {
+        match self.authenticate() {
+            Ok(cooky) => Ok(),
+            Err(ename, emsg) => {
+                let mut furl = String::from(redir_to);
+                if &ename != "" {
+                    let furl_qrystr = Self::fail_url(ename, emsg);
+                    furl.push_str(&furl_qrystr);
+                }
+                Err( Flash::error(Redirect::to(&furl), &emsg) )
+            },
+        }
+    }
 }
-
 
 
 impl<'de, 'a, 'r, T: AuthorizeCookie> FromRequest<'a, 'r> for AuthContainer<'de, T> where T: ::serde::Serialize + ::serde::Deserialize<'de> {

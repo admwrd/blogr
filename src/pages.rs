@@ -74,7 +74,7 @@ pub fn hbs_test_login_dashboard(conn: DbConn, admin: AdministratorCookie) -> Tem
     output
 }
 
-#[get("/login", rank = 3)]
+#[get("/login", rank = 4)]
 pub fn hbs_test_login_form(conn: DbConn) -> Template {
     let start = Instant::now();
     
@@ -93,12 +93,43 @@ pub fn hbs_test_login_retry(conn: DbConn, flash: FlashMessage) -> Template {
     // let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
     // let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
     // TODO: replace username and message in the template call with actual info from the flashmessage
-    let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), "username".to_string(), "message".to_string()), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
+    let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), Some("username".to_string()), Some("message".to_string())), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
         
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
 }
+
+#[get("/login?<user>")]
+// pub fn hbs_test_login_retry(conn: DbConn, user: Option<AuthContainer<Administrator>>, fail: AuthFailure) -> Template {
+pub fn hbs_test_login_retry_query(user: UserQuery, flash: Option<FlashMessage>, conn: DbConn) -> Template {
+    let start = Instant::now();
+    
+    let err_msg: Option<String>;
+    if let Some(flashmsg) = flash {
+        err_msg = Some( alert_info( flashmsg.msg() ) );
+    } else {
+        err_msg = None;
+    }
+    let output: Template;
+    if &user.user != "" {
+        output = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), Some(user.user), err_msg), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, None);
+    } else {
+        output = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), None, err_msg), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, None);
+    }
+    // let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
+    // let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
+    // TODO: replace username and message in the template call with actual info from the flashmessage
+       
+    // Newly commented out 
+    // let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), Some("username".to_string()), Some("message".to_string())), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
+    
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
+}
+
 
 #[derive(FromForm)]
 pub struct FailMsg {
@@ -107,10 +138,15 @@ pub struct FailMsg {
 
 #[post("/login", data = "<form>")]
 // pub fn hbs_test_process_login(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
+// pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
 pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
-    let start = Instant::now();
+    // let start = Instant::now();
     
-    let login_form = form.into_inner();
+    // let login_form = form.into_inner();
+    let container: LoginContainer<AdministratorForm> = form.into_inner();
+    let login_form: AdministratorForm = container.form;
+    login_form.flash_redirect()
+    // if login_form
     
     
     
@@ -125,10 +161,12 @@ pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut
         // failurl.push_str(&failmsg);
     // }
     
-    let end = start.elapsed();
-    println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // let end = start.elapsed();
+    // println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     
-    login_form.redirect("/login", "/login", cookies)
+    // login_form.redirect("/login", "/login", cookies)
+    
+    
     
     // inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
 }
