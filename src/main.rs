@@ -37,6 +37,7 @@ extern crate rocket_contrib;
 extern crate rocket_simpleauth as auth;
 extern crate serde;
 #[macro_use] extern crate serde_derive;
+extern crate rmp_serde as rmps;
 
 extern crate chrono;
 #[macro_use] extern crate lazy_static;
@@ -99,6 +100,8 @@ mod data;
 mod templates;
 mod pages;
 mod sanitize;
+mod authorize;
+mod administrator;
 
 // use layout::*;
 // use cookie_data::*;

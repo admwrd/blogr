@@ -1,5 +1,4 @@
 
-use std::str;
 use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
@@ -10,7 +9,7 @@ use rocket::{Request, Data, Outcome, Response};
 use ::rocket::config::{Config, Environment};
 use rocket::data::FromData;
 use rocket::http::{Cookie, Cookies, MediaType, ContentType, Status, RawStr};
-use ::rocket::outcome::Outcome;
+// use ::rocket::outcome::Outcome;
 use rocket::request::{FlashMessage, Form, FromRequest,FromForm, FormItems, FromFormValue, FromParam};
 use rocket::response::{content, NamedFile, Redirect, Flash, Responder, Content};
 use rocket::response::content::Html;
@@ -35,9 +34,6 @@ use sanitize::*;
 
 // FromRequest - retrieve cookie data
 // FromForm - retrieve login data and authenticate and create cookie if authenticated
-
-//! The authorize module provides a simple wrapper around a user type
-//! and its corresponding form type.
 
 /// When using it for checking if a user is an administrator
 /// use: AuthContainer::CookieData<Administrator> where Administrator is a
@@ -184,8 +180,8 @@ impl<A: AuthorizeForm+CookieId> LoginContainer {
             Err(user, err) => {
                 let mut fail = fail_url.to_string();
                 fail.push_str(A::fail_url(err));
-                Err(Flash::success(Redirect::to(), "Login Success")),
-            }
+                Err(Flash::success(Redirect::to(), "Login Success"))
+            },
         }
         
     }

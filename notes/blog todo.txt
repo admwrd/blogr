@@ -1,5 +1,7 @@
 
 Blogr
+	Limit tags to only show top 50 tags, or maybe make a separate page that shows all of them
+
 	Does blogr search page show a form with the date range?
 		
 
