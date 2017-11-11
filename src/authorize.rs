@@ -147,11 +147,11 @@ pub trait AuthorizeForm : CookieId {
     }
     
     
-    fn flash_redirect(&self, redir_to: &str) -> Result<Redirect, Flash<Redirect>> {
+    fn flash_redirect(&self, ok_redir: &str, err_redir: &str) -> Result<Redirect, Flash<Redirect>> {
         match self.authenticate() {
-            Ok(cooky) => Ok(),
+            Ok(cooky) => Ok(Redirect::to(ok_redir)),
             Err(ename, emsg) => {
-                let mut furl = String::from(redir_to);
+                let mut furl = String::from(err_redir);
                 if &ename != "" {
                     let furl_qrystr = Self::fail_url(ename, emsg);
                     furl.push_str(&furl_qrystr);

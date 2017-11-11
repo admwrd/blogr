@@ -139,15 +139,18 @@ pub struct FailMsg {
 #[post("/login", data = "<form>")]
 // pub fn hbs_test_process_login(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
 // pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
-pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
     // let start = Instant::now();
-    
     // let login_form = form.into_inner();
-    let container: LoginContainer<AdministratorForm> = form.into_inner();
-    let login_form: AdministratorForm = container.form;
-    login_form.flash_redirect()
+    
+    // let container: LoginContainer<AdministratorForm> = form.into_inner();
+    // let login_form: AdministratorForm = container.form;
+    let container = form.into_inner();
+    let login_form = container.form;
+    login_form.flash_redirect("/login", "/login")
     // if login_form
     
+    // form.into_inner().form.flash_redirect("/login", "/login")
     
     
     // let inside = form.into_inner();
