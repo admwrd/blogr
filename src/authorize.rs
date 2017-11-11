@@ -3,6 +3,7 @@ use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
+use std::marker::PhantomData;
 
 use rocket;
 use rocket::{Request, Data, Outcome, Response};
@@ -40,13 +41,15 @@ use sanitize::*;
 /// data structure that contains the administrator cookie data
 
 #[derive(Debug, Clone)]
-pub struct AuthContainer<'de, T: AuthorizeCookie + Serialize + Deserialize<'de>> {
+pub struct AuthContainer<'de, T: AuthorizeCookie + Serialize + Deserialize<'de> + 'de> {
     pub cookie: T,
+    _marker: PhantomData<&'de T>,
 }
 
 #[derive(Debug, Clone)]
-pub struct LoginContainer<'de, T: AuthorizeForm + Serialize + Deserialize<'de>> {
+pub struct LoginContainer<'de, T: AuthorizeForm + Serialize + Deserialize<'de> + 'de> {
     pub form: T,
+    _marker: PhantomData<&'de T>,
 }
 
 // #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -121,14 +124,15 @@ pub trait AuthorizeForm : CookieId {
     /// Creates a url that the user should be directed to when the login fails
     /// The authenticate method will return an error message, this is passed to fail_url()
     /// This only creates the "?some=thing" part, the "/page?" part is created by caller function
-    fn fail_url(&self, &str) -> String;
+    // fn fail_url(&self, &str) -> String;
+    fn fail_url(&str, &str) -> String;
     
     fn new_form(user: &str, pass: &str) -> Self;
 }
 
 
 
-impl<'de, 'a, 'r, T: AuthorizeCookie> FromRequest<'a, 'r> for AuthContainer<'de, T> {
+impl<'de, 'a, 'r, T: AuthorizeCookie> FromRequest<'a, 'r> for AuthContainer<'de, T> where T: ::serde::Serialize + ::serde::Deserialize<'de> {
     type Error = ();
 
     fn from_request(request: &'a Request<'r>) -> rocket::request::Outcome<AuthContainer<'de, T>,Self::Error>{
@@ -162,7 +166,7 @@ impl<'de, 'a, 'r, T: AuthorizeCookie> FromRequest<'a, 'r> for AuthContainer<'de,
     
 // }
 
-impl<'de, A: AuthorizeForm+CookieId> LoginContainer<'de, A> {
+impl<'de, A: AuthorizeForm+CookieId> LoginContainer<'de, A>  where A: ::serde::Serialize + ::serde::Deserialize<'de> {
     /// Redirect to different locations based on whether the LoginContainer data
     /// is valid credentials (as determined by authenticate() method)
     /// 
@@ -188,7 +192,7 @@ impl<'de, A: AuthorizeForm+CookieId> LoginContainer<'de, A> {
     }
 }
 
-impl<'de, 'f, A: AuthorizeForm> FromForm<'f> for LoginContainer<'de, A>{
+impl<'de, 'f, A: AuthorizeForm> FromForm<'f> for LoginContainer<'de, A>  where A: ::serde::Serialize + ::serde::Deserialize<'de>{
     type Error = &'static str;
     
     fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
