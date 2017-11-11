@@ -15,19 +15,19 @@ pub struct AdministratorForm {
 }
 
 impl CookieId for AdministratorCookie {
-    fn cookie_id() -> &str {
+    fn cookie_id<'a>() -> &'a str {
         "acid"
     }
 }
 
 impl CookieId for AdministratorForm {
-    fn cookie_id() -> &str {
+    fn cookie_id<'a>() -> &'a str {
         "acid"
     }
 } 
 
 
-impl Authorize for AdministratorCookie {
+impl AuthorizeCookie for AdministratorCookie {
     // The store and retrieve methods are implemented automatically thanks to default methods
     
     // fn store(&self) -> String {
@@ -41,7 +41,7 @@ impl Authorize for AdministratorCookie {
 impl AuthorizeForm for AdministratorForm {
     type CookieType = AdministratorCookie;
     // fn authenticate_user(username: &str, password: &str) -> Result<CookieType, (String, String)> {
-    fn authenticate(&self) -> Result<CookieType, (String, String)> {
+    fn authenticate(&self) -> Result<Self::CookieType, (String, String)> {
         if &self.username == "andrew" && &self.password != "" {
             Ok(
                 AdministratorCookie {
@@ -51,7 +51,7 @@ impl AuthorizeForm for AdministratorForm {
                 }
             )
         } else {
-            Err(username.to_string(), "Incorrect username".to_string())
+            Err(self.username.to_string(), "Incorrect username".to_string())
         }
     }
     // fn fail_url(&self, msg: &str) -> String {

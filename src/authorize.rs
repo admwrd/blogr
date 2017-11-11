@@ -40,12 +40,12 @@ use sanitize::*;
 /// data structure that contains the administrator cookie data
 
 #[derive(Debug, Clone)]
-pub struct AuthContainer<T: Authorize + Serialize + Deserialize> {
+pub struct AuthContainer<'de, T: AuthorizeCookie + Serialize + Deserialize<'de>> {
     pub cookie: T,
 }
 
 #[derive(Debug, Clone)]
-pub struct LoginContainer<T: AuthorizeForm + Serialize + Deserialize> {
+pub struct LoginContainer<'de, T: AuthorizeForm + Serialize + Deserialize<'de>> {
     pub form: T,
 }
 
@@ -65,7 +65,7 @@ pub trait CookieId {
     fn identifier(&self) -> &str {
         Self::cookie_id()
     }
-    fn cookie_id() -> &str {
+    fn cookie_id<'a>() -> &'a str {
         "sid" // default identifier
     }
 }
@@ -82,7 +82,8 @@ pub trait AuthorizeCookie : CookieId {
     {
         let mut buffer = Vec::new();
         self.serialize(&mut Serializer::new(&mut buffer)).expect("Could not store authorization data.");
-        str::from_utf8(&sparkle_heart).expect("Invalid UTF characters found in authorization data.")
+        // str::from_utf8(&sparkle_heart).expect("Invalid UTF characters found in authorization data.")
+        str::from_utf8(&buffer).expect("Invalid UTF characters found in authorization data.")
     }
     
     /// Takes a string and converts it to a useful data structure
@@ -115,7 +116,7 @@ pub trait AuthorizeForm : CookieId {
     ///     authentication failed.  An example could be that the username was not found
     ///     or perhaps invalid password for the specified user.
     /// 
-    fn authenticate(&self) -> Result<CookieType, (String, String)>;
+    fn authenticate(&self) -> Result<Self::CookieType, (String, String)>;
     
     /// Creates a url that the user should be directed to when the login fails
     /// The authenticate method will return an error message, this is passed to fail_url()
@@ -127,10 +128,10 @@ pub trait AuthorizeForm : CookieId {
 
 
 
-impl<'a, 'r, T: Authorize> FromRequest<'a, 'r> for AuthContainer<T> {
+impl<'de, 'a, 'r, T: AuthorizeCookie> FromRequest<'a, 'r> for AuthContainer<'de, T> {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> rocket::request::Outcome<AuthContainer<T>,Self::Error>{
+    fn from_request(request: &'a Request<'r>) -> rocket::request::Outcome<AuthContainer<'de, T>,Self::Error>{
         // let cookie_id = config::get_cookie_identifier();
         
         // let cid = AuthContainer.cookie::cookie_id();
@@ -157,11 +158,11 @@ impl<'a, 'r, T: Authorize> FromRequest<'a, 'r> for AuthContainer<T> {
     
 // }
 
-impl<A: Authorize> AuthStatus<A> {
+// impl<A: AuthorizeCookie> AuthStatus<A> {
     
-}
+// }
 
-impl<A: AuthorizeForm+CookieId> LoginContainer {
+impl<'de, A: AuthorizeForm+CookieId> LoginContainer<'de, A> {
     /// Redirect to different locations based on whether the LoginContainer data
     /// is valid credentials (as determined by authenticate() method)
     /// 
@@ -187,7 +188,7 @@ impl<A: AuthorizeForm+CookieId> LoginContainer {
     }
 }
 
-impl<'f,A: AuthorizeForm> FromForm<'f> for LoginContainer<A>{
+impl<'de, 'f, A: AuthorizeForm> FromForm<'f> for LoginContainer<'de, A>{
     type Error = &'static str;
     
     fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
@@ -236,7 +237,7 @@ impl<'f,A: AuthorizeForm> FromForm<'f> for LoginContainer<A>{
 
 
 
-// impl Authorize for AdminAuthCookie {
+// impl AuthorizeCookie for AdminAuthCookie {
 //     type FormType = AdminAuthForm;
     
 // }
