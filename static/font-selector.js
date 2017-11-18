@@ -204,6 +204,14 @@ function display_fonts() {
     alert("The current font settings are:\n\ntarget: " + cur_target + "\n\nlogo: " + logo + "\n\ntitle: " + title + "\n\nbody: " + body);
 }
 
+function display_settings() {
+    document.getElementById('cfg-target').innerHTML = 'Target: ' + cur_target;
+    document.getElementById('body-font').innerHTML = 'Body Font: ' + body_fonts[cur_body];
+    document.getElementById('logo-font').innerHTML = 'Logo Font: ' + logo_fonts[cur_logo];
+    document.getElementById('title-font').innerHTML = 'Title Font: ' + title_fonts[cur_title];
+}
+
+
 function body_add(value) {
     if (value < 0) {
         if (value + cur_body < 0) { cur_body = last_body_font; } else { cur_body = cur_body+value; }
@@ -327,7 +335,7 @@ document.addEventListener("keypress", function(event) {
     } else if (event.key == 'q' || event.key == 'i') { 
         reset_target(true);
     }
-    
+    display_settings();
     
 
 
