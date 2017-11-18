@@ -212,6 +212,7 @@ function display_settings() {
 }
 
 
+
 function body_add(value) {
     if (value < 0) {
         if (value + cur_body < 0) { cur_body = last_body_font; } else { cur_body = cur_body+value; }
@@ -237,6 +238,24 @@ function title_add(value) {
         if (value + cur_title > last_title_font) { cur_title = 0; } else { cur_title = cur_title+value; }
     }
     set_title();
+}
+
+function generic_add(value, max, cur) {
+    if (cur < 0) {
+        if (value == -1) {
+            return max;
+        } else if (value == 1) {
+            return 0;
+        }
+    } else {
+        if (value == -1) {
+            if ( cur == 0 ) { return max; }
+            else { return cur - 1; }
+        } else if (value == 1) {
+            if ( cur == max ) { return 0; } 
+            else { return  cur + 1; }
+        }
+    }
 }
 
 function body_reset(initial = false) {
@@ -283,19 +302,26 @@ function reset_target(hard = false) {
 // of the array instead of wrapping the exact number of items
 function target_select(targ, value) {
     if (targ == 'all') {
-        body_add(value);
-        logo_add(value);
-        title_add(value);
-    } else if (targ == 'body') { body_add(value); }
-      else if (targ == 'logo') { logo_add(value); }
-      else if (targ == 'title') { title_add(value); }
+        cur_body = generic_add(value, last_body_font, cur_body);
+        cur_logo = generic_add(value, last_logo_font, cur_logo);
+        cur_title = generic_add(value, last_title_font, cur_title);
+    } else if (targ == 'body') { cur_body = generic_add(value, last_body_font, cur_body); }
+      else if (targ == 'logo') { cur_logo = generic_add(value, last_logo_font, cur_logo); }
+      else if (targ == 'title') { cur_title = generic_add(value, last_title_font, cur_title); }
+    // if (targ == 'all') {
+    //     body_add(value);
+    //     logo_add(value);
+    //     title_add(value);
+    // } else if (targ == 'body') { body_add(value); }
+    //   else if (targ == 'logo') { logo_add(value); }
+    //   else if (targ == 'title') { title_add(value); }
 }
 
 function next_target() {
-    target_select(cur_target, 1);
+    target_select(cur_target, -1);
 }
 function prev_target() {
-    target_select(cur_target, -1);
+    target_select(cur_target, 1);
 }
 function set_target(targ) {
     if        (targ == 'all') { cur_target = 'all'; } 
@@ -304,22 +330,40 @@ function set_target(targ) {
     else if (targ == 'title') { cur_target = 'title'; }
 }
 
-document.addEventListener("keypress", function(event) {
+
+// https://jsfiddle.net/Sk8erPeter/Mhpy3/
+
+// document.onkeydown = function(event) {
+addEventListener("keydown", function(event) {
     // enter: 13 - Up: 38 - Down: 40 - Right: 39 - Left: 37
-    if (event.key == 'n' || event.which == 39) { 
-        next_target();
-    } else if (event.key == 'p' || event.which == 37) {
-        prev_target();
-    } else if (event.which == 38) {
-        if (cur_target == 'all') { cur_target = 'body'; }
-        else if (cur_target == 'body') { cur_target = 'logo'; }
-        else if (cur_target == 'logo') { cur_target = 'title'; }
-        else if (cur_target == 'title') { cur_target = 'all'; }
-    } else if (event.which == 40) {
+    
+    // var evt = event || window.event;
+    // var k = (evt.which) ? evt.which : evt.keyCode;
+    if (event.which == 37) { next_target(); }
+    else if (event.which == 39) { prev_target(); }
+    else if (event.which == 38) {
         if (cur_target == 'all') { cur_target = 'title'; }
         else if (cur_target == 'body') { cur_target = 'all'; }
         else if (cur_target == 'logo') { cur_target = 'body'; }
         else if (cur_target == 'title') { cur_target = 'logo'; }
+    } else if (event.which == 40) {
+        if (cur_target == 'all') { cur_target = 'body'; }
+        else if (cur_target == 'body') { cur_target = 'logo'; }
+        else if (cur_target == 'logo') { cur_target = 'title'; }
+        else if (cur_target == 'title') { cur_target = 'all'; }
+    } else {
+        return;
+    }
+    display_settings();
+    event.preventDefault();
+});
+
+document.addEventListener("keypress", function(event) {
+    // if (event.key == 'ArrowLeft' || event.which == '37' || event.which == 37 || event.key == '37' || event.key == 37) { alert('left arrow!'); }
+    if (event.key == 'n') { 
+        next_target();
+    } else if (event.key == 'p') {
+        prev_target();
     } else if (event.key == 'a') {
         set_target('all');
     } else if (event.key == 'b') {
@@ -334,6 +378,8 @@ document.addEventListener("keypress", function(event) {
         reset_target(false);
     } else if (event.key == 'q' || event.key == 'i') { 
         reset_target(true);
+    } else {
+        return;
     }
     display_settings();
     
