@@ -1,11 +1,5 @@
 
 /* Todo:
-  AUTHENTICATE
-    Setup a database with a user table and query the username and password for authentication
-  ARTICLES
-    Setup a database table with an article table
-  VIEW
-    Add: articles in a category, articles with a tag, single article
   JOIN
     Add a signup page
     
@@ -18,11 +12,6 @@
       -Routes: Admin Users: can create comments and delete comments
                Regular users: can create comments and delete own comments
                Public: can view comments and see a link to login to post comments   
-  POLYMORPHIC AUTH
-    Wrap the AdminAuth and UserAuth structs in another struct or trait
-      -The trait should require the functions that the structs currently implement
-          but the functions will be moved to the wrapper struct
-          
 
 */
 
@@ -100,8 +89,8 @@ mod data;
 mod templates;
 mod pages;
 mod sanitize;
-mod authorize;
-mod administrator;
+// mod authorize;
+// mod administrator;
 
 // use layout::*;
 // use cookie_data::*;

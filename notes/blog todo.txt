@@ -1,9 +1,47 @@
 
+Rocket-auth-login:
+	BEFORE PUBLISH:
+		change font demonized to another freeware font as demonized is personal-use
+		the quicksand font is freeware and prolly doesnt have to change
+	Add description and other settings to Cargo.toml file
+	Add [[bin]] sections to the root crate's Cargo.toml
+
 Blogr
+	Convert blogr to ssl
+
+	Get VPS
+
+	Convert from the simple-auth to my rocket-auth-login crate for authentication and login processing
+
+	Change the blogr database password to a text column called pass
+	Add a text column called salt to the database
+	Add a trigger and function to hash the password with the salt on insert or update
+	Change sql for authentication to check for the salted password hash
+
+
+	Force SSL unless in Dev mode
+	
+	Convert sanitize functions to using the unicode_segments crate
+
+
+	Add a 404 page, maybe other error pages as well
+		#[error(404)] I believe it is
+
+	Add a TL;DR: section of articles
+		Should be optional (nullable in the database)
+		Should also be included in the full-text column
+	
+	Add article "types"
+		The Markdown type will interpret the article contents as markdown and format it into HTML
+			Maybe index all h1 (# or Text\n====) and h2 (## or Text\n-----)
+				For each header add a <a name="lowercase_underscored_header">Header</a>
+				Maybe add a vertical menu using the scrollspy bootstrap plugin thingy
+		The HTML type will leave it as is, unprocessed
+	
 	Limit tags to only show top 50 tags, or maybe make a separate page that shows all of them
 
 	Does blogr search page show a form with the date range?
-		
+		I can't even remember, prolly not.
 
 	Change search, article, and articles templates to show an author.
 		Update the database to link each article to an author
@@ -91,6 +129,14 @@ Future Todo:
 	Research NoSQL databases which could be faster
 		Maybe even redis
 
+	Cache all HTML output from pages using database queries
+		Add an option in the hbs_template() that indicates whether it should
+			look for and store cached results
+			Maybe the option should be an Option<u32> indicating how many 
+				minutes to store the cached contents
+		Use Redis
+		Or other caching tools
+
 	Add search functionality
 	
 	Add a signup page
@@ -135,6 +181,18 @@ Research Futures
 
 
 Done
+
+
+	DO NOT  make password a byte vector, Vector<u8> instead of String
+		the password comes in as a plaintext string, the only place it is
+		not a string is in the database, and the database takes care of all
+		of the hasing and salting stuff so keep the password a string!!!!!!
+
+	Change passwords from using a simple hash to a hash(salt + password)
+		make a database column called salt
+		the salt is randomly generated and concatenated to the plaintext password before hashing
+		the hash of the password+salt is what is stored in the database
+
 	Add a method/helper function to retrieve an article and user from a qry
 		retrieve the data from the raw qry
 		returns a result <Article/User, String>

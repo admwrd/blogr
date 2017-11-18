@@ -19,7 +19,9 @@ use auth::authenticator::Authenticator;
 use regex::Regex;
 use titlecase::titlecase;
 
-use super::{BLOG_URL, ADMIN_LOGIN_URL, USER_LOGIN_URL, CREATE_FORM_URL, TEST_LOGIN_URL};
+// use super::{BLOG_URL, ADMIN_LOGIN_URL, USER_LOGIN_URL, CREATE_FORM_URL, TEST_LOGIN_URL};
+use super::*;
+
 // use super::RssContent;
 use layout::*;
 use cookie_data::*;
@@ -33,8 +35,8 @@ use data::*;
 use templates::*;
 use sanitize::*;
 
-use authorize::*;
-use administrator::*;
+// use authorize::*;
+// use administrator::*;
 
 /*
 
@@ -62,117 +64,117 @@ something(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) ->
 
 */
 
-#[get("/login")]
-pub fn hbs_test_login_dashboard(conn: DbConn, admin: AdministratorCookie) -> Template {
-    let start = Instant::now();
+// #[get("/login")]
+// pub fn hbs_test_login_dashboard(conn: DbConn, admin: AdministratorCookie) -> Template {
+//     let start = Instant::now();
     
-    // let username = admin.username.clone();
-    let output: Template = hbs_template(TemplateBody::General(format!("Welcome.  You are viewing the administrator dashboard page."), None), Some("Admin Dashboard".to_string()), String::from("/dashboard"), None, None, None, Some(start));
+//     // let username = admin.username.clone();
+//     let output: Template = hbs_template(TemplateBody::General(format!("Welcome.  You are viewing the administrator dashboard page."), None), Some("Admin Dashboard".to_string()), String::from("/dashboard"), None, None, None, Some(start));
         
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
-#[get("/login", rank = 4)]
-pub fn hbs_test_login_form(conn: DbConn) -> Template {
-    let start = Instant::now();
+// #[get("/login", rank = 4)]
+// pub fn hbs_test_login_form(conn: DbConn) -> Template {
+//     let start = Instant::now();
     
-    let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), None, None), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
+//     let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), None, None), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
         
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
-#[get("/login", rank = 2)]
-// pub fn hbs_test_login_retry(conn: DbConn, user: Option<AuthContainer<Administrator>>, fail: AuthFailure) -> Template {
-pub fn hbs_test_login_retry(conn: DbConn, flash: FlashMessage) -> Template {
-    let start = Instant::now();
+// #[get("/login", rank = 2)]
+// // pub fn hbs_test_login_retry(conn: DbConn, user: Option<AuthContainer<Administrator>>, fail: AuthFailure) -> Template {
+// pub fn hbs_test_login_retry(conn: DbConn, flash: FlashMessage) -> Template {
+//     let start = Instant::now();
     
-    // let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
-    // let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
-    // TODO: replace username and message in the template call with actual info from the flashmessage
-    let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), Some("username".to_string()), Some("message".to_string())), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
+//     // let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
+//     // let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
+//     // TODO: replace username and message in the template call with actual info from the flashmessage
+//     let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), Some("username".to_string()), Some("message".to_string())), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
         
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
-#[get("/login?<user>")]
-// pub fn hbs_test_login_retry(conn: DbConn, user: Option<AuthContainer<Administrator>>, fail: AuthFailure) -> Template {
-pub fn hbs_test_login_retry_query(user: UserQuery, flash: Option<FlashMessage>, conn: DbConn) -> Template {
-    let start = Instant::now();
+// #[get("/login?<user>")]
+// // pub fn hbs_test_login_retry(conn: DbConn, user: Option<AuthContainer<Administrator>>, fail: AuthFailure) -> Template {
+// pub fn hbs_test_login_retry_query(user: UserQuery, flash: Option<FlashMessage>, conn: DbConn) -> Template {
+//     let start = Instant::now();
     
-    let err_msg: Option<String>;
-    if let Some(flashmsg) = flash {
-        err_msg = Some( alert_info( flashmsg.msg() ) );
-    } else {
-        err_msg = None;
-    }
-    let output: Template;
-    if &user.user != "" {
-        output = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), Some(user.user), err_msg), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, None);
-    } else {
-        output = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), None, err_msg), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, None);
-    }
-    // let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
-    // let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
-    // TODO: replace username and message in the template call with actual info from the flashmessage
+//     let err_msg: Option<String>;
+//     if let Some(flashmsg) = flash {
+//         err_msg = Some( alert_info( flashmsg.msg() ) );
+//     } else {
+//         err_msg = None;
+//     }
+//     let output: Template;
+//     if &user.user != "" {
+//         output = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), Some(user.user), err_msg), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, None);
+//     } else {
+//         output = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), None, err_msg), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, None);
+//     }
+//     // let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
+//     // let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
+//     // TODO: replace username and message in the template call with actual info from the flashmessage
        
-    // Newly commented out 
-    // let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), Some("username".to_string()), Some("message".to_string())), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
+//     // Newly commented out 
+//     // let output: Template = hbs_template(TemplateBody::Login(TEST_LOGIN_URL.to_string(), Some("username".to_string()), Some("message".to_string())), Some("Admin Login".to_string()), String::from("/dashboard"), None, None, None, Some(start));
     
     
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
 
-#[derive(FromForm)]
-pub struct FailMsg {
-    msg: String,
-}
+// #[derive(FromForm)]
+// pub struct FailMsg {
+//     msg: String,
+// }
 
-#[post("/login", data = "<form>")]
-// pub fn hbs_test_process_login(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
-// pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
-pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-    // let start = Instant::now();
-    // let login_form = form.into_inner();
+// #[post("/login", data = "<form>")]
+// // pub fn hbs_test_process_login(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
+// // pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+// pub fn hbs_test_process_login(form: Form<LoginContainer<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+//     // let start = Instant::now();
+//     // let login_form = form.into_inner();
     
-    // let container: LoginContainer<AdministratorForm> = form.into_inner();
-    // let login_form: AdministratorForm = container.form;
-    let container = form.into_inner();
-    let login_form = container.form;
-    login_form.flash_redirect("/login", "/login")
-    // if login_form
+//     // let container: LoginContainer<AdministratorForm> = form.into_inner();
+//     // let login_form: AdministratorForm = container.form;
+//     let container = form.into_inner();
+//     let login_form = container.form;
+//     login_form.flash_redirect("/login", "/login")
+//     // if login_form
     
-    // form.into_inner().form.flash_redirect("/login", "/login")
-    
-    
-    // let inside = form.into_inner();
-    // let failuser = inside.user_str();
-    // let failmsg = inside.fail_str();
-    // let mut failurl = TEST_LOGIN_URL.to_string();
-    // if failmsg != "" && failmsg != " " {
-        // failurl.push_str("?user=");
-        // failurl.push_str(&failuser);
-        // failurl.push_str("&msg=");
-        // failurl.push_str(&failmsg);
-    // }
-    
-    // let end = start.elapsed();
-    // println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    
-    // login_form.redirect("/login", "/login", cookies)
+//     // form.into_inner().form.flash_redirect("/login", "/login")
     
     
+//     // let inside = form.into_inner();
+//     // let failuser = inside.user_str();
+//     // let failmsg = inside.fail_str();
+//     // let mut failurl = TEST_LOGIN_URL.to_string();
+//     // if failmsg != "" && failmsg != " " {
+//         // failurl.push_str("?user=");
+//         // failurl.push_str(&failuser);
+//         // failurl.push_str("&msg=");
+//         // failurl.push_str(&failmsg);
+//     // }
     
-    // inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
-}
+//     // let end = start.elapsed();
+//     // println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    
+//     // login_form.redirect("/login", "/login", cookies)
+    
+    
+    
+//     // inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
+// }
 
 
 
