@@ -517,6 +517,12 @@ mark, .v-term {
 }
 
 
+@font-face {
+  font-family: vishusBlogText;
+  src: local("vishusBlogText"),
+  url('../fonts/Quicksand_Book.otf');
+  font-weight: bold;
+}
 
 /* FONT TESTINGS */
 
