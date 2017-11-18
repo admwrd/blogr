@@ -302,12 +302,12 @@ function reset_target(hard = false) {
 // of the array instead of wrapping the exact number of items
 function target_select(targ, value) {
     if (targ == 'all') {
-        cur_body = generic_add(value, last_body_font, cur_body);
-        cur_logo = generic_add(value, last_logo_font, cur_logo);
-        cur_title = generic_add(value, last_title_font, cur_title);
-    } else if (targ == 'body') { cur_body = generic_add(value, last_body_font, cur_body); }
-      else if (targ == 'logo') { cur_logo = generic_add(value, last_logo_font, cur_logo); }
-      else if (targ == 'title') { cur_title = generic_add(value, last_title_font, cur_title); }
+        cur_body = generic_add(value, last_body_font, cur_body); set_body();
+        cur_logo = generic_add(value, last_logo_font, cur_logo); set_logo();
+        cur_title = generic_add(value, last_title_font, cur_title); set_title();
+    } else if (targ == 'body') { cur_body = generic_add(value, last_body_font, cur_body); set_body(); }
+      else if (targ == 'logo') { cur_logo = generic_add(value, last_logo_font, cur_logo); set_logo(); }
+      else if (targ == 'title') { cur_title = generic_add(value, last_title_font, cur_title); set_title(); }
     // if (targ == 'all') {
     //     body_add(value);
     //     logo_add(value);
