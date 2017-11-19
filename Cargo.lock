@@ -59,7 +59,7 @@ dependencies = [
 
 [[package]]
 name = "blogr"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "chrono 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dotenv 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -74,6 +74,7 @@ dependencies = [
  "regex 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rmp-serde 0.13.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket 0.3.3",
+ "rocket-auth-login 0.2.0",
  "rocket-simpleauth 0.3.0",
  "rocket_codegen 0.3.3",
  "rocket_contrib 0.3.3",
@@ -764,6 +765,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rocket-auth-login"
+version = "0.2.0"
+dependencies = [
+ "htmlescape 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rocket 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rocket_codegen 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "rocket-simpleauth"
 version = "0.3.0"
 dependencies = [
@@ -776,6 +787,17 @@ version = "0.3.3"
 dependencies = [
  "log 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket 0.3.3",
+ "version_check 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "yansi 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "rocket_codegen"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "log 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rocket 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "version_check 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "yansi 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -966,6 +988,111 @@ version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "unic-char-property"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unic-utils 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "unic-char-range"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "unic-ucd"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unic-ucd-age 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-bidi 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-case 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-category 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-core 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-name 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-normal 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "unic-ucd-age"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unic-char-property 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-char-range 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-core 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-utils 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "unic-ucd-bidi"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unic-char-property 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-char-range 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-core 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-utils 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "unic-ucd-case"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unic-char-property 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-char-range 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-core 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "unic-ucd-category"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "matches 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-char-property 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-char-range 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-core 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-utils 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "unic-ucd-core"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "unic-ucd-name"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unic-ucd-core 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-utils 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "unic-ucd-normal"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unic-char-property 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-char-range 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-category 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-ucd-core 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unic-utils 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "unic-utils"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unic-char-range 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "unicase"
 version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1133,6 +1260,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum rmp 0.8.7 (registry+https://github.com/rust-lang/crates.io-index)" = "a3d45d7afc9b132b34a2479648863aa95c5c88e98b32285326a6ebadc80ec5c9"
 "checksum rmp-serde 0.13.7 (registry+https://github.com/rust-lang/crates.io-index)" = "011e1d58446e9fa3af7cdc1fb91295b10621d3ac4cb3a85cc86385ee9ca50cd3"
 "checksum rocket 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "3ad92f830d1ae2e9400ff212c949f6101b794cb3f50df975a8278b30280de51e"
+"checksum rocket_codegen 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "a945a800964fd73054d726fcfb52dbb5ed2c77f9c97f94de81f94970779f12ad"
 "checksum rss 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "70294b2be2d620fed3939032067684c53b8ccae18e8ca0b8410447f0f07228c5"
 "checksum rustc-demangle 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "aee45432acc62f7b9a108cc054142dac51f979e69e71ddce7d6fc7adf29e817e"
 "checksum safemem 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e27a8b19b835f7aea908818e871f5cc3a5a186550c30773be987e155e8163d8f"
@@ -1156,6 +1284,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum traitobject 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "efd1f82c56340fdf16f2a953d7bda4f8fdffba13d93b00844c25572110b26079"
 "checksum typeable 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "1410f6f91f21d1612654e7cc69193b0334f909dcf2c790c4826254fbb86f8887"
 "checksum typenum 1.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "13a99dc6780ef33c78780b826cf9d2a78840b72cae9474de4bcaf9051e60ebbd"
+"checksum unic-char-property 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "7db4cfb2500d21b26b22b349cdd096e0bd83905fbfe8071c577a20c6138cb76e"
+"checksum unic-char-range 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "7d9c3bb5ec40e132a14838b03b935894ade75254196b75dedd4b385b5c504f3a"
+"checksum unic-ucd 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "cf5322993aca65c323aa22dd72ba02b68adfa0fc3e3bc55bdeb57aaed1df446c"
+"checksum unic-ucd-age 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f67935903da7bf2fcff29c9c56f9a214c426beb762744216e681b3b3312730dc"
+"checksum unic-ucd-bidi 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "70bbad51f681736c6b37c966813900f59f6efb55f8e1b962dbb9ca7bea55275d"
+"checksum unic-ucd-case 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3760191b8427f473382a7ae4baa4748da380ff444df2f552765ad4a5c5b0933b"
+"checksum unic-ucd-category 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "c69184b34c05c986c66467d0a1e1981572de70f6fbcba660ab25844b24248bb8"
+"checksum unic-ucd-core 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "868815ca38146cc80735251b2319e28c5c1b977ae1c320f4e12226e090371d0a"
+"checksum unic-ucd-name 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ef7f19ed16b28a7502ad978a3f33ea2401bc0d0c4cddb0a6d462a5a5481332e3"
+"checksum unic-ucd-normal 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "7c5a65691a866f0ed4829815b9e7cddb1fe5f88db45ff04e4278292d802f8cfe"
+"checksum unic-utils 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "34d9344184107b7ef16907a407b781a46c04bf2d721ecbddc48d838391925d58"
 "checksum unicase 1.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "7f4765f83163b74f957c797ad9253caf97f103fb064d3999aea9568d09fc8a33"
 "checksum unicode-bidi 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)" = "49f2bd0c6468a8230e1db229cff8029217cf623c767ea5d60bfbd42729ea54d5"
 "checksum unicode-normalization 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "51ccda9ef9efa3f7ef5d91e8f9b83bbe6955f9bf86aec89d5cce2c874625920f"

@@ -40,9 +40,17 @@ extern crate r2d2_postgres;
 extern crate titlecase;
 
 extern crate handlebars;
+#[allow(unused_imports)]
 #[macro_use] extern crate serde_json;
 extern crate htmlescape;
 extern crate rss;
+extern crate dotenv;
+#[macro_use] extern crate log;
+extern crate env_logger;
+// #[macro_use] extern crate diesel_codegen;
+// #[macro_use] extern crate diesel;
+
+extern crate rocket_auth_login as ral;
 
 
 use handlebars::Handlebars;
@@ -72,12 +80,8 @@ use auth::authenticator::Authenticator;
 
 // use chrono::prelude::*;
 // use multipart::server::Multipart;
-// #[macro_use] extern crate diesel;
-// #[macro_use] extern crate diesel_codegen;
-extern crate dotenv;
-#[macro_use] extern crate log;
-extern crate env_logger;
 
+mod roles;
 mod layout;
 mod cookie_data;
 mod admin_auth;
@@ -101,6 +105,7 @@ mod sanitize;
 // use login_form_status::LoginFormRedirect;
 // use blog::*;
 // use templates::*;
+use ral::authorization::*;
 use data::*;
 use pages::*;
 use templates::TemplateMenu;
@@ -166,6 +171,12 @@ fn main() {
             pages::hbs_about,
             pages::rss_page,
             pages::hbs_index,
+            
+            pages::dashboard_authorized,
+            pages::dashboard_login,
+            pages::dashboard_retry_user,
+            pages::dashboard_retry_flash,
+            pages::process_admin_login,
             
             static_files
         ])

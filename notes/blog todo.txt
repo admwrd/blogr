@@ -1,10 +1,6 @@
 
-Rocket-auth-login:
-	BEFORE PUBLISH:
-		change font demonized to another freeware font as demonized is personal-use
-		the quicksand font is freeware and prolly doesnt have to change
-	Add description and other settings to Cargo.toml file
-	Add [[bin]] sections to the root crate's Cargo.toml
+Rocket-auth-login
+	Cleanup the administrator.rs module in the tls_example
 
 Blogr
 	Use the rocket-file-cache crate to cache static files
@@ -188,6 +184,15 @@ Research Futures
 
 
 
+
+Rocket-auth-login:
+	BEFORE PUBLISH:
+		change font demonized to another freeware font as demonized is personal-use
+		the quicksand font is freeware and prolly doesnt have to change
+	Add description and other settings to Cargo.toml file
+	
+	NOT DONE - Decided not to do this as the example are excluded from the actual published crate
+	Add [[bin]] sections to the root crate's Cargo.toml
 
 
 
