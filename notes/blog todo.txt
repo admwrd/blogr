@@ -7,6 +7,17 @@ Rocket-auth-login:
 	Add [[bin]] sections to the root crate's Cargo.toml
 
 Blogr
+	Use the rocket-file-cache crate to cache static files
+		https://crates.io/crates/rocket-file-cache
+
+	Add compression?
+		Could use the zopfli crate for the gzip/deflate algorithm?
+		https://github.com/SergioBenitez/Rocket/issues/195
+		Make sure the AcceptEncoding allows compression, use the following as a reference:
+			https://mmstick.tk/post/jmP
+
+	Add content expiration headers?
+
 	Convert blogr to ssl
 
 	Get VPS
