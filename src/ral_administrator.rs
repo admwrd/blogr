@@ -1,16 +1,16 @@
 
 use rocket::{Request, Outcome};
-use rocket::request::{FromRequest, FromForm, FormItems, FlashMessage, Form};
-use rocket::http::{Cookie, Cookies};
+// use rocket::request::FromRequest;
+use rocket::request::{FromRequest, FromForm, FormItems};
 use std::collections::HashMap;
 use std::str::{from_utf8};
-// use cookie::Cookie;
 
-use rocket::response::{Redirect, Flash};
 
 use super::PGCONN;
+// use password::*;
 use login::authorization::*;
 use login::sanitization::*;
+// use auth::sanitization::*;
 
 /// The AdministratorCookie type is used to indicate a user has logged in as an administrator
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -24,19 +24,18 @@ pub struct AdministratorCookie {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AdministratorForm {
     pub username: String,
-    // pub password: &'b [u8],
     pub password: String,
 }
 
 impl CookieId for AdministratorCookie {
     fn cookie_id<'a>() -> &'a str {
-        "acid"
+        "plain_acid"
     }
 }
 
 impl CookieId for AdministratorForm {
     fn cookie_id<'a>() -> &'a str {
-        "acid"
+        "plain_acid"
     }
 } 
 
@@ -87,11 +86,10 @@ impl AuthorizeForm for AdministratorForm {
         let conn = PGCONN.lock().unwrap();
         let authstr = format!(r#"
             SELECT u.userid, u.username, u.display FROM users u WHERE u.username = '{username}' AND 
-                u.hash_salt = crypt('{password}', u.hash_salt)"#, username=&self.username, password=&self.password);
+                u.salt_hash = crypt('{password}', u.salt_hash)"#, username=&self.username, password=&self.password);
         let is_user_qrystr = format!("SELECT userid FROM users WHERE username = '{}'", &self.username);
         let is_admin_qrystr = format!("SELECT userid FROM users WHERE username = '{}' AND is_admin = '1'", &self.username);
-        let password_qrystr = format!("SELECT u.userid FROM users u WHERE u.username = '{}' AND u.hash_salt = crypt('{}', u.hash_salt)", &self.username, &self.password);
-        println!("Attempting query: {}", authstr);
+        let password_qrystr = format!("SELECT userid FROM users WHERE username = '{}' AND salt_hash = crypt('{}', salt_hash)", &self.username, &self.password);
         if let Ok(qry) = conn.query(&authstr, &[]) {
             if !qry.is_empty() && qry.len() == 1 {
                 let row = qry.get(0);
@@ -101,7 +99,6 @@ impl AuthorizeForm for AdministratorForm {
                     Some(Ok(d)) => Some(d),
                     _ => None,
                 };
-                
                 return Ok(AdministratorCookie {
                     userid: row.get(0),
                     username: row.get(1),
@@ -135,38 +132,8 @@ impl AuthorizeForm for AdministratorForm {
         AdministratorForm {
             username: user.to_string(),
             password: pass.to_string(),
-            // password: pass,
         }
     }
-    
-    // /// Define a custom flash_redirect() method that overrides the default
-    // /// implementation in authorization::AuthorizeForm trait.
-    // /// This allows the cookie to be made secure
-    // fn flash_redirect(&self, ok_redir: &str, err_redir: &str, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-    //     match self.authenticate() {
-    //         Ok(cooky) => {
-    //             let cid = Self::cookie_id();
-    //             let contents = cooky.store_cookie();
-    //             cookies.add_private(
-    //                 Cookie::new(cid, contents)
-    //                 // Cookie::build(cid, contents)
-    //                 //     .secure(true)
-    //                 //     .finish()
-    //             );
-    //             Ok(Redirect::to(ok_redir))
-    //         },
-    //         Err(fail) => {
-    //             let mut furl = String::from(err_redir);
-    //             if &fail.user != "" {
-    //                 let furl_qrystr = Self::fail_url(&fail.user);
-    //                 furl.push_str(&furl_qrystr);
-    //             }
-    //             Err( Flash::error(Redirect::to(&furl), &fail.msg) )
-    //         },
-    //     }
-    // }
-    
-    
     
 }
 
@@ -203,53 +170,102 @@ impl<'a, 'r> FromRequest<'a, 'r> for AdministratorCookie {
 }
 
 
-impl<'f> FromForm<'f> for AdministratorForm {
-    type Error = &'static str;
+
+
+// impl<'f> FromForm<'f> for AdministratorForm {
+//     type Error = &'static str;
     
-    fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
-        // let mut user_pass = HashMap::new();
-        let mut user: String = String::new();
-        let mut pass: String = String::new();
-        // let mut pass: Vec<u8> = Vec::new();
-        let mut extras: HashMap<String, String> = HashMap::new();
+//     fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
+//         // let mut user_pass = HashMap::new();
+//         let mut user: String = String::new();
+//         let mut pass: String = String::new();
+//         // let mut pass: Vec<u8> = Vec::new();
+//         let mut extras: HashMap<String, String> = HashMap::new();
         
-        for (key,value) in form_items {
-            match key.as_str(){
-                "username" => {
-                    // user = sanitize(&value.url_decode().unwrap_or(String::new()));
-                    user = AdministratorForm::clean_username(&value.url_decode().unwrap_or(String::new()));
-                },
-                "password" => {
-                    // pass = sanitize_password(&value.url_decode().unwrap_or(String::new()));
-                    pass = AdministratorForm::clean_password(&value.url_decode().unwrap_or(String::new()));
-                    // pass = value.bytes().collect();
-                },
-                // _ => {},
-                a => {
-                    // extras.insert( a.to_string(), sanitize( &value.url_decode().unwrap_or(String::new()) ) );
-                    extras.insert( a.to_string(), AdministratorForm::clean_extras( &value.url_decode().unwrap_or(String::new()) ) );
-                },
-            }
-        }
+//         for (key,value) in form_items {
+//             match key.as_str(){
+//                 "username" => {
+//                     // user = sanitize(&value.url_decode().unwrap_or(String::new()));
+//                     user = AdministratorForm::clean_username(&value.url_decode().unwrap_or(String::new()));
+//                 },
+//                 "password" => {
+//                     // pass = sanitize_password(&value.url_decode().unwrap_or(String::new()));
+//                     pass = AdministratorForm::clean_password(&value.url_decode().unwrap_or(String::new()));
+//                     // pass = value.bytes().collect();
+//                 },
+//                 // _ => {},
+//                 a => {
+//                     // extras.insert( a.to_string(), sanitize( &value.url_decode().unwrap_or(String::new()) ) );
+//                     extras.insert( a.to_string(), AdministratorForm::clean_extras( &value.url_decode().unwrap_or(String::new()) ) );
+//                 },
+//             }
+//         }
         
-        // println!("Creating login form data structure with:\nUser: {}\nPass: {}\nExtras: {:?}", user, pass, extras);
+//         // println!("Creating login form data structure with:\nUser: {}\nPass: {}\nExtras: {:?}", user, pass, extras);
         
-        Ok(AdministratorForm {
-            username: user,
-            password: pass,
-        })
-        
-        // Do not need to check for username / password here,
-        // if the authentication method requires them it will
-        // fail at that point.
-        // Ok(
-        //     LoginCont {
-        //         form: if extras.len() == 0 {
-        //                   A::new_form(&user, &pass, None)
-        //                } else {
-        //                    A::new_form(&user, &pass, Some(extras))
-        //                },
-        //     }
-        // )
-    }
-}
+//         // Do not need to check for username / password here,
+//         // if the authentication method requires them it will
+//         // fail at that point.
+//         Ok(
+//             if extras.len() == 0 {
+//               AdministratorForm::new_form(&user, &pass, None)
+//            } else {
+//                AdministratorForm::new_form(&user, &pass, Some(extras))
+//            }
+//         )
+//     }
+// }
+
+
+// impl<'f> FromForm<'f> for LoginCont<AdministratorForm> {
+//     type Error = &'static str;
+//     
+//     fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
+//         // let mut user_pass = HashMap::new();
+//         let mut user: String = String::new();
+//         let mut pass: String = String::new();
+//         // let mut pass: Vec<u8> = Vec::new();
+//         let mut extras: HashMap<String, String> = HashMap::new();
+//         
+//         for (key,value) in form_items {
+//             match key.as_str(){
+//                 "username" => {
+//                     // user = sanitize(&value.url_decode().unwrap_or(String::new()));
+//                     user = AdministratorForm::clean_username(&value.url_decode().unwrap_or(String::new()));
+//                 },
+//                 "password" => {
+//                     // pass = sanitize_password(&value.url_decode().unwrap_or(String::new()));
+//                     pass = AdministratorForm::clean_password(&value.url_decode().unwrap_or(String::new()));
+//                     // pass = value.bytes().collect();
+//                 },
+//                 // _ => {},
+//                 a => {
+//                     // extras.insert( a.to_string(), sanitize( &value.url_decode().unwrap_or(String::new()) ) );
+//                     extras.insert( a.to_string(), AdministratorForm::clean_extras( &value.url_decode().unwrap_or(String::new()) ) );
+//                 },
+//             }
+//         }
+//         
+//         // println!("Creating login form data structure with:\nUser: {}\nPass: {}\nExtras: {:?}", user, pass, extras);
+//         
+//         // Do not need to check for username / password here,
+//         // if the authentication method requires them it will
+//         // fail at that point.
+//         Ok(
+//             LoginCont {
+//                 form: if extras.len() == 0 {
+//                           AdministratorForm::new_form(&user, &pass, None)
+//                        } else {
+//                            AdministratorForm::new_form(&user, &pass, Some(extras))
+//                        },
+//             }
+//         )
+//     }
+// }
+
+
+
+
+
+
+

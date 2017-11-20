@@ -50,7 +50,30 @@ extern crate env_logger;
 // #[macro_use] extern crate diesel_codegen;
 // #[macro_use] extern crate diesel;
 
-extern crate rocket_auth_login as ral;
+extern crate rocket_auth_login as login;
+
+
+mod layout;
+mod cookie_data;
+mod admin_auth;
+mod user_auth;
+mod users;
+mod login_form_status;
+mod blog;
+mod data;
+mod templates;
+mod pages;
+mod sanitize;
+// mod ral_administrator;
+// mod pages_administrator;
+
+// use ral_administrator::*;
+// use pages_administrator::*;
+use data::*;
+use pages::*;
+use templates::TemplateMenu;
+use login::authorization::*;
+use login::*;
 
 
 use handlebars::Handlebars;
@@ -68,8 +91,10 @@ use rocket::{Request, Data, Outcome, Response};
 use rocket::response::{content, NamedFile, Redirect, Flash, Responder, Content};
 use rocket::response::content::Html;
 use rocket::data::FromData;
-use rocket::request::{FlashMessage, Form};
+use rocket::request::{FlashMessage, Form, FromForm, FormItems};
 use rocket::http::{Cookie, Cookies, MediaType, ContentType, Status};
+
+
 use auth::userpass::UserPass;
 use auth::status::{LoginStatus,LoginRedirect};
 use auth::dummy::DummyAuthenticator;
@@ -81,34 +106,7 @@ use auth::authenticator::Authenticator;
 // use chrono::prelude::*;
 // use multipart::server::Multipart;
 
-mod roles;
-mod layout;
-mod cookie_data;
-mod admin_auth;
-mod user_auth;
-mod users;
-mod login_form_status;
-mod blog;
-mod data;
-mod templates;
-mod pages;
-mod sanitize;
-// mod authorize;
-// mod administrator;
 
-// use layout::*;
-// use cookie_data::*;
-// use admin_auth::*;
-// use user_auth::*;
-// use users::*;
-// use login_form_status::*;
-// use login_form_status::LoginFormRedirect;
-// use blog::*;
-// use templates::*;
-use ral::authorization::*;
-use data::*;
-use pages::*;
-use templates::TemplateMenu;
 
 // BLOG_URL MUST HAVE A TRAILING FORWARD SLASH /
 pub const BLOG_URL: &'static str = "http://localhost:8000/";
@@ -126,12 +124,57 @@ fn static_files(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("static/").join(file)).ok()
 }
 
+
+// TEST ROUTE 1
+// #[allow(unused_mut)]
+// #[post("/admin_login", data = "<form>")]
+// // fn process_admin_login(form: Form<LoginCont<AdminLogin>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+// // fn process_admin_login(form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+// // fn process_admin_login(form: Form<AdministratorForm>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+// pub fn process_admin_login(form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+//     let start = Instant::now();
+    
+//     // let inner = form.into_inner();
+//     // let inner = &form;
+//     // let login = inner.form;
+//     let login = form.into_inner();
+//     let output = login.flash_redirect("/dashboard", "/admin_login", cookies);
+    
+//     let end = start.elapsed();
+//     println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
+
+// TEST ROUTE 2
+// #[post("/admin_login", data = "<form>")]
+// fn process_login(form: Form<AdministratorForm>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+//     // let inner = form.into_inner();
+//     // let login = inner.form;
+//     let login = form.into_inner();
+//     login.flash_reidrect("/dashboard", "/login", cookies)
+// }
+
 lazy_static! {
     static ref PGCONN: Mutex<DbConn> = Mutex::new( DbConn(init_pg_pool().get().expect("Could not connect to database.")) );
 }
 
+// #[get("/testroute")]
+// // fn test_route(mut cookies: rocket::http::cookies::Cookies) -> Result<rocket::response::redirect::Redirect, rocket::response::flash::Flash<rocket::response::redirect::Redirect>> {
+// fn test_route(mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+//     let testform = AdministratorForm {
+//         username: String::from("andrew"),
+//         password: String::from("password"),
+//     };
+//     // let testresult = testform.from_form();
+//     // let testresult = testform.flash_redirect("/dashboard", "/login", cookies as rocket::http::cookies::Cookies);
+//     let testresult = testform.flash_redirect("/dashboard", "/login", cookies);
+//     testresult
+// }
 
 fn main() {
+    // use login::authorization::LoginCont;
+    // use ral_administrator::AdministratorForm;
+    
     // env_logger::init();
     // init_pg_pool();
     // if let Ok(pg_conn) = init_pg_pool().get() {
@@ -172,377 +215,16 @@ fn main() {
             pages::rss_page,
             pages::hbs_index,
             
-            pages::dashboard_authorized,
-            pages::dashboard_login,
-            pages::dashboard_retry_user,
-            pages::dashboard_retry_flash,
-            pages::process_admin_login,
+            // pages_administrator::dashboard_authorized,
+            // pages_administrator::dashboard_login,
+            // pages_administrator::dashboard_retry_user,
+            // pages_administrator::dashboard_retry_flash,
+            // pages_administrator::process_admin_login,
+            // process_admin_login,
             
             static_files
         ])
         .launch();
 }
-
-
-
-// #[get("/admin")]
-// fn admin_page(data: AdminCookie) -> Html<String> {
-//     let start = Instant::now();
-
-//     let body = format!("Welcome {user}! You have reach the administrator page.", user = data.username);
-//     let output = template(&body);
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/admin", rank = 2)]
-// fn admin_login() -> Html<String> {
-//     let start = Instant::now();
-
-//     let output = template(&login_form(ADMIN_LOGIN_URL));
-        
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/admin?<fail>")]
-// fn admin_retry(fail: AuthFailure) -> Html<String> {
-//     template(&login_form_fail(ADMIN_LOGIN_URL, &fail.user, &fail.msg))
-// }
-
-// #[post("/admin", data = "<form>")]
-// fn admin_process(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
-//     let start = Instant::now();
-    
-//     let inside = form.into_inner();
-//     let failuser = inside.user_str();
-//     let failmsg = inside.fail_str();
-//     let mut failurl = ADMIN_LOGIN_URL.to_string();
-//     if failmsg != "" && failmsg != " " {
-//         failurl.push_str("?user=");
-//         failurl.push_str(&failuser);
-//         failurl.push_str("&msg=");
-//         failurl.push_str(&failmsg);
-//     }
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    
-//     inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
-// }
-
-
-
-
-// #[get("/user")]
-// fn user_page(data: UserCookie) -> Html<String> {
-//     let body = format!("Welcome {user}! You are at the user page.", user = data.username);
-//     template(&body)
-// }
-
-// #[get("/user", rank = 2)]
-// fn user_login() -> Html<String> {
-//     template( &login_form(USER_LOGIN_URL) )
-// }
-
-// #[get("/user?<fail>")]
-// fn user_retry(fail: AuthFailure) -> Html<String> {
-//     template(&login_form_fail(USER_LOGIN_URL, &fail.user, &fail.msg))
-// }
-
-// #[post("/user", data = "<form>")]
-// fn user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> LoginFormRedirect {
-//     let start = Instant::now();
-    
-//     let inside = form.into_inner();
-//     let failuser = inside.user_str();
-//     let failmsg = inside.fail_str();
-//     let mut failurl = USER_LOGIN_URL.to_string();
-//     if failmsg != "" && failmsg != " " {
-//         failurl.push_str("?user=");
-//         failurl.push_str(&failuser);
-//         failurl.push_str("&msg=");
-//         failurl.push_str(&failmsg);
-//     }
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    
-//     inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
-// }
-
-
-
-// #[get("/view")]
-// fn all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
-//     let start = Instant::now();
-//     let output: Html<String>;
-//     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
-//     if results.len() != 0 {
-//         let is_admin = if admin.is_some() { true } else { false };
-//         let is_user = if user.is_some() { true } else { false };
-//         let username: Option<String> = if let Some(a_user) = admin { Some(a_user.username) } else if let Some(u_user) = user { Some(u_user.username) } else { None };
-//         output = template_articles(results, is_admin, is_user, username);
-//     } else {
-//         if admin.is_some() {
-//             output = template( &alert_danger("There are no articles<br>\n<a href =\"/insert\">Create Article</a>") );
-//         } else {
-//             output = template( &alert_danger("There are no articles.") );
-//         }
-//     }
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/view?<page>")]
-// fn view_page(page: ViewPage, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
-//     // unimplemented!()
-//     template("You are viewing paginated articles.")
-// }
-
-
-// #[get("/all_tags")]
-// fn all_tags() -> Html<String> {
-//     template("All tags page is not yet implemented.")
-// }
-
-
-// #[get("/tag?<tag>", rank = 2)]
-// fn view_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
-//     let start = Instant::now();
-    
-//     let output: Html<String>;
-//     // limit, # body chars, min date, max date, tags, strings
-//     let tags = Some(split_tags(tag.tag));
-//     let results = Article::retrieve_all(conn, 0, Some(-1), None, None, tags, None);
-//     if results.len() != 0 {
-//         let is_admin = if admin.is_some() { true } else { false };
-//         let is_user = if user.is_some() { true } else { false };
-//         let username: Option<String> = if let Some(a_user) = admin { Some(a_user.username) } else if let Some(u_user) = user { Some(u_user.username) } else { None };
-//         output = template_articles(results, is_admin, is_user, username);
-        
-//     } else {
-//         output = template( &alert_danger("Could not find any articles with the specified tag.") );
-//     }
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/article?<aid>")]
-// fn view_article(aid: ArticleId, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
-//     let start = Instant::now();
-//     let rst = aid.retrieve_with_conn(conn); // retrieve result
-//     let mut output: Html<String>; 
-//     if let Some(article) = rst {
-//         let is_admin = if admin.is_some() { true } else { false };
-//         let is_user = if user.is_some() { true } else { false };
-//         let username: Option<String> = if let Some(a_user) = admin { Some(a_user.username) } else if let Some(u_user) = user { Some(u_user.username) } else { None };
-//         output = full_template_article(&article, is_admin, is_user, username)
-//     } else {
-//         // output =  template(&format!("Article #{id} could not be retrieved.", id=aid.aid))
-//         output =  template(&alert_danger(&format!("Article {id} could not be found.", id=aid.aid)))
-//     }
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/article")]
-// fn article_not_found() -> Html<String> {
-//     let start = Instant::now();
-//     let mut content = String::from("The article you have specified does not exist.");
-    
-//     let output = template(&content);
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[post("/article", data = "<form>")]
-// fn post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
-//     let start = Instant::now();
-    
-//     let result = form.into_inner().save(&conn);
-//     let output: Html<String>;
-//     match result { 
-//         Ok(article) => {
-//             output = full_template_article(&article, true, true, Some(admin.username));
-//         },
-//         Err(why) => {
-//             output = template(&format!("Could not post the blog article.  Reason: {}", why));
-//         },
-//     }
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-// #[post("/article", rank=2)]
-// fn unauthorized_post() -> Html<String> {
-    
-//     template(UNAUTHORIZED_POST_MESSAGE)
-// }
-
-// #[get("/insert")]
-// fn insert_form(user: Option<AdminCookie>) -> Html<String> {
-//     let start = Instant::now();
-    
-//     let content;
-//     if let Some(admin) = user {
-//         content = template_create_article(BLOG_URL);
-//     } else {
-//         content = UNAUTHORIZED_POST_MESSAGE.to_string();
-//     }
-//     let output = template(&content);
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/logout")]
-// fn logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
-//     if admin.is_some() || user.is_some() {
-//         if let Some(a) = admin {
-//             cookies.remove_private(Cookie::named(AdminCookie::get_cid()));
-//             // cookies.remove_private(Cookie::named("user_id"));
-//         }
-//         if let Some(u) = user {
-//             cookies.remove_private(Cookie::named(UserCookie::get_cid()));
-//         }
-//         Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
-//     } else {
-//         Err(Redirect::to("/admin"))
-//     }
-// }
-
-// #[get("/search")]
-// fn search_page() -> Html<String> {
-//     // unimplemented!()
-//     template("The search page has not been implemented yet.")
-// }
-
-// #[get("/search?<search>")]
-// fn search_results(search: Search, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Html<String> {
-//     // unimplemented!()
-//     template("The search results page has not been implemented yet.")
-// }
-
-// #[get("/about")]
-// fn about() -> Html<String> {
-//     template("This is the about page.")
-// }
-
-// #[get("/template")]
-// fn template_testing(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
-//     let output: Template;
-//     let start = Instant::now();
-    
-//     output = hbs_template(TemplateBody::General("This is some content.".to_string()), Some("Article Page".to_string()), admin, user, None, Some(start));
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/template2")]
-// fn template_testing2(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
-//     let start = Instant::now();
-//     let output: Template;
-//     let aid = ArticleId { aid: 9 };
-//     let result = aid.retrieve_with_conn(conn);
-//     if let Some(article) = result {
-//         let a_title = article.title.clone();
-//         output = hbs_template(TemplateBody::Article(article), Some(format!("VishusBlog::{}", a_title)), admin, user, None, Some(start));
-//     } else {
-//         output = hbs_template(TemplateBody::General("Could not find article 9".to_string()), Some("VishusBlog::Invalid Article".to_string()), admin, user, None, Some(start));
-//     }
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/template3")]
-// fn template_testing3(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
-//     let start = Instant::now();
-//     let output: Template;
-//     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
-//     if results.len() != 0 {
-//         output = hbs_template(TemplateBody::Articles(results), Some("VishusBlog::Viewing All Articles".to_string()), admin, user, None, Some(start));
-//     } else {
-//         output = hbs_template(TemplateBody::General("Could not find any articles.".to_string()), Some("VishusBlog::Invalid Articles".to_string()), admin, user, None, Some(start));
-//     }
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/login")]
-// fn login_admin(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
-//     let output: Template;
-//     let start = Instant::now();
-    
-//     output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, None), Some("Administrator Login".to_string()), admin, user, None, Some(start));
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/create")]
-// fn create_post(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
-//     let start = Instant::now();
-//     let output: Template;
-//     if admin.is_some() {
-//         output = hbs_template(TemplateBody::Create(CREATE_FORM_URL.to_string()), Some("New Post".to_string()), admin, user, None, Some(start));
-//     } else {
-//         output = hbs_template(TemplateBody::General(UNAUTHORIZED_POST_MESSAGE.to_string()), Some("VishusBlog::Not Authorized".to_string()), admin, user, None, Some(start));
-//     }
-    
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/")]
-// fn index(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>) -> Html<String> {
-//     // let body = r#"Hello! This is a blog.<br><a href="/user">User page</a><br><a href="/admin">Go to admin page</a>"#;
-//     // template(body)
-//     let start = Instant::now();
-//     let mut output: Html<String> = Html(String::new());
-//     if let Some(flashmsg) = flash {
-//         // let output: Html<String>;
-//         let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
-//         if results.len() != 0 {
-//             let is_admin = if admin.is_some() { true } else { false };
-//             let is_user = if user.is_some() { true } else { false };
-//             let username: Option<String> = if let Some(a_user) = admin { Some(a_user.username) } else if let Some(u_user) = user { Some(u_user.username) } else { None };
-            
-//             output = template_articles_msg(&alert_success("You have been logged out."), false, results, is_admin, is_user, username);
-//         } else {
-//             if admin.is_some() {
-//                 output = template( &alert_danger("There are no articles<br>\n<a href =\"/insert\">Create Article</a>") );
-//             } else {
-//                 output = template( &alert_danger("There are no articles.") );
-//             }
-//         }
-//     } else {
-//         output = all_articles(conn, admin, user);
-//     }
-//     let end = start.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-
-
 
 

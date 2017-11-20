@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 use rocket_contrib::Template;
 use rocket::response::{content, NamedFile, Redirect, Flash};
 use rocket::{Request, Data, Outcome};
-use rocket::request::{FlashMessage, Form};
+use rocket::request::{FlashMessage, Form, FromForm};
 use rocket::data::FromData;
 use rocket::response::content::Html;
 // use rocket::request::{Form, FlashMessage};
@@ -25,6 +25,7 @@ use super::*;
 // use super::RssContent;
 use layout::*;
 use cookie_data::*;
+// use cookie_data::CookieId;
 use admin_auth::*;
 use user_auth::*;
 use users::*;
@@ -34,95 +35,11 @@ use blog::*;
 use data::*;
 use templates::*;
 use sanitize::*;
-
 // use authorize::*;
 // use administrator::*;
-use ral::authorization::*;
-use ral::*;
-use roles::*;
-
-pub const URL_LOGIN_ADMIN: &'static str = "http://localhost:8000/admin_login";
-
-/* Todo:
-    Add a struct that implements the Responder trait
-        Use this for adding an expiration header
-    Add another struct that implements the Responder trait
-        Use this for compressing the output using brotli/gzip/deflate
-    Add structs that implement the Responder trait
-        that will combine the expiration and compression responders
-    Maybe even add a struct that will handle static file caching
-        Database queries are cached by postgresql
-            Look into how postgresql caches recent queries
-            and look up how to increase how many queries are cached
-            and when they are cached.  Try to get them cached sooner.
-*/
-
-#[get("/dashboard", rank = 1)]
-fn dashboard_authorized(admin: Admin, conn: DbConn) -> Template {
-    let start = Instant::now();
-    
-    let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=admin.username), None), Some("Dashboard".to_string()), String::from("/dashboard"), Some(admin), None, None, Some(start));
-    
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
-
-#[get("/admin_login", rank = 1)]
-fn dashboard_login() -> Template {
-    hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, None)
-}
-
-#[get("/admin_login?<user>")]
-fn dashboard_retry_user(user: UserQuery, flash_msg_opt: Option<FlashMessage>) -> Template {
-    let start = Instant::now();
-    
-    let username = if &user.user != "" { Some(user.user.clone() ) } else { None };
-    let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
-    let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), username, flash), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, Some(start));
-    
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
-
-#[get("/admin_login", rank = 2)]
-fn dashboard_retry_flash(flash_msg: FlashMessage) -> Template {
-    let start = Instant::now();
-    
-    let flash = Some( alert_danger(flash_msg.msg()) );
-    let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, flash), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, Some(start));
-    
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
-
-#[allow(unused_mut)]
-#[post("/admin_login", data = "<form>")]
-// fn process_admin_login(form: Form<LoginCont<AdminLogin>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-fn process_admin_login(form: Form<AdminLogin>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-    let start = Instant::now();
-    
-    // let inner = form.into_inner();
-    let inner = &form;
-    let login = inner.form;
-    let output = login.flash_redirect("/dashboard", "/admin_login", cookies);
-    
-    let end = start.elapsed();
-    println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
-
-#[get("/admin_logout")]
-fn logout(admin: Option<Admin>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
-    if let Some(_) = admin {
-        cookies.remove_private(Cookie::named(Admin::cookie_id()));
-        Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
-    } else {
-        Err(Redirect::to("/admin_login"))
-    }
-}
+use login::authorization::*;
+use login::sanitization::*;
+// use roles::*;
 
 /*
 
@@ -609,6 +526,7 @@ pub fn hbs_create_form(conn: DbConn, admin: Option<AdminCookie>, user: Option<Us
 
 #[get("/logout")]
 pub fn hbs_logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+    use cookie_data::CookieId;
     if admin.is_some() || user.is_some() {
         if let Some(a) = admin {
             cookies.remove_private(Cookie::named(AdminCookie::get_cid()));

@@ -1,6 +1,18 @@
 
 Rocket-auth-login
+	Add repository url link in the Cargo.toml file
+	
 	Cleanup the administrator.rs module in the tls_example
+		Remove the password module
+		Cleanup all the commented-out old byte vector password code
+
+	In examples, in the administrator module change the folowing
+		cookies.remove_private(Cookie::named(AdministratorCookie::cookie_id()));
+		to
+	        Administrator::delete_cookie();
+	
+	Check the OWASP guide and also check which characters are in the unicode categories
+		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr
 	Use the rocket-file-cache crate to cache static files

@@ -1,76 +1,54 @@
 
+use ral::authorization;
+use ral::authorization::*;
+use ral::sanitization::*;
+
 use rocket::{Request, Outcome};
-use rocket::request::{FromRequest, FromForm, FormItems, FlashMessage, Form};
-use rocket::http::{Cookie, Cookies};
+use rocket::request::{FromRequest, FromForm, FormItems};
+// use rocket::http::{Cookie, Cookies};
+use rocket::http::Cookies;
 use std::collections::HashMap;
 use std::str::{from_utf8};
-// use cookie::Cookie;
-
 use rocket::response::{Redirect, Flash};
 
 use super::PGCONN;
-use login::authorization::*;
-use login::sanitization::*;
 
-/// The AdministratorCookie type is used to indicate a user has logged in as an administrator
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AdministratorCookie {
+pub struct Admin {
     pub userid: u32,
     pub username: String,
     pub display: Option<String>,
 }
 
-/// The AdministratorForm type is used to process a user attempting to login as an administrator
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AdministratorForm {
+pub struct AdminLogin {
     pub username: String,
-    // pub password: &'b [u8],
-    pub password: String,
+    password: String,
 }
 
-impl CookieId for AdministratorCookie {
+impl CookieId for Admin {
     fn cookie_id<'a>() -> &'a str {
         "acid"
     }
 }
 
-impl CookieId for AdministratorForm {
+impl CookieId for AdminLogin {
     fn cookie_id<'a>() -> &'a str {
         "acid"
     }
-} 
+}
 
-impl AuthorizeCookie for AdministratorCookie {
-    /// The store_cookie() method should contain code that
-    /// converts the specified data structure into a string
-    /// 
-    /// This is likely to be achieved using one of the serde
-    /// serialization crates.  Personally I would use either
-    /// serde_json or serde's messagepack implementation ( rmp-serde [rmps]).
-    /// 
-    /// Json is portable and human readable.  
-    /// 
-    /// MsgPack is a binary format, and while not human readable is more
-    /// compact and efficient.
+impl AuthorizeCookie for Admin {
+    
     fn store_cookie(&self) -> String {
         ::serde_json::to_string(self).expect("Could not serialize")
     }
     
-    
-    /// The retrieve_cookie() method deserializes a string
-    /// into a cookie data type.
-    /// 
-    /// Again, serde is likely to be used here.
-    /// Either the messagepack or json formats would work well here.
-    /// 
-    /// Json is portable and human readable.  
-    /// 
-    /// MsgPack is a binary format, and while not human readable is more
-    /// compact and efficient.
     #[allow(unused_variables)]
     fn retrieve_cookie(string: String) -> Option<Self> {
         let mut des_buf = string.clone();
-        let des: Result<AdministratorCookie, _> = ::serde_json::from_str(&mut des_buf);
+        let des: Result<Admin, _> = ::serde_json::from_str(&mut des_buf);
         if let Ok(cooky) = des {
             Some(cooky)
         } else {
@@ -79,8 +57,8 @@ impl AuthorizeCookie for AdministratorCookie {
     }
 }
 
-impl AuthorizeForm for AdministratorForm {
-    type CookieType = AdministratorCookie;
+impl AuthorizeForm for AdminLogin {
+    type CookieType = Admin;
     
     /// Authenticate the credentials inside the login form
     fn authenticate(&self) -> Result<Self::CookieType, AuthFail> {
@@ -88,10 +66,15 @@ impl AuthorizeForm for AdministratorForm {
         let authstr = format!(r#"
             SELECT u.userid, u.username, u.display FROM users u WHERE u.username = '{username}' AND 
                 u.hash_salt = crypt('{password}', u.hash_salt)"#, username=&self.username, password=&self.password);
+            // , 'LATIN1')"#, username=&self.username, password=sanitize_password(from_utf8(&self.password).unwrap_or("")));
+        // let qrystr = format!("SELECT userid, username, display,  FROM users WHERE username = '{}' AND password = '{}' AND is_admin = '1'", &self.username, &self.password);
         let is_user_qrystr = format!("SELECT userid FROM users WHERE username = '{}'", &self.username);
         let is_admin_qrystr = format!("SELECT userid FROM users WHERE username = '{}' AND is_admin = '1'", &self.username);
+        // let password_qrystr = format!("SELECT userid FROM users WHERE username = '{}' AND password = '{}'", &self.username, &self.password);
         let password_qrystr = format!("SELECT u.userid FROM users u WHERE u.username = '{}' AND u.hash_salt = crypt('{}', u.hash_salt)", &self.username, &self.password);
+        // let password_qrystr = format!("SELECT userid FROM users WHERE username = '{}' AND password = '{}'", &self.username, from_utf8(&self.password).unwrap_or(""));
         println!("Attempting query: {}", authstr);
+        // if let Ok(qry) = conn.query(&qrystr, &[]) {
         if let Ok(qry) = conn.query(&authstr, &[]) {
             if !qry.is_empty() && qry.len() == 1 {
                 let row = qry.get(0);
@@ -102,7 +85,7 @@ impl AuthorizeForm for AdministratorForm {
                     _ => None,
                 };
                 
-                return Ok(AdministratorCookie {
+                return Ok(Admin {
                     userid: row.get(0),
                     username: row.get(1),
                     display,
@@ -132,10 +115,9 @@ impl AuthorizeForm for AdministratorForm {
     
     /// Create a new login form instance
     fn new_form(user: &str, pass: &str, _extras: Option<HashMap<String, String>>) -> Self {
-        AdministratorForm {
+        AdminLogin {
             username: user.to_string(),
             password: pass.to_string(),
-            // password: pass,
         }
     }
     
@@ -148,10 +130,9 @@ impl AuthorizeForm for AdministratorForm {
     //             let cid = Self::cookie_id();
     //             let contents = cooky.store_cookie();
     //             cookies.add_private(
-    //                 Cookie::new(cid, contents)
-    //                 // Cookie::build(cid, contents)
-    //                 //     .secure(true)
-    //                 //     .finish()
+    //                 Cookie::build(cid, contents)
+    //                     // .secure(true)
+    //                     .finish()
     //             );
     //             Ok(Redirect::to(ok_redir))
     //         },
@@ -165,31 +146,18 @@ impl AuthorizeForm for AdministratorForm {
     //         },
     //     }
     // }
-    
-    
-    
 }
 
-impl<'a, 'r> FromRequest<'a, 'r> for AdministratorCookie {
+
+impl<'a, 'r> FromRequest<'a, 'r> for Admin {
     type Error = ();
-    
-    /// The from_request inside the file defining the custom data types
-    /// enables the type to be checked directly in a route as a request guard
-    /// 
-    /// This is not needed but highly recommended.  Otherwise you would need to use:
-    /// 
-    /// `#[get("/protected")] fn admin_page(admin: AuthCont<AdministratorCookie>)`
-    /// 
-    /// instead of:
-    /// 
-    /// `#[get("/protected")] fn admin_page(admin: AdministratorCookie)`
-    fn from_request(request: &'a Request<'r>) -> ::rocket::request::Outcome<AdministratorCookie,Self::Error>{
-        let cid = AdministratorCookie::cookie_id();
+    fn from_request(request: &'a Request<'r>) -> ::rocket::request::Outcome<Admin,Self::Error>{
+        let cid = Admin::cookie_id();
         let mut cookies = request.cookies();
         
         match cookies.get_private(cid) {
             Some(cookie) => {
-                if let Some(cookie_deserialized) = AdministratorCookie::retrieve_cookie(cookie.value().to_string()) {
+                if let Some(cookie_deserialized) = Admin::retrieve_cookie(cookie.value().to_string()) {
                     Outcome::Success(
                         cookie_deserialized
                     )
@@ -203,45 +171,34 @@ impl<'a, 'r> FromRequest<'a, 'r> for AdministratorCookie {
 }
 
 
-impl<'f> FromForm<'f> for AdministratorForm {
+impl<'f> FromForm<'f> for AdminLogin {
     type Error = &'static str;
     
-    fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
-        // let mut user_pass = HashMap::new();
+    fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<AdminLogin, Self::Error> {
         let mut user: String = String::new();
         let mut pass: String = String::new();
-        // let mut pass: Vec<u8> = Vec::new();
         let mut extras: HashMap<String, String> = HashMap::new();
         
         for (key,value) in form_items {
             match key.as_str(){
                 "username" => {
-                    // user = sanitize(&value.url_decode().unwrap_or(String::new()));
-                    user = AdministratorForm::clean_username(&value.url_decode().unwrap_or(String::new()));
+                    user = AdminLogin::clean_username(&value.url_decode().unwrap_or(String::new()));
                 },
                 "password" => {
-                    // pass = sanitize_password(&value.url_decode().unwrap_or(String::new()));
-                    pass = AdministratorForm::clean_password(&value.url_decode().unwrap_or(String::new()));
-                    // pass = value.bytes().collect();
+                    pass = AdminLogin::clean_password(&value.url_decode().unwrap_or(String::new()));
                 },
-                // _ => {},
                 a => {
-                    // extras.insert( a.to_string(), sanitize( &value.url_decode().unwrap_or(String::new()) ) );
-                    extras.insert( a.to_string(), AdministratorForm::clean_extras( &value.url_decode().unwrap_or(String::new()) ) );
+                    extras.insert( a.to_string(), AdminLogin::clean_extras( &value.url_decode().unwrap_or(String::new()) ) );
                 },
             }
         }
         
-        // println!("Creating login form data structure with:\nUser: {}\nPass: {}\nExtras: {:?}", user, pass, extras);
+        if extras.len() == 0 {
+            AdminLogin::new_form(&user, &pass, None)
+        } else {
+            AdminLogin::new_form(&user, &pass, Some(extras))
+        }
         
-        Ok(AdministratorForm {
-            username: user,
-            password: pass,
-        })
-        
-        // Do not need to check for username / password here,
-        // if the authentication method requires them it will
-        // fail at that point.
         // Ok(
         //     LoginCont {
         //         form: if extras.len() == 0 {
@@ -253,3 +210,25 @@ impl<'f> FromForm<'f> for AdministratorForm {
         // )
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
