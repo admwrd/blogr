@@ -107,7 +107,7 @@ pub struct Express {
 }
 
 impl Express {
-    fn compress(self, encoding: AcceptEncoding) -> Self {
+    fn compress(mut self, encoding: AcceptEncoding) -> Self {
         
         match encoding.preferred() {
             PreferredEncoding::Brotli => {

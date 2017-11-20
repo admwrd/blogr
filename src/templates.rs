@@ -359,7 +359,7 @@ pub fn hbs_template_string(content: TemplateBody, title: Option<String>, page: S
     
     let root_path;
     if let Ok(exe_path) = env::current_exe() {
-        let p = exe_path.parent().unwrap().parent().unwrap().to_path_buf();
+        let mut p = exe_path.parent().unwrap().parent().unwrap().to_path_buf();
         p.push("templates");
         root_path = p;
     } else {
