@@ -41,12 +41,13 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
+                        <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
                         {{#each info.pages}}
-                          {{#if this.separator}}
-                            <li class="v-nav-item nav-item v-divider {{this.classes}}"></li>
+                          {{#is-current-page ../info.page this.url}}
+                            <li class="v-nav-item nav-item active"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
                           {{else}}
-                            <li class="v-nav-item nav-item {{this.classes}}"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
-                          {{/if}}
+                            <li class="v-nav-item nav-item"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
+                          {{/is-current-page}}
                         {{/each}}
                         {{#if info.is_admin}}
                         <li class="v-nav-item nav-item dropdown">
@@ -58,7 +59,11 @@
                               {{#if this.separator}}
                                   <div class="dropdown-divider"></div>
                               {{else}}
-                                  <a class="dropdown-item {{this.classes}}" href="{{this.url}}">{{this.name}}</a>
+                                {{#is-current-page ../info.page this.url}}
+                                  <a class="dropdown-item active" href="{{this.url}}">{{this.name}}</a>
+                                {{else}}
+                                  <a class="dropdown-item" href="{{this.url}}">{{this.name}}</a>
+                                {{/is-current-page}}
                               {{/if}}
                             {{/each}}
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->
@@ -68,7 +73,7 @@
                         <!-- <li class="v-nav-item nav-item"><a class="nav-link disabled" href="#">Disabled</a></li> -->
                     </ul>
                     <form id="search-form" action="{{info.base_url}}search" method="get" class="form-inline my-2 my-lg-0">
-                        <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" value="{{#if search.q}}{{search.q}}{{/if}}" aria-label="Search">
                         <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
                     </form>
                 </div>
@@ -78,25 +83,27 @@
 <!-- ---------- -->
                     
                     {{#if msg}}
-                        {{{msg}}}
+                    {{{msg}}}
                     {{/if}}
+                    {{#each body}}
                     <article class="v-article">
                         <header class="v-article-header">
-                            <h2 class="v-article-title"><a href="{{info.base_url}}article/{{body.aid}}/{{body.title}}">{{body.title}}</a></h2>
+                            <h2 class="v-article-title"><a href="{{info.base_url}}article/{{this.aid}}/{{this.title}}">{{this.title}}</a></h2>
                             <div class="row">
-                                <date class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</date>
+                                <date class="v-article-date" datetime="{{this.posted_machine}}">{{this.posted_human}}</date>
                                 <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
                             </div>
                         </header>
                         <p>
-                            {{{body.body}}}
+                            {{{this.body}}}
                         </p>
                         <div class="v-article-tags">
-                            {{#each body.tags}}
-                            <a href="{{../info.base_url}}tag?tag={{this}}">{{this}}</a>
+                            {{#each this.tags}}
+                            <a href="{{../../info.base_url}}tag?tag={{this}}">{{this}}</a>
                             {{/each}}
                         </div>
                     </article>
+                    {{/each}}
                     
 <!-- ---------- -->
 

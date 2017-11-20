@@ -47,6 +47,7 @@ pub struct TemplateMenu {
     pub separator: bool,
     pub name: String,
     pub url: String,
+    pub classes: String,
 }
 
 /// The TemplateInfo struct contains page metadata
@@ -127,10 +128,18 @@ pub struct TemplateTags {
 // let end = start.elapsed();
 // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
 
+
+
 impl TemplateMenu {
-    pub fn new(name: String, url: String) -> TemplateMenu {
+    pub fn new(name: String, url: String, current_page: &str) -> TemplateMenu {
+        let classes = if &url == current_page {
+            "active".to_string()
+        } else {
+            String::new()
+        };
         TemplateMenu {
             separator: false,
+            classes,
             name,
             url,
         }
@@ -140,9 +149,12 @@ impl TemplateMenu {
             separator: true,
             name: String::new(),
             url: String::new(),
+            classes: String::new(),
         }
     }
 }
+
+
 
 impl TemplateInfo {
     pub fn new( title: Option<String>, 
@@ -154,10 +166,6 @@ impl TemplateInfo {
                 pages: Vec<TemplateMenu>,
                 admin_pages: Vec<TemplateMenu>,
               ) -> TemplateInfo {
-        // let page = String::from("About");
-        // let mut pages: Vec<TemplateMenu> = Vec::new();
-        // pages.push( TemplateMenu { name: "About".to_string(), url: "localhost/about_page".to_string(), } );
-        // pages.push( TemplateMenu { name: "Logout".to_string(), url: "localhost/logout_page".to_string(), } );
         
         TemplateInfo {
             title: if let Some(t) = title { t } else { String::new() },
@@ -178,10 +186,7 @@ impl TemplateInfo {
     }
 }
 
-// pub fn new(content: &'a str, title: Option<&'b str>, admin: Option<AdminCookie>, user: Option<UserCookie>, menu: Vec<(&str, &str)>, admin_menu: Vec<(&str, &str)>) -> TemplateItems {
-// body: if let TemplateBody::General(contents) = content { contents } else { "Invalid contents." },
-// body: if let TemplateBody::Article(article) = content { contents } else { Article {aid: 0, title: String::from("Invalid Article"), Local::now().naive_local(), body: String::from("Invalid template contents."), Vec::new(), String::from("Invalid article template.")} },
-// body: if let TemplateBody::Article(article) = content { contents } else { Article {aid: 0, title: String::from("Invalid Article"), Local::now().naive_local(), body: String::from("Invalid template contents."), Vec::new(), String::from("Invalid article template.")} },
+
 
 impl TemplateGeneral  {
     pub fn new(content: String, msg: Option<String>, info: TemplateInfo) -> TemplateGeneral {
@@ -211,17 +216,6 @@ impl TemplateArticles {
         }
     }
 }
-// impl TemplateSearch {
-//     pub fn new(content: Vec<Article>, qry: Option<String>, msg: Option<String>, info: TemplateInfo) -> TemplateSearch {
-//         let mut articles: Vec<ArticleDisplay> = content.iter().map(|a| a.to_display()).collect();
-//         TemplateSearch {
-//             body: articles,
-//             qry: if let Some(q) = qry { q } else { String::new() },
-//             msg: if let Some(m) = msg { m } else { String::new() },
-//             info,
-//         }
-//     }
-// }
 impl TemplateSearch {
     pub fn new(content: Vec<Article>, search: Option<Search>, msg: Option<String>, info: TemplateInfo) -> TemplateSearch {
         let mut articles: Vec<ArticleDisplay> = content.iter().map(|a| a.to_display()).collect();
@@ -262,6 +256,8 @@ impl TemplateTags {
     }
 }
 
+
+
 pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
     // let mut context: HashMap<&str> = HashMap::new();
     // context.insert();
@@ -269,20 +265,20 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
     // let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
     
     let mut pages: Vec<TemplateMenu> = vec![
-        TemplateMenu::new(String::from("Home"), String::from("/")),
-        TemplateMenu::new(String::from("About"), String::from("/about")),
-        TemplateMenu::new(String::from("View Tags"), String::from("/all_tags")),
+        TemplateMenu::new(String::from("Home"), String::from("/"), &page),
+        TemplateMenu::new(String::from("About"), String::from("/about"), &page),
+        TemplateMenu::new(String::from("View Tags"), String::from("/all_tags"), &page),
     ];
     
     let mut admin_pages: Vec<TemplateMenu> = Vec::new();
     if admin_opt.is_some() {
-        admin_pages.push( TemplateMenu::new(String::from("Admin Dashboard"), String::from("/admin")) );
-        admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create")) );
+        admin_pages.push( TemplateMenu::new(String::from("Admin Dashboard"), String::from("/admin"), &page) );
+        admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create"), &page) );
         admin_pages.push( TemplateMenu::separator() );
-        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/logout")) );
+        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/logout"), &page) );
         
     } else {
-        pages.push( TemplateMenu::new(String::from("Login"), String::from("/admin")) );
+        pages.push( TemplateMenu::new(String::from("Login"), String::from("/admin"), &page) );
     }
     
     let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, page, pages, admin_pages);
@@ -329,29 +325,6 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
     }
     
 }
-
-// pub fn hbs_login(tried_user: Option<String>, fail_msg: Option<String>, title: Option<String>, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
-    
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

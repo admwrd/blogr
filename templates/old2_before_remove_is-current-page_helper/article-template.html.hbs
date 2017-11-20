@@ -41,12 +41,13 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
+                        <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
                         {{#each info.pages}}
-                          {{#if this.separator}}
-                            <li class="v-nav-item nav-item v-divider {{this.classes}}"></li>
+                          {{#is-current-page ../info.page this.url}}
+                            <li class="v-nav-item nav-item active"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
                           {{else}}
-                            <li class="v-nav-item nav-item {{this.classes}}"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
-                          {{/if}}
+                            <li class="v-nav-item nav-item"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
+                          {{/is-current-page}}
                         {{/each}}
                         {{#if info.is_admin}}
                         <li class="v-nav-item nav-item dropdown">
@@ -58,7 +59,11 @@
                               {{#if this.separator}}
                                   <div class="dropdown-divider"></div>
                               {{else}}
-                                  <a class="dropdown-item {{this.classes}}" href="{{this.url}}">{{this.name}}</a>
+                                {{#is-current-page ../info.page this.url}}
+                                  <a class="dropdown-item active" href="{{this.url}}">{{this.name}}</a>
+                                {{else}}
+                                  <a class="dropdown-item" href="{{this.url}}">{{this.name}}</a>
+                                {{/is-current-page}}
                               {{/if}}
                             {{/each}}
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->

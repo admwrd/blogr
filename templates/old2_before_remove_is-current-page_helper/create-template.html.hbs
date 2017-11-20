@@ -41,12 +41,13 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
+                        <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
                         {{#each info.pages}}
-                          {{#if this.separator}}
-                            <li class="v-nav-item nav-item v-divider {{this.classes}}"></li>
+                          {{#is-current-page ../info.page this.url}}
+                            <li class="v-nav-item nav-item active"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
                           {{else}}
-                            <li class="v-nav-item nav-item {{this.classes}}"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
-                          {{/if}}
+                            <li class="v-nav-item nav-item"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
+                          {{/is-current-page}}
                         {{/each}}
                         {{#if info.is_admin}}
                         <li class="v-nav-item nav-item dropdown">
@@ -58,7 +59,11 @@
                               {{#if this.separator}}
                                   <div class="dropdown-divider"></div>
                               {{else}}
-                                  <a class="dropdown-item {{this.classes}}" href="{{this.url}}">{{this.name}}</a>
+                                {{#is-current-page ../info.page this.url}}
+                                  <a class="dropdown-item active" href="{{this.url}}">{{this.name}}</a>
+                                {{else}}
+                                  <a class="dropdown-item" href="{{this.url}}">{{this.name}}</a>
+                                {{/is-current-page}}
                               {{/if}}
                             {{/each}}
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->
@@ -74,32 +79,44 @@
                 </div>
             </nav>
                 <div id="v-body">
+                    <div class="v-content">
                     
 <!-- ---------- -->
-                    
-                    {{#if msg}}
-                        {{{msg}}}
-                    {{/if}}
-                    <article class="v-article">
-                        <header class="v-article-header">
-                            <h2 class="v-article-title"><a href="{{info.base_url}}article/{{body.aid}}/{{body.title}}">{{body.title}}</a></h2>
-                            <div class="row">
-                                <date class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</date>
-                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
+                        
+                        {{#if msg}}
+                            {{{msg}}}
+                        {{/if}}
+                        <form method="post" action="{{action_url}}" name="insert_form">
+                            <div class="col-md-7 mx-auto mb-3">
+                                <input name="title" type="text" maxlength="120" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">
                             </div>
-                        </header>
-                        <p>
-                            {{{body.body}}}
-                        </p>
-                        <div class="v-article-tags">
-                            {{#each body.tags}}
-                            <a href="{{../info.base_url}}tag?tag={{this}}">{{this}}</a>
-                            {{/each}}
-                        </div>
-                    </article>
+                            <div class="form-group">
+                                <label for="input_description" class="v-form-label">Description</label>
+                                <textarea class="form-control" name="description" id="insert_desc" maxlength="400" rows="2"></textarea>
+                                <!-- <input name="description" type="text" class="v-form-control form-control" maxlength="250" id="insert-desc" placeholder="Description"> -->
+                            </div>
+                            <div class="form-group">
+                                <label for="input_body" class="v-form-label">Contents</label>
+                                <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-8 mx-auto">
+                                <label for="insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
+                                    <input name="tags" type="text" maxlength="250" class="v-centered-input v-form-control form-control" id="insert-tags" placeholder="Tags">
+                                    <div class="v-form-message" id="tag-msg">
+                                        Did you mean to <b>Comma Separate</b> the tags?
+                                    </div>
+                            </div>
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary">Create Article</button>
+                            </div>
+                        </form>
+                        <script>
+                            StartText();
+                        </script>
                     
 <!-- ---------- -->
 
+                    </div>
                     <footer id="v-footer">
                         <div class="v-copyright">&copy; 2017 Andrew Prindle | <a href="{{info.base_url}}rss.xml">RSS</a></div>
                         {{#if info.gentime}}

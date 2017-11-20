@@ -187,7 +187,10 @@ impl ArticleId {
     // Prefer to use this over retrieve()
     pub fn retrieve_with_conn(&self, pgconn: DbConn) -> Option<Article> {
         // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
-        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid), &[]);
+        // let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid))) WHERE a.aid = {id}", id=self.aid), &[]);
+        let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid))) WHERE a.aid = {id}", id=self.aid);
+        let rawqry = pgconn.query(&qrystr, &[]);
+        println!("Running query:\n{}", qrystr);
         if let Ok(aqry) = rawqry {
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {

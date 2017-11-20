@@ -19,12 +19,12 @@
         
         <!-- Custom CSS -->
         <!-- <link id="pageStyleSheet" type="text/css" href="css/blog.css" rel="stylesheet" /> -->
-        <link id="pageStyleSheet" type="text/css" href="{{info.base_url}}css/blogr.css" rel="stylesheet" />
+        <link id="pageStyleSheet" type="text/css" href="css/blogr.css" rel="stylesheet" />
         
         <!-- JavaScript -->
         <!-- <script src="js-head.js"></script>  -->
-        <script src="{{info.base_url}}sha256.js"></script>
-        <script src="{{info.base_url}}blog.js"></script>
+        <script src="sha256.js"></script>
+        <script src="blog.js"></script>
         
         <style>
         
@@ -37,16 +37,17 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="blog-logo navbar-brand" href="{{info.base_url}}">Vishus Blog</a>
+                <a class="blog-logo navbar-brand" href="#">Vishus Blog</a>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
+                        <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
                         {{#each info.pages}}
-                          {{#if this.separator}}
-                            <li class="v-nav-item nav-item v-divider {{this.classes}}"></li>
+                          {{#is-current-page ../info.page this.url}}
+                            <li class="v-nav-item nav-item active"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
                           {{else}}
-                            <li class="v-nav-item nav-item {{this.classes}}"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
-                          {{/if}}
+                            <li class="v-nav-item nav-item"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
+                          {{/is-current-page}}
                         {{/each}}
                         {{#if info.is_admin}}
                         <li class="v-nav-item nav-item dropdown">
@@ -58,7 +59,11 @@
                               {{#if this.separator}}
                                   <div class="dropdown-divider"></div>
                               {{else}}
-                                  <a class="dropdown-item {{this.classes}}" href="{{this.url}}">{{this.name}}</a>
+                                {{#is-current-page ../info.page this.url}}
+                                  <a class="dropdown-item active" href="{{this.url}}">{{this.name}}</a>
+                                {{else}}
+                                  <a class="dropdown-item" href="{{this.url}}">{{this.name}}</a>
+                                {{/is-current-page}}
                               {{/if}}
                             {{/each}}
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->
@@ -67,41 +72,33 @@
                         {{/if}}
                         <!-- <li class="v-nav-item nav-item"><a class="nav-link disabled" href="#">Disabled</a></li> -->
                     </ul>
-                    <form id="search-form" action="{{info.base_url}}search" method="get" class="form-inline my-2 my-lg-0">
+                    <form id="search-form" action="/search" method="get" class="form-inline my-2 my-lg-0">
                         <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
                     </form>
                 </div>
             </nav>
                 <div id="v-body">
-                    
+                    <div class="v-content">
 <!-- ---------- -->
                     
-                    {{#if msg}}
+                        {{#if msg}}
                         {{{msg}}}
-                    {{/if}}
-                    <article class="v-article">
-                        <header class="v-article-header">
-                            <h2 class="v-article-title"><a href="{{info.base_url}}article/{{body.aid}}/{{body.title}}">{{body.title}}</a></h2>
-                            <div class="row">
-                                <date class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</date>
-                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
-                            </div>
-                        </header>
-                        <p>
-                            {{{body.body}}}
-                        </p>
-                        <div class="v-article-tags">
-                            {{#each body.tags}}
-                            <a href="{{../info.base_url}}tag?tag={{this}}">{{this}}</a>
-                            {{/each}}
+                        {{/if}}
+                        
+                        <div class="v-article-tags v-all-tags">
+                            <ul>
+                        {{#each tags}}
+                            <li class="v-tag-size-{{this.size}}"><a href="/tag?tag={{this.url}}">{{this.tag}} ({{this.count}})</a></li>
+                        {{/each}}
+                            </ul>
                         </div>
-                    </article>
-                    
+                        
 <!-- ---------- -->
-
+                        
+                    </div>
                     <footer id="v-footer">
-                        <div class="v-copyright">&copy; 2017 Andrew Prindle | <a href="{{info.base_url}}rss.xml">RSS</a></div>
+                        <div class="v-copyright">&copy; 2017 Andrew Prindle</div>
                         {{#if info.gentime}}
                         <div class="v-generation-time">Generated in {{info.gentime}} seconds</div>
                         {{/if}}
@@ -119,7 +116,7 @@
         <!-- Custom JavaScript -->
         <!-- <script src="sha256.js"></script> -->
         <!-- <script src="blog.js"></script> -->
-        <script src="{{info.base_url}}blog_after.js"></script>
+        <script src="blog_after.js"></script>
         <script>
             {{#if info.js}}
             {{{info.js}}}

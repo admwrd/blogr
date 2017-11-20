@@ -41,6 +41,34 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="v-nav navbar-nav mr-auto">
+                        <!-- <li class="v-nav-item nav-item active"><a class="nav-link" href="">Home <span class="sr-only">(current)</span></a></li> -->
+                        <!-- {{#each info.pages}}
+                          {{#is-current-page ../info.page this.url}}
+                            <li class="v-nav-item nav-item active"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
+                          {{else}}
+                            <li class="v-nav-item nav-item"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
+                          {{/is-current-page}}
+                        {{/each}}
+                        {{#if info.is_admin}}
+                        <li class="v-nav-item nav-item dropdown">
+                            <a class="v-nav-login nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{info.username}}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            {{#each info.admin_pages}}
+                              {{#if this.separator}}
+                                  <div class="dropdown-divider"></div>
+                              {{else}}
+                                {{#is-current-page ../info.page this.url}}
+                                  <a class="dropdown-item active" href="{{this.url}}">{{this.name}}</a>
+                                {{else}}
+                                  <a class="dropdown-item" href="{{this.url}}">{{this.name}}</a>
+                                {{/is-current-page}}
+                              {{/if}}
+                            {{/each}}
+                        {{/if}} -->
+                            
+                            
                         {{#each info.pages}}
                           {{#if this.separator}}
                             <li class="v-nav-item nav-item v-divider {{this.classes}}"></li>
@@ -74,32 +102,42 @@
                 </div>
             </nav>
                 <div id="v-body">
+                    <div class="v-content">
                     
 <!-- ---------- -->
-                    
-                    {{#if msg}}
-                        {{{msg}}}
-                    {{/if}}
-                    <article class="v-article">
-                        <header class="v-article-header">
-                            <h2 class="v-article-title"><a href="{{info.base_url}}article/{{body.aid}}/{{body.title}}">{{body.title}}</a></h2>
-                            <div class="row">
-                                <date class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</date>
-                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
+                        
+                        {{#if msg}}
+                            {{{msg}}}
+                        {{/if}}
+                        <form id="needs-validation" action="{{action_url}}" name="login_form" method="post" novalidate>
+                            <div class="form-group" id="userGroup">
+                                <label for="usernameField">Email Address</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="text" name="username" value="{{#if tried_user}}{{tried_user}}{{/if}}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username" required>
+                                    <div class="invalid-feedback">
+                                        Please specify a username
+                                    </div>
+                                </div>
+                                <!-- <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small> -->
                             </div>
-                        </header>
-                        <p>
-                            {{{body.body}}}
-                        </p>
-                        <div class="v-article-tags">
-                            {{#each body.tags}}
-                            <a href="{{../info.base_url}}tag?tag={{this}}">{{this}}</a>
-                            {{/each}}
-                        </div>
-                    </article>
+                            <div class="form-group" id="passGroup">
+                                <label for="passwordField">Password</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
+                                    <div class="invalid-feedback">
+                                        A password is requierd.
+                                    </div>
+                                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
+                                </div>
+                            </div>
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                            </div>
+                        </form>
                     
 <!-- ---------- -->
 
+                    </div>
                     <footer id="v-footer">
                         <div class="v-copyright">&copy; 2017 Andrew Prindle | <a href="{{info.base_url}}rss.xml">RSS</a></div>
                         {{#if info.gentime}}
