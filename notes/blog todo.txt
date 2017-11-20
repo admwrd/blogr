@@ -19,8 +19,13 @@ Rocket-auth-login
 
 Blogr	
 	Express
+		Check for other ways to convert from Template to String other than template.show()
+			Docs say its slow and even without compression its slow (1.2 seconds to load mainly just the layout)
 		Maybe add a way to change compression method priorities as long as they are supported
-
+		Combine the AcceptEncoding and Responder (both use the request parameter)
+		Compile as release
+		Wrap the template responder inside the Express responder
+		
 	Change menu items to reflect new login pages
 	
 	Use the rocket-file-cache crate to cache static files
@@ -337,5 +342,16 @@ Done
 		Use javascript to add the edit/delete options
 		But in the route check the correct cookie is set for that action
 
+	
+
+
+
+
+TESTS
+	Test if two datastructures that are defined the exact same but defined
+		in different modules are compatible
+	
+	
+	
 	
 
