@@ -160,7 +160,7 @@ impl From<String> for Express {
         // let data = template.show();
         
         Express {
-            data: template.as_bytes(), // Todo: maybe change this to into_bytes() so the String is consumed and changed instead of copied as bytes
+            data: template.bytes().collect::<Vec<u8>>(), // Todo: maybe change this to into_bytes() so the String is consumed and changed instead of copied as bytes
             content_type: ContentType::HTML, // assume all template are HTML files.  If your templates are not all html files change this
             ttl: 0, // Do not cache the regular html files as they may change immediately
             compress: None,

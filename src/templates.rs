@@ -359,7 +359,7 @@ pub fn hbs_template_string(content: TemplateBody, title: Option<String>, page: S
     
     let root_path;
     if let Ok(exe_path) = env::current_exe() {
-        root_path = exe_path.parent().unwrap().unwrap().to_path_buf.push("templates");
+        root_path = exe_path.parent().unwrap().parent().unwrap().to_path_buf().push("templates");
     } else {
         root_path = Path::new("templates/");
     }
@@ -367,15 +367,15 @@ pub fn hbs_template_string(content: TemplateBody, title: Option<String>, page: S
     match content {
         TemplateBody::General(contents, msg) => {
             let context = TemplateGeneral::new(contents, msg, info);
-            Template::show(root_path, "general-template", &context)
+            Template::show(root_path, "general-template", &context).unwrap_or(String::new())
         },
         TemplateBody::Article(article, msg) => {
             let context = TemplateArticle::new(article, msg, info);
-            Template::show(root_path, "article-template", &context)
+            Template::show(root_path, "article-template", &context).unwrap_or(String::new())
         },
         TemplateBody::Articles(articles, msg) => {
             let context = TemplateArticles::new(articles, msg, info);
-            Template::show(root_path, "articles-template", &context)
+            Template::show(root_path, "articles-template", &context).unwrap_or(String::new())
             // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
             // Template::render("general-template", &context)
         },
@@ -387,21 +387,21 @@ pub fn hbs_template_string(content: TemplateBody, title: Option<String>, page: S
         // },
         TemplateBody::Search(articles, search, msg) => {
             let context = TemplateSearch::new(articles, search, msg, info);
-            Template::show(root_path, "search-template", &context)
+            Template::show(root_path, "search-template", &context).unwrap_or(String::new())
             // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
             // Template::render("general-template", &context)
         },
         TemplateBody::Login(action, tried, fail) => {
             let context = TemplateLogin::new(action, tried, fail, info);
-            Template::show(root_path, "login-template", &context)
+            Template::show(root_path, "login-template", &context).unwrap_or(String::new())
         },
         TemplateBody::Create(action, msg) => {
             let context = TemplateCreate::new(action, msg, info);
-            Template::show(root_path, "create-template", &context)
+            Template::show(root_path, "create-template", &context).unwrap_or(String::new())
         },
         TemplateBody::Tags(tags, msg) => {
             let context = TemplateTags::new(tags, msg, info);
-            Template::show(root_path, "tags-template", &context)
+            Template::show(root_path, "tags-template", &context).unwrap_or(String::new())
         },
     }
     
