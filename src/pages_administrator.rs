@@ -181,13 +181,13 @@ pub fn compress_test3(encoding: AcceptEncoding) -> Express {
     tempstr
 }
 
-#[get("/compress3")]
+#[get("/compress4")]
 pub fn compress_test4(encoding: AcceptEncoding) -> Express {
     
     // let text
     
     // let template_string: String = hbs_template_string(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
-    let template_template: Template = hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
+    let template_template: String = hbs_template_string(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
     
     // Express::From(template).compress(encoding)
     // Express::from_string(template).compress(encoding)

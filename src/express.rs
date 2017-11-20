@@ -97,12 +97,12 @@ impl AcceptEncoding {
     pub fn contains_brotli(self)  -> bool { self.supported & BROTLI != 0 }
     pub fn is_uncompressed(self)  -> bool { self.supported == 0 }
     pub fn preferred(self) -> PreferredEncoding {
-        if self.supported & BROTLI != 0 {
-            PreferredEncoding::Brotli
+        if self.supported & GZIP != 0 {
+            PreferredEncoding::Gzip
         } else if self.supported & DEFLATE != 0 {
             PreferredEncoding::Deflate
-        } else if self.supported & GZIP != 0 {
-            PreferredEncoding::Gzip
+        } else if self.supported & BROTLI != 0 {
+            PreferredEncoding::Brotli
         } else {
             PreferredEncoding::Uncompressed
         }
@@ -269,7 +269,7 @@ impl Express {
         self
     }
     pub fn compress(mut self, encoding: AcceptEncoding) -> Self {
-        println!("Attempting to set compression, support: {:?}", encoding);
+        // println!("Attempting to set compression, support: {:?}", encoding);
         match encoding.preferred() {
             PreferredEncoding::Brotli => {
                 println!("Encoding with Brotli");
