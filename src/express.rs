@@ -107,6 +107,50 @@ impl AcceptEncoding {
             PreferredEncoding::Uncompressed
         }
     }
+    /// Returns a new AcceptEncoding that specifies the gzip method
+    #[inline(always)]
+    pub fn gzip() -> Self { AcceptEncoding { supported: GZIP } }
+    /// Returns a new AcceptEncoding that specifies the deflate method
+    #[inline(always)]
+    pub fn deflate() -> Self { AcceptEncoding { supported: DEFLATE } }
+    /// Returns a new AcceptEncoding that specifies the brotli method
+    #[inline(always)]
+    pub fn brotli() -> Self { AcceptEncoding { supported: BROTLI } }
+    
+    /// Returns a new AcceptEncoding that uses no compression
+    #[inline(always)]
+    pub fn no_compression() -> Self { AcceptEncoding { supported: 0 } }
+    
+    /// Returns a new AcceptEncoding that specifies the gzip method
+    pub fn checked_gzip(&self) -> Self { 
+        if self.contains_gzip() { 
+            AcceptEncoding { 
+                supported: GZIP 
+            } 
+        } else { 
+            AcceptEncoding::no_compression() 
+        } 
+    }
+    /// Returns a new AcceptEncoding that specifies the deflate method
+    pub fn checked_deflate(&self) -> Self {
+        if self.contains_deflate() { 
+            AcceptEncoding { 
+                supported: DEFLATE 
+            } 
+        } else { 
+            AcceptEncoding::no_compression() 
+        } 
+    }
+    /// Returns a new AcceptEncoding that specifies the brotli method
+    pub fn checked_brotli(&self) -> Self { 
+        if self.contains_brotli() { 
+            AcceptEncoding { 
+                supported: BROTLI 
+            } 
+        } else { 
+            AcceptEncoding::no_compression() 
+        } 
+    }
 }
 
 impl<'a, 'r> FromRequest<'a, 'r> for AcceptEncoding {
@@ -149,6 +193,26 @@ impl TempCont {
     }
 }
 
+
+// PROPOSED NEW STRUCTURE FOR EXPRESS
+// New structure that better differentiates between data and template
+// #[derive(Debug,Clone)]
+// pub enum Express {
+//     Template {
+//         template: TempCont,
+//         content_type: ContentType,
+//         ttl: usize,
+//         compress: Option<PreferredEncoding>,
+//     },
+//     ByteData {
+//         data: Vec<u8>,
+//         content_type: ContentType,
+//         ttl: usize,
+//         compress: Option<PreferredEncoding>,
+//     },
+// }
+
+
 #[derive(Debug,Clone)]
 pub struct Express {
     pub data: Vec<u8>,
@@ -167,26 +231,41 @@ impl Express {
             ttl: 0, // Do not cache the regular html files as they may change immediately
             compress: None,
             template: None,
+        }
     }
-    }
+    /// Set ttl to the number of seconds the content should be cached
     pub fn set_ttl(mut self, ttl: usize) -> Self {
         self.ttl = ttl;
         self
     }
+    /// Set the data to a byte vector
     pub fn set_data(mut self, data: Vec<u8>) -> Self {
         self.data = data;
         self
     }
+    /// Sets the compression method to one specified in the PreferredEncoding enum
     pub fn set_compression(mut self, encoding: Option<PreferredEncoding>) -> Self {
         self.compress = encoding;
         self
     }
+    /// Resets the compression method to None
+    pub fn reset_compression(mut self) -> Self {
+        self.compress = None;
+        self
+    }
+    /// Sets the content type to the specified Rocket ContentType
     pub fn set_content_type(mut self, cont_type: ContentType) -> Self {
         self.content_type = cont_type;
         self
     }
+    /// Sets the template field.  If template is set the data field is ignored.
     pub fn set_template(mut self, template: Template) -> Self {
         self.template = Some(TempCont::store(template));
+        self
+    }
+    /// Resets the template field to None
+    pub fn reset_template(mut self) -> Self {
+        self.template = None;
         self
     }
     pub fn compress(mut self, encoding: AcceptEncoding) -> Self {
@@ -205,7 +284,7 @@ impl Express {
                 // let mut compressor = ::brotli::Compressor::new(Cursor::new(self.data), 10*1024, 9, 22);
                 
                 // let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
-                let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 2, 22);
+                let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
                 let _ = compressor.read_to_end(&mut output);
                 // Some(ContentEncoding::Brotli)
                 self.data = output;
