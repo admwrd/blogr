@@ -246,6 +246,8 @@ fn main() {
             pages_administrator::logout_user,
             
             pages_administrator::resp_test,
+            pages_administrator::compress_test,
+            pages_administrator::compress_test2,
             static_files
         ])
         .launch();
