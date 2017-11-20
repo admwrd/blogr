@@ -97,12 +97,12 @@ impl AcceptEncoding {
     pub fn contains_brotli(self)  -> bool { self.supported & BROTLI != 0 }
     pub fn is_uncompressed(self)  -> bool { self.supported == 0 }
     pub fn preferred(self) -> PreferredEncoding {
-        if self.supported & DEFLATE != 0 {
+        if self.supported & BROTLI != 0 {
+            PreferredEncoding::Brotli
+        } else if self.supported & DEFLATE != 0 {
             PreferredEncoding::Deflate
         } else if self.supported & GZIP != 0 {
             PreferredEncoding::Gzip
-        } else if self.supported & BROTLI != 0 {
-            PreferredEncoding::Brotli
         } else {
             PreferredEncoding::Uncompressed
         }
@@ -370,8 +370,90 @@ impl From<NamedFile> for Express {
     }
 }
 
+impl Express {
+    fn compress_content(&mut self, data: Vec<u8>) -> Vec<u8> {
+        
+        if let Some(ref pref) = self.compress {
+            match pref {
+                &PreferredEncoding::Brotli => {
+                    println!("Encoding output content with brotli");
+                    let mut output = Vec::with_capacity(data.len()+200);
+                    let mut compressor = ::brotli::CompressorReader::new(Cursor::new(&self.data), 10*1024, 9, 22);
+                    let _ = compressor.read_to_end(&mut output);
+                    
+                    output
+                },
+                &PreferredEncoding::Gzip => {
+                    println!("Encoding with Gzip");
+                    let mut output = Vec::with_capacity(data.len()+200);
+                    zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Gzip, &self.data, &mut output).expect("Gzip compression failed.");
+                    
+                    output
+                },
+                &PreferredEncoding::Deflate => {
+                    println!("Encoding with Deflate");
+                    let mut output = Vec::with_capacity(data.len()+200);
+                    zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Deflate, &self.data, &mut output).expect("Deflate compression failed.");
+                    
+                    output
+                },
+                _ => data,
+            }
+            // self.template = None;
+            // true
+        } else {
+            // false
+            data
+        }
+    }
+}
 
-// New Express Responder
+// // New New Express Responder
+// // Work in progress - does not work - has a few borrow errors
+// impl<'a> Responder<'a> for Express {
+//     // fn respond(self) -> response::Result<'a> {
+//     fn respond_to(mut self, req: &Request) -> response::Result<'a> {
+//         // println!("Setting headers to:\n{:?}", self);
+        
+//         let mut resp = Response::build();
+//         if let &Some(ref tempcont) = &self.template {
+//             // resp.join( tempcont.t.respond_to(req).unwrap_or_default() );
+//             let mut temp_resp = tempcont.t.respond_to(req).unwrap_or_default();
+//             let temp_opt = temp_resp.body_bytes();
+            
+//             if let Some(body) = temp_opt {
+//                 // resp.streamed_body(Cursor::new(body));
+                
+//                 resp.streamed_body( Cursor::new( self.compress_content(body) ) );
+//             } else {
+//                 println!("Fallback response using join");
+//                 // resp.join(temp_resp);
+//                 resp.join(temp_resp);
+//             }
+//         } else {
+//             // resp.sized_body(Cursor::new(self.data));
+            
+//             // resp.streamed_body(Cursor::new(self.data));
+//             resp.streamed_body( Cursor::new( self.compress_content(self.data) ) );
+            
+//         }
+        
+//         resp.header(self.content_type);
+//         resp.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
+//         if let Some(enc) = self.compress {
+//             match enc {
+//                 PreferredEncoding::Brotli => { resp.raw_header("Content-Encoding", "br"); },
+//                 PreferredEncoding::Gzip => { resp.raw_header("Content-Encoding", "gzip"); },
+//                 PreferredEncoding::Deflate => { resp.raw_header("Content-Encoding", "deflate"); },
+//                 _ => {},
+//             }
+//         }
+//         resp.ok()
+//     }
+// }
+
+
+// Old New Express Responder
 impl<'a> Responder<'a> for Express {
     // fn respond(self) -> response::Result<'a> {
     fn respond_to(self, req: &Request) -> response::Result<'a> {

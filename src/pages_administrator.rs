@@ -181,6 +181,51 @@ pub fn compress_test3(encoding: AcceptEncoding) -> Express {
     tempstr
 }
 
+#[get("/compress3")]
+pub fn compress_test4(encoding: AcceptEncoding) -> Express {
+    
+    // let text
+    
+    // let template_string: String = hbs_template_string(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
+    let template_template: Template = hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
+    
+    // Express::From(template).compress(encoding)
+    // Express::from_string(template).compress(encoding)
+    // Express::from_string(template)
+    
+    // let tempstr: Express = template_string.into();
+    let express: Express = template_template.into();
+    // tempstr.compress(encoding)
+    express.compress(encoding)
+}
+
+#[get("/gzip")]
+pub fn compress_gzip(encoding: AcceptEncoding) -> Express {
+    let template_template: Template = hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
+
+    let express: Express = template_template.into();
+    express.compress( encoding.checked_gzip() )
+}
+
+
+#[get("/deflate")]
+pub fn compress_deflate(encoding: AcceptEncoding) -> Express {
+    let template_template: Template = hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
+
+    let express: Express = template_template.into();
+    express.compress( encoding.checked_deflate() )
+}
+
+
+#[get("/brotli")]
+pub fn compress_brotli(encoding: AcceptEncoding) -> Express {
+    let template_template: Template = hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
+
+    let express: Express = template_template.into();
+    express.compress( encoding.checked_brotli() )
+}
+
+
 
 #[get("/admin_dashboard")]
 pub fn dashboard_admin_authorized(admin: AdministratorCookie, conn: DbConn) -> Template {

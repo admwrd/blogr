@@ -19,6 +19,10 @@ Rocket-auth-login
 
 Blogr	
 	Express
+		Move actual compression into the responder, set compression with the compression() method of Express
+		Maybe check if pages load faster if compression is handled inside the Responder (respond_to() method)
+			Instead of during the route
+		
 		Check for other ways to convert from Template to String other than template.show()
 			Note: Docs say its slow and even without compression its slow (1.2 seconds to load mainly just the layout)
 			Wrap the template responder inside the Express responder, use express.join(template.respond_to(req))

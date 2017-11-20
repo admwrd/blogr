@@ -206,6 +206,10 @@ fn main() {
             pages_administrator::compress_test,
             pages_administrator::compress_test2,
             pages_administrator::compress_test3,
+            pages_administrator::compress_test4,
+            pages_administrator::compress_gzip,
+            pages_administrator::compress_deflate,
+            pages_administrator::compress_brotli,
             static_files
         ])
         .launch();
