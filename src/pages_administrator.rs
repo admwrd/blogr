@@ -50,7 +50,9 @@ pub fn resp_test(encoding: AcceptEncoding) -> Express {
     let template: String = hbs_template_string(TemplateBody::General(format!("Test successful. Encoding: {:?}", encoding), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
     // Express::From(template).compress(encoding)
     // Express::from_string(template).compress(encoding)
-    Express::from_string(template)
+    // Express::from_string(template)
+    let tempstr: Express = template.into();
+    tempstr.compress(encoding)
 }
 
 

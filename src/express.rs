@@ -73,12 +73,12 @@ impl AcceptEncoding {
     pub fn contains_brotli(self)  -> bool { self.supported & BROTLI != 0 }
     pub fn is_uncompressed(self)  -> bool { self.supported == 0 }
     pub fn preferred(self) -> PreferredEncoding {
-        if self.supported & BROTLI != 0 {
-            PreferredEncoding::Brotli
-        } else if self.supported & GZIP != 0 {
+        if self.supported & GZIP != 0 {
             PreferredEncoding::Gzip
         } else if self.supported & DEFLATE != 0 {
             PreferredEncoding::Deflate
+        } else if self.supported & BROTLI != 0 {
+            PreferredEncoding::Brotli
         } else {
             PreferredEncoding::Uncompressed
         }
@@ -132,7 +132,7 @@ impl Express {
         self
     }
     pub fn compress(mut self, encoding: AcceptEncoding) -> Self {
-        // println!("Attempting to set compression, support: {:?}", encoding);
+        println!("Attempting to set compression, support: {:?}", encoding);
         match encoding.preferred() {
             PreferredEncoding::Brotli => {
                 println!("Encoding with Brotli");
@@ -145,11 +145,13 @@ impl Express {
                 
                 // let mut compressor = ::brotli::BrotliReader::new(Cursor::new(self.data), 10*1024, 9, 22);
                 // let mut compressor = ::brotli::Compressor::new(Cursor::new(self.data), 10*1024, 9, 22);
-                let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
+                
+                // let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
+                let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 2, 22);
                 let _ = compressor.read_to_end(&mut output);
                 // Some(ContentEncoding::Brotli)
                 self.data = output;
-                self.compress = Some(PreferredEncoding::Deflate);
+                self.compress = Some(PreferredEncoding::Brotli);
             },
             PreferredEncoding::Gzip => {
                 println!("Encoding with Gzip");
@@ -170,6 +172,40 @@ impl Express {
                 println!("No compression methods available.");
             },
         }
+        
+        // if encoding.contains_brotli() {
+        //     println!("Encoding with Brotli");
+        //     let mut output = Vec::with_capacity(10*1024);
+            
+        //     // use std::io::Cursor;
+        //     // let mut buff = Cursor::new(vec![0; 15]);
+        //     // write_ten_bytes_at_end(&mut buff).unwrap();
+            
+            
+        //     // let mut compressor = ::brotli::BrotliReader::new(Cursor::new(self.data), 10*1024, 9, 22);
+        //     // let mut compressor = ::brotli::Compressor::new(Cursor::new(self.data), 10*1024, 9, 22);
+        //     let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
+        //     let _ = compressor.read_to_end(&mut output);
+        //     // Some(ContentEncoding::Brotli)
+        //     self.data = output;
+        //     self.compress = Some(PreferredEncoding::Brotli);
+        // } else if encoding.contains_gzip() {
+        //     println!("Encoding with Gzip");
+        //     let mut output = Vec::with_capacity(10*1024);
+        //     zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Gzip, &self.data, &mut output).expect("Gzip compression failed.");
+        //     self.data = output;
+        //     self.compress = Some(PreferredEncoding::Gzip);
+            
+        // } else if encoding.contains_deflate() {
+        //     println!("Encoding with Deflate");
+        //     let mut output = Vec::with_capacity(10*1024);
+        //     zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Deflate, &self.data, &mut output).expect("Deflate compression failed.");
+        //     self.data = output;
+        //     self.compress = Some(PreferredEncoding::Deflate);
+        // } else {
+        //     println!("No compression methods available.");
+        // }
+        
         self
     }
 }
