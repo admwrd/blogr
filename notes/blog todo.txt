@@ -14,7 +14,7 @@ Rocket-auth-login
 	Check the OWASP guide and also check which characters are in the unicode categories
 		allowed by the sanitize functions, basically just make sure they're secure
 
-Blogr
+Blogr	
 	Use the rocket-file-cache crate to cache static files
 		https://crates.io/crates/rocket-file-cache
 
@@ -58,6 +58,8 @@ Blogr
 		The HTML type will leave it as is, unprocessed
 	
 	Limit tags to only show top 50 tags, or maybe make a separate page that shows all of them
+
+	Maybe: Add author to the homepage (multiple articles) instead of just on the single article?
 
 	Does blogr search page show a form with the date range?
 		I can't even remember, prolly not.

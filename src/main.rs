@@ -50,7 +50,7 @@ extern crate env_logger;
 // #[macro_use] extern crate diesel_codegen;
 // #[macro_use] extern crate diesel;
 
-extern crate rocket_auth_login as login;
+extern crate rocket_auth_login;
 
 
 mod layout;
@@ -64,16 +64,16 @@ mod data;
 mod templates;
 mod pages;
 mod sanitize;
-// mod ral_administrator;
-// mod pages_administrator;
+mod ral_administrator;
+mod pages_administrator;
 
-// use ral_administrator::*;
-// use pages_administrator::*;
+use ral_administrator::*;
+use pages_administrator::*;
 use data::*;
 use pages::*;
 use templates::TemplateMenu;
-use login::authorization::*;
-use login::*;
+use rocket_auth_login::authorization::*;
+use rocket_auth_login::*;
 
 
 use handlebars::Handlebars;
@@ -215,11 +215,11 @@ fn main() {
             pages::rss_page,
             pages::hbs_index,
             
-            // pages_administrator::dashboard_authorized,
-            // pages_administrator::dashboard_login,
-            // pages_administrator::dashboard_retry_user,
-            // pages_administrator::dashboard_retry_flash,
-            // pages_administrator::process_admin_login,
+            pages_administrator::dashboard_authorized,
+            pages_administrator::dashboard_login,
+            pages_administrator::dashboard_retry_user,
+            pages_administrator::dashboard_retry_flash,
+            pages_administrator::process_admin_login,
             // process_admin_login,
             
             static_files

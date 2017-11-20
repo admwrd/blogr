@@ -9,8 +9,8 @@ use postgres::Connection;
 use std::sync::Mutex;
 use std::path::{Path, PathBuf};
 
-use login::authorization::*;
-use login::sanitization::*;
+use rocket_auth_login::authorization::*;
+use rocket_auth_login::sanitization::*;
 use ral_administrator::*;
 
 use ::templates::*;
@@ -94,7 +94,7 @@ pub fn process_admin_login(form: Form<LoginCont<AdministratorForm>>, mut cookies
     // let inner = form.into_inner();
     // let inner = &form;
     // let login = inner.form;
-    let login = form.into_inner();
+    let login: AdministratorForm = form.into_inner().form;
     let output = login.flash_redirect("/dashboard", "/admin_login", cookies);
     
     let end = start.elapsed();

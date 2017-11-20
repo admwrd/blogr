@@ -37,8 +37,8 @@ use templates::*;
 use sanitize::*;
 // use authorize::*;
 // use administrator::*;
-use login::authorization::*;
-use login::sanitization::*;
+use rocket_auth_login::authorization::*;
+use rocket_auth_login::sanitization::*;
 // use roles::*;
 
 /*

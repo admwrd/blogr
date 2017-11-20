@@ -8,8 +8,8 @@ use std::str::{from_utf8};
 
 use super::PGCONN;
 // use password::*;
-use login::authorization::*;
-use login::sanitization::*;
+use rocket_auth_login::authorization::*;
+use rocket_auth_login::sanitization::*;
 // use auth::sanitization::*;
 
 /// The AdministratorCookie type is used to indicate a user has logged in as an administrator
