@@ -132,7 +132,7 @@ impl Express {
         self
     }
     pub fn compress(mut self, encoding: AcceptEncoding) -> Self {
-        println!("Attempting to set compression, support: {:?}", encoding);
+        // println!("Attempting to set compression, support: {:?}", encoding);
         match encoding.preferred() {
             PreferredEncoding::Brotli => {
                 println!("Encoding with Brotli");
@@ -214,7 +214,7 @@ impl<'a> Responder<'a> for Express {
     // fn respond(self) -> response::Result<'a> {
     fn respond_to(self, _: &Request) -> response::Result<'a> {
         let mut resp = Response::build();
-        println!("Setting headers to:\n{:?}", self);
+        // println!("Setting headers to:\n{:?}", self);
         resp.sized_body(Cursor::new(self.data));
         resp.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
         if let Some(enc) = self.compress {

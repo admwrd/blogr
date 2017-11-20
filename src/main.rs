@@ -124,8 +124,18 @@ pub const MAX_CREATE_TAGS: usize = 250;
 
 
 #[get("/<file..>", rank=10)]
-fn static_files(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/").join(file)).ok()
+fn static_files(file: PathBuf, encoding: AcceptEncoding) -> Option<Express> {
+// fn static_files(file: PathBuf) -> Option<NamedFile> {
+    // NamedFile::open(Path::new("static/").join(file)).ok()
+    
+    if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
+        let exp: Express = named.into();
+        // Some(exp.compress(encoding))
+        Some(exp)
+    } else {
+        None
+    }
+    
 }
 
 
