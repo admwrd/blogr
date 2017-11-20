@@ -12,13 +12,13 @@
                     event.stopPropagation();
                 } else {
                     $("button[type=submit]").attr("disabled", "disabled");
-                    var pwd1 = document.getElementById("passwordField");
-                    var pwd2 = document.getElementById("passwordHidden");
-                    if (pwd1 && pwd2) {
-                        pwd1.style.display = 'none';
-                        pwd2.style.display = 'block';
-                        pwd1.value = Sha256.hash(pwd1.value);
-                    }
+                    // var pwd1 = document.getElementById("passwordField");
+                    // var pwd2 = document.getElementById("passwordHidden");
+                    // if (pwd1 && pwd2) {
+                        // pwd1.style.display = 'none';
+                        // pwd2.style.display = 'block';
+                        // pwd1.value = Sha256.hash(pwd1.value);
+                    // }
                 }
                 form.classList.add('was-validated');
             }, false);

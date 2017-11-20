@@ -86,10 +86,11 @@ impl AuthorizeForm for AdministratorForm {
         let conn = PGCONN.lock().unwrap();
         let authstr = format!(r#"
             SELECT u.userid, u.username, u.display FROM users u WHERE u.username = '{username}' AND 
-                u.salt_hash = crypt('{password}', u.salt_hash)"#, username=&self.username, password=&self.password);
+                u.hash_salt = crypt('{password}', u.hash_salt)"#, username=&self.username, password=&self.password);
         let is_user_qrystr = format!("SELECT userid FROM users WHERE username = '{}'", &self.username);
         let is_admin_qrystr = format!("SELECT userid FROM users WHERE username = '{}' AND is_admin = '1'", &self.username);
-        let password_qrystr = format!("SELECT userid FROM users WHERE username = '{}' AND salt_hash = crypt('{}', salt_hash)", &self.username, &self.password);
+        let password_qrystr = format!("SELECT userid FROM users WHERE username = '{}' AND hash_salt = crypt('{}', hash_salt)", &self.username, &self.password);
+        println!("Running: {}", authstr);
         if let Ok(qry) = conn.query(&authstr, &[]) {
             if !qry.is_empty() && qry.len() == 1 {
                 let row = qry.get(0);

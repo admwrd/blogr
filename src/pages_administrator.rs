@@ -53,7 +53,7 @@ pub fn dashboard_authorized(admin: AdministratorCookie, conn: DbConn) -> Templat
 
 #[get("/admin_login", rank = 1)]
 pub fn dashboard_login() -> Template {
-    hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, None)
+    hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, None)
 }
 
 #[get("/admin_login?<user>")]
@@ -64,7 +64,7 @@ pub fn dashboard_retry_user(mut user: QueryUser, flash_msg_opt: Option<FlashMess
     // user = login::sanitization::sanitize(&user);
     let username = if &user.user != "" { Some(user.user.clone() ) } else { None };
     let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
-    let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), username, flash), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, Some(start));
+    let output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), username, flash), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, Some(start));
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
@@ -76,7 +76,7 @@ pub fn dashboard_retry_flash(flash_msg: FlashMessage) -> Template {
     let start = Instant::now();
     
     let flash = Some( alert_danger(flash_msg.msg()) );
-    let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, flash), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, Some(start));
+    let output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, flash), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, Some(start));
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
