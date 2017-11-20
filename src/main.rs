@@ -65,6 +65,7 @@ mod templates;
 mod pages;
 mod sanitize;
 mod ral_administrator;
+mod ral_user;
 mod pages_administrator;
 
 use ral_administrator::*;
@@ -215,12 +216,21 @@ fn main() {
             pages::rss_page,
             pages::hbs_index,
             
-            pages_administrator::dashboard_authorized,
-            pages_administrator::dashboard_login,
-            pages_administrator::dashboard_retry_user,
-            pages_administrator::dashboard_retry_flash,
+            pages_administrator::dashboard_admin_authorized,
+            pages_administrator::dashboard_admin_unauthorized,
+            pages_administrator::dashboard_admin_login,
+            pages_administrator::dashboard_admin_retry_user,
+            pages_administrator::dashboard_admin_retry_flash,
             pages_administrator::process_admin_login,
-            // process_admin_login,
+            pages_administrator::logout_admin,
+            
+            pages_administrator::dashboard_user_authorized,
+            pages_administrator::dashboard_user_unauthorized,
+            pages_administrator::dashboard_user_login,
+            pages_administrator::dashboard_user_retry_user,
+            pages_administrator::dashboard_user_retry_flash,
+            pages_administrator::process_user_login,
+            pages_administrator::logout_user,
             
             static_files
         ])

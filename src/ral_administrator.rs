@@ -12,7 +12,6 @@ use rocket_auth_login::authorization::*;
 use rocket_auth_login::sanitization::*;
 // use auth::sanitization::*;
 
-/// The AdministratorCookie type is used to indicate a user has logged in as an administrator
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AdministratorCookie {
     pub userid: u32,
@@ -20,7 +19,6 @@ pub struct AdministratorCookie {
     pub display: Option<String>,
 }
 
-/// The AdministratorForm type is used to process a user attempting to login as an administrator
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AdministratorForm {
     pub username: String,
@@ -29,43 +27,22 @@ pub struct AdministratorForm {
 
 impl CookieId for AdministratorCookie {
     fn cookie_id<'a>() -> &'a str {
-        "plain_acid"
+        "accid"
     }
 }
 
 impl CookieId for AdministratorForm {
     fn cookie_id<'a>() -> &'a str {
-        "plain_acid"
+        "accid"
     }
 } 
 
 impl AuthorizeCookie for AdministratorCookie {
-    /// The store_cookie() method should contain code that
-    /// converts the specified data structure into a string
-    /// 
-    /// This is likely to be achieved using one of the serde
-    /// serialization crates.  Personally I would use either
-    /// serde_json or serde's messagepack implementation ( rmp-serde [rmps]).
-    /// 
-    /// Json is portable and human readable.  
-    /// 
-    /// MsgPack is a binary format, and while not human readable is more
-    /// compact and efficient.
     fn store_cookie(&self) -> String {
         ::serde_json::to_string(self).expect("Could not serialize")
     }
     
     
-    /// The retrieve_cookie() method deserializes a string
-    /// into a cookie data type.
-    /// 
-    /// Again, serde is likely to be used here.
-    /// Either the messagepack or json formats would work well here.
-    /// 
-    /// Json is portable and human readable.  
-    /// 
-    /// MsgPack is a binary format, and while not human readable is more
-    /// compact and efficient.
     #[allow(unused_variables)]
     fn retrieve_cookie(string: String) -> Option<Self> {
         let mut des_buf = string.clone();
@@ -81,11 +58,10 @@ impl AuthorizeCookie for AdministratorCookie {
 impl AuthorizeForm for AdministratorForm {
     type CookieType = AdministratorCookie;
     
-    /// Authenticate the credentials inside the login form
     fn authenticate(&self) -> Result<Self::CookieType, AuthFail> {
         let conn = PGCONN.lock().unwrap();
         let authstr = format!(r#"
-            SELECT u.userid, u.username, u.display FROM users u WHERE u.username = '{username}' AND 
+            SELECT u.userid, u.username, u.display FROM users u WHERE u.username = '{username}' AND is_admin = true AND 
                 u.hash_salt = crypt('{password}', u.hash_salt)"#, username=&self.username, password=&self.password);
         let is_user_qrystr = format!("SELECT userid FROM users WHERE username = '{}'", &self.username);
         let is_admin_qrystr = format!("SELECT userid FROM users WHERE username = '{}' AND is_admin = '1'", &self.username);
@@ -128,7 +104,6 @@ impl AuthorizeForm for AdministratorForm {
         Err(AuthFail::new(self.username.clone(), "Unknown error..".to_string()))
     }
     
-    /// Create a new login form instance
     fn new_form(user: &str, pass: &str, _extras: Option<HashMap<String, String>>) -> Self {
         AdministratorForm {
             username: user.to_string(),
@@ -141,16 +116,6 @@ impl AuthorizeForm for AdministratorForm {
 impl<'a, 'r> FromRequest<'a, 'r> for AdministratorCookie {
     type Error = ();
     
-    /// The from_request inside the file defining the custom data types
-    /// enables the type to be checked directly in a route as a request guard
-    /// 
-    /// This is not needed but highly recommended.  Otherwise you would need to use:
-    /// 
-    /// `#[get("/protected")] fn admin_page(admin: AuthCont<AdministratorCookie>)`
-    /// 
-    /// instead of:
-    /// 
-    /// `#[get("/protected")] fn admin_page(admin: AdministratorCookie)`
     fn from_request(request: &'a Request<'r>) -> ::rocket::request::Outcome<AdministratorCookie,Self::Error>{
         let cid = AdministratorCookie::cookie_id();
         let mut cookies = request.cookies();

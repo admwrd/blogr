@@ -6,6 +6,9 @@ Rocket-auth-login
 		Remove the password module
 		Cleanup all the commented-out old byte vector password code
 
+	In examples make sure in the process route that the inner form variable is typed:
+		let login: AdministratorForm = form.into_inner().form;
+
 	In examples, in the administrator module change the folowing
 		cookies.remove_private(Cookie::named(AdministratorCookie::cookie_id()));
 		to
