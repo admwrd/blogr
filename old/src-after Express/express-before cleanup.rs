@@ -1,8 +1,6 @@
 
 use rocket::response::{self, Response, Responder};
 
-
-use std::mem;
 use std::io::{Cursor, Read};
 // use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -16,8 +14,6 @@ use std::fs::File;
 // use std::io::BufReader;
 use std::io::prelude::*;
 use rocket::http::ContentType;
-// use std::option::Option;
-use std::option;
 
 use zopfli;
 use brotli;
@@ -40,27 +36,7 @@ const DEFAULT_TTL: usize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 da
         3. The Express (possibly modified) Express structured is returned from compress
         4. The Express function's Responder is called by Rocket and sets the appropriate
             content type, content encoding, ttl, and related headers
-   USAGE
-   
-   fn my_route(encoding: AcceptEncoding) -> Express {
-       let hbs = hbs_template(...);
-       let express: Express = hbs.into();
-       express
-       // or
-       express.compress(encoding)
-   }
-   
-   
-   Template Responder (Recommended)
-    let hbs = hbs_template(...);
-    let express: Express = hbs.into();
-    express
-   
-   String (slower)
-    let hbs = hbs_template_string(...);
-    let express: Express = hbs.into();
-    express
-   
+    
 */
 
 
@@ -122,41 +98,12 @@ impl<'a, 'r> FromRequest<'a, 'r> for AcceptEncoding {
     }
 }
 
-#[derive(Debug)]
-pub struct TempCont {
-    pub t: Template,
-}
-    
-impl Clone for TempCont {
-    fn clone(&self) -> TempCont {
-        // *self
-        let new: TempCont;
-        unsafe {
-            new= mem::transmute_copy(&self.t);
-        }
-        new
-    }
-}
-
-impl TempCont {
-    fn store(template: Template) -> TempCont {
-        TempCont {
-            t: template,
-        }
-    }
-    fn retrieve(self) -> Template {
-        self.t
-    }
-}
-
 #[derive(Debug,Clone)]
 pub struct Express {
     pub data: Vec<u8>,
     pub content_type: ContentType,
     pub ttl: usize,
     pub compress: Option<PreferredEncoding>,
-    // pub template: option::Option<Template>,
-    pub template: Option<TempCont>,
 }
 
 impl Express {
@@ -166,7 +113,6 @@ impl Express {
             content_type: ContentType::HTML, // assume all template are HTML files.  If your templates are not all html files change this
             ttl: 0, // Do not cache the regular html files as they may change immediately
             compress: None,
-            template: None,
     }
     }
     pub fn set_ttl(mut self, ttl: usize) -> Self {
@@ -183,10 +129,6 @@ impl Express {
     }
     pub fn set_content_type(mut self, cont_type: ContentType) -> Self {
         self.content_type = cont_type;
-        self
-    }
-    pub fn set_template(mut self, template: Template) -> Self {
-        self.template = Some(TempCont::store(template));
         self
     }
     pub fn compress(mut self, encoding: AcceptEncoding) -> Self {
@@ -230,28 +172,78 @@ impl Express {
                 println!("No compression methods available.");
             },
         }
-
+        
+        // if encoding.contains_brotli() {
+        //     println!("Encoding with Brotli");
+        //     let mut output = Vec::with_capacity(10*1024);
+            
+        //     // use std::io::Cursor;
+        //     // let mut buff = Cursor::new(vec![0; 15]);
+        //     // write_ten_bytes_at_end(&mut buff).unwrap();
+            
+            
+        //     // let mut compressor = ::brotli::BrotliReader::new(Cursor::new(self.data), 10*1024, 9, 22);
+        //     // let mut compressor = ::brotli::Compressor::new(Cursor::new(self.data), 10*1024, 9, 22);
+        //     let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
+        //     let _ = compressor.read_to_end(&mut output);
+        //     // Some(ContentEncoding::Brotli)
+        //     self.data = output;
+        //     self.compress = Some(PreferredEncoding::Brotli);
+        // } else if encoding.contains_gzip() {
+        //     println!("Encoding with Gzip");
+        //     let mut output = Vec::with_capacity(10*1024);
+        //     zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Gzip, &self.data, &mut output).expect("Gzip compression failed.");
+        //     self.data = output;
+        //     self.compress = Some(PreferredEncoding::Gzip);
+            
+        // } else if encoding.contains_deflate() {
+        //     println!("Encoding with Deflate");
+        //     let mut output = Vec::with_capacity(10*1024);
+        //     zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Deflate, &self.data, &mut output).expect("Deflate compression failed.");
+        //     self.data = output;
+        //     self.compress = Some(PreferredEncoding::Deflate);
+        // } else {
+        //     println!("No compression methods available.");
+        // }
+        
+        
+                
+        // if encoding.contains_brotli() {
+        //     println!("Encoding with Brotli");
+        //     let mut output = Vec::with_capacity(10*1024);
+            
+        //     // use std::io::Cursor;
+        //     // let mut buff = Cursor::new(vec![0; 15]);
+        //     // write_ten_bytes_at_end(&mut buff).unwrap();
+            
+            
+        //     // let mut compressor = ::brotli::BrotliReader::new(Cursor::new(self.data), 10*1024, 9, 22);
+        //     // let mut compressor = ::brotli::Compressor::new(Cursor::new(self.data), 10*1024, 9, 22);
+        //     let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
+        //     let _ = compressor.read_to_end(&mut output);
+        //     // Some(ContentEncoding::Brotli)
+        //     self.data = output;
+        //     self.compress = Some(PreferredEncoding::Brotli);
+        // } else if encoding.contains_gzip() {
+        //     println!("Encoding with Gzip");
+        //     let mut output = Vec::with_capacity(10*1024);
+        //     zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Gzip, &self.data, &mut output).expect("Gzip compression failed.");
+        //     self.data = output;
+        //     self.compress = Some(PreferredEncoding::Gzip);
+            
+        // } else if encoding.contains_deflate() {
+        //     println!("Encoding with Deflate");
+        //     let mut output = Vec::with_capacity(10*1024);
+        //     zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Deflate, &self.data, &mut output).expect("Deflate compression failed.");
+        //     self.data = output;
+        //     self.compress = Some(PreferredEncoding::Deflate);
+        // } else {
+        //     println!("No compression methods available.");
+        // }
+        
+        
+        
         self
-    }
-}
-
-impl From<Template> for Express {
-    fn from(template: Template) -> Express {
-        // let mut output = Vec::with_capacity(30*1024);
-        // zopfli::compress(&Options::default(), &Format::Gzip, template.to_string().as_bytes(), &mut output).unwrap();
-        
-        // let data = template.to_string().as_bytes();
-        // let (contents) = template.finalize();
-        // let data = template.show();
-        
-        Express {
-            // data: template.bytes().collect::<Vec<u8>>(), // Todo: maybe change this to into_bytes() so the String is consumed and changed instead of copied as bytes
-            data: Vec::new(),
-            content_type: ContentType::HTML, // assume all template are HTML files.  If your templates are not all html files change this
-            ttl: 0, // Do not cache the regular html files as they may change immediately
-            compress: None,
-            template: Some(TempCont::store(template)),
-        }
     }
 }
 
@@ -269,7 +261,6 @@ impl From<String> for Express {
             content_type: ContentType::HTML, // assume all template are HTML files.  If your templates are not all html files change this
             ttl: 0, // Do not cache the regular html files as they may change immediately
             compress: None,
-            template: None,
         }
     }
 }
@@ -286,27 +277,18 @@ impl From<NamedFile> for Express {
             content_type,
             ttl: DEFAULT_TTL,
             compress: None,
-            template: None,
         }
     }
 }
 
 
-// New Express Responder
+
 impl<'a> Responder<'a> for Express {
     // fn respond(self) -> response::Result<'a> {
-    fn respond_to(self, req: &Request) -> response::Result<'a> {
-        // println!("Setting headers to:\n{:?}", self);
-        
+    fn respond_to(self, _: &Request) -> response::Result<'a> {
         let mut resp = Response::build();
-        if let Some(tempcont) = self.template {
-            resp.join( tempcont.t.respond_to(req).unwrap_or_default() );
-        } else {
-            resp.sized_body(Cursor::new(self.data));
-            // resp.streamed_body(Cursor::new(self.data));
-        }
-        
-        resp.header(self.content_type);
+        // println!("Setting headers to:\n{:?}", self);
+        resp.sized_body(Cursor::new(self.data));
         resp.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
         if let Some(enc) = self.compress {
             match enc {
@@ -316,31 +298,14 @@ impl<'a> Responder<'a> for Express {
                 _ => {},
             }
         }
+        resp.header(self.content_type);
         resp.ok()
     }
 }
 
 
-// Original Express Responder
-// impl<'a> Responder<'a> for Express {
-//     // fn respond(self) -> response::Result<'a> {
-//     fn respond_to(self, _: &Request) -> response::Result<'a> {
-//         let mut resp = Response::build();
-//         // println!("Setting headers to:\n{:?}", self);
-//         resp.sized_body(Cursor::new(self.data));
-//         resp.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
-//         if let Some(enc) = self.compress {
-//             match enc {
-//                 PreferredEncoding::Brotli => { resp.raw_header("Content-Encoding", "br"); },
-//                 PreferredEncoding::Gzip => { resp.raw_header("Content-Encoding", "gzip"); },
-//                 PreferredEncoding::Deflate => { resp.raw_header("Content-Encoding", "deflate"); },
-//                 _ => {},
-//             }
-//         }
-//         resp.header(self.content_type);
-//         resp.ok()
-//     }
-// }
+
+
 
 
 

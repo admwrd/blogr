@@ -20,12 +20,23 @@ Rocket-auth-login
 Blogr	
 	Express
 		Check for other ways to convert from Template to String other than template.show()
-			Docs say its slow and even without compression its slow (1.2 seconds to load mainly just the layout)
+			Note: Docs say its slow and even without compression its slow (1.2 seconds to load mainly just the layout)
+			Wrap the template responder inside the Express responder, use express.join(template.respond_to(req))
+			
 		Maybe add a way to change compression method priorities as long as they are supported
 		Combine the AcceptEncoding and Responder (both use the request parameter)
 		Compile as release
+		Maybe stream the results of the responder in large files
+			https://api.rocket.rs/rocket/response/trait.Responder.html
+			Stream::from(Cursor::new(string))
+		Maybe use streamed_body
+			https://api.rocket.rs/rocket/response/struct.ResponseBuilder.html#method.streamed_body
 		Wrap the template responder inside the Express responder
-		
+		Timings:
+			Gzip: ~200-300ms for compress
+			
+			
+			
 	Change menu items to reflect new login pages
 	
 	Use the rocket-file-cache crate to cache static files

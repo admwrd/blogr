@@ -103,9 +103,6 @@ use auth::userpass::UserPass;
 use auth::status::{LoginStatus,LoginRedirect};
 use auth::dummy::DummyAuthenticator;
 use auth::authenticator::Authenticator;
-// use rocket::request::FlashMessage;
-
-
 
 // use chrono::prelude::*;
 // use multipart::server::Multipart;
@@ -126,11 +123,14 @@ pub const MAX_CREATE_TAGS: usize = 250;
 #[get("/<file..>", rank=10)]
 fn static_files(file: PathBuf, encoding: AcceptEncoding) -> Option<Express> {
 // fn static_files(file: PathBuf) -> Option<NamedFile> {
+    // Without Expiration header:
     // NamedFile::open(Path::new("static/").join(file)).ok()
     
     if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
         let exp: Express = named.into();
+        // With compression (slower to process):
         // Some(exp.compress(encoding))
+        // Without compression (faster to process):
         Some(exp)
     } else {
         None
@@ -138,52 +138,9 @@ fn static_files(file: PathBuf, encoding: AcceptEncoding) -> Option<Express> {
     
 }
 
-
-// TEST ROUTE 1
-// #[allow(unused_mut)]
-// #[post("/admin_login", data = "<form>")]
-// // fn process_admin_login(form: Form<LoginCont<AdminLogin>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-// // fn process_admin_login(form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-// // fn process_admin_login(form: Form<AdministratorForm>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-// pub fn process_admin_login(form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-//     let start = Instant::now();
-    
-//     // let inner = form.into_inner();
-//     // let inner = &form;
-//     // let login = inner.form;
-//     let login = form.into_inner();
-//     let output = login.flash_redirect("/dashboard", "/admin_login", cookies);
-    
-//     let end = start.elapsed();
-//     println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// TEST ROUTE 2
-// #[post("/admin_login", data = "<form>")]
-// fn process_login(form: Form<AdministratorForm>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-//     // let inner = form.into_inner();
-//     // let login = inner.form;
-//     let login = form.into_inner();
-//     login.flash_reidrect("/dashboard", "/login", cookies)
-// }
-
 lazy_static! {
     static ref PGCONN: Mutex<DbConn> = Mutex::new( DbConn(init_pg_pool().get().expect("Could not connect to database.")) );
 }
-
-// #[get("/testroute")]
-// // fn test_route(mut cookies: rocket::http::cookies::Cookies) -> Result<rocket::response::redirect::Redirect, rocket::response::flash::Flash<rocket::response::redirect::Redirect>> {
-// fn test_route(mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-//     let testform = AdministratorForm {
-//         username: String::from("andrew"),
-//         password: String::from("password"),
-//     };
-//     // let testresult = testform.from_form();
-//     // let testresult = testform.flash_redirect("/dashboard", "/login", cookies as rocket::http::cookies::Cookies);
-//     let testresult = testform.flash_redirect("/dashboard", "/login", cookies);
-//     testresult
-// }
 
 fn main() {
     // use login::authorization::LoginCont;
@@ -248,6 +205,7 @@ fn main() {
             pages_administrator::resp_test,
             pages_administrator::compress_test,
             pages_administrator::compress_test2,
+            pages_administrator::compress_test3,
             static_files
         ])
         .launch();
