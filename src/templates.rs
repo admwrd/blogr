@@ -16,6 +16,9 @@ use blog::*;
 use layout::*;
 use users::*;
 
+use std::path::{Path, PathBuf};
+use std::env;
+
 #[derive(Debug, Clone, Serialize)]
 pub struct TagCount {
     pub tag: String,
@@ -326,6 +329,83 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
     
 }
 
+
+
+
+pub fn hbs_template_string(content: TemplateBody, title: Option<String>, page: String, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> String {
+    // let mut context: HashMap<&str> = HashMap::new();
+    // context.insert();
+    let js = if let Some(j) = javascript { j } else { "".to_string() }; 
+    // let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
+    
+    let mut pages: Vec<TemplateMenu> = vec![
+        TemplateMenu::new(String::from("Home"), String::from("/"), &page),
+        TemplateMenu::new(String::from("About"), String::from("/about"), &page),
+        TemplateMenu::new(String::from("View Tags"), String::from("/all_tags"), &page),
+    ];
+    
+    let mut admin_pages: Vec<TemplateMenu> = Vec::new();
+    if admin_opt.is_some() {
+        admin_pages.push( TemplateMenu::new(String::from("Admin Dashboard"), String::from("/admin"), &page) );
+        admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create"), &page) );
+        admin_pages.push( TemplateMenu::separator() );
+        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/logout"), &page) );
+        
+    } else {
+        pages.push( TemplateMenu::new(String::from("Login"), String::from("/admin"), &page) );
+    }
+    
+    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, page, pages, admin_pages);
+    
+    let root_path;
+    if let Ok(exe_path) = env::current_exe() {
+        root_path = exe_path.parent().unwrap().unwrap().to_path_buf.push("templates");
+    } else {
+        root_path = Path::new("templates/");
+    }
+    
+    match content {
+        TemplateBody::General(contents, msg) => {
+            let context = TemplateGeneral::new(contents, msg, info);
+            Template::show(root_path, "general-template", &context)
+        },
+        TemplateBody::Article(article, msg) => {
+            let context = TemplateArticle::new(article, msg, info);
+            Template::show(root_path, "article-template", &context)
+        },
+        TemplateBody::Articles(articles, msg) => {
+            let context = TemplateArticles::new(articles, msg, info);
+            Template::show(root_path, "articles-template", &context)
+            // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
+            // Template::render("general-template", &context)
+        },
+        // TemplateBody::Search(articles, qry, msg) => {
+        //     let context = TemplateArticles::new(articles, qry, msg, info);
+        //     Template::render("articles-template", &context)
+        //     // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
+        //     // Template::render("general-template", &context)
+        // },
+        TemplateBody::Search(articles, search, msg) => {
+            let context = TemplateSearch::new(articles, search, msg, info);
+            Template::show(root_path, "search-template", &context)
+            // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
+            // Template::render("general-template", &context)
+        },
+        TemplateBody::Login(action, tried, fail) => {
+            let context = TemplateLogin::new(action, tried, fail, info);
+            Template::show(root_path, "login-template", &context)
+        },
+        TemplateBody::Create(action, msg) => {
+            let context = TemplateCreate::new(action, msg, info);
+            Template::show(root_path, "create-template", &context)
+        },
+        TemplateBody::Tags(tags, msg) => {
+            let context = TemplateTags::new(tags, msg, info);
+            Template::show(root_path, "tags-template", &context)
+        },
+    }
+    
+}
 
 
 

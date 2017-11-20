@@ -37,6 +37,7 @@ extern crate postgres;
 extern crate r2d2;
 extern crate r2d2_postgres;
 
+extern crate brotli;
 extern crate zopfli;
 extern crate titlecase;
 
@@ -53,7 +54,7 @@ extern crate env_logger;
 
 extern crate rocket_auth_login;
 
-
+mod responder;
 mod layout;
 mod cookie_data;
 mod admin_auth;
@@ -69,6 +70,7 @@ mod ral_administrator;
 mod ral_user;
 mod pages_administrator;
 
+use responder::*;
 use ral_administrator::*;
 use pages_administrator::*;
 use data::*;
