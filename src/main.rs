@@ -54,7 +54,7 @@ extern crate env_logger;
 
 extern crate rocket_auth_login;
 
-mod responder;
+mod express;
 mod layout;
 mod cookie_data;
 mod admin_auth;
@@ -70,7 +70,7 @@ mod ral_administrator;
 mod ral_user;
 mod pages_administrator;
 
-use responder::*;
+use express::*;
 use ral_administrator::*;
 use pages_administrator::*;
 use data::*;
@@ -235,6 +235,7 @@ fn main() {
             pages_administrator::process_user_login,
             pages_administrator::logout_user,
             
+            pages_administrator::resp_test,
             static_files
         ])
         .launch();

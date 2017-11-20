@@ -18,7 +18,7 @@ use ::templates::*;
 use ::blog::*;
 use ::data::*;
 use ::layout::*;
-use responder::*;
+use express::*;
 
 use super::*;
 pub const URL_LOGIN_ADMIN: &'static str = "http://localhost:8000/admin_login";
@@ -42,6 +42,17 @@ pub struct QueryUser {
             and look up how to increase how many queries are cached
             and when they are cached.  Try to get them cached sooner.
 */
+
+
+#[get("/test")]
+pub fn resp_test(encoding: AcceptEncoding) -> Express {
+    
+    let template: String = hbs_template_string(TemplateBody::General(format!("Test successful. Encoding: {:?}", encoding), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
+    // Express::From(template).compress(encoding)
+    Express::from_string(template).compress(encoding)
+}
+
+
 
 #[get("/admin_dashboard")]
 pub fn dashboard_admin_authorized(admin: AdministratorCookie, conn: DbConn) -> Template {
@@ -222,6 +233,5 @@ pub fn logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Result<Fl
         Err(Redirect::to("/user_login"))
     }
 }
-
 
 

@@ -18,6 +18,8 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+	Change menu items to reflect new login pages
+	
 	Use the rocket-file-cache crate to cache static files
 		https://crates.io/crates/rocket-file-cache
 

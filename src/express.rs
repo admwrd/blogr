@@ -107,6 +107,14 @@ pub struct Express {
 }
 
 impl Express {
+    pub fn from_string(template: String) -> Self {
+        Express {
+            data: template.bytes().collect::<Vec<u8>>(), // Todo: maybe change this to into_bytes() so the String is consumed and changed instead of copied as bytes
+            content_type: ContentType::HTML, // assume all template are HTML files.  If your templates are not all html files change this
+            ttl: 0, // Do not cache the regular html files as they may change immediately
+            compress: None,
+    }
+    }
     pub fn set_ttl(mut self, ttl: usize) -> Self {
         self.ttl = ttl;
         self
