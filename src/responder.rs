@@ -22,6 +22,26 @@ use rocket::request::{FromRequest, Request};
 use rocket::http::Status;
 use rocket::Outcome;
 
+
+
+const DEFAULT_TTL: usize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
+
+
+
+/* Process Flow
+    Enter a route with an AcceptEncoding parameter
+    The AcceptEncoding FromRequest is triggered and finds out which algorithms are supported
+    Once the route is finished and has generated a template use the following line of code:
+        Express::From(template).compress(encoding)
+        1. The template is converted to an Express structure
+        2. The compress function compresses the content with an available compression function
+        3. The Express (possibly modified) Express structured is returned from compress
+        4. The Express function's Responder is called by Rocket and sets the appropriate
+            content type, content encoding, ttl, and related headers
+    
+*/
+
+
 // https://github.com/SergioBenitez/Rocket/issues/195
 // https://mmstick.tk/post/q42
 
@@ -175,24 +195,38 @@ pub struct Express {
 }
 
 impl Express {
-    compress(&mut self, encoding: AcceptEncoding) {
-        
-        let mut output = Vec::with_capacity(10*1024);
+    compress(&mut self, encoding: AcceptEncoding) -> Self {
         
         match encoding.preffered() {
             PreferredEncoding::Brotli => {
+                println!("Encoding with Brotli");
+                let mut output = Vec::with_capacity(10*1024);
                 let mut compressor = BrotliReader::new(file, 10*1024, 9, 22);
                 let _ = compressor.read_to_end(&mut output);
-                Some(ContentEncoding::Brotli)
+                // Some(ContentEncoding::Brotli)
+                self.data = output;
+                self.compress = Some(PreferredEncoding::Deflate);
             },
             PreferredEncoding::Gzip => {
+                println!("Encoding with Gzip");
+                let mut output = Vec::with_capacity(10*1024);
                 zopfli::compress(&Options::default(), &Format::Gzip, self.data, &mut output).expect("Gzip compression failed.");
+                self.data = output;
+                self.compress = Some(PreferredEncoding::Gzip);
             },
             PreferredEncoding::Deflate => {
+                println!("Encoding with Deflate");
+                let mut output = Vec::with_capacity(10*1024);
                 zopfli::compress(&Options::default(), &Format::Deflate, self.data, &mut output).expect("Deflate compression failed.");
+                self.data = output;
+                self.compress = Some(PreferredEncoding::Deflate);
                 
             },
+            _ => {
+                println!("No compression methods available.");
+            },
         }
+        self
     }
 }
 
@@ -210,14 +244,14 @@ impl From<Template> for Express {
         // zopfli::compress(&Options::default(), &Format::Gzip, template.to_string().as_bytes(), &mut output).unwrap();
         Express {
             data: template.to_string().as_bytes(),
-            content_type: ContentType::HTML,
-            ttl: 0,
+            content_type: ContentType::HTML, // assume all template are HTML files.  If your templates are not all html files change this
+            ttl: 0, // Do not cache the regular html files as they may change immediately
             compress: None,
         }
     }
 }
 
-
+// NamedFiles passed the static files route
 impl From<NamedFile> for Express {
     fn from(named: NamedFile) -> Express {
         let path = named.path();
@@ -227,11 +261,12 @@ impl From<NamedFile> for Express {
         Express {
             data,
             content_type,
-            ttl: 1*60*60,
+            ttl: DEFAULT_TTL,
             compress: None,
         }
     }
 }
+
 
 
 impl<'a> Responder<'a> for Express {
@@ -246,9 +281,7 @@ impl<'a> Responder<'a> for Express {
                 PreferredEncoding::Deflate => { resp.raw_header("Content-Encoding", "deflate") },
                 _ => {},
             }
-            
         }
-        
         resp.header(self.content_type)
         resp.ok()
     }
