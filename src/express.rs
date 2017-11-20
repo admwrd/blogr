@@ -300,10 +300,24 @@ impl<'a> Responder<'a> for Express {
         
         let mut resp = Response::build();
         if let Some(tempcont) = self.template {
-            resp.join( tempcont.t.respond_to(req).unwrap_or_default() );
+            // resp.join( tempcont.t.respond_to(req).unwrap_or_default() );
+            let mut temp_resp = tempcont.t.respond_to(req).unwrap_or_default();
+            
+            
+            let temp_opt = temp_resp.body_bytes();
+            if let Some(body) = temp_opt {
+                resp.streamed_body(Cursor::new(body));
+            } else {
+                println!("Fallback response using join");
+                resp.join(temp_resp);
+            }
+            
+            
+            // resp.join(  );
+            
         } else {
-            resp.sized_body(Cursor::new(self.data));
-            // resp.streamed_body(Cursor::new(self.data));
+            // resp.sized_body(Cursor::new(self.data));
+            resp.streamed_body(Cursor::new(self.data));
         }
         
         resp.header(self.content_type);

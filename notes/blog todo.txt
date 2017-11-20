@@ -24,7 +24,8 @@ Blogr
 			Wrap the template responder inside the Express responder, use express.join(template.respond_to(req))
 			
 		Maybe add a way to change compression method priorities as long as they are supported
-		Combine the AcceptEncoding and Responder (both use the request parameter)
+		DO NOT combine AcceptEncoding and Responder (keep purity of responder)
+			Combine the AcceptEncoding and Responder (both use the request parameter)
 		Compile as release
 		Maybe stream the results of the responder in large files
 			https://api.rocket.rs/rocket/response/trait.Responder.html
