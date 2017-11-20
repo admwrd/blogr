@@ -18,6 +18,7 @@ use ::templates::*;
 use ::blog::*;
 use ::data::*;
 use ::layout::*;
+use responder::*;
 
 use super::*;
 pub const URL_LOGIN_ADMIN: &'static str = "http://localhost:8000/admin_login";

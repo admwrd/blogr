@@ -107,8 +107,24 @@ pub struct Express {
 }
 
 impl Express {
-    fn compress(mut self, encoding: AcceptEncoding) -> Self {
-        
+    pub fn set_ttl(mut self, ttl: usize) -> Self {
+        self.ttl = ttl;
+        self
+    }
+    pub fn set_data(mut self, data: Vec<u8>) -> Self {
+        self.data = data;
+        self
+    }
+    pub fn set_compression(mut self, encoding: Option<PreferredEncoding>) -> Self {
+        self.compress = encoding;
+        self
+    }
+    pub fn set_content_type(mut self, cont_type: ContentType) -> Self {
+        self.content_type = cont_type;
+        self
+    }
+    pub fn compress(mut self, encoding: AcceptEncoding) -> Self {
+        println!("Attempting to set compression, support: {:?}", encoding);
         match encoding.preferred() {
             PreferredEncoding::Brotli => {
                 println!("Encoding with Brotli");
@@ -190,6 +206,7 @@ impl<'a> Responder<'a> for Express {
     // fn respond(self) -> response::Result<'a> {
     fn respond_to(self, _: &Request) -> response::Result<'a> {
         let mut resp = Response::build();
+        println!("Setting headers to:\n{:?}", self);
         resp.sized_body(Cursor::new(self.data));
         resp.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
         if let Some(enc) = self.compress {
