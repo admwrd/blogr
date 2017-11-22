@@ -83,15 +83,11 @@ pub struct DataTemplate(Template);
 
 impl Clone for DataNamed {
     fn clone(&self) -> DataNamed {
-        // if let Ok(named) = self.0.try_clone() {
-            // DataNamed(named) // Does not work, try_clone() returns a File not a NamedFile
-        // } else {
         let new: NamedFile;
         unsafe {
             new = mem::transmute_copy( &self.0 );
         }
        DataNamed(new)
-        // }
     }
 }
 
@@ -135,8 +131,6 @@ impl ExpressData for DataNamed {
         ContentType::from_extension(self.0.path().extension().unwrap_or(OsStr::new("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
     }
     fn contents(self, _: &Request) -> Vec<u8> {
-        // could do self.file().metadata().len() but this seems more 
-        // complicated than letting vector be sized automatically
         let mut data: Vec<u8> = Vec::new();
         self.0.file().read_to_end(&mut data);
         data
@@ -272,22 +266,7 @@ impl From<Template> for Express {
     }
 }
 
-impl<T: Into<ExData>> From<T> for Express {
-    fn from(original: T) -> Express {
-        let data: ExData = original.into(); // Convert into ExData
-        Express {
-            content_type: (&data).content_type(),
-            data,
-            method: CompressionEncoding::Uncompressed,
-            ttl: DEFAULT_TTL,
-            streamed: true,
-        }
-    }
-}
-
-
 impl<'a> Responder<'a> for Express {
-    // fn respond(self) -> response::Result<'a> {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         let mut response = Response::build();
         

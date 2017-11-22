@@ -130,10 +130,10 @@ fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
     // NamedFile::open(Path::new("static/").join(file)).ok()
     
     if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
-        let exp: Express = named.into();
         // With compression (slower to process):
         // Some(exp.compress(encoding))
         // Without compression (faster to process):
+        let exp: Express = named.into();
         Some(exp)
     } else {
         None
@@ -206,6 +206,7 @@ fn main() {
             pages_administrator::logout_user,
             
             pages_administrator::resp_test,
+            pages_administrator::uncompressed,
             pages_administrator::compress_test,
             pages_administrator::compress_test2,
             pages_administrator::compress_test3,

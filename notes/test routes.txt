@@ -1,0 +1,22 @@
+
+uncompressed	template
+
+
+test		express	string	
+compress	express	string	compressed
+compress2	express	string
+compress3	express	templat
+express4	express	templat	compressed
+gzip		express	templat	compressed gzip
+deflate		express	templat	compressed deflate
+brotli		express	templat	compressed brotli
+
+
+
+
+
+
+
+
+
+

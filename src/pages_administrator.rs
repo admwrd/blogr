@@ -150,6 +150,11 @@ const TEST_TEXT: &'static str = r#"
 <p>Sed sodales nisi vel ligula dignissim, vel tristique odio varius. Donec hendrerit vulputate felis et mattis. Pellentesque vel libero justo. Suspendisse dignissim eget diam ac finibus. Quisque vel pulvinar nisi. In hendrerit, enim vitae interdum fermentum, erat eros vehicula velit, vitae convallis magna turpis sit amet ante. Maecenas elementum ipsum odio, quis fringilla enim lacinia vel. Curabitur vestibulum quis metus id iaculis. Praesent a purus non eros tincidunt cursus. Sed eu porttitor orci. Duis suscipit nibh et mi egestas bibendum. Cras dignissim ipsum vel blandit rhoncus massa nunc.</p>
 "#;
 
+#[get("/uncompressed")]
+pub fn uncompressed() ->  Template {
+    hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None)
+}
+
 #[get("/compress2")]
 pub fn compress_test2(encoding: AcceptCompression) -> Express {
     
@@ -179,7 +184,7 @@ pub fn compress_test3(encoding: AcceptCompression) -> Express {
     // let tempstr: Express = template_string.into();
     let tempstr: Express = template_template.into();
     // tempstr.compress(encoding)
-    tempstr
+    tempstr.clone()
 }
 
 #[get("/compress4")]
