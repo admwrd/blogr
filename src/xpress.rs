@@ -9,6 +9,7 @@ use rocket_contrib::Template;
 use rocket::http::ContentType;
 
 use std::mem;
+use std::ffi::OsStr;
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 use std::fs::{self, File};
@@ -36,12 +37,26 @@ pub trait ExpressData {
     fn contents(&self, &Request) -> Vec<u8>;
 }
 
-#[derive(Debug)]
-pub struct ExData<T: ExpressData>(T);
+#[derive(Debug, Clone)]
+// pub struct ExData<T: ExpressData>(T);
+pub enum ExData {
+    Bytes(DataBytes),
+    File(DataFile),
+    Named(DataNamed),
+    String(DataString),
+    Template(DataTemplate),
+}
 
-impl<T: Into<ExData<T>>> ExData<T> {
+impl ExData {
     fn content_type(&self) -> ContentType {
-        self.content_type()
+        // self.0.content_type()
+        match self {
+            &ExData::Bytes(data) => data.content_type(),
+            &ExData::File(data) => data.content_type(),
+            &ExData::Named(data) => data.content_type(),
+            &ExData::String(data) => data.content_type(),
+            &ExData::Template(data) => data.content_type(),
+        }
     }
 }
 
@@ -49,12 +64,39 @@ impl<T: Into<ExData<T>>> ExData<T> {
 struct DataBytes(Vec<u8>);
 #[derive(Debug, Clone)]
 struct DataFile(PathBuf);
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct DataNamed(NamedFile);
 #[derive(Debug, Clone)]
 struct DataString(String);
 #[derive(Debug)]
 struct DataTemplate(Template);
+
+
+impl Clone for DataNamed {
+    fn clone(&self) -> DataNamed {
+        // if let Ok(named) = self.0.try_clone() {
+            // DataNamed(named) // Does not work, try_clone() returns a File not a NamedFile
+        // } else {
+        let new: NamedFile;
+        unsafe {
+            new = mem::transmute_copy( &self.0 );
+        }
+       DataNamed(new)
+        // }
+    }
+}
+
+impl Clone for DataTemplate {
+    fn clone(&self) -> DataTemplate {
+        let new: Template;
+        unsafe {
+            new = mem::transmute_copy( &self.0 );
+        }
+        DataTemplate(new)
+    }
+}
+
+
 
 impl ExpressData for DataBytes {
     fn content_type(&self) -> ContentType {
@@ -67,13 +109,13 @@ impl ExpressData for DataBytes {
 
 impl ExpressData for DataFile {
     fn content_type(&self) -> ContentType {
-        ContentType::from_extension(self.extension().unwrap_or(Path::new()).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
+        ContentType::from_extension(self.0.extension().unwrap_or(OsStr::default("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
     }
     fn contents(&self, _: &Request) -> Vec<u8> {
-        let file_rst = File::open();
+        let file_rst = File::open(self.0);
         let mut data: Vec<u8> = Vec::new();
         if let Ok(file) = file_rst {
-            file.read_to_end(&mut data)
+            file.read_to_end(&mut data);
         }
         data
     }
@@ -81,13 +123,13 @@ impl ExpressData for DataFile {
 
 impl ExpressData for DataNamed {
     fn content_type(&self) -> ContentType {
-        ContentType::from_extension(self.path().extension().unwrap_or(Path::new()).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
+        ContentType::from_extension(self.0.path().extension().unwrap_or(OsStr::default("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
     }
     fn contents(&self, _: &Request) -> Vec<u8> {
         // could do self.file().metadata().len() but this seems more 
         // complicated than letting vector be sized automatically
         let mut data: Vec<u8> = Vec::new();
-        self.file().read_to_end(&mut data);
+        self.0.file().read_to_end(&mut data);
         data
     }
 }
@@ -97,7 +139,7 @@ impl ExpressData for DataString {
         ContentType::HTML
     }
     fn contents(&self, _: &Request) -> Vec<u8> {
-        self.0.as_bytes()
+        self.0.bytes().collect::<Vec<u8>>()
     }
 }
 
@@ -106,7 +148,7 @@ impl ExpressData for DataTemplate {
         ContentType::HTML
     }
     fn contents(&self, req: &Request) -> Vec<u8> {
-        let response = self.respond_to(req).unwrap_or_default();
+        let response = self.0.respond_to(req).unwrap_or_default();
         if let Some(body) = response.body_bytes() {
             body
         } else {
@@ -126,15 +168,15 @@ impl ExpressData for DataTemplate {
 //     Temp(Template),
 // }
 
-impl Clone for DataTemplate {
-    fn clone(&self) -> ExData {
-        let new: Template;
-        unsafe {
-            new = mem::transmute_copy( &self.0 );
-        }
-        ExData::Temp(new)
-    }
-}
+// impl Clone for ExData {
+//     fn clone(&self) -> ExData {
+//         let new: Template;
+//         unsafe {
+//             new = mem::transmute_copy( &self.0 );
+//         }
+//         ExData::Temp(new)
+//     }
+// }
 
 // impl ExData {
 //     // Note: Could convert each enum type into a type
@@ -157,8 +199,8 @@ impl Clone for DataTemplate {
 
 
 #[derive(Debug,Clone)]
-pub struct Express<T> {
-    data: ExData<T>,
+pub struct Express {
+    data: ExData,
     method: CompressionEncoding,
     content_type: ContentType,
     ttl: usize,
@@ -166,7 +208,7 @@ pub struct Express<T> {
 }
 
 
-impl<T: Into<ExData<T>>> Express<T> {
+impl Express {
     
     /// Alias for add_comrpession
     #[inline(always)]
@@ -210,11 +252,50 @@ impl<T: Into<ExData<T>>> Express<T> {
         self.streamed = false;
         self
     }
+    pub fn new(data: ExData) -> Express {
+        Express {
+            data,
+            method: CompressionEncoding::Uncompressed,
+            content_type: data.content_type(),
+            ttl: DEFAULT_TTL,
+            streamed: true,
+        }
+    }
 }
 
-impl<T: Into<ExData<T>>> From<T> for Express<T> {
+impl From<String> for Express {
+    fn from(original: String) -> Express {
+        Express::new( ExData::String( DataString(original) ) )
+    }
+}
+
+impl From<NamedFile> for Express {
+    fn from(original: NamedFile) -> Express {
+        Express::new( ExData::Named( DataNamed(original) ) )
+    }
+}
+
+impl From<Vec<u8>> for Express {
+    fn from(original: Vec<u8>) -> Express {
+        Express::new( ExData::Bytes( DataBytes(original) ) )
+    }
+}
+
+impl From<PathBuf> for Express {
+    fn from(original: PathBuf) -> Express {
+        Express::new( ExData::File( DataFile(original) ) )
+    }
+}
+
+impl From<Template> for Express {
+    fn from(original: Template) -> Express {
+        Express::new( ExData::Template( DataTemplate(original) ) )
+    }
+}
+
+impl<T: Into<ExData>> From<T> for Express {
     fn from(original: T) -> Express {
-        let data: T = original.into(); // Convert into ExData
+        let data: ExData = original.into(); // Convert into ExData
         Express {
             data,
             method: CompressionEncoding::Uncompressed,
@@ -226,7 +307,7 @@ impl<T: Into<ExData<T>>> From<T> for Express<T> {
 }
 
 
-impl<'a, T> Responder<'a> for Express<T> {
+impl<'a> Responder<'a> for Express {
     // fn respond(self) -> response::Result<'a> {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         let mut response = Response::build();
@@ -265,7 +346,7 @@ impl<'a, T> Responder<'a> for Express<T> {
             CompressionEncoding::Uncompressed => {},
         }
         if self.streamed {
-            response.streamed_body(Cursor::new(data))
+            response.set_streamed_body(Cursor::new(data))
         } else {
             response.sized_body(Cursor::new(data))
         }
