@@ -47,7 +47,7 @@ pub enum ExData {
     Template(DataTemplate),
 }
 
-impl ExData {
+impl ExpressData for ExData {
     fn content_type(&self) -> ContentType {
         // self.0.content_type()
         match self {
@@ -58,18 +58,27 @@ impl ExData {
             &ExData::Template(data) => data.content_type(),
         }
     }
+    fn contents(&self, req: &Request) -> Vec<u8> {
+        match self {
+            &ExData::Bytes(data) => data.contents(req),
+            &ExData::File(data) => data.contents(req),
+            &ExData::Named(data) => data.contents(req),
+            &ExData::String(data) => data.contents(req),
+            &ExData::Template(data) => data.contents(req),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
-struct DataBytes(Vec<u8>);
+pub struct DataBytes(Vec<u8>);
 #[derive(Debug, Clone)]
-struct DataFile(PathBuf);
+pub struct DataFile(PathBuf);
 #[derive(Debug)]
-struct DataNamed(NamedFile);
+pub struct DataNamed(NamedFile);
 #[derive(Debug, Clone)]
-struct DataString(String);
+pub struct DataString(String);
 #[derive(Debug)]
-struct DataTemplate(Template);
+pub struct DataTemplate(Template);
 
 
 impl Clone for DataNamed {
@@ -109,7 +118,7 @@ impl ExpressData for DataBytes {
 
 impl ExpressData for DataFile {
     fn content_type(&self) -> ContentType {
-        ContentType::from_extension(self.0.extension().unwrap_or(OsStr::default("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
+        ContentType::from_extension(self.0.extension().unwrap_or(OsStr::new("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
     }
     fn contents(&self, _: &Request) -> Vec<u8> {
         let file_rst = File::open(self.0);
@@ -123,7 +132,7 @@ impl ExpressData for DataFile {
 
 impl ExpressData for DataNamed {
     fn content_type(&self) -> ContentType {
-        ContentType::from_extension(self.0.path().extension().unwrap_or(OsStr::default("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
+        ContentType::from_extension(self.0.path().extension().unwrap_or(OsStr::new("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
     }
     fn contents(&self, _: &Request) -> Vec<u8> {
         // could do self.file().metadata().len() but this seems more 
@@ -159,45 +168,6 @@ impl ExpressData for DataTemplate {
 }
 
 
-// #[derive(Debug)]
-// pub enum ExData {
-//     Bytes(Vec<u8>),
-//     File(PathBuf),
-//     Named(NamedFile),
-//     Text(String),
-//     Temp(Template),
-// }
-
-// impl Clone for ExData {
-//     fn clone(&self) -> ExData {
-//         let new: Template;
-//         unsafe {
-//             new = mem::transmute_copy( &self.0 );
-//         }
-//         ExData::Temp(new)
-//     }
-// }
-
-// impl ExData {
-//     // Note: Could convert each enum type into a type
-//     //       then add a trait that contains a content_type() method
-//     //       each type will implement the method and instead of matching
-//     //       just call the content_type() method.  Seems more efficient and clean
-//     /// The ExData.content_type() method is used to tell the Express type what default content type to use when converting into an Express type.
-//     /// For Files/NameFiles the content type associated with the extension is used (if any), falling back to Plain if no associated type is found.
-//     /// For bytes, text, and templates the content type is HTML.  To set the content type manually use the express.set_content_type() method.
-//     fn content_type(&self) -> ContentType {
-//         match self {
-//             &ExData::Bytes::(_) => ContentType::HTML,
-//             &ExData::File::(path) => ContentType::from_extension(path.extension().unwrap_or(Path::new()).to_str().unwrap_or("")).unwrap_or(ContentType::Plain),
-//             &ExData::Named::(named) => ContentType::from_extension(named.path().extension().unwrap_or(Path::new()).to_str().unwrap_or("")).unwrap_or(ContentType::Plain),
-//             &ExData::Text::(_) => ContentType::HTML,
-//             &ExData::Temp::(_) => ContentType::HTML,
-//         }
-//     }
-// }
-
-
 #[derive(Debug,Clone)]
 pub struct Express {
     data: ExData,
@@ -207,6 +177,15 @@ pub struct Express {
     streamed: bool,
 }
 
+
+impl ExpressData for Express {
+    fn content_type(&self) -> ContentType {
+        self.data.content_type()
+    }
+    fn contents(&self, req: &Request) -> Vec<u8> {
+        self.data.contents(req)
+    }
+}
 
 impl Express {
     
@@ -299,7 +278,7 @@ impl<T: Into<ExData>> From<T> for Express {
         Express {
             data,
             method: CompressionEncoding::Uncompressed,
-            content: data.content_type(),
+            content_type: data.content_type(),
             ttl: DEFAULT_TTL,
             streamed: true,
         }
@@ -322,7 +301,7 @@ impl<'a> Responder<'a> for Express {
                 response.raw_header("Content-Encoding", "br");
                 
                 let mut output = Vec::with_capacity(data.len()+200);
-                let mut compressor = ::brotli::CompressorReader::new(Cursor::new(&self.data), 10*1024, 9, 22);
+                let mut compressor = ::brotli::CompressorReader::new(Cursor::new(data), 10*1024, 9, 22);
                 let _ = compressor.read_to_end(&mut output);
                 
                 data = output;
@@ -331,24 +310,24 @@ impl<'a> Responder<'a> for Express {
                 response.raw_header("Content-Encoding", "gzip");
                 
                 let mut output = Vec::with_capacity(data.len()+200);
-                zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Gzip, data, &mut output).expect("Gzip compression failed.");
+                zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Gzip, &data, &mut output).expect("Gzip compression failed.");
                 
                 data = output;
             },
-            CompressionEncoding::Defalte => {
+            CompressionEncoding::Deflate => {
                 response.raw_header("Content-Encoding", "defalte");
                 
                 let mut output = Vec::with_capacity(data.len()+200);
-                zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Deflate, data, &mut output).expect("Deflate compression failed.");
+                zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Deflate, &data, &mut output).expect("Deflate compression failed.");
                 
                 data = output;
             },
             CompressionEncoding::Uncompressed => {},
         }
         if self.streamed {
-            response.set_streamed_body(Cursor::new(data))
+            response.streamed_body(Cursor::new(data));
         } else {
-            response.sized_body(Cursor::new(data))
+            response.sized_body(Cursor::new(data));
         }
         
         response.ok()
