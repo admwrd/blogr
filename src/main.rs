@@ -134,7 +134,7 @@ fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
         // Some(exp.compress(encoding))
         // Without compression (faster to process):
         let exp: Express = named.into();
-        Some(exp)
+        Some( exp.clone() )
     } else {
         None
     }

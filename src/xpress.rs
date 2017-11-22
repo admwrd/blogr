@@ -83,21 +83,40 @@ pub struct DataTemplate(Template);
 
 impl Clone for DataNamed {
     fn clone(&self) -> DataNamed {
-        let new: NamedFile;
-        unsafe {
-            new = mem::transmute_copy( &self.0 );
-        }
-       DataNamed(new)
+       // // Crashes
+       //  let new: NamedFile;
+       //  unsafe {
+       //      new = mem::transmute_copy( &self.0 );
+       //  }
+       // DataNamed(new)
+       
+       // let named = NamedFile { 0: self.0.path().to_path_buf(), 1: *self.0.file() };
+       let named = NamedFile::open(self.0.path()).expect("Cloning DataNamed(NamedFile) failed, ensure to check that the file exists before creating an Express structure.");
+       
+       DataNamed(named)
     }
 }
 
 impl Clone for DataTemplate {
     fn clone(&self) -> DataTemplate {
-        let new: Template;
-        unsafe {
-            new = mem::transmute_copy( &self.0 );
-        }
-        DataTemplate(new)
+        // // let new: Template;
+        // let size = mem::size_of_val(&self.0);
+        // // let new_bytes: Vec<u8> = vec![0u8; size*4];
+        // let mut new_bytes: Vec<u8> = Vec::with_capacity(size*4);
+        // new_bytes = vec![0u8; size*4];
+        // // let new_bytes: [u8; size] = [0u8; size]; 
+        // let mut new: Template;
+        // unsafe {
+        //     println!("Cloning DataTemplate.  Size of source: {}, Destination: {}", mem::size_of_val(&self.0), mem::size_of_val(&new));
+        //     new_bytes = mem::transmute_copy( &self.0 );
+        //     new = mem::transmute(new_bytes);
+        // }
+        
+        // DataTemplate(new)
+        
+        
+        // Bleh nothing works.  I hate how the Rocket Templates are organized/written.
+        unimplemented!()
     }
 }
 
