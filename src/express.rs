@@ -25,6 +25,29 @@ use rocket::request::{FromRequest, Request};
 use rocket::Outcome;
 
 
+/* 
+    Days
+    1    86400
+    2   172800
+    3   259200
+    4   345600
+    5   432000
+    6   518400
+    7   604800
+    8   691200
+    9   777600
+    10  864000
+    
+    Weeks
+    1    604800
+    2   1382400
+    4   2073600
+    5   2764800
+    6   3456000
+    
+    Year
+    1   31536000
+*/
 
 const DEFAULT_TTL: usize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
 
@@ -97,12 +120,12 @@ impl AcceptEncoding {
     pub fn contains_brotli(self)  -> bool { self.supported & BROTLI != 0 }
     pub fn is_uncompressed(self)  -> bool { self.supported == 0 }
     pub fn preferred(self) -> PreferredEncoding {
-        if self.supported & GZIP != 0 {
+        if self.supported & BROTLI != 0 {
+            PreferredEncoding::Brotli
+        } else if self.supported & GZIP != 0 {
             PreferredEncoding::Gzip
         } else if self.supported & DEFLATE != 0 {
             PreferredEncoding::Deflate
-        } else if self.supported & BROTLI != 0 {
-            PreferredEncoding::Brotli
         } else {
             PreferredEncoding::Uncompressed
         }
@@ -273,7 +296,7 @@ impl Express {
         match encoding.preferred() {
             PreferredEncoding::Brotli => {
                 println!("Encoding with Brotli");
-                let mut output = Vec::with_capacity(10*1024);
+                // let mut output = Vec::with_capacity(10*1024);
                 
                 // use std::io::Cursor;
                 // let mut buff = Cursor::new(vec![0; 15]);
@@ -284,9 +307,22 @@ impl Express {
                 // let mut compressor = ::brotli::Compressor::new(Cursor::new(self.data), 10*1024, 9, 22);
                 
                 // let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
-                let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
-                let _ = compressor.read_to_end(&mut output);
                 // Some(ContentEncoding::Brotli)
+                
+                // let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
+                // let _ = compressor.read_to_end(&mut output);
+                
+                let mut output = Vec::with_capacity(10*1024);
+                if let Some(ref tempcont) = self.template {
+                    let mut compressor = ::brotli::CompressorReader::new(Cursor::new(tempcont.t), 10*1024, 9, 22);
+                    let _ = compressor.read_to_end(&mut output);
+                    
+                } else {
+                    let mut compressor = ::brotli::CompressorReader::new(Cursor::new(self.data), 10*1024, 9, 22);
+                    let _ = compressor.read_to_end(&mut output);
+                    
+                }
+                
                 self.data = output;
                 self.compress = Some(PreferredEncoding::Brotli);
             },

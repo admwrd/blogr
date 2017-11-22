@@ -22,6 +22,10 @@ Blogr
 		Express::compress() only works on strings not templates!
 			At least that what it seems is the reason compression is not working
 				Yes that is the problem.  It works fine with strings.  Rewrite!!!
+			Make the new responder compress static files/strings with the data
+			Make the templates compress the response body data
+			
+			
 			
 		Move actual compression into the responder, set compression with the compression() method of Express
 		Maybe check if pages load faster if compression is handled inside the Responder (respond_to() method)

@@ -54,7 +54,9 @@ extern crate env_logger;
 
 extern crate rocket_auth_login;
 
-mod express;
+mod accept;
+mod xpress;
+// mod express;
 mod layout;
 mod cookie_data;
 mod admin_auth;
@@ -70,7 +72,8 @@ mod ral_administrator;
 mod ral_user;
 mod pages_administrator;
 
-use express::*;
+use xpress::*;
+use accept::*;
 use ral_administrator::*;
 use pages_administrator::*;
 use data::*;
@@ -121,7 +124,7 @@ pub const MAX_CREATE_TAGS: usize = 250;
 
 
 #[get("/<file..>", rank=10)]
-fn static_files(file: PathBuf, encoding: AcceptEncoding) -> Option<Express> {
+fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
 // fn static_files(file: PathBuf) -> Option<NamedFile> {
     // Without Expiration header:
     // NamedFile::open(Path::new("static/").join(file)).ok()

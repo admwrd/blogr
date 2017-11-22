@@ -18,7 +18,8 @@ use ::templates::*;
 use ::blog::*;
 use ::data::*;
 use ::layout::*;
-use express::*;
+use xpress::*;
+use accept::*;
 
 use super::*;
 pub const URL_LOGIN_ADMIN: &'static str = "http://localhost:8000/admin_login";
@@ -45,7 +46,7 @@ pub struct QueryUser {
 
 
 #[get("/test")]
-pub fn resp_test(encoding: AcceptEncoding) -> Express {
+pub fn resp_test(encoding: AcceptCompression) -> Express {
     
     let template: String = hbs_template_string(TemplateBody::General(format!("Test successful. Encoding: {:?}", encoding), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
     // Express::From(template).compress(encoding)
@@ -56,7 +57,7 @@ pub fn resp_test(encoding: AcceptEncoding) -> Express {
 }
 
 #[get("/compress")]
-pub fn compress_test(encoding: AcceptEncoding) -> Express {
+pub fn compress_test(encoding: AcceptCompression) -> Express {
     
     let template: String = hbs_template_string(TemplateBody::General(format!("Test successful. Encoding: {:?}", encoding), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
     // Express::From(template).compress(encoding)
@@ -150,7 +151,7 @@ const TEST_TEXT: &'static str = r#"
 "#;
 
 #[get("/compress2")]
-pub fn compress_test2(encoding: AcceptEncoding) -> Express {
+pub fn compress_test2(encoding: AcceptCompression) -> Express {
     
     // let text
     
@@ -164,7 +165,7 @@ pub fn compress_test2(encoding: AcceptEncoding) -> Express {
 }
 
 #[get("/compress3")]
-pub fn compress_test3(encoding: AcceptEncoding) -> Express {
+pub fn compress_test3(encoding: AcceptCompression) -> Express {
     
     // let text
     
@@ -182,7 +183,7 @@ pub fn compress_test3(encoding: AcceptEncoding) -> Express {
 }
 
 #[get("/compress4")]
-pub fn compress_test4(encoding: AcceptEncoding) -> Express {
+pub fn compress_test4(encoding: AcceptCompression) -> Express {
     
     // let text
     
@@ -200,7 +201,7 @@ pub fn compress_test4(encoding: AcceptEncoding) -> Express {
 }
 
 #[get("/gzip")]
-pub fn compress_gzip(encoding: AcceptEncoding) -> Express {
+pub fn compress_gzip(encoding: AcceptCompression) -> Express {
     let template_template: Template = hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
 
     let express: Express = template_template.into();
@@ -209,7 +210,7 @@ pub fn compress_gzip(encoding: AcceptEncoding) -> Express {
 
 
 #[get("/deflate")]
-pub fn compress_deflate(encoding: AcceptEncoding) -> Express {
+pub fn compress_deflate(encoding: AcceptCompression) -> Express {
     let template_template: Template = hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
 
     let express: Express = template_template.into();
@@ -218,7 +219,7 @@ pub fn compress_deflate(encoding: AcceptEncoding) -> Express {
 
 
 #[get("/brotli")]
-pub fn compress_brotli(encoding: AcceptEncoding) -> Express {
+pub fn compress_brotli(encoding: AcceptCompression) -> Express {
     let template_template: Template = hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
 
     let express: Express = template_template.into();
