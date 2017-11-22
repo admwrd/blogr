@@ -34,7 +34,7 @@ const DEFAULT_TTL: usize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 da
 
 pub trait ExpressData {
     fn content_type(&self) -> ContentType;
-    fn contents(&self, &Request) -> Vec<u8>;
+    fn contents(self, &Request) -> Vec<u8>;
 }
 
 #[derive(Debug, Clone)]
@@ -51,20 +51,20 @@ impl ExpressData for ExData {
     fn content_type(&self) -> ContentType {
         // self.0.content_type()
         match self {
-            &ExData::Bytes(data) => data.content_type(),
-            &ExData::File(data) => data.content_type(),
-            &ExData::Named(data) => data.content_type(),
-            &ExData::String(data) => data.content_type(),
-            &ExData::Template(data) => data.content_type(),
+            &ExData::Bytes(ref data) => data.content_type(),
+            &ExData::File(ref data) => data.content_type(),
+            &ExData::Named(ref data) => data.content_type(),
+            &ExData::String(ref data) => data.content_type(),
+            &ExData::Template(ref data) => data.content_type(),
         }
     }
-    fn contents(&self, req: &Request) -> Vec<u8> {
+    fn contents(self, req: &Request) -> Vec<u8> {
         match self {
-            &ExData::Bytes(data) => data.contents(req),
-            &ExData::File(data) => data.contents(req),
-            &ExData::Named(data) => data.contents(req),
-            &ExData::String(data) => data.contents(req),
-            &ExData::Template(data) => data.contents(req),
+            ExData::Bytes(data) => data.contents(req),
+            ExData::File(data) => data.contents(req),
+            ExData::Named(data) => data.contents(req),
+            ExData::String(data) => data.contents(req),
+            ExData::Template(data) => data.contents(req),
         }
     }
 }
@@ -111,7 +111,7 @@ impl ExpressData for DataBytes {
     fn content_type(&self) -> ContentType {
         ContentType::HTML
     }
-    fn contents(&self, _: &Request) -> Vec<u8> {
+    fn contents(self, _: &Request) -> Vec<u8> {
         self.0
     }
 }
@@ -120,10 +120,10 @@ impl ExpressData for DataFile {
     fn content_type(&self) -> ContentType {
         ContentType::from_extension(self.0.extension().unwrap_or(OsStr::new("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
     }
-    fn contents(&self, _: &Request) -> Vec<u8> {
+    fn contents(self, _: &Request) -> Vec<u8> {
         let file_rst = File::open(self.0);
         let mut data: Vec<u8> = Vec::new();
-        if let Ok(file) = file_rst {
+        if let Ok(mut file) = file_rst {
             file.read_to_end(&mut data);
         }
         data
@@ -134,7 +134,7 @@ impl ExpressData for DataNamed {
     fn content_type(&self) -> ContentType {
         ContentType::from_extension(self.0.path().extension().unwrap_or(OsStr::new("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain)
     }
-    fn contents(&self, _: &Request) -> Vec<u8> {
+    fn contents(self, _: &Request) -> Vec<u8> {
         // could do self.file().metadata().len() but this seems more 
         // complicated than letting vector be sized automatically
         let mut data: Vec<u8> = Vec::new();
@@ -147,7 +147,7 @@ impl ExpressData for DataString {
     fn content_type(&self) -> ContentType {
         ContentType::HTML
     }
-    fn contents(&self, _: &Request) -> Vec<u8> {
+    fn contents(self, _: &Request) -> Vec<u8> {
         self.0.bytes().collect::<Vec<u8>>()
     }
 }
@@ -156,8 +156,8 @@ impl ExpressData for DataTemplate {
     fn content_type(&self) -> ContentType {
         ContentType::HTML
     }
-    fn contents(&self, req: &Request) -> Vec<u8> {
-        let response = self.0.respond_to(req).unwrap_or_default();
+    fn contents(self, req: &Request) -> Vec<u8> {
+        let mut response = self.0.respond_to(req).unwrap_or_default();
         if let Some(body) = response.body_bytes() {
             body
         } else {
@@ -182,7 +182,7 @@ impl ExpressData for Express {
     fn content_type(&self) -> ContentType {
         self.data.content_type()
     }
-    fn contents(&self, req: &Request) -> Vec<u8> {
+    fn contents(self, req: &Request) -> Vec<u8> {
         self.data.contents(req)
     }
 }
@@ -233,9 +233,9 @@ impl Express {
     }
     pub fn new(data: ExData) -> Express {
         Express {
+            content_type: (&data).content_type(),
             data,
             method: CompressionEncoding::Uncompressed,
-            content_type: data.content_type(),
             ttl: DEFAULT_TTL,
             streamed: true,
         }
@@ -276,9 +276,9 @@ impl<T: Into<ExData>> From<T> for Express {
     fn from(original: T) -> Express {
         let data: ExData = original.into(); // Convert into ExData
         Express {
+            content_type: (&data).content_type(),
             data,
             method: CompressionEncoding::Uncompressed,
-            content_type: data.content_type(),
             ttl: DEFAULT_TTL,
             streamed: true,
         }
@@ -294,7 +294,7 @@ impl<'a> Responder<'a> for Express {
         response.header(self.content_type);
         response.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
         
-        let data = self.data.contents(req);
+        let mut data = self.data.contents(req);
         
         match self.method {
             CompressionEncoding::Brotli => {
