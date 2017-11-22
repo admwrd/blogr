@@ -315,7 +315,7 @@ impl<'a> Responder<'a> for Express {
                 data = output;
             },
             CompressionEncoding::Deflate => {
-                response.raw_header("Content-Encoding", "defalte");
+                response.raw_header("Content-Encoding", "deflate");
                 
                 let mut output = Vec::with_capacity(data.len()+200);
                 zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Deflate, &data, &mut output).expect("Deflate compression failed.");
