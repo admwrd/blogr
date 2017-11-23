@@ -75,6 +75,11 @@ a:active {
     padding: 1em 0.5em 1em 0.5em;
     text-align: justify;
 }
+
+.v-article-single {
+    min-height: 400px;
+}
+
 .v-article-header {
 }
 .v-article-title {

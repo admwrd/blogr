@@ -9,21 +9,20 @@ log = "normal"
 # log = "debug"
 # uncomment secret_key to allow cookies to persist between executions of the program
 # secret_key = "8Xui8SN4mI+7egV/9dlfYYLGQJeEx4+DwmSQLwDVXJg="
+secret_key = "xzGyzxd1biBiPAi0xcxU1SQEyLSjYpT5eUmezbJ1r3A="
 limits = { forms = 32768 }
 
 [staging]
 address = "localhost"
 port = 8000
 log = "debug"
-# secret_key = [randomly generated at launch]
-secret_key = "8Xui8SN4mI+7egV/9dlfYYLGQJeEx4+DwmSQLwDVXJg="
+secret_key = "xzGyzxd1biBiPAi0xcxU1SQEyLSjYpT5eUmezbJ1r3A="
 limits = { forms = 32768 }
 
 [production]
 address = "localhost"
 port = 8000
 log = "critical"
-# secret_key = [randomly generated at launch]
-secret_key = "8Xui8SN4mI+7egV/9dlfYYLGQJeEx4+DwmSQLwDVXJg="
+secret_key = "xzGyzxd1biBiPAi0xcxU1SQEyLSjYpT5eUmezbJ1r3A="
 limits = { forms = 32768 }
 

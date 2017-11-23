@@ -232,7 +232,7 @@ impl Express {
             content_type: (&data).content_type(),
             data,
             method: CompressionEncoding::Uncompressed,
-            ttl: DEFAULT_TTL,
+            ttl: 0,
             streamed: true,
         }
     }
@@ -246,7 +246,7 @@ impl From<String> for Express {
 
 impl From<NamedFile> for Express {
     fn from(original: NamedFile) -> Express {
-        Express::new( ExData::Named( DataNamed(original) ) )
+        Express::new( ExData::Named( DataNamed(original) ) ).set_ttl(DEFAULT_TTL)
     }
 }
 
@@ -258,7 +258,7 @@ impl From<Vec<u8>> for Express {
 
 impl From<PathBuf> for Express {
     fn from(original: PathBuf) -> Express {
-        Express::new( ExData::File( DataFile(original) ) )
+        Express::new( ExData::File( DataFile(original) ) ).set_ttl(DEFAULT_TTL)
     }
 }
 
@@ -295,8 +295,10 @@ fn express_gzip(data: Vec<u8>) -> Vec<u8> {
 }
 
 fn express_brotli(data: Vec<u8>) -> Vec<u8> {
-    let mut output = Vec::with_capacity(data.len()+200);
-    let mut compressor = ::brotli::CompressorReader::new(Cursor::new(data), 10*1024, 9, 22);
+    let length = data.len()+200;
+    let mut output = Vec::with_capacity(length);
+    // let mut compressor = ::brotli::CompressorReader::new(Cursor::new(data), 10*1024, 9, 22);
+    let mut compressor = ::brotli::CompressorReader::new(Cursor::new(data), length, 9, 22);
     let _ = compressor.read_to_end(&mut output);
     
     // data = output;

@@ -18,6 +18,7 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+	Fix viewing of single articles - broke when users table changed
 	Express
 		Express::compress() only works on strings not templates!
 			At least that what it seems is the reason compression is not working

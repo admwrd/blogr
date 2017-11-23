@@ -27,13 +27,13 @@ pub struct AdministratorForm {
 
 impl CookieId for AdministratorCookie {
     fn cookie_id<'a>() -> &'a str {
-        "accid"
+        "ascid"
     }
 }
 
 impl CookieId for AdministratorForm {
     fn cookie_id<'a>() -> &'a str {
-        "accid"
+        "ascid"
     }
 } 
 
