@@ -25,6 +25,7 @@ extern crate rocket;
 extern crate rocket_contrib;
 extern crate rocket_simpleauth as auth;
 extern crate serde;
+#[macro_use] extern crate serde_json;
 #[macro_use] extern crate serde_derive;
 extern crate rmp_serde as rmps;
 
@@ -43,7 +44,6 @@ extern crate titlecase;
 
 extern crate handlebars;
 #[allow(unused_imports)]
-#[macro_use] extern crate serde_json;
 extern crate htmlescape;
 extern crate rss;
 extern crate dotenv;

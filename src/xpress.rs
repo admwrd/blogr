@@ -15,6 +15,8 @@ use std::path::{Path, PathBuf};
 use std::fs::{self, File};
 use std::io::prelude::*;
 use std::option;
+use serde_json::{Value, to_value};
+use std::borrow::Cow;
 // use std::io::BufReader;
 // use std::option::Option;
 // use std::sync::atomic::{AtomicUsize, Ordering};
@@ -97,8 +99,37 @@ impl Clone for DataNamed {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct TemplateClone {
+    name: Cow<'static, str>,
+    value: Option<Value>,
+}
+
 impl Clone for DataTemplate {
     fn clone(&self) -> DataTemplate {
+        
+        let s: &'static str = "";
+        let faux = TemplateClone {
+            name: Cow::Borrowed(s),
+            // value: json!({ "an": "object" }),
+            value: None,
+        };
+        let new: Template;
+        // let ptr: &Template;
+        let ptr: &Template = &self.0;
+        println!("Cloning DataTemplate.  Size of source: {}, DataClone: {}, Template: {}", mem::size_of_val(&self.0), mem::size_of_val(&faux), mem::size_of::<Template>());
+        
+        unsafe {
+            // new = mem::transmute_copy( &self.0 );
+            // new = mem::transmute( &self.0 );
+            // new = mem::transmute_copy( ptr );
+            new = mem::transmute( *ptr );
+        }
+        
+        
+        
+        DataTemplate( new )
+        
         // // let new: Template;
         // let size = mem::size_of_val(&self.0);
         // // let new_bytes: Vec<u8> = vec![0u8; size*4];
@@ -116,7 +147,7 @@ impl Clone for DataTemplate {
         
         
         // Bleh nothing works.  I hate how the Rocket Templates are organized/written.
-        unimplemented!()
+        // unimplemented!()
     }
 }
 
