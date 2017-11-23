@@ -26,6 +26,17 @@ use brotli;
 use rocket::request::{FromRequest, Request};
 use rocket::Outcome;
 
+
+use std::io;
+// use std::io::Read;
+// use std::io::Write;
+// use std::fs;
+
+use libflate::gzip;
+// use libflate::zlib;
+use libflate::deflate;
+
+
 use accept::*;
 
 const DEFAULT_TTL: usize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
@@ -39,8 +50,9 @@ pub trait ExpressData {
     fn contents(self, &Request) -> Vec<u8>;
 }
 
+
+// Do not derive clone since Templates cannot be cloned
 #[derive(Debug)]
-// pub struct ExData<T: ExpressData>(T);
 pub enum ExData {
     Bytes(DataBytes),
     File(DataFile),
@@ -71,85 +83,25 @@ impl ExpressData for ExData {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DataBytes(Vec<u8>);
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DataFile(PathBuf);
 #[derive(Debug)]
 pub struct DataNamed(NamedFile);
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DataString(String);
 #[derive(Debug)]
 pub struct DataTemplate(Template);
 
 
-// impl Clone for DataNamed {
-//     fn clone(&self) -> DataNamed {
-//        // // Crashes
-//        //  let new: NamedFile;
-//        //  unsafe {
-//        //      new = mem::transmute_copy( &self.0 );
-//        //  }
-//        // DataNamed(new)
+impl Clone for DataNamed {
+    fn clone(&self) -> DataNamed {
+       let named = NamedFile::open(self.0.path()).expect("Cloning DataNamed(NamedFile) failed, ensure to check that the file exists before creating an Express structure.");
        
-//        // let named = NamedFile { 0: self.0.path().to_path_buf(), 1: *self.0.file() };
-//        let named = NamedFile::open(self.0.path()).expect("Cloning DataNamed(NamedFile) failed, ensure to check that the file exists before creating an Express structure.");
-       
-//        DataNamed(named)
-//     }
-// }
-
-// #[derive(Debug)]
-// pub struct TemplateClone {
-//     name: Cow<'static, str>,
-//     value: Option<Value>,
-// }
-
-// impl Clone for DataTemplate {
-//     fn clone(&self) -> DataTemplate {
-        
-//         let s: &'static str = "";
-//         let faux = TemplateClone {
-//             name: Cow::Borrowed(s),
-//             // value: json!({ "an": "object" }),
-//             value: None,
-//         };
-//         let new: Template;
-//         // let ptr: &Template;
-//         let ptr: &Template = &self.0;
-//         println!("Cloning DataTemplate.  Size of source: {}, DataClone: {}, Template: {}", mem::size_of_val(&self.0), mem::size_of_val(&faux), mem::size_of::<Template>());
-        
-//         unsafe {
-//             // new = mem::transmute_copy( &self.0 );
-//             // new = mem::transmute( &self.0 );
-//             // new = mem::transmute_copy( ptr );
-//             new = mem::transmute( *ptr );
-//         }
-        
-        
-        
-//         DataTemplate( new )
-        
-//         // // let new: Template;
-//         // let size = mem::size_of_val(&self.0);
-//         // // let new_bytes: Vec<u8> = vec![0u8; size*4];
-//         // let mut new_bytes: Vec<u8> = Vec::with_capacity(size*4);
-//         // new_bytes = vec![0u8; size*4];
-//         // // let new_bytes: [u8; size] = [0u8; size]; 
-//         // let mut new: Template;
-//         // unsafe {
-//         //     println!("Cloning DataTemplate.  Size of source: {}, Destination: {}", mem::size_of_val(&self.0), mem::size_of_val(&new));
-//         //     new_bytes = mem::transmute_copy( &self.0 );
-//         //     new = mem::transmute(new_bytes);
-//         // }
-        
-//         // DataTemplate(new)
-        
-        
-//         // Bleh nothing works.  I hate how the Rocket Templates are organized/written.
-//         // unimplemented!()
-//     }
-// }
+       DataNamed(named)
+    }
+}
 
 
 
@@ -316,6 +268,55 @@ impl From<Template> for Express {
     }
 }
 
+fn express_gzip(data: Vec<u8>) -> Vec<u8> {
+    // let mut output = Vec::with_capacity(data.len()+200);
+    // zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Gzip, &data, &mut output).expect("Gzip compression failed.");
+    
+    // data = output;
+    
+    let mut output = Vec::with_capacity(data.len()+200);
+    
+    // let mut encoder = gzip::Encoder::new(output).unwrap();
+    // io::copy(&mut data, &mut encoder).expect("Encoding GZIP stream failed");
+    // encoder.finish().into_result().unwrap();
+    
+    // let mut encoder = Encoder::new(Vec::new()).unwrap();
+    // io::copy(&mut &b"Hello World!"[..], &mut encoder).unwrap();
+    // let encoded_data = encoder.finish().into_result().unwrap();
+    
+    // let mut encoder = gzip::Encoder::new(output).unwrap();
+    // io::copy(&mut data, &mut encoder).expect("Gzip compression failed.");
+    // let data = encoder.finish().into_result().unwrap();
+    
+    let mut encoder = gzip::Encoder::new(output).unwrap();
+    encoder.write_all(&data).expect("Gzip compression failed.");
+    // data = encoder.finish().into_result().unwrap();
+    encoder.finish().into_result().unwrap()
+}
+
+fn express_brotli(data: Vec<u8>) -> Vec<u8> {
+    let mut output = Vec::with_capacity(data.len()+200);
+    let mut compressor = ::brotli::CompressorReader::new(Cursor::new(data), 10*1024, 9, 22);
+    let _ = compressor.read_to_end(&mut output);
+    
+    // data = output;
+    output
+}
+fn express_deflate(data: Vec<u8>) -> Vec<u8> {
+    let mut output = Vec::with_capacity(data.len()+200);
+    
+    // zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Deflate, &data, &mut output).expect("Deflate compression failed.");
+    // // data = output;
+    // output
+    
+    let mut encoder = deflate::Encoder::new(output);
+    encoder.write_all(&data).expect("Deflate compression failed.");
+    // data = encoder.finish().into_result().unwrap();
+    encoder.finish().into_result().unwrap()
+    
+}
+
+
 impl<'a> Responder<'a> for Express {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         let mut response = Response::build();
@@ -329,27 +330,17 @@ impl<'a> Responder<'a> for Express {
             CompressionEncoding::Brotli => {
                 response.raw_header("Content-Encoding", "br");
                 
-                let mut output = Vec::with_capacity(data.len()+200);
-                let mut compressor = ::brotli::CompressorReader::new(Cursor::new(data), 10*1024, 9, 22);
-                let _ = compressor.read_to_end(&mut output);
-                
-                data = output;
+                data = express_brotli(data);
             },
             CompressionEncoding::Gzip =>{
                 response.raw_header("Content-Encoding", "gzip");
                 
-                let mut output = Vec::with_capacity(data.len()+200);
-                zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Gzip, &data, &mut output).expect("Gzip compression failed.");
-                
-                data = output;
+                data = express_gzip(data);
             },
             CompressionEncoding::Deflate => {
                 response.raw_header("Content-Encoding", "deflate");
                 
-                let mut output = Vec::with_capacity(data.len()+200);
-                zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Deflate, &data, &mut output).expect("Deflate compression failed.");
-                
-                data = output;
+                data = express_deflate(data);
             },
             CompressionEncoding::Uncompressed => {},
         }

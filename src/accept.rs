@@ -25,12 +25,12 @@ impl AcceptCompression {
     pub fn contains_brotli(self)  -> bool { self.supported & BROTLI != 0 }
     pub fn is_uncompressed(self)  -> bool { self.supported == 0 }
     pub fn preferred(self) -> CompressionEncoding {
-        if self.supported & BROTLI != 0 {
-            CompressionEncoding::Brotli
-        } else if self.supported & GZIP != 0 {
+        if self.supported & GZIP != 0 {
             CompressionEncoding::Gzip
-        } else if self.supported & DEFLATE != 0 {
-            CompressionEncoding::Deflate
+        } else if self.supported & BROTLI != 0 {
+            CompressionEncoding::Brotli
+        // } else if self.supported & DEFLATE != 0 {
+            // CompressionEncoding::Deflate
         } else {
             CompressionEncoding::Uncompressed
         }

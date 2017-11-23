@@ -194,7 +194,7 @@ pub fn compress_test4(encoding: AcceptCompression) -> Express {
     // let text
     
     // let template_string: String = hbs_template_string(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
-    let template_template: String = hbs_template_string(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
+    let template_template = hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
     
     // Express::From(template).compress(encoding)
     // Express::from_string(template).compress(encoding)
