@@ -39,7 +39,7 @@ pub trait ExpressData {
     fn contents(self, &Request) -> Vec<u8>;
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 // pub struct ExData<T: ExpressData>(T);
 pub enum ExData {
     Bytes(DataBytes),
@@ -71,85 +71,85 @@ impl ExpressData for ExData {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct DataBytes(Vec<u8>);
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct DataFile(PathBuf);
 #[derive(Debug)]
 pub struct DataNamed(NamedFile);
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct DataString(String);
 #[derive(Debug)]
 pub struct DataTemplate(Template);
 
 
-impl Clone for DataNamed {
-    fn clone(&self) -> DataNamed {
-       // // Crashes
-       //  let new: NamedFile;
-       //  unsafe {
-       //      new = mem::transmute_copy( &self.0 );
-       //  }
-       // DataNamed(new)
+// impl Clone for DataNamed {
+//     fn clone(&self) -> DataNamed {
+//        // // Crashes
+//        //  let new: NamedFile;
+//        //  unsafe {
+//        //      new = mem::transmute_copy( &self.0 );
+//        //  }
+//        // DataNamed(new)
        
-       // let named = NamedFile { 0: self.0.path().to_path_buf(), 1: *self.0.file() };
-       let named = NamedFile::open(self.0.path()).expect("Cloning DataNamed(NamedFile) failed, ensure to check that the file exists before creating an Express structure.");
+//        // let named = NamedFile { 0: self.0.path().to_path_buf(), 1: *self.0.file() };
+//        let named = NamedFile::open(self.0.path()).expect("Cloning DataNamed(NamedFile) failed, ensure to check that the file exists before creating an Express structure.");
        
-       DataNamed(named)
-    }
-}
+//        DataNamed(named)
+//     }
+// }
 
-#[derive(Debug, Clone)]
-pub struct TemplateClone {
-    name: Cow<'static, str>,
-    value: Option<Value>,
-}
+// #[derive(Debug)]
+// pub struct TemplateClone {
+//     name: Cow<'static, str>,
+//     value: Option<Value>,
+// }
 
-impl Clone for DataTemplate {
-    fn clone(&self) -> DataTemplate {
+// impl Clone for DataTemplate {
+//     fn clone(&self) -> DataTemplate {
         
-        let s: &'static str = "";
-        let faux = TemplateClone {
-            name: Cow::Borrowed(s),
-            // value: json!({ "an": "object" }),
-            value: None,
-        };
-        let new: Template;
-        // let ptr: &Template;
-        let ptr: &Template = &self.0;
-        println!("Cloning DataTemplate.  Size of source: {}, DataClone: {}, Template: {}", mem::size_of_val(&self.0), mem::size_of_val(&faux), mem::size_of::<Template>());
+//         let s: &'static str = "";
+//         let faux = TemplateClone {
+//             name: Cow::Borrowed(s),
+//             // value: json!({ "an": "object" }),
+//             value: None,
+//         };
+//         let new: Template;
+//         // let ptr: &Template;
+//         let ptr: &Template = &self.0;
+//         println!("Cloning DataTemplate.  Size of source: {}, DataClone: {}, Template: {}", mem::size_of_val(&self.0), mem::size_of_val(&faux), mem::size_of::<Template>());
         
-        unsafe {
-            // new = mem::transmute_copy( &self.0 );
-            // new = mem::transmute( &self.0 );
-            // new = mem::transmute_copy( ptr );
-            new = mem::transmute( *ptr );
-        }
-        
-        
-        
-        DataTemplate( new )
-        
-        // // let new: Template;
-        // let size = mem::size_of_val(&self.0);
-        // // let new_bytes: Vec<u8> = vec![0u8; size*4];
-        // let mut new_bytes: Vec<u8> = Vec::with_capacity(size*4);
-        // new_bytes = vec![0u8; size*4];
-        // // let new_bytes: [u8; size] = [0u8; size]; 
-        // let mut new: Template;
-        // unsafe {
-        //     println!("Cloning DataTemplate.  Size of source: {}, Destination: {}", mem::size_of_val(&self.0), mem::size_of_val(&new));
-        //     new_bytes = mem::transmute_copy( &self.0 );
-        //     new = mem::transmute(new_bytes);
-        // }
-        
-        // DataTemplate(new)
+//         unsafe {
+//             // new = mem::transmute_copy( &self.0 );
+//             // new = mem::transmute( &self.0 );
+//             // new = mem::transmute_copy( ptr );
+//             new = mem::transmute( *ptr );
+//         }
         
         
-        // Bleh nothing works.  I hate how the Rocket Templates are organized/written.
-        // unimplemented!()
-    }
-}
+        
+//         DataTemplate( new )
+        
+//         // // let new: Template;
+//         // let size = mem::size_of_val(&self.0);
+//         // // let new_bytes: Vec<u8> = vec![0u8; size*4];
+//         // let mut new_bytes: Vec<u8> = Vec::with_capacity(size*4);
+//         // new_bytes = vec![0u8; size*4];
+//         // // let new_bytes: [u8; size] = [0u8; size]; 
+//         // let mut new: Template;
+//         // unsafe {
+//         //     println!("Cloning DataTemplate.  Size of source: {}, Destination: {}", mem::size_of_val(&self.0), mem::size_of_val(&new));
+//         //     new_bytes = mem::transmute_copy( &self.0 );
+//         //     new = mem::transmute(new_bytes);
+//         // }
+        
+//         // DataTemplate(new)
+        
+        
+//         // Bleh nothing works.  I hate how the Rocket Templates are organized/written.
+//         // unimplemented!()
+//     }
+// }
 
 
 
@@ -212,7 +212,7 @@ impl ExpressData for DataTemplate {
 }
 
 
-#[derive(Debug,Clone)]
+#[derive(Debug)]
 pub struct Express {
     data: ExData,
     method: CompressionEncoding,

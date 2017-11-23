@@ -132,9 +132,10 @@ fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
     if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
         // With compression (slower to process):
         // Some(exp.compress(encoding))
+        //
         // Without compression (faster to process):
         let exp: Express = named.into();
-        Some( exp.clone() )
+        Some( exp )
     } else {
         None
     }

@@ -184,7 +184,8 @@ pub fn compress_test3(encoding: AcceptCompression) -> Express {
     // let tempstr: Express = template_string.into();
     let tempstr: Express = template_template.into();
     // tempstr.compress(encoding)
-    tempstr.clone()
+    // tempstr.clone()
+    tempstr
 }
 
 #[get("/compress4")]
