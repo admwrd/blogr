@@ -9,6 +9,7 @@ use rocket_contrib::Template;
 use rocket::http::ContentType;
 
 use std::mem;
+use std::collections::HashMap;
 use std::ffi::OsStr;
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
@@ -39,7 +40,7 @@ use libflate::deflate;
 
 use accept::*;
 
-const DEFAULT_TTL: usize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
+const DEFAULT_TTL: isize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
 
 
 // Do not add content type to ExData, allow user to set explicitly
@@ -169,8 +170,9 @@ pub struct Express {
     data: ExData,
     method: CompressionEncoding,
     content_type: ContentType,
-    ttl: usize,
+    ttl: isize,
     streamed: bool,
+    extras: HashMap<String, String>,
 }
 
 
@@ -200,7 +202,7 @@ impl Express {
         self
     }
     /// Set ttl to the number of seconds the content should be cached
-    pub fn set_ttl(mut self, ttl: usize) -> Self {
+    pub fn set_ttl(mut self, ttl: isize) -> Self {
         self.ttl = ttl;
         self
     }
@@ -227,13 +229,18 @@ impl Express {
         self.streamed = false;
         self
     }
+    pub fn add_extra(mut self, key: String, value: String) -> Self {
+        self.extras.insert(key, value);
+        self
+    }
     pub fn new(data: ExData) -> Express {
         Express {
             content_type: (&data).content_type(),
             data,
             method: CompressionEncoding::Uncompressed,
-            ttl: 0,
+            ttl: -1,
             streamed: true,
+            extras: HashMap::new(),
         }
     }
 }
@@ -322,9 +329,18 @@ fn express_deflate(data: Vec<u8>) -> Vec<u8> {
 impl<'a> Responder<'a> for Express {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         let mut response = Response::build();
-        
+        let extras = self.extras;
         response.header(self.content_type);
         response.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
+        if self.ttl == -1 {
+            response.raw_header("Pragma", "no-cache");
+        }
+        
+        if extras.len() != 0 {
+            for (key, value) in extras {
+                response.raw_header(key, value);
+            }
+        }
         
         let mut data = self.data.contents(req);
         

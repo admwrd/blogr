@@ -22,8 +22,8 @@ use xpress::*;
 use accept::*;
 
 use super::*;
-pub const URL_LOGIN_ADMIN: &'static str = "http://localhost:8000/admin_login";
-pub const URL_LOGIN_USER: &'static str = "http://localhost:8000/user_login";
+pub const URL_LOGIN_ADMIN: &'static str = "http://localhost:8000/admin";
+pub const URL_LOGIN_USER: &'static str = "http://localhost:8000/user";
 
 #[derive(Debug, Clone, FromForm)]
 pub struct QueryUser {
@@ -45,27 +45,6 @@ pub struct QueryUser {
 */
 
 
-#[get("/test")]
-pub fn resp_test(encoding: AcceptCompression) -> Express {
-    
-    let template: String = hbs_template_string(TemplateBody::General(format!("Test successful. Encoding: {:?}", encoding), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
-    // Express::From(template).compress(encoding)
-    // Express::from_string(template).compress(encoding)
-    // Express::from_string(template)
-    let tempstr: Express = template.into();
-    tempstr
-}
-
-#[get("/compress")]
-pub fn compress_test(encoding: AcceptCompression) -> Express {
-    
-    let template: String = hbs_template_string(TemplateBody::General(format!("Test successful. Encoding: {:?}", encoding), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
-    // Express::From(template).compress(encoding)
-    // Express::from_string(template).compress(encoding)
-    // Express::from_string(template)
-    let tempstr: Express = template.into();
-    tempstr.compress(encoding)
-}
 
 const TEST_TEXT: &'static str = r#"
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque iaculis molestie elit quis ullamcorper. Ut rutrum fermentum metus at volutpat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed vehicula enim urna. Ut id vestibulum arcu. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nam condimentum, mauris sed bibendum feugiat, mauris eros dictum dolor, in vehicula quam purus sed elit. Nullam vitae dignissim sem, consectetur fringilla nulla. Quisque eget interdum felis, ac euismod nisl. Nullam sit amet dui arcu. Aliquam vestibulum vel lorem egestas iaculis. Suspendisse tellus purus, dictum in justo at, scelerisque lacinia enim. Nunc aliquet eget sapien sed convallis. Phasellus sed odio tortor. Aenean convallis condimentum erat, vitae viverra est varius non.</p>
@@ -150,9 +129,40 @@ const TEST_TEXT: &'static str = r#"
 <p>Sed sodales nisi vel ligula dignissim, vel tristique odio varius. Donec hendrerit vulputate felis et mattis. Pellentesque vel libero justo. Suspendisse dignissim eget diam ac finibus. Quisque vel pulvinar nisi. In hendrerit, enim vitae interdum fermentum, erat eros vehicula velit, vitae convallis magna turpis sit amet ante. Maecenas elementum ipsum odio, quis fringilla enim lacinia vel. Curabitur vestibulum quis metus id iaculis. Praesent a purus non eros tincidunt cursus. Sed eu porttitor orci. Duis suscipit nibh et mi egestas bibendum. Cras dignissim ipsum vel blandit rhoncus massa nunc.</p>
 "#;
 
+
+
+
+
+
+
+
+
+
+#[get("/test")]
+pub fn resp_test(encoding: AcceptCompression) -> Express {
+    
+    let template: String = hbs_template_string(TemplateBody::General(format!("Test successful. Encoding: {:?}", encoding), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
+    // Express::From(template).compress(encoding)
+    // Express::from_string(template).compress(encoding)
+    // Express::from_string(template)
+    let tempstr: Express = template.into();
+    tempstr.add_extra("Pragma".to_string(), "no-cache".to_string())
+}
+
 #[get("/uncompressed")]
 pub fn uncompressed() ->  Template {
     hbs_template(TemplateBody::General(TEST_TEXT.to_string(), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None)
+}
+
+#[get("/compress")]
+pub fn compress_test(encoding: AcceptCompression) -> Express {
+    
+    let template: String = hbs_template_string(TemplateBody::General(format!("Test successful. Encoding: {:?}", encoding), None), Some("Test Page".to_string()), String::from("/test"), None, None, None, None);
+    // Express::From(template).compress(encoding)
+    // Express::from_string(template).compress(encoding)
+    // Express::from_string(template)
+    let tempstr: Express = template.into();
+    tempstr.compress(encoding)
 }
 
 #[get("/compress2")]
@@ -234,75 +244,94 @@ pub fn compress_brotli(encoding: AcceptCompression) -> Express {
 
 
 
-#[get("/admin_dashboard")]
+
+
+
+
+
+
+
+#[get("/admin", rank = 1)]
 pub fn dashboard_admin_authorized(admin: AdministratorCookie, conn: DbConn) -> Template {
     let start = Instant::now();
     
-    let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=admin.username), None), Some("Dashboard".to_string()), String::from("/admin_dashboard"), None, None, None, Some(start));
+    let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=admin.username), None), Some("Dashboard".to_string()), String::from("/admin"), None, None, None, Some(start));
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
 }
 
-#[get("/admin_dashboard", rank = 2)]
-pub fn dashboard_admin_unauthorized() -> Template {
-    hbs_template(
-        TemplateBody::General(
-            "You are not logged in. <a href=\"/admin_login\">Administrator Login</a>".to_string(), None
-        ), 
-        Some("Administrator Login".to_string()), 
-        String::from("/admin_dashboard_error"), 
-        None, 
-        None, 
-        None, 
-        None
-    )
+// #[get("/admin_dashboard", rank = 2)]
+// pub fn dashboard_admin_unauthorized() -> Template {
+//     hbs_template(
+//         TemplateBody::General(
+//             "You are not logged in. <a href=\"/admin_login\">Administrator Login</a>".to_string(), None
+//         ), 
+//         Some("Administrator Login".to_string()), 
+//         String::from("/admin_dashboard_error"), 
+//         None, 
+//         None, 
+//         None, 
+//         None
+//     )
+// }
+
+// #[get("/admin", rank = 3)]
+// pub fn dashboard_admin_login() -> Template {
+//     hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, None, None, None)
+// }
+
+#[get("/admin", rank = 2)]
+pub fn dashboard_admin_flash(flash_msg_opt: Option<FlashMessage>) -> Template {
+    let start = Instant::now();
+    let output: Template;
+    
+    if let Some(flash_msg) = flash_msg_opt {
+        let flash = Some( alert_danger(flash_msg.msg()) );
+        output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, flash), Some("Administrator Login".to_string()), String::from("/admin"), None, None, None, Some(start));
+    } else {
+        output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, None, None, Some(start));
+    }
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
 }
 
-#[get("/admin_login", rank = 1)]
-pub fn dashboard_admin_login() -> Template {
-    hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, None)
-}
-
-#[get("/admin_login?<user>")]
-// fn dashboard_retry_user(user: UserQuery, flash_msg_opt: Option<FlashMessage>) -> Template {
-// fn dashboard_retry_user(mut user: String, flash_msg_opt: Option<FlashMessage>) -> Template {
+#[get("/admin?<user>")]
 pub fn dashboard_admin_retry_user(mut user: QueryUser, flash_msg_opt: Option<FlashMessage>) -> Template {
     let start = Instant::now();
     // user = login::sanitization::sanitize(&user);
     let username = if &user.user != "" { Some(user.user.clone() ) } else { None };
     let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
-    let output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), username, flash), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, Some(start));
+    let output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), username, flash), Some("Administrator Login".to_string()), String::from("/admin"), None, None, None, Some(start));
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
 }
 
-#[get("/admin_login", rank = 2)]
-pub fn dashboard_admin_retry_flash(flash_msg: FlashMessage) -> Template {
-    let start = Instant::now();
+// #[get("/admin", rank = 2)]
+// pub fn dashboard_admin_retry_flash(flash_msg: FlashMessage) -> Template {
+//     let start = Instant::now();
     
-    let flash = Some( alert_danger(flash_msg.msg()) );
-    let output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, flash), Some("Administrator Login".to_string()), String::from("/admin_login"), None, None, None, Some(start));
+//     let flash = Some( alert_danger(flash_msg.msg()) );
+//     let output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, flash), Some("Administrator Login".to_string()), String::from("/admin"), None, None, None, Some(start));
     
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
 #[allow(unused_mut)]
-#[post("/admin_login", data = "<form>")]
-// fn process_admin_login(form: Form<LoginCont<AdminLogin>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-// fn process_admin_login(form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-// fn process_admin_login(form: Form<AdministratorForm>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+#[post("/admin", data = "<form>")]
 pub fn process_admin_login(form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
     let start = Instant::now();
     
     let login: AdministratorForm = form.get().form();
     // let login: AdministratorForm = form.into_inner().form;
-    let output = login.flash_redirect("/admin_dashboard", "/admin_login", cookies);
+    let output = login.flash_redirect("/admin", "/admin", cookies);
     
     let end = start.elapsed();
     println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
@@ -316,7 +345,7 @@ pub fn logout_admin(admin: Option<AdministratorCookie>, mut cookies: Cookies) ->
         AdministratorCookie::delete_cookie(cookies);
         Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
     } else {
-        Err(Redirect::to("/admin_login"))
+        Err(Redirect::to("/admin"))
     }
 }
 
@@ -328,75 +357,90 @@ pub fn logout_admin(admin: Option<AdministratorCookie>, mut cookies: Cookies) ->
 
 
 
-#[get("/user_dashboard")]
+
+
+#[get("/user", rank = 1)]
 pub fn dashboard_user_authorized(admin: UserCookie, conn: DbConn) -> Template {
     let start = Instant::now();
     
-    let output: Template = hbs_template(TemplateBody::General(format!("Welcome User {user}.  You are viewing the User dashboard page.", user=admin.username), None), Some("User Dashboard".to_string()), String::from("/user_dashboard"), None, None, None, Some(start));
+    let output: Template = hbs_template(TemplateBody::General(format!("Welcome User {user}.  You are viewing the User dashboard page.", user=admin.username), None), Some("User Dashboard".to_string()), String::from("/user"), None, None, None, Some(start));
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
 }
 
-#[get("/user_login", rank = 1)]
+#[get("/user", rank = 2)]
+pub fn dashboard_user_flash(flash_msg_opt: Option<FlashMessage>) -> Template {
+    let start = Instant::now();
+    let output: Template;
+    
+    if let Some(flash_msg) = flash_msg_opt {
+        let flash = Some( alert_danger(flash_msg.msg()) );
+        output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, flash), Some("User Login".to_string()), String::from("/user"), None, None, None, Some(start));
+    } else {
+        output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), None, None, None, Some(start));
+    }
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
+}
+
+
+#[get("/user", rank = 3)]
 pub fn dashboard_user_login() -> Template {
-    hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, None), Some("User Login".to_string()), String::from("/user_login"), None, None, None, None)
+    hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), None, None, None, None)
 }
 
-#[get("/user_dashboard", rank = 2)]
-pub fn dashboard_user_unauthorized() -> Template {
-    hbs_template(
-        TemplateBody::General(
-            "You are not logged in. <a href=\"/user_login\">User Login</a>".to_string(), None,
-        ), 
-        Some("User Login".to_string()),
-        String::from("/user_dashboard_error"), 
-        None, 
-        None, 
-        None, 
-        None
-    )
-}
+// #[get("/user", rank = 2)]
+// pub fn dashboard_user_unauthorized() -> Template {
+//     hbs_template(
+//         TemplateBody::General(
+//             "You are not logged in. <a href=\"/user_login\">User Login</a>".to_string(), None,
+//         ), 
+//         Some("User Login".to_string()),
+//         String::from("/user_dashboard_error"), 
+//         None, 
+//         None, 
+//         None, 
+//         None
+//     )
+// }
 
-#[get("/user_login?<user>")]
-// fn dashboard_retry_user(user: UserQuery, flash_msg_opt: Option<FlashMessage>) -> Template {
-// fn dashboard_retry_user(mut user: String, flash_msg_opt: Option<FlashMessage>) -> Template {
+#[get("/user?<user>")]
 pub fn dashboard_user_retry_user(mut user: QueryUser, flash_msg_opt: Option<FlashMessage>) -> Template {
     let start = Instant::now();
     // user = login::sanitization::sanitize(&user);
     let username = if &user.user != "" { Some(user.user.clone() ) } else { None };
     let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
-    let output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), username, flash), Some("User Login".to_string()), String::from("/user_login"), None, None, None, Some(start));
+    let output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), username, flash), Some("User Login".to_string()), String::from("/user"), None, None, None, Some(start));
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     output
 }
 
-#[get("/user_login", rank = 2)]
-pub fn dashboard_user_retry_flash(flash_msg: FlashMessage) -> Template {
-    let start = Instant::now();
+// #[get("/user", rank = 2)]
+// pub fn dashboard_user_retry_flash(flash_msg: FlashMessage) -> Template {
+//     let start = Instant::now();
     
-    let flash = Some( alert_danger(flash_msg.msg()) );
-    let output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, flash), Some("User Login".to_string()), String::from("/user_login"), None, None, None, None);
+//     let flash = Some( alert_danger(flash_msg.msg()) );
+//     let output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, flash), Some("User Login".to_string()), String::from("/user"), None, None, None, None);
     
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
 #[allow(unused_mut)]
-#[post("/user_login", data = "<form>")]
-// fn process_admin_login(form: Form<LoginCont<AdminLogin>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-// fn process_admin_login(form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
-// fn process_admin_login(form: Form<AdministratorForm>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+#[post("/user", data = "<form>")]
 pub fn process_user_login(form: Form<LoginCont<UserForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
     let start = Instant::now();
     
     let login: UserForm = form.get().form();
     // let login: AdministratorForm = form.into_inner().form;
-    let output = login.flash_redirect("/user_dashboard", "/user_login", cookies);
+    let output = login.flash_redirect("/user", "/user", cookies);
     
     let end = start.elapsed();
     println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
@@ -410,7 +454,7 @@ pub fn logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Result<Fl
         UserCookie::delete_cookie(cookies);
         Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
     } else {
-        Err(Redirect::to("/user_login"))
+        Err(Redirect::to("/user"))
     }
 }
 

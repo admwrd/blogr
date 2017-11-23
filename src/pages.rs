@@ -42,121 +42,121 @@ use rocket_auth_login::sanitization::*;
 // use roles::*;
 
 
-#[get("/admin")]
-pub fn hbs_admin_page(conn: DbConn, admin: AdminCookie, user: Option<UserCookie>) -> Template {
-    let start = Instant::now();
-    let username = admin.username.clone();
-    let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=username), None), Some("Administrator Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start));
+// #[get("/admin")]
+// pub fn hbs_admin_page(conn: DbConn, admin: AdminCookie, user: Option<UserCookie>) -> Template {
+//     let start = Instant::now();
+//     let username = admin.username.clone();
+//     let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=username), None), Some("Administrator Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start));
         
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
-#[get("/admin", rank = 2)]
-pub fn hbs_admin_login(conn: DbConn, user: Option<UserCookie>) -> Template {
-    let start = Instant::now();
+// #[get("/admin", rank = 2)]
+// pub fn hbs_admin_login(conn: DbConn, user: Option<UserCookie>) -> Template {
+//     let start = Instant::now();
     
-    let output: Template = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start));
+//     let output: Template = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start));
         
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
-#[get("/admin?<fail>")]
-pub fn hbs_admin_retry(conn: DbConn, user: Option<UserCookie>, fail: AuthFailure) -> Template {
-    let start = Instant::now();
+// #[get("/admin?<fail>")]
+// pub fn hbs_admin_retry(conn: DbConn, user: Option<UserCookie>, fail: AuthFailure) -> Template {
+//     let start = Instant::now();
     
-    let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
-    let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
-    let output: Template = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), clean_user, clean_msg), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start));
+//     let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
+//     let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
+//     let output: Template = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), clean_user, clean_msg), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start));
         
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
-#[post("/admin", data = "<form>")]
-pub fn hbs_process_admin(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
-    let start = Instant::now();
+// #[post("/admin", data = "<form>")]
+// pub fn hbs_process_admin(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
+//     let start = Instant::now();
     
-    let inside = form.into_inner();
-    let failuser = inside.user_str();
-    let failmsg = inside.fail_str();
-    let mut failurl = ADMIN_LOGIN_URL.to_string();
-    if failmsg != "" && failmsg != " " {
-        failurl.push_str("?user=");
-        failurl.push_str(&failuser);
-        failurl.push_str("&msg=");
-        failurl.push_str(&failmsg);
-    }
+//     let inside = form.into_inner();
+//     let failuser = inside.user_str();
+//     let failmsg = inside.fail_str();
+//     let mut failurl = ADMIN_LOGIN_URL.to_string();
+//     if failmsg != "" && failmsg != " " {
+//         failurl.push_str("?user=");
+//         failurl.push_str(&failuser);
+//         failurl.push_str("&msg=");
+//         failurl.push_str(&failmsg);
+//     }
     
-    let end = start.elapsed();
-    println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     let end = start.elapsed();
+//     println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     
-    inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
-}
+//     inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
+// }
 
 
 
 
-#[get("/user")]
-pub fn hbs_user_page(conn: DbConn, admin: Option<AdminCookie>, user: UserCookie) -> Template {
-    let start = Instant::now();
+// #[get("/user")]
+// pub fn hbs_user_page(conn: DbConn, admin: Option<AdminCookie>, user: UserCookie) -> Template {
+//     let start = Instant::now();
     
-    let username = user.username.clone();
-    let output: Template = hbs_template(TemplateBody::General(format!("Welcome {user}.  You are viewing your dashboard page.", user=username), None), Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start));
+//     let username = user.username.clone();
+//     let output: Template = hbs_template(TemplateBody::General(format!("Welcome {user}.  You are viewing your dashboard page.", user=username), None), Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start));
         
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
-#[get("/user", rank = 2)]
-pub fn hbs_user_login(conn: DbConn, admin: Option<AdminCookie>) -> Template {
-    let start = Instant::now();
+// #[get("/user", rank = 2)]
+// pub fn hbs_user_login(conn: DbConn, admin: Option<AdminCookie>) -> Template {
+//     let start = Instant::now();
     
-    let output: Template = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start));
+//     let output: Template = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start));
         
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
-#[get("/user?<fail>")]
-pub fn hbs_user_retry(conn: DbConn, admin: Option<AdminCookie>, fail: AuthFailure) -> Template {
-    let start = Instant::now();
+// #[get("/user?<fail>")]
+// pub fn hbs_user_retry(conn: DbConn, admin: Option<AdminCookie>, fail: AuthFailure) -> Template {
+//     let start = Instant::now();
     
-    let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
-    let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
-    let output: Template = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), clean_user, clean_msg), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start));
+//     let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
+//     let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
+//     let output: Template = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), clean_user, clean_msg), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start));
         
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
-}
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     output
+// }
 
-#[post("/user", data = "<form>")]
-pub fn hbs_user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> LoginFormRedirect {
-    let start = Instant::now();
+// #[post("/user", data = "<form>")]
+// pub fn hbs_user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> LoginFormRedirect {
+//     let start = Instant::now();
     
-    let inside = form.into_inner();
-    let failuser = inside.user_str();
-    let failmsg = inside.fail_str();
-    let mut failurl = USER_LOGIN_URL.to_string();
-    if failmsg != "" && failmsg != " " {
-        failurl.push_str("?user=");
-        failurl.push_str(&failuser);
-        failurl.push_str("&msg=");
-        failurl.push_str(&failmsg);
-    }
+//     let inside = form.into_inner();
+//     let failuser = inside.user_str();
+//     let failmsg = inside.fail_str();
+//     let mut failurl = USER_LOGIN_URL.to_string();
+//     if failmsg != "" && failmsg != " " {
+//         failurl.push_str("?user=");
+//         failurl.push_str(&failuser);
+//         failurl.push_str("&msg=");
+//         failurl.push_str(&failmsg);
+//     }
     
-    let end = start.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     let end = start.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     
-    inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
-}
+//     inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
+// }
 
 
 
@@ -382,22 +382,22 @@ pub fn hbs_create_form(conn: DbConn, admin: Option<AdminCookie>, user: Option<Us
     output
 }
 
-#[get("/logout")]
-pub fn hbs_logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
-    use cookie_data::CookieId;
-    if admin.is_some() || user.is_some() {
-        if let Some(a) = admin {
-            cookies.remove_private(Cookie::named(AdminCookie::get_cid()));
-            // cookies.remove_private(Cookie::named("user_id"));
-        }
-        if let Some(u) = user {
-            cookies.remove_private(Cookie::named(UserCookie::get_cid()));
-        }
-        Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
-    } else {
-        Err(Redirect::to("/admin"))
-    }
-}
+// #[get("/logout")]
+// pub fn hbs_logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+//     use cookie_data::CookieId;
+//     if admin.is_some() || user.is_some() {
+//         if let Some(a) = admin {
+//             cookies.remove_private(Cookie::named(AdminCookie::get_cid()));
+//             // cookies.remove_private(Cookie::named("user_id"));
+//         }
+//         if let Some(u) = user {
+//             cookies.remove_private(Cookie::named(UserCookie::get_cid()));
+//         }
+//         Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
+//     } else {
+//         Err(Redirect::to("/admin"))
+//     }
+// }
 
 
 // Do a full-text search on the body and title fields

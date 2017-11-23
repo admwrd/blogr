@@ -165,14 +165,15 @@ fn main() {
         .attach(Template::fairing())
         .mount("/", routes![
             
-            pages::hbs_admin_page,
-            pages::hbs_admin_login,
-            pages::hbs_admin_retry,
-            pages::hbs_process_admin,
-            pages::hbs_user_page,
-            pages::hbs_user_login,
-            pages::hbs_user_retry,
-            pages::hbs_user_process,
+            // pages::hbs_admin_page,
+            // pages::hbs_admin_login,
+            // pages::hbs_admin_retry,
+            // pages::hbs_process_admin,
+            // pages::hbs_user_page,
+            // pages::hbs_user_login,
+            // pages::hbs_user_retry,
+            // pages::hbs_user_process,
+            
             pages::hbs_all_articles,
             pages::hbs_articles_page,
             pages::hbs_tags_all,
@@ -184,7 +185,8 @@ fn main() {
             pages::hbs_article_process,
             pages::hbs_create_unauthorized,
             pages::hbs_create_form,
-            pages::hbs_logout,
+            
+            // pages::hbs_logout,
             pages::hbs_search_page,
             pages::hbs_search_results,
             pages::hbs_about,
@@ -192,18 +194,19 @@ fn main() {
             pages::hbs_index,
             
             pages_administrator::dashboard_admin_authorized,
-            pages_administrator::dashboard_admin_unauthorized,
-            pages_administrator::dashboard_admin_login,
+            // pages_administrator::dashboard_admin_unauthorized,
             pages_administrator::dashboard_admin_retry_user,
-            pages_administrator::dashboard_admin_retry_flash,
+            // pages_administrator::dashboard_admin_retry_flash,
+            pages_administrator::dashboard_admin_flash,
             pages_administrator::process_admin_login,
             pages_administrator::logout_admin,
             
             pages_administrator::dashboard_user_authorized,
-            pages_administrator::dashboard_user_unauthorized,
+            // pages_administrator::dashboard_user_unauthorized,
             pages_administrator::dashboard_user_login,
             pages_administrator::dashboard_user_retry_user,
-            pages_administrator::dashboard_user_retry_flash,
+            pages_administrator::dashboard_user_flash,
+            // pages_administrator::dashboard_user_retry_flash,
             pages_administrator::process_user_login,
             pages_administrator::logout_user,
             
