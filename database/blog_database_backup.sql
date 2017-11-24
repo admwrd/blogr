@@ -88,7 +88,7 @@ SET search_path = public, pg_catalog;
 -- Name: array_unique(anyarray); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION array_unique(arr anyarray) RETURNS anyarray
+CREATE OR REPLACE FUNCTION array_unique(arr anyarray) RETURNS anyarray
     LANGUAGE sql
     AS $_$
     select array( select distinct unnest($1) )
@@ -102,13 +102,13 @@ ALTER FUNCTION public.array_unique(arr anyarray) OWNER TO postgres;
 -- Name: fulltxt_articles_update(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION fulltxt_articles_update() RETURNS trigger
+CREATE OR REPLACE FUNCTION fulltxt_articles_update() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 begin
   new.fulltxt := setweight(to_tsvector('pg_catalog.english', new.title), 'A') || 
-		 setweight(to_tsvector('pg_catalog.english', coalesce(new.description,'')), 'B') || 
-		 setweight(to_tsvector('pg_catalog.english', new.body), 'C');
+         setweight(to_tsvector('pg_catalog.english', coalesce(new.description,'')), 'B') || 
+         setweight(to_tsvector('pg_catalog.english', new.body), 'C');
   return new;
 end
 $$;
@@ -121,7 +121,7 @@ ALTER FUNCTION public.fulltxt_articles_update() OWNER TO postgres;
 -- Name: proc_blog_users_insert(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION proc_blog_users_insert() RETURNS trigger
+CREATE OR REPLACE FUNCTION proc_blog_users_insert() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 begin
@@ -140,14 +140,15 @@ ALTER FUNCTION public.proc_blog_users_insert() OWNER TO postgres;
 -- Name: proc_blog_users_update(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION proc_blog_users_update() RETURNS trigger
+CREATE OR REPLACE FUNCTION proc_blog_users_update() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 begin
   IF new.hash_salt = NULL THEN
     new.hash_salt := old.hash_salt;
   ELSE
-    new.hash_salt := crypt(new.hash_salt, old.hash_salt);
+    -- new.hash_salt := crypt(new.hash_salt, old.hash_salt);
+    new.hash_salt := crypt(new.hash_salt, gen_salt('bf', 8));
   END IF;
   return new;
 end
