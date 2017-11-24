@@ -8,8 +8,10 @@ use titlecase::titlecase;
 use std::time::{Instant, Duration};
 
 // use cookie_data::*;
-use admin_auth::*;
-use user_auth::*;
+
+// not used anymore
+// use admin_auth::*;
+// use user_auth::*;
 
 use super::BLOG_URL;
 use blog::*;

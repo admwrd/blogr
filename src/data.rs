@@ -1,5 +1,5 @@
 
-use rocket;
+// use rocket;
 use ::rocket::request::{self, FromRequest, FromForm, FormItems};
 use rocket::{Request, State, Outcome};
 use ::rocket::config::{Config, Environment};
@@ -10,8 +10,9 @@ use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 
 use blog::*;
-use users::*;
-use cookie_data::*;
+// not used anymore
+// use users::*;
+// use cookie_data::*;
 
 // use rocket::request::{self, FromRequest};
 
@@ -138,19 +139,19 @@ pub fn establish_connection_dotenv() -> Connection {
 }
 
 
-pub trait HasUsername {
-    fn username(&self) -> String;
-    fn retrieve_user(&self) -> Self;
-}
+// pub trait HasUsername {
+//     fn username(&self) -> String;
+//     fn retrieve_user(&self) -> Self;
+// }
 
-impl HasUsername for AdminCookie {
-    fn username(&self) -> String {
-        self.username.clone()
-    }
-    fn retrieve_user(&self) -> Self {
-        unimplemented!()
-    }
-}
+// impl HasUsername for AdminCookie {
+//     fn username(&self) -> String {
+//         self.username.clone()
+//     }
+//     fn retrieve_user(&self) -> Self {
+//         unimplemented!()
+//     }
+// }
 
 
 

@@ -18,7 +18,10 @@ use htmlescape::*;
 use postgres::{Connection};
 
 use super::{MAX_CREATE_TITLE, MAX_CREATE_DESCRIPTION, MAX_CREATE_TAGS};
-use users::*;
+
+// not used anymore
+// use users::*;
+
 use data::*;
 use sanitize::*;
 
