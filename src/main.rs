@@ -67,6 +67,7 @@ mod login_form_status;
 mod blog;
 mod data;
 mod templates;
+mod hbs_templates;
 mod pages;
 mod sanitize;
 mod ral_administrator;

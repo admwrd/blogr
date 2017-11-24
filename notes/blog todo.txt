@@ -18,6 +18,12 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+	Make a Request Guard (from_request) that creates a start (Instance) variable
+		so the route does not have to declare the start variable itself for timing
+		it just needs to declare the timer type in the funciton signature
+	
+	Make the templates display the user's display name if it is not None (it is an option field) otherwise the username
+
 	Fix the templates, new rocket-auth-login code needs to have admin/user data sent to it 
 		to render the template with the correct permissions
 	

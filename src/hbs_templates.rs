@@ -7,17 +7,17 @@ use chrono::{NaiveDate, NaiveDateTime};
 use titlecase::titlecase;
 use std::time::{Instant, Duration};
 
-use cookie_data::*;
+// use cookie_data::*;
 use admin_auth::*;
 use user_auth::*;
 
 use super::BLOG_URL;
 use blog::*;
 use layout::*;
-use users::*;
+// use users;
 
-use ral_administrator;
-// use ral_user;
+use ral_administrator::*;
+use ral_user::*;
 
 
 use std::path::{Path, PathBuf};
@@ -136,7 +136,7 @@ pub struct TemplateTags {
 // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
 
 
-pub fn create_menu(page: &str, admin_opt: &Option<AdminCookie>) -> (Vec<TemplateMenu>, Vec<TemplateMenu>) {
+pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>) -> (Vec<TemplateMenu>, Vec<TemplateMenu>) {
     
     let mut pages: Vec<TemplateMenu> = vec![
         TemplateMenu::new(String::from("Home"), String::from("/"), page),
@@ -187,7 +187,7 @@ impl TemplateMenu {
 
 impl TemplateInfo {
     pub fn new( title: Option<String>, 
-                admin: Option<AdminCookie>, 
+                admin: Option<AdministratorCookie>, 
                 user: Option<UserCookie>, 
                 js: String, 
                 gen: Option<Instant>, 
@@ -287,7 +287,9 @@ impl TemplateTags {
 
 
 
-pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
+
+
+pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, admin_opt: Option<AdministratorCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
     // let mut context: HashMap<&str> = HashMap::new();
     // context.insert();
     let js = if let Some(j) = javascript { j } else { "".to_string() }; 
@@ -339,126 +341,6 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
     }
     
 }
-
-
-
-
-pub fn hbs_template_string(content: TemplateBody, title: Option<String>, page: String, admin_opt: Option<AdminCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> String {
-    // let mut context: HashMap<&str> = HashMap::new();
-    // context.insert();
-    let js = if let Some(j) = javascript { j } else { "".to_string() }; 
-    // let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
-    
-    let (pages, admin_pages) = create_menu(&page, &admin_opt);
-    
-    let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, page, pages, admin_pages);
-    
-    let root_path;
-    if let Ok(exe_path) = env::current_exe() {
-        let mut p = exe_path.parent().unwrap().parent().unwrap().parent().unwrap().to_path_buf();
-        p.push("templates");
-        root_path = p;
-    } else {
-        root_path = PathBuf::new();
-    }
-    
-    match content {
-        TemplateBody::General(contents, msg) => {
-            let context = TemplateGeneral::new(contents, msg, info);
-            Template::show(root_path, "general-template", &context).unwrap_or(String::new())
-        },
-        TemplateBody::Article(article, msg) => {
-            let context = TemplateArticle::new(article, msg, info);
-            Template::show(root_path, "article-template", &context).unwrap_or(String::new())
-        },
-        TemplateBody::Articles(articles, msg) => {
-            let context = TemplateArticles::new(articles, msg, info);
-            Template::show(root_path, "articles-template", &context).unwrap_or(String::new())
-            // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
-            // Template::render("general-template", &context)
-        },
-        // TemplateBody::Search(articles, qry, msg) => {
-        //     let context = TemplateArticles::new(articles, qry, msg, info);
-        //     Template::render("articles-template", &context)
-        //     // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
-        //     // Template::render("general-template", &context)
-        // },
-        TemplateBody::Search(articles, search, msg) => {
-            let context = TemplateSearch::new(articles, search, msg, info);
-            Template::show(root_path, "search-template", &context).unwrap_or(String::new())
-            // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
-            // Template::render("general-template", &context)
-        },
-        TemplateBody::Login(action, tried, fail) => {
-            let context = TemplateLogin::new(action, tried, fail, info);
-            Template::show(root_path, "login-template", &context).unwrap_or(String::new())
-        },
-        TemplateBody::Create(action, msg) => {
-            let context = TemplateCreate::new(action, msg, info);
-            Template::show(root_path, "create-template", &context).unwrap_or(String::new())
-        },
-        TemplateBody::Tags(tags, msg) => {
-            let context = TemplateTags::new(tags, msg, info);
-            Template::show(root_path, "tags-template", &context).unwrap_or(String::new())
-        },
-    }
-    
-}
-
-
-
-// pub fn hbs(content: TemplateBody, title: Option<String>, page: String, admin_opt: Option<AdministratorCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
-//     // let mut context: HashMap<&str> = HashMap::new();
-//     // context.insert();
-//     let js = if let Some(j) = javascript { j } else { "".to_string() }; 
-//     // let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
-    
-//     let (pages, admin_pages) = create_menu();
-    
-//     let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, page, pages, admin_pages);
-    
-//     match content {
-//         TemplateBody::General(contents, msg) => {
-//             let context = TemplateGeneral::new(contents, msg, info);
-//             Template::render("general-template", &context)
-//         },
-//         TemplateBody::Article(article, msg) => {
-//             let context = TemplateArticle::new(article, msg, info);
-//             Template::render("article-template", &context)
-//         },
-//         TemplateBody::Articles(articles, msg) => {
-//             let context = TemplateArticles::new(articles, msg, info);
-//             Template::render("articles-template", &context)
-//             // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
-//             // Template::render("general-template", &context)
-//         },
-//         // TemplateBody::Search(articles, qry, msg) => {
-//         //     let context = TemplateArticles::new(articles, qry, msg, info);
-//         //     Template::render("articles-template", &context)
-//         //     // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
-//         //     // Template::render("general-template", &context)
-//         // },
-//         TemplateBody::Search(articles, search, msg) => {
-//             let context = TemplateSearch::new(articles, search, msg, info);
-//             Template::render("search-template", &context)
-//             // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
-//             // Template::render("general-template", &context)
-//         },
-//         TemplateBody::Login(action, tried, fail) => {
-//             let context = TemplateLogin::new(action, tried, fail, info);
-//             Template::render("login-template", &context)
-//         },
-//         TemplateBody::Create(action, msg) => {
-//             let context = TemplateCreate::new(action, msg, info);
-//             Template::render("create-template", &context)
-//         },
-//         TemplateBody::Tags(tags, msg) => {
-//             let context = TemplateTags::new(tags, msg, info);
-//             Template::render("tags-template", &context)
-//         },
-//     }
-    
-// }
 
 
 
