@@ -48,11 +48,10 @@
                             <li class="v-nav-item nav-item {{this.classes}}"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
                           {{/if}}
                         {{/each}}
-                        
-                        {{#if info.admin_pages}}
+                        {{#if info.is_admin}}
                         <li class="v-nav-item nav-item dropdown">
                             <a class="v-nav-login nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{info.dropdown}}
+                                {{info.username}}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             {{#each info.admin_pages}}
@@ -78,11 +77,35 @@
                     <div class="v-content">
                     
 <!-- ---------- -->
-                    
-                    {{#if msg}}
-                        {{{msg}}}
-                    {{/if}}
-                    {{{body}}}
+                        
+                        {{#if msg}}
+                            {{{msg}}}
+                        {{/if}}
+                        <form id="needs-validation" action="{{action_url}}" name="login_form" method="post" novalidate>
+                            <div class="form-group" id="userGroup">
+                                <label for="usernameField">Email Address</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="text" name="username" value="{{#if tried_user}}{{tried_user}}{{/if}}" class="form-control" id="usernameField" aria-describedby="idHelp" placeholder="Username" required>
+                                    <div class="invalid-feedback">
+                                        Please specify a username
+                                    </div>
+                                </div>
+                                <!-- <small id="idHelp" class="form-text text-muted">Your email address will not be shared with anyone else.</small> -->
+                            </div>
+                            <div class="form-group" id="passGroup">
+                                <label for="passwordField">Password</label>
+                                <div class="col-md-9 mb-3">
+                                    <input type="password" name="password" class="form-control" id="passwordField" placeholder="Password" required>
+                                    <div class="invalid-feedback">
+                                        A password is requierd.
+                                    </div>
+                                    <input type="password" id="passwordHidden" class="hidden-pass form-control">
+                                </div>
+                            </div>
+                            <div class="v-submit">
+                                <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
+                            </div>
+                        </form>
                     
 <!-- ---------- -->
 

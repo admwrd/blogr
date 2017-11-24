@@ -785,10 +785,15 @@ pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<U
         
         let express: Express = output.into();
         express.compress(encoding)
+            // set_ttl(-1)
+            .set_content_type(ContentType::XML)
+            // .add_extra("Content-Type".to_string(), "application/rss+xml".to_string())
     } else {
         let output = String::from("Could not create RSS feed.");
         let express: Express = output.into();
-        express.compress(encoding)
+        // Do not need to compress output with such a small string.
+        // express.compress(encoding).set_content_type(ContentType::XML
+        express
     }
 }
 

@@ -73,6 +73,7 @@ pub struct TemplateInfo {
     pub pages: Vec<TemplateMenu>,
     pub admin_pages: Vec<TemplateMenu>,
     pub base_url: &'static str,
+    pub dropdown: String,
 }
 
 // START TEMPLATEBODY STRUCTURES
@@ -146,20 +147,31 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
         TemplateMenu::new(String::from("View Tags"), String::from("/all_tags"), page),
     ];
     
+    // Displays both admin and user menus if user is logged in as both
     let mut admin_pages: Vec<TemplateMenu> = Vec::new();
+    // if admin_opt.is_some() && user_opt.is_some() {
+    //     admin_pages.push( TemplateMenu::separator() );
+    // }
+    if user_opt.is_some() {
+        admin_pages.push( TemplateMenu::new(String::from("User Dashboard"), String::from("/user"), page) );
+        // admin_pages.push( TemplateMenu::separator() );
+        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/user_logout"), page) );
+    } else {
+        admin_pages.push( TemplateMenu::new(String::from("User Login"), String::from("/user"), page) );
+    }
+    admin_pages.push( TemplateMenu::separator() );
     if admin_opt.is_some() {
         admin_pages.push( TemplateMenu::new(String::from("Admin Dashboard"), String::from("/admin"), page) );
         admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create"), page) );
-        admin_pages.push( TemplateMenu::separator() );
+        // admin_pages.push( TemplateMenu::separator() );
         admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/admin_logout"), page) );
-    } else if user_opt.is_some() {
-        admin_pages.push( TemplateMenu::new(String::from("User Dashboard"), String::from("/user"), page) );
-        admin_pages.push( TemplateMenu::separator() );
-        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/user_logout"), page) );
     } else {
-        pages.push( TemplateMenu::new(String::from("User Login"), String::from("/user"), page) );
-        pages.push( TemplateMenu::new(String::from("Admin Login"), String::from("/admin"), page) );
+        admin_pages.push( TemplateMenu::new(String::from("Admin Login"), String::from("/admin"), page) );
     }
+    // if admin_opt.is_none() && user_opt.is_none() {
+    //     pages.push( TemplateMenu::new(String::from("User Login"), String::from("/user"), page) );
+    //     pages.push( TemplateMenu::new(String::from("Admin Login"), String::from("/admin"), page) );
+    // }
     
     (pages, admin_pages)
 }
@@ -231,6 +243,7 @@ impl TemplateInfo {
             is_admin: if admin.is_some() { true } else { false },
             is_user: if user.is_some() { true } else { false },
             // username: if let Some(a) = admin { titlecase(&a.username.clone()) } else if let Some(u) = user { titlecase(&u.username.clone()) } else { String::new() },
+            dropdown: if &username != "" { username.clone() } else { "Login".to_string() },
             username,
             js,
             gentime,

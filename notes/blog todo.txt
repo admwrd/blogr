@@ -34,6 +34,14 @@ Blogr
 
 	Force SSL unless in Dev mode
 
+	Add pagination and limit number of articles shown in the following pages:
+		front page
+		search
+		individual tag page (lists just one tag)
+		
+		
+		
+
 	Add a 404 page, maybe other error pages as well
 		#[error(404)] I believe it is
 

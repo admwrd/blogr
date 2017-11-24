@@ -48,11 +48,10 @@
                             <li class="v-nav-item nav-item {{this.classes}}"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
                           {{/if}}
                         {{/each}}
-                        
-                        {{#if info.admin_pages}}
+                        {{#if info.is_admin}}
                         <li class="v-nav-item nav-item dropdown">
                             <a class="v-nav-login nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{info.dropdown}}
+                                {{info.username}}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             {{#each info.admin_pages}}

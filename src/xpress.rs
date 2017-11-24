@@ -330,17 +330,22 @@ impl<'a> Responder<'a> for Express {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         let mut response = Response::build();
         let extras = self.extras;
-        response.header(self.content_type);
-        response.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
-        if self.ttl == -1 {
-            response.raw_header("Pragma", "no-cache");
-        }
         
         if extras.len() != 0 {
             for (key, value) in extras {
                 response.raw_header(key, value);
             }
         }
+        
+        // println!("Serving page using content-type: {}", &self.content_type.to_string());
+        response.header(self.content_type);
+        
+        
+        response.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
+        if self.ttl == -1 {
+            response.raw_header("Pragma", "no-cache");
+        }
+        
         
         let mut data = self.data.contents(req);
         
