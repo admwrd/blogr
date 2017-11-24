@@ -18,6 +18,9 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+	Fix the admin menu logout to direct the user to admin_logout instead of logout
+
+	Rename/remove the pages_administrator module
 
 	Make a Request Guard (from_request) that creates a start (Instance) variable
 		so the route does not have to declare the start variable itself for timing

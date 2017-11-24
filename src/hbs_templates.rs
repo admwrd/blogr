@@ -136,7 +136,7 @@ pub struct TemplateTags {
 // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
 
 
-pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>) -> (Vec<TemplateMenu>, Vec<TemplateMenu>) {
+pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt: &Option<UserCookie>) -> (Vec<TemplateMenu>, Vec<TemplateMenu>) {
     
     let mut pages: Vec<TemplateMenu> = vec![
         TemplateMenu::new(String::from("Home"), String::from("/"), page),
@@ -149,10 +149,14 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>) -> (Vec<
         admin_pages.push( TemplateMenu::new(String::from("Admin Dashboard"), String::from("/admin"), page) );
         admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create"), page) );
         admin_pages.push( TemplateMenu::separator() );
-        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/logout"), page) );
-        
+        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/logout_admin"), page) );
+    if user_opt.is_some() {
+        admin_pages.push( TemplateMenu::new(String::from("User Dashboard"), String::from("/user"), page) );
+        admin_pages.push( TemplateMenu::separator() );
+        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/logout_user"), page) );
     } else {
-        pages.push( TemplateMenu::new(String::from("Login"), String::from("/admin"), page) );
+        pages.push( TemplateMenu::new(String::from("User Login"), String::from("/admin"), page) );
+        pages.push( TemplateMenu::new(String::from("Admin Login"), String::from("/admin"), page) );
     }
     
     (pages, admin_pages)
@@ -295,7 +299,7 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
     let js = if let Some(j) = javascript { j } else { "".to_string() }; 
     // let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
     
-    let (pages, admin_pages) = create_menu(&page, &admin_opt);
+    let (pages, admin_pages) = create_menu(&page, &admin_opt, &user_opt);
     
     let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen, page, pages, admin_pages);
     
