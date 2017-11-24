@@ -23,7 +23,7 @@
 // extern crate multipart;
 extern crate rocket;
 extern crate rocket_contrib;
-extern crate rocket_simpleauth as auth;
+// extern crate rocket_simpleauth as auth;
 extern crate serde;
 #[macro_use] extern crate serde_json;
 #[macro_use] extern crate serde_derive;
@@ -32,7 +32,7 @@ extern crate rmp_serde as rmps;
 extern crate chrono;
 #[macro_use] extern crate lazy_static;
 extern crate regex;
-extern crate time;
+// extern crate time;
 
 extern crate postgres;
 extern crate r2d2;
@@ -43,7 +43,7 @@ extern crate brotli;
 extern crate zopfli;
 
 extern crate titlecase;
-extern crate handlebars;
+// extern crate handlebars;
 #[allow(unused_imports)]
 extern crate htmlescape;
 extern crate rss;
@@ -86,7 +86,7 @@ use rocket_auth_login::*;
 use rocket_auth_login::sanitization::*;
 use hbs_templates::*;
 
-use handlebars::Handlebars;
+// use handlebars::Handlebars;
 use titlecase::titlecase;
 use regex::Regex;
 use std::time::Instant;
@@ -105,10 +105,10 @@ use rocket::request::{FlashMessage, Form, FromForm, FormItems};
 use rocket::http::{Cookie, Cookies, MediaType, ContentType, Status};
 
 
-use auth::userpass::UserPass;
-use auth::status::{LoginStatus,LoginRedirect};
-use auth::dummy::DummyAuthenticator;
-use auth::authenticator::Authenticator;
+// use auth::userpass::UserPass;
+// use auth::status::{LoginStatus,LoginRedirect};
+// use auth::dummy::DummyAuthenticator;
+// use auth::authenticator::Authenticator;
 
 // use chrono::prelude::*;
 // use multipart::server::Multipart;

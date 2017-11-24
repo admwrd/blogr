@@ -132,13 +132,20 @@ pub fn establish_connection() -> Connection {
     // Connection::connect("postgres://postgres@localhost:5433", TlsMode::None).unwrap()
     Connection::connect(database_url, postgres::TlsMode::None).unwrap()
 }
-pub fn establish_connection_dotenv() -> Connection {
-    dotenv().ok();
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    Connection::connect(database_url, postgres::TlsMode::None).unwrap()
-}
+
+// Commented out because the DotEnv crate isn't required anywhere else
+// and these functions are not used.  They are left here because they
+// could be useful at some point, someday but not immediately.
+//
+// pub fn establish_connection_dotenv() -> Connection {
+//     dotenv().ok();
+//     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+//     Connection::connect(database_url, postgres::TlsMode::None).unwrap()
+// }
 
 
+
+// Possible way to retrieve a user
 // pub trait HasUsername {
 //     fn username(&self) -> String;
 //     fn retrieve_user(&self) -> Self;

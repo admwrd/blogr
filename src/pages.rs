@@ -12,10 +12,10 @@ use rocket::data::FromData;
 use rocket::response::content::Html;
 // use rocket::request::{Form, FlashMessage};
 use rocket::http::{Cookie, Cookies, RawStr};
-use auth::userpass::UserPass;
-use auth::status::{LoginStatus,LoginRedirect};
-use auth::dummy::DummyAuthenticator;
-use auth::authenticator::Authenticator;
+// use auth::userpass::UserPass;
+// use auth::status::{LoginStatus,LoginRedirect};
+// use auth::dummy::DummyAuthenticator;
+// use auth::authenticator::Authenticator;
 use regex::Regex;
 use titlecase::titlecase;
 
