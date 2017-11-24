@@ -201,7 +201,14 @@ impl TemplateInfo {
                 pages: Vec<TemplateMenu>,
                 admin_pages: Vec<TemplateMenu>,
               ) -> TemplateInfo {
-        
+        let gentime = if let Some(inst) = gen {
+            let end = inst.elapsed();
+            format!("{}.{:08}", end.as_secs(), end.subsec_nanos())
+        } else { 
+            String::new() 
+        };
+        // Display the page generation time (up until template processing)???
+        // println!("Route processed in {}.{:08}", end.as_secs(), end.subsec_nanos());
         TemplateInfo {
             title: if let Some(t) = title { t } else { String::new() },
             logged_in: if admin.is_some() || user.is_some() { true } else { false },
@@ -209,10 +216,7 @@ impl TemplateInfo {
             is_user: if user.is_some() { true } else { false },
             username: if let Some(a) = admin { titlecase(&a.username.clone()) } else if let Some(u) = user { titlecase(&u.username.clone()) } else { String::new() },
             js,
-            gentime: if let Some(inst) = gen {
-                let end = inst.elapsed();
-                format!("{}.{:08}", end.as_secs(), end.subsec_nanos())
-            } else { String::new() },
+            gentime,
             page,
             pages,
             admin_pages,
