@@ -48,8 +48,8 @@ extern crate handlebars;
 extern crate htmlescape;
 extern crate rss;
 extern crate dotenv;
-#[macro_use] extern crate log;
-extern crate env_logger;
+// #[macro_use] extern crate log;
+// extern crate env_logger;
 // #[macro_use] extern crate diesel_codegen;
 // #[macro_use] extern crate diesel;
 
@@ -83,7 +83,8 @@ use pages::*;
 // use templates::TemplateMenu;
 use rocket_auth_login::authorization::*;
 use rocket_auth_login::*;
-
+use rocket_auth_login::sanitization::*;
+use hbs_templates::*;
 
 use handlebars::Handlebars;
 use titlecase::titlecase;
@@ -125,6 +126,12 @@ pub const MAX_CREATE_DESCRIPTION: usize = 400;
 pub const MAX_CREATE_TAGS: usize = 250;
 
 
+#[error(500)]
+fn internal_error() -> &'static str {
+    "Whoops! Looks like we messed up."
+}
+
+
 #[get("/<file..>", rank=10)]
 fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
 // fn static_files(file: PathBuf) -> Option<NamedFile> {
@@ -142,6 +149,28 @@ fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
         None
     }
     
+}
+
+// #[error(404)]
+// fn not_found(req: &rocket::Request) -> Html<String> {
+//     Html(format!("<p>Sorry, but '{}' is not a valid path!</p>
+//             <p>Try visiting /hello/&lt;name&gt;/&lt;age&gt; instead.</p>",
+//             req.uri()))
+// }
+
+#[error(404)]
+pub fn error_not_found(req: &Request) -> Express {
+    let content = format!( "The request page `{}` could not be found.", sanitize_text(req.uri().as_str()) );
+    let output = hbs_template(TemplateBody::General(content, None), Some("404 Not Found.".to_string()), String::from("/404"), None, None, None, None);
+    let express: Express = output.into();
+    express
+}
+#[error(404)]
+pub fn error_internal_error(req: &Request) -> Express {
+    let content = format!( "An internal server error occurred procesing the page `{}`.", sanitize_text(req.uri().as_str()) );
+    let output = hbs_template(TemplateBody::General(content, None), Some("500 Internal Error.".to_string()), String::from("/500"), None, None, None, None);
+    let express: Express = output.into();
+    express
 }
 
 lazy_static! {
@@ -195,21 +224,21 @@ fn main() {
             pages::hbs_index,
             
             // pages_administrator::dashboard_admin_unauthorized,
-            pages::dashboard_admin_authorized,
-            pages::dashboard_admin_flash,
-            pages::dashboard_admin_retry_user,
+            pages::hbs_dashboard_admin_authorized,
+            pages::hbs_dashboard_admin_flash,
+            pages::hbs_dashboard_admin_retry_user,
             // pages_administrator::dashboard_admin_retry_flash,
-            pages::process_admin_login,
-            pages::logout_admin,
+            pages::hbs_process_admin_login,
+            pages::hbs_logout_admin,
             
-            pages::dashboard_user_authorized,
+            pages::hbs_dashboard_user_authorized,
             // pages_administrator::dashboard_user_unauthorized,
             // pages::dashboard_user_login,
-            pages::dashboard_user_retry_user,
-            pages::dashboard_user_flash,
+            pages::hbs_dashboard_user_retry_user,
+            pages::hbs_dashboard_user_flash,
             // pages_administrator::dashboard_user_retry_flash,
-            pages::process_user_login,
-            pages::logout_user,
+            pages::hbs_process_user_login,
+            pages::hbs_logout_user,
             
             pages_administrator::resp_test,
             pages_administrator::uncompressed,
@@ -222,6 +251,7 @@ fn main() {
             pages_administrator::compress_brotli,
             static_files
         ])
+        .catch(errors![ error_internal_error, error_not_found ])
         .launch();
 }
 

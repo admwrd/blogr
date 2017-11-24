@@ -22,8 +22,6 @@ Blogr
 	
 	Add author link in article/articles
 		show author in articles
-	
-	Make the templates display the user's display name if it is not None (it is an option field) otherwise the username
 
 	Use the rocket-file-cache crate to cache static files
 		https://crates.io/crates/rocket-file-cache
@@ -59,6 +57,8 @@ Blogr
 	Limit tags to only show top 50 tags, or maybe make a separate page that shows all of them
 
 	Maybe: Add author to the homepage (multiple articles) instead of just on the single article?
+
+	Eventually change the hbs_templates to have the flash message in the general parameters/info not in the TemplateBody
 
 	Does blogr search page show a form with the date range?
 		I can't even remember, prolly not.
@@ -225,6 +225,8 @@ Rocket-auth-login:
 DONE
 
 
+	
+	Make the templates display the user's display name if it is not None (it is an option field) otherwise the username
 
 	Fix the templates, new rocket-auth-login code needs to have admin/user data sent to it 
 		to render the template with the correct permissions

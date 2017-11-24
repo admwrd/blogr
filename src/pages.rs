@@ -179,7 +179,7 @@ use accept::*;
 
 
 #[get("/admin", rank = 1)]
-pub fn dashboard_admin_authorized(start: GenTimer, conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_admin_authorized(start: GenTimer, conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     
     let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=admin.username), None), Some("Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start.0));
@@ -191,7 +191,7 @@ pub fn dashboard_admin_authorized(start: GenTimer, conn: DbConn, user: Option<Us
 }
 
 #[get("/admin", rank = 2)]
-pub fn dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     let output: Template;
     
@@ -218,7 +218,7 @@ pub fn dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<UserCoo
 
 
 #[get("/admin?<userqry>")]
-pub fn dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut userqry: QueryUser, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut userqry: QueryUser, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     // let userqry: QueryUser = userqry_form.get();
     
@@ -235,7 +235,7 @@ pub fn dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Option<Us
 
 #[allow(unused_mut)]
 #[post("/admin", data = "<form>")]
-pub fn process_admin_login(start: GenTimer, form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
     // let start = Instant::now();
     
     let login: AdministratorForm = form.get().form();
@@ -248,7 +248,7 @@ pub fn process_admin_login(start: GenTimer, form: Form<LoginCont<AdministratorFo
 }
 
 #[get("/admin_logout")]
-pub fn logout_admin(admin: Option<AdministratorCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+pub fn hbs_logout_admin(admin: Option<AdministratorCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
     if let Some(_) = admin {
         // cookies.remove_private(Cookie::named(AdministratorCookie::cookie_id()));
         AdministratorCookie::delete_cookie(cookies);
@@ -269,7 +269,7 @@ pub fn logout_admin(admin: Option<AdministratorCookie>, mut cookies: Cookies) ->
 
 
 #[get("/user", rank = 1)]
-pub fn dashboard_user_authorized(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: UserCookie, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_user_authorized(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: UserCookie, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     
     let output: Template = hbs_template(TemplateBody::General(format!("Welcome User {user}.  You are viewing the User dashboard page.", user=user.username), None), Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start.0));
@@ -281,7 +281,7 @@ pub fn dashboard_user_authorized(start: GenTimer, conn: DbConn, admin: Option<Ad
 }
 
 #[get("/user", rank = 2)]
-pub fn dashboard_user_flash(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_user_flash(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     let output: Template;
     
@@ -305,7 +305,7 @@ pub fn dashboard_user_flash(start: GenTimer, conn: DbConn, admin: Option<Adminis
 // }
 
 #[get("/user?<user>")]
-pub fn dashboard_user_retry_user(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, mut user: QueryUser, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_user_retry_user(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, mut user: QueryUser, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     // user = login::sanitization::sanitize(&user);
     let username = if &user.user != "" { Some(user.user.clone() ) } else { None };
@@ -320,7 +320,7 @@ pub fn dashboard_user_retry_user(start: GenTimer, conn: DbConn, admin: Option<Ad
 
 #[allow(unused_mut)]
 #[post("/user", data = "<form>")]
-pub fn process_user_login(start: GenTimer, form: Form<LoginCont<UserForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+pub fn hbs_process_user_login(start: GenTimer, form: Form<LoginCont<UserForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
     // let start = Instant::now();
     
     let login: UserForm = form.get().form();
@@ -333,7 +333,7 @@ pub fn process_user_login(start: GenTimer, form: Form<LoginCont<UserForm>>, mut 
 }
 
 #[get("/user_logout")]
-pub fn logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+pub fn hbs_logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
     if let Some(_) = admin {
         // cookies.remove_private(Cookie::named(UserCookie::cookie_id()));
         UserCookie::delete_cookie(cookies);
