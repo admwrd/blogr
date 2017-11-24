@@ -20,30 +20,39 @@ use regex::Regex;
 use titlecase::titlecase;
 
 // use super::{BLOG_URL, ADMIN_LOGIN_URL, USER_LOGIN_URL, CREATE_FORM_URL, TEST_LOGIN_URL};
-use super::*;
 
 // use super::RssContent;
-use layout::*;
-use cookie_data::*;
+// use cookie_data::*;
 // use cookie_data::CookieId;
-use admin_auth::*;
-use user_auth::*;
-use users::*;
-use login_form_status::*;
-use login_form_status::LoginFormRedirect;
-use blog::*;
-use data::*;
-use templates::*;
-use sanitize::*;
+// use admin_auth::*;
+// use user_auth::*;
+// use users::*;
+// use login_form_status::*;
+// use login_form_status::LoginFormRedirect;
+// use templates::*;
 // use authorize::*;
 // use administrator::*;
+// use roles::*;
+use super::*;
+use layout::*;
+use blog::*;
+use data::*;
+use sanitize::*;
 use rocket_auth_login::authorization::*;
 use rocket_auth_login::sanitization::*;
-// use roles::*;
+use ral_administrator::*;
+use ral_user::*;
+use hbs_templates::*;
+use xpress::*;
+use accept::*;
+// use ::templates::*;
+
+
+
 
 
 // #[get("/admin")]
-// pub fn hbs_admin_page(conn: DbConn, admin: AdminCookie, user: Option<UserCookie>) -> Template {
+// pub fn hbs_admin_page(conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
 //     let start = Instant::now();
 //     let username = admin.username.clone();
 //     let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=username), None), Some("Administrator Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start));
@@ -54,7 +63,7 @@ use rocket_auth_login::sanitization::*;
 // }
 
 // #[get("/admin", rank = 2)]
-// pub fn hbs_admin_login(conn: DbConn, user: Option<UserCookie>) -> Template {
+// pub fn hbs_admin_login(conn: DbConn, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
 //     let start = Instant::now();
     
 //     let output: Template = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start));
@@ -65,7 +74,7 @@ use rocket_auth_login::sanitization::*;
 // }
 
 // #[get("/admin?<fail>")]
-// pub fn hbs_admin_retry(conn: DbConn, user: Option<UserCookie>, fail: AuthFailure) -> Template {
+// pub fn hbs_admin_retry(conn: DbConn, user: Option<UserCookie>, fail: AuthFailure, encoding: AcceptCompression) -> Express {
 //     let start = Instant::now();
     
 //     let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
@@ -102,7 +111,7 @@ use rocket_auth_login::sanitization::*;
 
 
 // #[get("/user")]
-// pub fn hbs_user_page(conn: DbConn, admin: Option<AdminCookie>, user: UserCookie) -> Template {
+// pub fn hbs_user_page(conn: DbConn, admin: Option<AdministratorCookie>, user: UserCookie, encoding: AcceptCompression) -> Express {
 //     let start = Instant::now();
     
 //     let username = user.username.clone();
@@ -114,7 +123,7 @@ use rocket_auth_login::sanitization::*;
 // }
 
 // #[get("/user", rank = 2)]
-// pub fn hbs_user_login(conn: DbConn, admin: Option<AdminCookie>) -> Template {
+// pub fn hbs_user_login(conn: DbConn, admin: Option<AdministratorCookie>, encoding: AcceptCompression) -> Express {
 //     let start = Instant::now();
     
 //     let output: Template = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start));
@@ -125,7 +134,7 @@ use rocket_auth_login::sanitization::*;
 // }
 
 // #[get("/user?<fail>")]
-// pub fn hbs_user_retry(conn: DbConn, admin: Option<AdminCookie>, fail: AuthFailure) -> Template {
+// pub fn hbs_user_retry(conn: DbConn, admin: Option<AdministratorCookie>, fail: AuthFailure, encoding: AcceptCompression) -> Express {
 //     let start = Instant::now();
     
 //     let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
@@ -160,8 +169,191 @@ use rocket_auth_login::sanitization::*;
 
 
 
+
+
+
+// output\.into\(\)\.compress\(encoding\)
+// let express: Express = output.into();
+//   express.compress(encoding)
+
+
+
+#[get("/admin", rank = 1)]
+pub fn dashboard_admin_authorized(conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, encoding: AcceptCompression) -> Express {
+    let start = Instant::now();
+    
+    let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=admin.username), None), Some("Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start));
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    let express: Express = output.into();
+    express.compress(encoding)
+}
+
+#[get("/admin", rank = 2)]
+pub fn dashboard_admin_flash(conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+    let start = Instant::now();
+    let output: Template;
+    
+    if let Some(flash_msg) = flash_msg_opt {
+        let flash = Some( alert_danger(flash_msg.msg()) );
+        output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, flash), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start));
+    } else {
+        output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start));
+    }
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    let express: Express = output.into();
+    express.compress(encoding)
+}
+
+// No longer needed.  Was getting errors because the dashboard_admin_retry_user() route
+// named the qrystr parameter user which already has a variable binding, renamed and fixed it
+// 
+// #[get("/admin/<userqry>")]
+// pub fn dashboard_admin_retry_route(conn: DbConn, user: Option<UserCookie>, mut userqry: String, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+//     unimplemented!()
+// }
+
+
+#[get("/admin?<userqry>")]
+pub fn dashboard_admin_retry_user(conn: DbConn, user: Option<UserCookie>, mut userqry: QueryUser, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+    let start = Instant::now();
+    // let userqry: QueryUser = userqry_form.get();
+    
+    // user = login::sanitization::sanitize(&user);
+    let username = if &userqry.user != "" { Some(userqry.user.clone() ) } else { None };
+    let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
+    let output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), username, flash), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start));
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    let express: Express = output.into();
+    express.compress(encoding)
+}
+
+#[allow(unused_mut)]
+#[post("/admin", data = "<form>")]
+pub fn process_admin_login(form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+    let start = Instant::now();
+    
+    let login: AdministratorForm = form.get().form();
+    // let login: AdministratorForm = form.into_inner().form;
+    let output = login.flash_redirect("/admin", "/admin", cookies);
+    
+    let end = start.elapsed();
+    println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
+}
+
+#[get("/admin_logout")]
+pub fn logout_admin(admin: Option<AdministratorCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+    if let Some(_) = admin {
+        // cookies.remove_private(Cookie::named(AdministratorCookie::cookie_id()));
+        AdministratorCookie::delete_cookie(cookies);
+        Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
+    } else {
+        Err(Redirect::to("/admin"))
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+#[get("/user", rank = 1)]
+pub fn dashboard_user_authorized(conn: DbConn, admin: Option<AdministratorCookie>, user: UserCookie, encoding: AcceptCompression) -> Express {
+    let start = Instant::now();
+    
+    let output: Template = hbs_template(TemplateBody::General(format!("Welcome User {user}.  You are viewing the User dashboard page.", user=user.username), None), Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start));
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    let express: Express = output.into();
+    express.compress(encoding)
+}
+
+#[get("/user", rank = 2)]
+pub fn dashboard_user_flash(conn: DbConn, admin: Option<AdministratorCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+    let start = Instant::now();
+    let output: Template;
+    
+    if let Some(flash_msg) = flash_msg_opt {
+        let flash = Some( alert_danger(flash_msg.msg()) );
+        output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, flash), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start));
+    } else {
+        output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start));
+    }
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    let express: Express = output.into();
+    express.compress(encoding)
+}
+
+
+// #[get("/user", rank = 3)]
+// pub fn dashboard_user_login(conn: DbConn, admin: Option<AdministratorCookie>, encoding: AcceptCompression) -> Express {
+//     hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), admin, None, None, None)
+// }
+
+#[get("/user?<user>")]
+pub fn dashboard_user_retry_user(conn: DbConn, admin: Option<AdministratorCookie>, mut user: QueryUser, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+    let start = Instant::now();
+    // user = login::sanitization::sanitize(&user);
+    let username = if &user.user != "" { Some(user.user.clone() ) } else { None };
+    let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
+    let output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), username, flash), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start));
+    
+    let end = start.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    let express: Express = output.into();
+    express.compress(encoding)
+}
+
+#[allow(unused_mut)]
+#[post("/user", data = "<form>")]
+pub fn process_user_login(form: Form<LoginCont<UserForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+    let start = Instant::now();
+    
+    let login: UserForm = form.get().form();
+    // let login: AdministratorForm = form.into_inner().form;
+    let output = login.flash_redirect("/user", "/user", cookies);
+    
+    let end = start.elapsed();
+    println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    output
+}
+
+#[get("/user_logout")]
+pub fn logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+    if let Some(_) = admin {
+        // cookies.remove_private(Cookie::named(UserCookie::cookie_id()));
+        UserCookie::delete_cookie(cookies);
+        Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
+    } else {
+        Err(Redirect::to("/user"))
+    }
+}
+
+
+
+
+
+
+
+
+
+
 #[get("/view")]
-pub fn hbs_all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_all_articles(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     let start = Instant::now();
     let output: Template;
     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
@@ -178,11 +370,12 @@ pub fn hbs_all_articles(conn: DbConn, admin: Option<AdminCookie>, user: Option<U
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 #[get("/view?<page>")]
-pub fn hbs_articles_page(page: ViewPage, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_articles_page(page: ViewPage, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     let start = Instant::now();
     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
     
@@ -191,18 +384,17 @@ pub fn hbs_articles_page(page: ViewPage, conn: DbConn, admin: Option<AdminCookie
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 
 #[get("/all_tags")]
-pub fn hbs_tags_all(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_tags_all(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     let start = Instant::now();
     
-    // let qrystr = "SELECT COUNT(*) as cnt, unnest(tag) as untag FROM articles GROUP BY untag;";
     let qrystr = "SELECT COUNT(*) as cnt, unnest(tag) as untag FROM articles GROUP BY untag ORDER BY cnt DESC;";
     let qry = conn.query(qrystr, &[]);
-    // let tags: Vec<TagCount> = if !qry.is_empty() && qry.len() != 0 {
     let mut tags: Vec<TagCount> = Vec::new();
     if let Ok(result) = qry {
         let mut sizes: Vec<u16> = Vec::new();
@@ -222,15 +414,7 @@ pub fn hbs_tags_all(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserC
             tags.push(tagcount);
         }
         if tags.len() > 4 {
-            // let top = if tags.len() > 7 { 6 } else { 3 };
-            // sizes.sort();
-            // println!("Top: {:?}", top);
-            // {
-                // sizes.sort_by(|a, b| a.cmp(b).reverse());
-            // }
-            // println!("Sorting tag sizes: {:?}", top);
             if tags.len() > 7 {
-                // for (i, mut v) in &mut tags[0..6].iter().enumerate() {
                 let mut i = 0u16;
                 for mut v in &mut tags[0..6] {
                     v.size = 6-i;
@@ -238,48 +422,27 @@ pub fn hbs_tags_all(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserC
                 }
                 
             } else {
-                // for mut i in &mut tags[0..3].iter().enumerate() {
                 let mut i = 0u16;
                 for mut v in &mut tags[0..3] {
                     v.size = (3-i)*2;
                 }
             }
             tags.sort_by(|a, b| a.tag.cmp(&b.tag));
-            
-            // let topx: Vec<u32> = sizes.iter().position(|n| tags[..top].contains(tag.count)).expect("Iterator failed.").collect();
-            // for t in &topx {
-                
-            // }
-            // for mut tag in &mut tags {
-            //     // let tpos = sizes.iter().position(|n| tags[..top].contains(tag.count));
-                
-            //     if sizes[..top].contains(&(tag.count as u16)) {
-            //         let mut s = 0;
-            //         // for (i, cnt) in sizes[(sizes.len()-top)..].iter().enumerate() {
-            //         for (i, cnt) in sizes[..top].iter().enumerate() {
-            //             if tag.count == i as u32 {
-            //                 // double the size if there is fewer tags
-            //                 tag.size = if top == 3 { ((top-i)*2) as u16 } else { (top-i) as u16 };
-            //                 break;
-            //             }
-            //         }
-            //     }
-            // }
         }
         
     }
     
-    // let output: Template = hbs_template(TemplateBody::General("The all tags page is not implemented yet.".to_string(), None), Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start));
     let output: Template = hbs_template(TemplateBody::Tags(tags, None), Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start));
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 
 #[get("/tag?<tag>", rank = 2)]
-pub fn hbs_articles_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_articles_tag(tag: Tag, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     let start = Instant::now();
     
     let output: Template;
@@ -294,23 +457,23 @@ pub fn hbs_articles_tag(tag: Tag, conn: DbConn, admin: Option<AdminCookie>, user
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
-// #[get("/<title>/article?<aid>")]
 #[get("/article/<aid>/<title>")]
 
-pub fn hbs_article_title(aid: ArticleId, title: Option<&RawStr>, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
-    hbs_article_view(aid, conn, admin, user)
+pub fn hbs_article_title(aid: ArticleId, title: Option<&RawStr>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    hbs_article_view(aid, conn, admin, user, encoding)
 }
 
 #[get("/article/<aid>")]
-pub fn hbs_article_id(aid: ArticleId, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
-    hbs_article_view(aid, conn, admin, user)
+pub fn hbs_article_id(aid: ArticleId, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    hbs_article_view(aid, conn, admin, user, encoding)
 }
 
 #[get("/article?<aid>")]
-pub fn hbs_article_view(aid: ArticleId, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_article_view(aid: ArticleId, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     let start = Instant::now();
     let rst = aid.retrieve_with_conn(conn); // retrieve result
     let mut output: Template; 
@@ -322,21 +485,22 @@ pub fn hbs_article_view(aid: ArticleId, conn: DbConn, admin: Option<AdminCookie>
     }
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 #[get("/article")]
-pub fn hbs_article_not_found(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_article_not_found(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     let start = Instant::now();
     let output: Template = hbs_template(TemplateBody::General(alert_danger("Article not found"), None), Some("Article not found".to_string()), String::from("/article"), admin, user, None, Some(start));
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 #[post("/create", data = "<form>")]
-pub fn hbs_article_process(form: Form<ArticleForm>, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
-// pub fn hbs_post_article(admin: AdminCookie, form: Form<ArticleForm>, conn: DbConn) -> Html<String> {
+pub fn hbs_article_process(form: Form<ArticleForm>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     let start = Instant::now();
     
     let output: Template;
@@ -353,21 +517,23 @@ pub fn hbs_article_process(form: Form<ArticleForm>, conn: DbConn, admin: Option<
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 #[post("/create", rank=2)]
-pub fn hbs_create_unauthorized(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_create_unauthorized(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     let start = Instant::now();
     
     let output: Template = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE), None), Some("Not Authorized".to_string()), String::from("/create"), admin, user, None, Some(start));
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 #[get("/create")]
-pub fn hbs_create_form(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_create_form(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     let start = Instant::now();
     
     let output: Template;
@@ -379,15 +545,16 @@ pub fn hbs_create_form(conn: DbConn, admin: Option<AdminCookie>, user: Option<Us
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 // #[get("/logout")]
-// pub fn hbs_logout(admin: Option<AdminCookie>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
+// pub fn hbs_logout(admin: Option<AdministratorCookie>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
 //     use cookie_data::CookieId;
 //     if admin.is_some() || user.is_some() {
 //         if let Some(a) = admin {
-//             cookies.remove_private(Cookie::named(AdminCookie::get_cid()));
+//             cookies.remove_private(Cookie::named(AdministratorCookie::get_cid()));
 //             // cookies.remove_private(Cookie::named("user_id"));
 //         }
 //         if let Some(u) = user {
@@ -407,21 +574,21 @@ pub fn hbs_create_form(conn: DbConn, admin: Option<AdminCookie>, user: Option<Us
 // https://www.postgresql.org/docs/current/static/functions-textsearch.html
 
 #[get("/search")]
-pub fn hbs_search_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_search_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     // unimplemented!()
     
     //show an advanced search form
      
     
     // don't forget to put the start Instant in the hbs_template() function
-    hbs_template(TemplateBody::General("Search page not implemented yet".to_string(), None), Some("Search".to_string()), String::from("/search"), admin, user, None, None)
+    let output: Template = hbs_template(TemplateBody::General("Search page not implemented yet".to_string(), None), Some("Search".to_string()), String::from("/search"), admin, user, None, None);
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 #[get("/search?<search>")]
-pub fn hbs_search_results(search: Search, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_search_results(search: Search, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     let start = Instant::now();
-    // don't forget to put the start Instant in the hbs_template() function
-    
     /*
         SELECT  
             a.aid, 
@@ -531,12 +698,14 @@ plainto_tsquery('pg_catalog.english', '"#);
     }
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 // application/rss+xml
 #[get("/rss.xml")]
-pub fn rss_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> String {
+// EXPRESS X - pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>) -> String {
+pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     use rss::{Channel, ChannelBuilder, Guid, GuidBuilder, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};
     use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
 
@@ -613,35 +782,39 @@ pub fn rss_page(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCooki
         let mut output = String::with_capacity(rss_output.len() + 30);
         output.push_str(r#"<?xml version="1.0"?>"#);
         output.push_str(&rss_output);
-        output
+        
+        let express: Express = output.into();
+        express.compress(encoding)
     } else {
-        String::from("Could not create RSS feed.")
+        let output = String::from("Could not create RSS feed.");
+        let express: Express = output.into();
+        express.compress(encoding)
     }
-    
-    
 }
 
 
 #[get("/author/<authorid>")]
-pub fn hbs_author(authorid: u32, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_author(authorid: u32, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     unimplemented!()
 }
 
 #[get("/author/<authorid>/<authorname>")]
-pub fn hbs_author_display(authorid: u32, authorname: Option<String>, conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_author_display(authorid: u32, authorname: Option<String>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     unimplemented!()
     
 }
 
 
 #[get("/about")]
-pub fn hbs_about(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>) -> Template {
+pub fn hbs_about(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     // don't forget to put the start Instant in the hbs_template() function
-    hbs_template(TemplateBody::General("This page is not implemented yet.  Soon it will tell a little about me.".to_string(), None), Some("About Me".to_string()), String::from("/about"), admin, user, None, None)
+    let output = hbs_template(TemplateBody::General("This page is not implemented yet.  Soon it will tell a little about me.".to_string(), None), Some("About Me".to_string()), String::from("/about"), admin, user, None, None);
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 #[get("/")]
-pub fn hbs_index(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>) -> Template {
+pub fn hbs_index(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let body = r#"Hello! This is a blog.<br><a href="/user">User page</a><br><a href="/admin">Go to admin page</a>"#;
     // template(body)
     let start = Instant::now();
@@ -664,7 +837,8 @@ pub fn hbs_index(conn: DbConn, admin: Option<AdminCookie>, user: Option<UserCook
     
     let end = start.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    output
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 

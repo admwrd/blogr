@@ -18,6 +18,7 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+
 	Make a Request Guard (from_request) that creates a start (Instance) variable
 		so the route does not have to declare the start variable itself for timing
 		it just needs to declare the timer type in the funciton signature
@@ -159,6 +160,19 @@ Design:
 
 
 Future Todo:
+	Write article about better way to organize template stuff
+	Possibly rewrite the template system interface to expose something like
+		hbs::info(title, page, hbs::general_page(contents) )
+			.add_user(user)
+			.add_admin(admin)
+			.add_timer(start)
+			.add_javascript(js)
+			.change_something()
+			.add_something_else()
+			.finalize()
+		only rewrite if really really need extras
+
+
 	Look into Handlebar Helper functions using Rocket_Contrib's Templates
 	IMPORTANT
 	Research NoSQL databases which could be faster
