@@ -814,10 +814,10 @@ pub fn hbs_about(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<
 }
 
 #[get("/")]
-pub fn hbs_index(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_index(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let body = r#"Hello! This is a blog.<br><a href="/user">User page</a><br><a href="/admin">Go to admin page</a>"#;
     // template(body)
-    let start = Instant::now();
+    // let start = Instant::now();
     // let mut output: Html<String> = Html(String::new());
     let output: Template;
     let fmsg: Option<String>;
@@ -828,14 +828,14 @@ pub fn hbs_index(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<
     }
     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
     if results.len() != 0 {
-        output = hbs_template(TemplateBody::Articles(results, fmsg), None, String::from("/"), admin, user, None, Some(start));
+        output = hbs_template(TemplateBody::Articles(results, fmsg), None, String::from("/"), admin, user, None, Some(start.0));
     } else if admin.is_some() {
-        output = hbs_template(TemplateBody::General("There are no articles.<br>\n<a href =\"/insert\">Create Article</a>".to_string(), None), None, String::from("/"), admin, user, None, Some(start));
+        output = hbs_template(TemplateBody::General("There are no articles.<br>\n<a href =\"/insert\">Create Article</a>".to_string(), None), None, String::from("/"), admin, user, None, Some(start.0));
     } else {
-        output = hbs_template(TemplateBody::General("There are no articles.".to_string(), None), None, String::from("/"), admin, user, None, Some(start));
+        output = hbs_template(TemplateBody::General("There are no articles.".to_string(), None), None, String::from("/"), admin, user, None, Some(start.0));
     }
     
-    let end = start.elapsed();
+    let end = start.0.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)

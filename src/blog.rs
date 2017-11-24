@@ -1,5 +1,6 @@
 
 use std::fmt::Display;
+use std::time::Instant;
 
 use rocket;
 use ::rocket::Request;
@@ -148,6 +149,40 @@ pub struct User {
     pub is_admin: bool,
     pub is_public: bool,
 }
+
+#[derive(Debug, Clone)]
+pub struct GenTimer (pub Instant);
+
+// use rocket::request::FromRequest;
+impl<'a, 'r> FromRequest<'a, 'r> for GenTimer {
+    type Error = ();
+    
+    fn from_request(request: &'a Request<'r>) -> ::rocket::request::Outcome<GenTimer,Self::Error> {
+        Outcome::Success( GenTimer( Instant::now() ) )
+    }
+}
+// // use rocket::request::FromRequest;
+// impl<'a, 'r> FromRequest<'a, 'r> for GenTimer {
+//     type Error = ();
+    
+//     fn from_request(request: &'a Request<'r>) -> ::rocket::request::Outcome<GenTimer,Self::Error>{
+        
+//         Outcome::Success(  )
+//         match cookies.get_private(cid) {
+//             Some(cookie) => {
+//                 if let Some(cookie_deserialized) = GenTimer::retrieve_cookie(cookie.value().to_string()) {
+//                     Outcome::Success(
+//                         cookie_deserialized
+//                     )
+//                 } else {
+//                     Outcome::Forward(())
+//                 }
+//             },
+//             None => Outcome::Forward(())
+//         }
+//     }
+// }
+
 
 pub const DESC_LIMIT: usize = 300;
 
@@ -433,22 +468,23 @@ impl ArticleForm {
 }
 
 
-
-// A request guard to ensure that an article exists for a given ArticleId or aid
-impl<'a, 'r> FromRequest<'a, 'r> for ArticleId {
-    type Error = ();
+// Would this even work?? You need to know the aid to be able to check if an article exists
+//     how would you get the aid from a Request Guard?
+// // A request guard to ensure that an article exists for a given ArticleId or aid
+// impl<'a, 'r> FromRequest<'a, 'r> for ArticleId {
+//     type Error = ();
     
-    fn from_request(request: &'a Request<'r>) -> rocket::request::Outcome<ArticleId, Self::Error> {
+//     fn from_request(request: &'a Request<'r>) -> rocket::request::Outcome<ArticleId, Self::Error> {
         
         
-        // match Article::retrieve() {
-        //     Some(cookie) => Outcome::Success(UserCookie::new(cookie.value().to_string())),
-        //     None => Outcome::Forward(()),
-        // }
+//         // match Article::retrieve() {
+//         //     Some(cookie) => Outcome::Success(UserCookie::new(cookie.value().to_string())),
+//         //     None => Outcome::Forward(()),
+//         // }
         
-        unimplemented!()
-    }
-}
+//         unimplemented!()
+//     }
+// }
 impl<'f> FromForm<'f> for ArticleId {
     type Error = &'static str;
     fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
@@ -469,21 +505,24 @@ impl<'f> FromForm<'f> for ArticleId {
         }
     }
 }
-// A request guard to ensure that an article exists for a given ArticleId or aid
-impl<'a, 'r> FromRequest<'a, 'r> for Tag {
-    type Error = ();
+
+// What was I doing here??
+//
+// // A request guard to ensure that an article exists for a given ArticleId or aid
+// impl<'a, 'r> FromRequest<'a, 'r> for Tag {
+//     type Error = ();
     
-    fn from_request(request: &'a Request<'r>) -> rocket::request::Outcome<Tag, Self::Error> {
+//     fn from_request(request: &'a Request<'r>) -> rocket::request::Outcome<Tag, Self::Error> {
         
         
-        // match Article::retrieve() {
-        //     Some(cookie) => Outcome::Success(UserCookie::new(cookie.value().to_string())),
-        //     None => Outcome::Forward(()),
-        // }
+//         // match Article::retrieve() {
+//         //     Some(cookie) => Outcome::Success(UserCookie::new(cookie.value().to_string())),
+//         //     None => Outcome::Forward(()),
+//         // }
         
-        unimplemented!()
-    }
-}
+//         unimplemented!()
+//     }
+// }
 
 
 impl<'f> FromForm<'f> for Search {
