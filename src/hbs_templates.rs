@@ -207,6 +207,22 @@ impl TemplateInfo {
         } else { 
             String::new() 
         };
+        let username = if let Some(a) = admin.clone() {
+            if let Some(d) = a.display {
+                titlecase(&d)
+            } else {
+                a.username.clone()
+            }
+        } else if let Some(u) = user.clone() {
+            if let Some(d) = u.display {
+                titlecase(&d)
+            } else {
+                u.username.clone()
+            }
+        } else {
+            String::new()
+        };
+        
         // Display the page generation time (up until template processing)???
         // println!("Route processed in {}.{:08}", end.as_secs(), end.subsec_nanos());
         TemplateInfo {
@@ -214,7 +230,8 @@ impl TemplateInfo {
             logged_in: if admin.is_some() || user.is_some() { true } else { false },
             is_admin: if admin.is_some() { true } else { false },
             is_user: if user.is_some() { true } else { false },
-            username: if let Some(a) = admin { titlecase(&a.username.clone()) } else if let Some(u) = user { titlecase(&u.username.clone()) } else { String::new() },
+            // username: if let Some(a) = admin { titlecase(&a.username.clone()) } else if let Some(u) = user { titlecase(&u.username.clone()) } else { String::new() },
+            username,
             js,
             gentime,
             page,
