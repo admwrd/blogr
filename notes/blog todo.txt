@@ -18,6 +18,13 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+	Add a attempts and lockout fields in the user database, which can be null and would be set to a datetime
+		if it is not null do not allow successful login until the time has passed
+			set a flash message explaining the timeout
+		attempts counts the number of continuous attempts to login without success
+			every x attempts lock it, do not clear the attempts until successful login
+
+
 	Add pubdate to rss items
 		Builder:
 		https://docs.rs/rss/1.1.0/rss/struct.ItemBuilder.html#method.pub_date
