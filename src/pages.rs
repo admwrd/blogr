@@ -808,18 +808,34 @@ pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<U
     }
 }
 
+// #[get("/author/<authorid>/<authorname>")]
+// pub fn hbs_author_display(start: GenTimer, authorid: u32, authorname: Option<String>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+//     unimplemented!()
+    
+// }
+
+#[get("/author/<authorid>/<authorname>")]
+pub fn hbs_author_display(start: GenTimer, authorid: u32, authorname: Option<&RawStr>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    hbs_author(start, authorid, conn, admin, user, encoding)
+}
 
 #[get("/author/<authorid>")]
 pub fn hbs_author(start: GenTimer, authorid: u32, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-    unimplemented!()
-}
-
-#[get("/author/<authorid>/<authorname>")]
-pub fn hbs_author_display(start: GenTimer, authorid: u32, authorname: Option<String>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-    unimplemented!()
+    // unimplemented!()
+    let output: Template;
+    let results = conn.articles( &format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE userid = {}", authorid) );
     
+    if let Some(articles) = results {
+        output = hbs_template(TemplateBody::Articles(articles, None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+    } else {
+        output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string(), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+    }
+    
+    let end = start.0.elapsed();
+    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    let express: Express = output.into();
+    express.compress(encoding)
 }
-
 
 #[get("/about")]
 pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
