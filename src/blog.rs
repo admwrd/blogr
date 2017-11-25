@@ -20,6 +20,7 @@ use postgres::{Connection};
 
 use super::{MAX_CREATE_TITLE, MAX_CREATE_DESCRIPTION, MAX_CREATE_TAGS};
 
+use rocket_auth_login::sanitization;
 // not used anymore
 // use users::*;
 
@@ -230,7 +231,7 @@ impl ArticleId {
                     // author_id: row.get(6),
                     // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
                     userid: row.get(6),
-                    username: titlecase( &username ),
+                    username: titlecase( &sanitization::sanitize(&username) ),
                 })
             } else { None }
         } else { None }
@@ -259,7 +260,7 @@ impl ArticleId {
                     tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     userid: row.get(6),
-                    username: titlecase( &username ),
+                    username: titlecase( &sanitization::sanitize(&username) ),
                     
                     // author_id: row.get(6),
                     // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
@@ -334,7 +335,7 @@ impl Article {
                     tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     userid: row.get(6),
-                    username: titlecase( &username ),
+                    username: titlecase( &sanitization::sanitize(&username) ),
                     
                 })
             } else { None }
@@ -353,9 +354,9 @@ impl Article {
         let mut qrystr: String = if let Some(summary) = description {
             if summary < 1 {
                 show_desc = true;
-                format!("SELECT a.aid, a.title, a.posted, a.LEFT(body, {}) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)", DESC_LIMIT)
+                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)", DESC_LIMIT)
             } else {
-                format!("SELECT a.aid, a.title, a.posted, a.LEFT(body, {}) AS body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)", summary)
+                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) AS body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)", summary)
             }
         } else {
             String::from("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)")
@@ -423,7 +424,7 @@ impl Article {
                             row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()) 
                         },
                     userid: row.get(6),
-                    username: titlecase( &username ),
+                    username: titlecase( &sanitization::sanitize(&username) ),
                     
                 };
                 articles.push(a);
@@ -457,7 +458,7 @@ impl ArticleForm {
             tags: split_tags(sanitize_tags(self.tags.clone())),
             description: sanitize_body(self.description.clone()),
             userid,
-            username: username.to_string(),
+            username: titlecase( &sanitization::sanitize(username) ),
         }
     }
     pub fn save(&self, conn: &DbConn, userid: u32, username: &str) -> Result<Article, String> {
@@ -493,7 +494,7 @@ impl ArticleForm {
                         tags: Article::split_tags(self.tags.clone()),
                         description: self.description.clone(),
                         userid,
-                        username: username.to_string(), 
+                        username: titlecase( &sanitization::sanitize(username) ), 
                     })
                 } else if qry.is_empty() {
                     Err("Error inserting article, result is empty.".to_string())

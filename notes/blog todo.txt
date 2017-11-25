@@ -34,6 +34,10 @@ Blogr
 
 	
 	
+	Update RSS, add the author field
+	
+	Add an author page which shows all articles by that user
+		Do not need a page to show author info, there is not enough info in the db about each user to display a full page
 	
 	
 	Add author when submitting a new article, read the AdministratorCookie's user id

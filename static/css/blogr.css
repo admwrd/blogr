@@ -179,6 +179,14 @@ a:active {
     text-align: center;
 }
 
+.v-byline {
+    text-align: center;
+    width: 100%;
+}
+.v-author-link {
+    font-style: italic;
+}
+
 .v-input-separator {
     background-color: #363636;
     color: #eee;
