@@ -349,7 +349,7 @@ impl<'a> Responder<'a> for Express {
             // `Pragma: no-cache` is Not supported by all browsers in the response
             response.raw_header("Pragma", "no-cache");
             response.raw_header("Cache-Control", "no-store");
-            response.adjoin_raw_header("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.raw_header_adjoin("Cache-Control", "no-cache, no-store, must-revalidate");
         } else {
             response.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
         }

@@ -18,6 +18,11 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+	Add pubdate to rss items
+		Builder:
+		https://docs.rs/rss/1.1.0/rss/struct.ItemBuilder.html#method.pub_date
+	Maybe add last_build_date as last modified date for the channel
+		https://docs.rs/rss/1.1.0/rss/struct.ChannelBuilder.html#method.last_build_date
 
 	If a user is signing in as an admin or regular user and has already signed in as another user type
 		check if the usernames/userid match, otherwise remove the old cookie
