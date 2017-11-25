@@ -9,6 +9,8 @@ use regex::Regex;
 use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 
+use titlecase::titlecase;
+
 use blog::*;
 // not used anymore
 // use users::*;
@@ -77,11 +79,15 @@ impl DbConn {
         let qryrst: Result<_, _> = if qrystr != "" {
             self.query(qrystr, &[])
         } else {
-            self.query("SELECT aid, title, posted, body, tag, description FROM articles", &[])
+            self.query("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description FROM articles a JOIN users u ON (a.author = u.userid)", &[])
         };
         if let Ok(result) = qryrst {
             let mut articles: Vec<Article> = Vec::new();
             for row in &result {
+                
+                let display: Option<String> = row.get(7);
+                let username: String = if let Some(disp) = display { disp } else { row.get(8) };
+                
                 let a = Article {
                     aid: row.get(0),
                     title: row.get(1),
@@ -89,6 +95,8 @@ impl DbConn {
                     body: row.get(3),
                     tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
+                    userid: row.get(6),
+                    username: titlecase( &username ),
                 };
                 articles.push(a);
             }

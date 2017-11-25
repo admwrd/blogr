@@ -500,18 +500,21 @@ pub fn hbs_article_not_found(start: GenTimer, conn: DbConn, admin: Option<Admini
 }
 
 #[post("/create", data = "<form>")]
-pub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     
     let output: Template;
-    let result = form.into_inner().save(&conn);
+    
+    let username = if let Some(ref display) = admin.display { display.clone() } else { titlecase(&admin.username) };
+    
+    let result = form.into_inner().save(&conn, admin.userid, &username);
     match result {
         Ok(article) => {
             let title = article.title.clone();
-            output = hbs_template(TemplateBody::Article(article, None), Some(title), String::from("/create"), admin, user, None, Some(start.0));
+            output = hbs_template(TemplateBody::Article(article, None), Some(title), String::from("/create"), Some(admin), user, None, Some(start.0));
         },
         Err(why) => {
-            output = hbs_template(TemplateBody::General(alert_danger(&format!("Could not post the submitted article.  Reason: {}", why)), None), Some("Could not post article".to_string()), String::from("/create"), admin, user, None, Some(start.0));
+            output = hbs_template(TemplateBody::General(alert_danger(&format!("Could not post the submitted article.  Reason: {}", why)), None), Some("Could not post article".to_string()), String::from("/create"), Some(admin), user, None, Some(start.0));
         },
     }
     
@@ -619,8 +622,10 @@ pub fn hbs_search_results(start: GenTimer, search: Search, conn: DbConn, admin: 
     println!("Search parameters:\n{:?}", search);
     
     let mut qrystr = String::with_capacity(750);
-    qrystr.push_str(r#"SELECT a.aid, a.title, a.posted, a.tag, ts_rank(a.fulltxt, fqry, 32) AS rank, ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body
-FROM articles a, 
+    qrystr.push_str(r#"
+SELECT a.aid, a.title, a.posted, a.tag, ts_rank(a.fulltxt, fqry, 32) AS rank, ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body,
+    u.userid, u.display, u.username
+FROM articles a JOIN users u ON (a.author = u.userid),
 plainto_tsquery('pg_catalog.english', '"#);
     
     // ts_headline([ config regconfig, ] document text, query tsquery [, options text ]) returns text
@@ -681,6 +686,10 @@ plainto_tsquery('pg_catalog.english', '"#);
     let output: Template;
     if let Ok(result) = qry {
         for row in &result {
+            
+            let display: Option<String> = row.get(7);
+            let username: String = if let Some(disp) = display { disp } else { row.get(8) };
+            
             let a = Article {
                 aid: row.get(0),
                 title: row.get(1),
@@ -688,6 +697,8 @@ plainto_tsquery('pg_catalog.english', '"#);
                 tags: row.get_opt(3).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()),
                 body: row.get(5),
                 description: String::new(),
+                userid: row.get(6),
+                username: titlecase( &username ),
             };
             articles.push(a);
         }

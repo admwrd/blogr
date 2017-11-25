@@ -6,15 +6,16 @@ authors = ["Andrew Prindle <prindle.andrew@gmail.com>"]
 [dependencies]
 brotli = "1.0.9"
 chrono = "0.4.0"
+# concurrent_hashmap = "0.2.2"
 dotenv = "0.10.1"
 # diesel = { version = "0.16.0", features = ["postgres"] }
 # diesel_codegen = { version = "0.16.0", features = ["postgres"] }
-env_logger = "0.4.3"
+# env_logger = "0.4.3"
 handlebars = "0.29.*"
 htmlescape = "0.3.1"
 lazy_static = "0.2.8"
 libflate = "0.1.12"
-log = "0.3.8"
+# log = "0.3.8"
 # multipart = "0.13.3"
 postgres = { version = "0.15.1", features = ["with-chrono"] }
 # postgres = "0.15.1"
@@ -30,13 +31,14 @@ rocket_codegen = "0.3.3"
 # rocket-auth-login = {path = "../rocket-auth-login"}
 rocket-auth-login = "0.2.*"
 # rocket-file-cache = "0.10.1"
-rocket-simpleauth = {path = "auth-rs"}
+# rocket-file-cache = { path = "rocket-file-cache" }
+# rocket-simpleauth = {path = "auth-rs"}
 # rocket-simpleauth = "0.3.0"
 rss = "1.*"
 serde_json = "1.0.2"
 serde = "1.0.11"
 serde_derive = "1.0.11"
-time = "0.1"
+# time = "0.1"
 titlecase = "0.10.0"
 zopfli = "0.3.6"
 

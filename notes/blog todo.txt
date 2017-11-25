@@ -18,10 +18,31 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+	Figure out how to add version badge to github readme.md file
+	
+	Test the current method of finding the generation time (Instant::now() and start.elapsed())
+		Chrono's Duration.span() runs a closure and returns the time it took to run the closure
+		
+		
+		
+		NOT the Time crate, it is deprecated.
+		against the Time crate's SteadyTime and PreciseTime
+			Benchmark how fast each is, and how accurate each is
+			Run Benchmark Tests with thread::sleep
+				use std::thread::sleep;
+				sleep(Duration::new(secs, nano_secs))
+
+	
+	
+	
+	
+	Add author when submitting a new article, read the AdministratorCookie's user id
+
 	Add the author page
 	
 	Add author link in article/articles
 		show author in articles
+		in the templates show a link to a page that will list all articles by that user
 
 	Use the rocket-file-cache crate to cache static files
 		https://crates.io/crates/rocket-file-cache

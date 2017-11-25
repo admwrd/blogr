@@ -43,8 +43,6 @@ pub struct Article {
     pub aid: u32,
     pub title: String,
     pub posted: NaiveDateTime,
-    pub userid: u32,
-    pub username: String,
     pub body: String,
     pub tags: Vec<String>,
     pub description: String,
@@ -58,8 +56,6 @@ pub struct ArticleDisplay {
     pub title: String,
     pub posted_machine: String,
     pub posted_human: String,
-    pub userid: u32,
-    pub username: String,
     pub body: String,
     pub tags: Vec<String>,
     pub description: String,
@@ -212,13 +208,6 @@ impl ArticleId {
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
                 let row = aqry.get(0); // get first row
-                
-                let display: Option<String> = row.get(7);
-                let username: String = if let Some(disp) = display { disp } else { row.get(8) };
-                // let username: String = row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(row.get(8)).to_string();
-                // row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(row.get(8));
-                
-                
                 Some( Article {
                     aid: row.get(0),
                     title: row.get(1), // todo: call sanitize title here
@@ -229,8 +218,6 @@ impl ArticleId {
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     // author_id: row.get(6),
                     // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
-                    userid: row.get(6),
-                    username: titlecase( &username ),
                 })
             } else { None }
         } else { None }
@@ -243,14 +230,10 @@ impl ArticleId {
         let rawqry = pgconn.query(&qrystr, &[]);
         println!("Running query:\n{}", qrystr);
         if let Ok(aqry) = rawqry {
-            // userid 6
-            // display 7
-            // username 8
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
                 let row = aqry.get(0); // get first row
-                let display: Option<String> = row.get(7);
-                let username: String = if let Some(disp) = display { disp } else { row.get(8) };
+                
                 Some( Article {
                     aid: row.get(0),
                     title: row.get(1), // todo: call sanitize title here
@@ -258,9 +241,6 @@ impl ArticleId {
                     body: row.get(3), // Todo: call sanitize body here
                     tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
-                    userid: row.get(6),
-                    username: titlecase( &username ),
-                    
                     // author_id: row.get(6),
                     // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
                 })
@@ -301,8 +281,6 @@ impl Article {
             body: self.body.clone(),
             tags: self.tags.clone(),
             description: self.description.clone(),
-            userid: self.userid,
-            username: self.username.clone(),
             // author_id: self.author_id,
             // author_name: self.author_name.clone(),
         }
@@ -317,15 +295,11 @@ impl Article {
     }
     pub fn retrieve(aid: u32) -> Option<Article> {
         let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE aid = {id}", id=aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=aid), &[]);
         if let Ok(aqry) = rawqry {
             // println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
                 let row = aqry.get(0); // get first row
-                
-                let display: Option<String> = row.get(7);
-                let username: String = if let Some(disp) = display { disp } else { row.get(8) };
-                
                 Some( Article {
                     aid: row.get(0),
                     title: row.get(1), // todo: call sanitize title here
@@ -333,9 +307,6 @@ impl Article {
                     body: row.get(3), // Todo: call sanitize body here
                     tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
-                    userid: row.get(6),
-                    username: titlecase( &username ),
-                    
                 })
             } else { None }
         } else { None }
@@ -353,12 +324,12 @@ impl Article {
         let mut qrystr: String = if let Some(summary) = description {
             if summary < 1 {
                 show_desc = true;
-                format!("SELECT a.aid, a.title, a.posted, a.LEFT(body, {}) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)", DESC_LIMIT)
+                format!("SELECT aid, title, posted, LEFT(body, {}) as body, tag, description FROM articles", DESC_LIMIT)
             } else {
-                format!("SELECT a.aid, a.title, a.posted, a.LEFT(body, {}) AS body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)", summary)
+                format!("SELECT aid, title, posted, LEFT(body, {}) AS body, tag, description FROM articles", summary)
             }
         } else {
-            String::from("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)")
+            String::from("SELECT aid, title, posted, body, tag, description FROM articles")
         };
         if min_date.is_some() || max_date.is_some() || (tag.is_some() && get_len(&tag) != 0) || (search.is_some() && get_len(&search) != 0) {
             qrystr.push_str(" WHERE");
@@ -400,11 +371,7 @@ impl Article {
         let qryrst = pgconn.query(&qrystr, &[]);
         if let Ok(result) = qryrst {
             let mut articles: Vec<Article> = Vec::new();
-            
             for row in &result {
-                let display: Option<String> = row.get(7);
-                let username: String = if let Some(disp) = display { disp } else { row.get(8) };
-                
                 let a = Article {
                     aid: row.get(0),
                     title: row.get(1),
@@ -422,9 +389,6 @@ impl Article {
                         } else { 
                             row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()) 
                         },
-                    userid: row.get(6),
-                    username: titlecase( &username ),
-                    
                 };
                 articles.push(a);
             }
@@ -446,7 +410,7 @@ impl ArticleForm {
             description,
         }
     }
-    pub fn to_article(&self, userid: u32, username: &str) -> Article {
+    pub fn to_article(&self) -> Article {
         // get next aid
         let next_aid = 0;
         Article {
@@ -456,11 +420,9 @@ impl ArticleForm {
             body: sanitize_body(self.body.clone()),
             tags: split_tags(sanitize_tags(self.tags.clone())),
             description: sanitize_body(self.description.clone()),
-            userid,
-            username: username.to_string(),
         }
     }
-    pub fn save(&self, conn: &DbConn, userid: u32, username: &str) -> Result<Article, String> {
+    pub fn save(&self, conn: &DbConn) -> Result<Article, String> {
         let now = Local::now().naive_local();
         
         // take blah, blah2, blah3 and convert into {'blah', 'blah2', 'blah3'}
@@ -492,8 +454,6 @@ impl ArticleForm {
                         body: self.body.clone(),
                         tags: Article::split_tags(self.tags.clone()),
                         description: self.description.clone(),
-                        userid,
-                        username: username.to_string(), 
                     })
                 } else if qry.is_empty() {
                     Err("Error inserting article, result is empty.".to_string())

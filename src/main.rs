@@ -38,6 +38,9 @@ extern crate postgres;
 extern crate r2d2;
 extern crate r2d2_postgres;
 
+// extern crate rocket_file_cache;
+// extern crate concurrent_hashmap;
+
 extern crate libflate;
 extern crate brotli;
 extern crate zopfli;
@@ -96,6 +99,15 @@ use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
+
+// Rocket File Cache - Removed
+// use rocket_file_cache::{Cache, CachedFile};
+// use std::sync::Mutex;
+// use std::path::{Path, PathBuf};
+// use rocket::State;
+
+// use concurrent_hashmap::*;
+
 use rocket_contrib::Template;
 use rocket::{Request, Data, Outcome, Response};
 use rocket::response::{content, NamedFile, Redirect, Flash, Responder, Content};
@@ -126,11 +138,18 @@ pub const MAX_CREATE_DESCRIPTION: usize = 400;
 pub const MAX_CREATE_TAGS: usize = 250;
 
 
-#[error(500)]
-fn internal_error() -> &'static str {
-    "Whoops! Looks like we messed up."
-}
 
+
+
+
+
+
+
+
+// #[get("/<file..>")]
+// fn files(file: PathBuf, cache: State<Cache> ) -> Option<CachedFile> {
+//     CachedFile::open(Path::new("www/").join(file), cache.inner())
+// }
 
 #[get("/<file..>", rank=10)]
 fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
@@ -139,10 +158,8 @@ fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
     // NamedFile::open(Path::new("static/").join(file)).ok()
     
     if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
-        // With compression (slower to process):
-        // Some(exp.compress(encoding))
-        //
-        // Without compression (faster to process):
+        
+        
         let exp: Express = named.into();
         Some( exp )
     } else {
@@ -165,7 +182,7 @@ pub fn error_not_found(req: &Request) -> Express {
     let express: Express = output.into();
     express
 }
-#[error(404)]
+#[error(500)]
 pub fn error_internal_error(req: &Request) -> Express {
     let content = format!( "An internal server error occurred procesing the page `{}`.", sanitize_text(req.uri().as_str()) );
     let output = hbs_template(TemplateBody::General(content, None), Some("500 Internal Error.".to_string()), String::from("/500"), None, None, None, None);
@@ -188,9 +205,11 @@ fn main() {
     //     // (*pg_conn).connect();
     // }
     
+    // let cache: Cache = Cache::new(1024 * 1024 * 40); // 40 MB
     init_pg_pool().get().unwrap();
     
     rocket::ignite()
+        // .manage(cache)
         .manage(data::init_pg_pool())
         .attach(Template::fairing())
         .mount("/", routes![

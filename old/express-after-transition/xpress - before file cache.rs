@@ -71,7 +71,6 @@ impl ExpressData for ExData {
             &ExData::Named(ref data) => data.content_type(),
             &ExData::String(ref data) => data.content_type(),
             &ExData::Template(ref data) => data.content_type(),
-            // &ExData::Cache(ref data) => data.content_type(),
         }
     }
     fn contents(self, req: &Request) -> Vec<u8> {
@@ -81,7 +80,6 @@ impl ExpressData for ExData {
             ExData::Named(data) => data.contents(req),
             ExData::String(data) => data.contents(req),
             ExData::Template(data) => data.contents(req),
-            // ExData::Cache(data) => data.contents(req),
         }
     }
 }
@@ -96,8 +94,6 @@ pub struct DataNamed(NamedFile);
 pub struct DataString(String);
 #[derive(Debug)]
 pub struct DataTemplate(Template);
-// #[derive(Debug)]
-// pub struct DataCache(Template);
 
 
 impl Clone for DataNamed {
