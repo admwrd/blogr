@@ -719,15 +719,21 @@ plainto_tsquery('pg_catalog.english', '"#);
 pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     use rss::{Channel, ChannelBuilder, Guid, GuidBuilder, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};
     use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
+    use urlencoding::encode;
 
+  
     let result = conn.articles("");
     if let Some(articles) = result {
         let mut article_items: Vec<Item> = Vec::new();
         for article in &articles {
             let mut link = String::with_capacity(BLOG_URL.len()+20);
             link.push_str(BLOG_URL);
-            link.push_str("article?aid=");
+            // link.push_str("article?aid=");
+            link.push_str("article/");
             link.push_str(&article.aid.to_string());
+            link.push_str("/");
+            // let encoded = encode("This string will be URL encoded.");
+            link.push_str( &encode(&article.title) );
             
             let desc: &str = if &article.description != "" {
                 &article.description
@@ -750,7 +756,8 @@ pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<U
                 .title(article.title.clone())
                 .link(link)
                 .description(desc.to_string())
-                .author("Andrew Prindle".to_string())
+                // .author("Andrew Prindle".to_string())
+                .author(article.username.clone())
                 // .categories()
                 .guid(guid)
                 .pub_date(date_posted)

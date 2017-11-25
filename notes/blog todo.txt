@@ -18,35 +18,17 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+	Add last modified (and created, if exists?) http headers to individual article pages
+		Maybe add a last modified header to articles page where the last modified
+		date value is the newest date of all the article dates
+	
+	Add content to the about me page.
+	Add a email/contact links at the bottom of the page in the footer
+		Maybe change add an email link in the name of the copyright
+		(c) 2017 <a href="">Andrew Prindle</a>
+	
 	Figure out how to add version badge to github readme.md file
 	
-	Test the current method of finding the generation time (Instant::now() and start.elapsed())
-		Chrono's Duration.span() runs a closure and returns the time it took to run the closure
-		
-		
-		
-		NOT the Time crate, it is deprecated.
-		against the Time crate's SteadyTime and PreciseTime
-			Benchmark how fast each is, and how accurate each is
-			Run Benchmark Tests with thread::sleep
-				use std::thread::sleep;
-				sleep(Duration::new(secs, nano_secs))
-
-	
-	
-	Update RSS, add the author field
-	
-	Add an author page which shows all articles by that user
-		Do not need a page to show author info, there is not enough info in the db about each user to display a full page
-	
-	
-	Add author when submitting a new article, read the AdministratorCookie's user id
-
-	Add the author page
-	
-	Add author link in article/articles
-		show author in articles
-		in the templates show a link to a page that will list all articles by that user
 
 	Use the rocket-file-cache crate to cache static files
 		https://crates.io/crates/rocket-file-cache
@@ -62,11 +44,9 @@ Blogr
 		search
 		individual tag page (lists just one tag)
 		
-		
-		
-
-	Add a 404 page, maybe other error pages as well
-		#[error(404)] I believe it is
+	
+	Maybe add email addresses?  The RSS author field is supposed to be an email. 
+		Probably not as it would increase spam
 
 	Add a TL;DR: section of articles
 		Should be optional (nullable in the database)
@@ -80,8 +60,6 @@ Blogr
 		The HTML type will leave it as is, unprocessed
 	
 	Limit tags to only show top 50 tags, or maybe make a separate page that shows all of them
-
-	Maybe: Add author to the homepage (multiple articles) instead of just on the single article?
 
 	Eventually change the hbs_templates to have the flash message in the general parameters/info not in the TemplateBody
 
@@ -136,24 +114,6 @@ Blogr
 	Make a page that lists articles by date, group by month maybe
 
 
-	Add Tls/Ssl using Let's Encrypt
-		https://mmstick.tk/post/q42
-		https://rocket.rs/guide/configuration/#configuring-tls
-		https://api.rocket.rs/rocket/config/struct.Config.html#method.set_tls
-	Sanitizing strings
-	Make an actual layout
-	Maybe implement a cache
-	maybe implement a file cache
-		This would allow files to be served even when the url
-		is a folder in root.  CSS & JS files for example will
-		not work correctly if the url is: 
-		localhost/view/category/blah
-	Finish implementing the Usertype module, make it an enum that holds whatever?
-
-
-
-
-
 
 
 Design:
@@ -163,12 +123,22 @@ Design:
 			only the content boxes moves, allowing their inside to display the image
 
 
-
-
-
-
-
 Future Todo:
+	
+	
+	Test the current method of finding the generation time (Instant::now() and start.elapsed())
+		Chrono's Duration.span() runs a closure and returns the time it took to run the closure
+		
+		
+		
+		NOT the Time crate, it is deprecated.
+		against the Time crate's SteadyTime and PreciseTime
+			Benchmark how fast each is, and how accurate each is
+			Run Benchmark Tests with thread::sleep
+				use std::thread::sleep;
+				sleep(Duration::new(secs, nano_secs))
+
+
 	Write article about better way to organize template stuff
 	Possibly rewrite the template system interface to expose something like
 		hbs::info(title, page, hbs::general_page(contents) )
@@ -188,6 +158,10 @@ Future Todo:
 		Maybe even redis
 
 	Cache all HTML output from pages using database queries
+		Allow different versions of the page to be cached
+			Cache brotli, gzip, deflate, and uncompressed versions of the page
+			Only cache the page with a given compressino method when page is requested
+				with a given compression method
 		Add an option in the hbs_template() that indicates whether it should
 			look for and store cached results
 			Maybe the option should be an Option<u32> indicating how many 
@@ -211,29 +185,15 @@ Future Todo:
 		like on newegg when companies reply to a comment about a problem
 	Display a form allowing users to make new comments and edit and maybe delete their own
 
-
 	Maybe when validating forms, set focus to first invalid form field
 		set a var called something like is_focused = true after first field
 		to prevent others from being focused
 
 
-
-
-
 Research Futures
 	try to implement caching by calling a function that returns a string and schedules an async function
-	to write the string to a cache after the string is returned to allow the webpage to load while the 
+	to write the string to a cache afzter the string is returned to allow the webpage to load while the 
 	string is being written to the cache
-
-
-
-
-
-
-
-
-
-
 
 
 Rocket-auth-login:
@@ -248,8 +208,25 @@ Rocket-auth-login:
 
 
 DONE
+	
+	
+	
+	
+	Maybe: Add author to the homepage (multiple articles) instead of just on the single article?
 
-
+	Add a 404 page, maybe other error pages as well
+		#[error(404)] I believe it is
+	
+	Update RSS, add the author field
+	
+	Add an author page which shows all articles by that user
+		Do not need a page to show author info, there is not enough info in the db about each user to display a full page
+		
+	Add author when submitting a new article, read the AdministratorCookie's user id
+	
+	Add author link in article/articles
+		show author in articles
+		in the templates show a link to a page that will list all articles by that user
 	
 	Make the templates display the user's display name if it is not None (it is an option field) otherwise the username
 
@@ -437,8 +414,20 @@ DONE
 		Use javascript to add the edit/delete options
 		But in the route check the correct cookie is set for that action
 
-	
 
+	Add Tls/Ssl using Let's Encrypt
+		https://mmstick.tk/post/q42
+		https://rocket.rs/guide/configuration/#configuring-tls
+		https://api.rocket.rs/rocket/config/struct.Config.html#method.set_tls
+	Sanitizing strings
+	Make an actual layout
+	Maybe implement a cache
+	maybe implement a file cache
+		This would allow files to be served even when the url
+		is a folder in root.  CSS & JS files for example will
+		not work correctly if the url is: 
+		localhost/view/category/blah
+	Finish implementing the Usertype module, make it an enum that holds whatever?
 
 
 

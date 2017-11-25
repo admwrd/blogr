@@ -45,6 +45,7 @@ extern crate libflate;
 extern crate brotli;
 extern crate zopfli;
 
+extern crate urlencoding;
 extern crate titlecase;
 // extern crate handlebars;
 #[allow(unused_imports)]

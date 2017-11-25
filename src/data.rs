@@ -79,7 +79,7 @@ impl DbConn {
         let qryrst: Result<_, _> = if qrystr != "" {
             self.query(qrystr, &[])
         } else {
-            self.query("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description FROM articles a JOIN users u ON (a.author = u.userid)", &[])
+            self.query("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", &[])
         };
         if let Ok(result) = qryrst {
             let mut articles: Vec<Article> = Vec::new();
