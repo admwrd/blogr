@@ -716,12 +716,13 @@ plainto_tsquery('pg_catalog.english', '"#);
 // application/rss+xml
 #[get("/rss.xml")]
 // EXPRESS X - pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>) -> String {
-pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn rss_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     use rss::{Channel, ChannelBuilder, Guid, GuidBuilder, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};
     use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
     use urlencoding::encode;
-
-  
+    
+    let rss: Express;
+    
     let result = conn.articles("");
     if let Some(articles) = result {
         let mut article_items: Vec<Item> = Vec::new();
@@ -802,17 +803,20 @@ pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<U
         output.push_str(&rss_output);
         
         let express: Express = output.into();
-        express.compress(encoding)
+        rss = express.set_content_type(ContentType::XML).compress(encoding);
             // set_ttl(-1)
-            .set_content_type(ContentType::XML)
             // .add_extra("Content-Type".to_string(), "application/rss+xml".to_string())
     } else {
         let output = String::from("Could not create RSS feed.");
         let express: Express = output.into();
         // Do not need to compress output with such a small string.
         // express.compress(encoding).set_content_type(ContentType::XML
-        express
+        rss = express;
     }
+    
+    let end = start.0.elapsed();
+    println!("RSS Generated in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    rss
 }
 
 // #[get("/author/<authorid>/<authorname>")]

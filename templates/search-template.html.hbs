@@ -108,7 +108,32 @@
 <!-- ---------- -->
 
                     <footer id="v-footer">
-                        <div class="v-copyright">&copy; 2017 Andrew Prindle | <a href="{{info.base_url}}rss.xml">RSS</a></div>
+                        <div class="v-copyright">&copy; 2017 
+                            <script type="text/javascript" language="javascript">
+                                <!--
+                                // Email obfuscator script 2.1 by Tim Williams, University of Arizona
+                                // Random encryption key feature coded by Andrew Moulden
+                                // This code is freeware provided these four comment lines remain intact
+                                // A wizard to generate this code is at http://www.jottings.com/obfuscator/
+                                { coded = "uqyNFia.zNFqaJ@IWzyi.xtW"
+                                  key = "WKfChFt7lv4Ykz9nGrTJBIZXUPHeLs2ciAp6SDmNQq3doMR1E50a8OVxywugbj"
+                                  shift=coded.length
+                                  link=""
+                                  for (i=0; i<coded.length; i++) {
+                                    if (key.indexOf(coded.charAt(i))==-1) {
+                                      ltr = coded.charAt(i)
+                                      link += (ltr)
+                                    }
+                                    else {     
+                                      ltr = (key.indexOf(coded.charAt(i))-shift+key.length) % key.length
+                                      link += (key.charAt(ltr))
+                                    }
+                                  }
+                                document.write("<a href='mailto:"+link+"'>Andrew Prindle</a>")
+                                }
+                                //-->
+                            </script><noscript>Andrew Prindle</noscript>
+                         | <a href="{{info.base_url}}rss.xml">RSS</a></div>
                         {{#if info.gentime}}
                         <div class="v-generation-time">Generated in {{info.gentime}} seconds</div>
                         {{/if}}
