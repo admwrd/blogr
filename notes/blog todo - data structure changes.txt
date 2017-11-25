@@ -1,0 +1,44 @@
+
+
+ADDITIONS - Article
+
+page type	markdown/html/attachment
+			attachment adds content-disposition header:
+			Content-Disposition: attachment; filename="fname.ext"
+
+etag hash?
+
+TL;DR section?
+
+hit count
+		tracked internally by the rust app and updated every so often
+
+unique visitors
+		tracked internally by the rust app and updated every so often
+
+
+
+ADDITIONS - Users (AdministratorCookie/UserCookie)
+Add an email field
+maybe in the future add an avatar???
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

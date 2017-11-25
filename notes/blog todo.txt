@@ -18,14 +18,23 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+
+	If a user is signing in as an admin or regular user and has already signed in as another user type
+		check if the usernames/userid match, otherwise remove the old cookie
+		This prevents a user from being logged in as two separate users with different user types
+		Maybe set a flash message saying that the other user was logged out or something
+
+	Add etags to articles
+		set ttl to enable the caching thens
+		The hash should be: hash(title + current datetime)
+		Do not need to hash body contents, will just be slower, datetime will make it unique
+		Could retrieve hash from database in a query or by hashing in Rust, either way
+	
 	Add last modified (and created, if exists?) http headers to individual article pages
 		Maybe add a last modified header to articles page where the last modified
 		date value is the newest date of all the article dates
 	
 	Add content to the about me page.
-	Add a email/contact links at the bottom of the page in the footer
-		Maybe change add an email link in the name of the copyright
-		(c) 2017 <a href="">Andrew Prindle</a>
 	
 	Figure out how to add version badge to github readme.md file
 	
@@ -66,10 +75,6 @@ Blogr
 	Does blogr search page show a form with the date range?
 		I can't even remember, prolly not.
 
-	Change search, article, and articles templates to show an author.
-		Update the database to link each article to an author
-		Update the RSS page to reflect the author for each article, use a join query to get the author
-
 	Allow admin to delete posts and edit them
 
 	Maybe add a preview as a popup modal [for creating posts?]
@@ -90,26 +95,17 @@ Blogr
 	Add unique visitors
 		Maybe create a file or in-memory list of ip addresses
 			every once and a while write them to database
+		IP Address Fairing Example:
+			https://github.com/lukaspustina/ifconfig-rs/blob/master/src/fairings.rs
+		Rocket Request.remote() method
+			https://api.rocket.rs/rocket/struct.Request.html#method.remote
 
 	Authenticate user properly with a database query
 
-	GET /users
-	GET /user?<userid> - userid: UserId
-	POST /user	// saves changes to display email and any other properties
-	Create a Users page that shows all users with public profiles
-		add a is_public bool to the user table in the database
-	Create a show user page that displays user information
-		create a UserId struct with a single username attribute
-		if the user has is_public set to false only admins can see it
-		Show Username link, and emai
-		if the viewer is an admin show a checkbox to change the is_admin field
-		if the logged in user/admin is viewing their own page
-			allow them to edit their information
-				allow password to be changed
-				add a hidden username form field
-	Create a 
 	Create a signup page
 		ensure the user enters a password with a min length etc
+
+	Create a page to edit the signed in user's data.
 
 	Make a page that lists articles by date, group by month maybe
 
@@ -124,6 +120,23 @@ Design:
 
 
 Future Todo:
+
+
+	Allow modifications to user info
+		GET /users
+		GET /user?<userid> - userid: UserId
+		POST /user	// saves changes to display email and any other properties
+		Create a Users page that shows all users with public profiles
+			add a is_public bool to the user table in the database
+		Create a show user page that displays user information
+			create a UserId struct with a single username attribute
+			if the user has is_public set to false only admins can see it
+			Show Username link, and emai
+			if the viewer is an admin show a checkbox to change the is_admin field
+			if the logged in user/admin is viewing their own page
+				allow them to edit their information
+				allow password to be changed
+					add a hidden username form field
 	
 	
 	Test the current method of finding the generation time (Instant::now() and start.elapsed())
@@ -184,7 +197,7 @@ Future Todo:
 	Maybe add ability for admins to reply to a comment with a special styling, 
 		like on newegg when companies reply to a comment about a problem
 	Display a form allowing users to make new comments and edit and maybe delete their own
-
+                                                                                                              
 	Maybe when validating forms, set focus to first invalid form field
 		set a var called something like is_focused = true after first field
 		to prevent others from being focused
@@ -210,7 +223,13 @@ Rocket-auth-login:
 DONE
 	
 	
+	Change search, article, and articles templates to show an author.
+		Update the database to link each article to an author
+		Update the RSS page to reflect the author for each article, use a join query to get the author
 	
+	Add a email/contact links at the bottom of the page in the footer
+		Maybe change add an email link in the name of the copyright
+		(c) 2017 <a href="">Andrew Prindle</a>
 	
 	Maybe: Add author to the homepage (multiple articles) instead of just on the single article?
 
