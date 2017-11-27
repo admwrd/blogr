@@ -1,5 +1,8 @@
 
 Rocket-auth-login
+	Update examples to use the new &mut Cookies for .redirect() and .flash_redirect() as well as ::delete_cookie()
+		Publish with new version number
+
 	Add repository url link in the Cargo.toml file
 	
 	Cleanup the administrator.rs module in the tls_example
@@ -24,12 +27,10 @@ Blogr
 		attempts counts the number of continuous attempts to login without success
 			every x attempts lock it, do not clear the attempts until successful login
 
-
-	Add pubdate to rss items
-		Builder:
-		https://docs.rs/rss/1.1.0/rss/struct.ItemBuilder.html#method.pub_date
 	Maybe add last_build_date as last modified date for the channel
 		https://docs.rs/rss/1.1.0/rss/struct.ChannelBuilder.html#method.last_build_date
+		Builder:
+		https://docs.rs/rss/1.1.0/rss/struct.ItemBuilder.html#method.pub_date
 
 	If a user is signing in as an admin or regular user and has already signed in as another user type
 		check if the usernames/userid match, otherwise remove the old cookie

@@ -32,6 +32,94 @@ maybe in the future add an avatar???
 
 
 
+Status Codes
+https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+
+Header Fields
+https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+
+Age	The age an object has been in a proxy cache in seconds
+Content-Disposition: attachment; filename="fname.ext"
+
+
+
+Should Use
+
+X-Frame-Options	DENY
+	click jacking prevention
+
+
+Validation
+When using the "must-revalidate" directive, the cache must verify the status of the stale resources before using it and expired ones should not be used. For more details, see the Validation:
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#Cache_validation
+
+Revved Resources
+For resources which are updated infrequently but should be updated quickly once changed, use
+revision numbers.  Old resources are cached with a large age, and new resources are added with
+a different revision number in the file name so it is newly retrieved once updated
+
+Vary
+If a resource is cached the Vary header indicates which fields in the headers must match exactly
+in order for the cached resource to be used.  Example:
+--> Accept-Encoding: br    (request)
+<-- Content-Encoded: br    (response)
+    Vary: Content-Encoding (response cont.)
+
+
+
+
+EXAMPLES
+
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified
+Date	Sat, 25 Nov 2017 19:06:31 GMT
+	Date and time that the message originated
+Last-Modified	Mon, 20 Nov 2017 16:05:09 GMT
+	Times are always in GMT not local time
+Content-Length	<num bytes>
+Connection	keep-alive
+Access-Control-Allow-Origin	*
+ETag	(hex characters)[;(compression method - br/gzip/deflate)]
+strict-transport-security	max-age=63072000
+Vary	Cookie, Accept-Encoding
+x-content-type-options	nosniff
+X-Frame-Options		DENY
+X-kuma-revision		1276011
+x-xss-protection	1; mode=block
+
+
+
+https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+Accept-Ranges	bytes
+Cache-Control	max-age=21600
+Content-Security-Policy	upgrade-insecure-requests
+Expires	Sun, 26 Nov 2017 01:15:55 GMT
+p3p	policyref="http://www.w3.org/2014/08/p3p.xml"
+Strict-Transport-Security	max-age=15552000; includeSubdomains; preload
+
+
+
+https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+age		68503
+cache-control	private, s-maxage=0, max-age=0, must-revalidate
+backend-timing	D=109844 t=1511304560834616
+link		</static/images/project-logos/enwiki.png>;rel=preload;as=image;media=not all and (min-resolution: 1.5dppx),</static/images/project-logos/enwiki-1.5x.png>;rel=preload;as=image;media=(min-resolution: 1.5dppx) and (max-resolution: 1.999999dppx),</static/images/project-logos/enwiki-2x.png>;rel=preload;as=image;media=(min-resolution: 2dppx)
+p3p		CP="This is not a P3P policy! See https://en.wikipedia.org/wiki/Special:CentralAutoLogin/P3P for more info.
+status		304
+via		1.1 varnish-v4 1.1 varnish-v4
+strict-transport-security	max-age=106384710; includeSubDomains; preload
+x-analytics	ns=0;page_id=13106156;WMF-Last-Access=25-Nov-2017;WMF-Last-Access-Global=25-Nov-2017;https=1
+x-cache		cp1067 hit/6, cp1053 hit/14
+x-cache-status	hit-front
+x-client-ip	173.239.240.19
+x-powered-by	HHVM/3.18.6-dev
+x-ua-compatible	IE=Edge
+
+
+
+
+
+
+
 
 
 

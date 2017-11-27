@@ -179,10 +179,15 @@ use accept::*;
 
 
 #[get("/admin", rank = 1)]
-pub fn hbs_dashboard_admin_authorized(start: GenTimer, conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_admin_authorized(start: GenTimer, conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
+    let flash = if let Some(flash) = flash_msg_opt {
+        Some( alert_warning(flash.msg()) )
+    } else {
+        None
+    };
     
-    let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=admin.username), None), Some("Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start.0));
+    let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=admin.username), flash), Some("Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start.0));
     
     let end = start.0.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
@@ -235,12 +240,34 @@ pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Optio
 
 #[allow(unused_mut)]
 #[post("/admin", data = "<form>")]
-pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<AdministratorForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+// pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<AdministratorForm>>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<AdministratorForm>>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
     // let start = Instant::now();
     
     let login: AdministratorForm = form.get().form();
     // let login: AdministratorForm = form.into_inner().form;
-    let output = login.flash_redirect("/admin", "/admin", cookies);
+    let mut output = login.flash_redirect("/admin", "/admin", &mut cookies);
+    
+    if output.is_ok() {
+        if let Some(user_cookie) = user {
+            if &user_cookie.username != &login.username {
+                if let Ok(redir) = output {
+                    let flash_message: Flash<Redirect> = Flash::error( 
+                        redir, 
+                        &format!("The regular user {} has been logged out.  You cannot log in with two separate user accounts at once.", 
+                            &user_cookie.username
+                        )
+                    );
+                    // Log the regular user out
+                    // would use UserCookie::delete_cookie(cookies) but cookies already gets sent elsewhere
+                    cookies.remove_private( Cookie::named( UserCookie::cookie_id() ) );
+                    
+                    // the Err will still allow the cookies to get set to log the user in but will allow a message to be passed
+                    output = Err( flash_message );
+                }
+            }
+        }
+    }
     
     let end = start.0.elapsed();
     println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
@@ -251,7 +278,7 @@ pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<Administrat
 pub fn hbs_logout_admin(admin: Option<AdministratorCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
     if let Some(_) = admin {
         // cookies.remove_private(Cookie::named(AdministratorCookie::cookie_id()));
-        AdministratorCookie::delete_cookie(cookies);
+        AdministratorCookie::delete_cookie(&mut cookies);
         Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
     } else {
         Err(Redirect::to("/admin"))
@@ -269,10 +296,15 @@ pub fn hbs_logout_admin(admin: Option<AdministratorCookie>, mut cookies: Cookies
 
 
 #[get("/user", rank = 1)]
-pub fn hbs_dashboard_user_authorized(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: UserCookie, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_user_authorized(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: UserCookie, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
+    let flash = if let Some(flash) = flash_msg_opt {
+        Some( alert_warning(flash.msg()) )
+    } else {
+        None
+    };
     
-    let output: Template = hbs_template(TemplateBody::General(format!("Welcome User {user}.  You are viewing the User dashboard page.", user=user.username), None), Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start.0));
+    let output: Template = hbs_template(TemplateBody::General(format!("Welcome User {user}.  You are viewing the User dashboard page.", user=user.username), flash), Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start.0));
     
     let end = start.0.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
@@ -320,12 +352,33 @@ pub fn hbs_dashboard_user_retry_user(start: GenTimer, conn: DbConn, admin: Optio
 
 #[allow(unused_mut)]
 #[post("/user", data = "<form>")]
-pub fn hbs_process_user_login(start: GenTimer, form: Form<LoginCont<UserForm>>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
+pub fn hbs_process_user_login(start: GenTimer, form: Form<LoginCont<UserForm>>, admin: Option<AdministratorCookie>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
     // let start = Instant::now();
     
     let login: UserForm = form.get().form();
     // let login: AdministratorForm = form.into_inner().form;
-    let output = login.flash_redirect("/user", "/user", cookies);
+    let mut output = login.flash_redirect("/user", "/user", &mut cookies);
+    
+    if output.is_ok() {
+        if let Some(admin_cookie) = admin {
+            if &admin_cookie.username != &login.username {
+                if let Ok(redir) = output {
+                    let flash_message: Flash<Redirect> = Flash::error( 
+                        redir, 
+                        &format!("The administrator user {} has been logged out.  You cannot log in with two separate user accounts at once.", 
+                            &admin_cookie.username
+                        )
+                    );
+                    // Log the regular user out
+                    // would use UserCookie::delete_cookie(cookies) but cookies already gets sent elsewhere
+                    cookies.remove_private( Cookie::named( AdministratorCookie::cookie_id() ) );
+                    
+                    // the Err will still allow the cookies to get set to log the user in but will allow a message to be passed
+                    output = Err( flash_message );
+                }
+            }
+        }
+    }
     
     let end = start.0.elapsed();
     println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
@@ -336,7 +389,7 @@ pub fn hbs_process_user_login(start: GenTimer, form: Form<LoginCont<UserForm>>, 
 pub fn hbs_logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
     if let Some(_) = admin {
         // cookies.remove_private(Cookie::named(UserCookie::cookie_id()));
-        UserCookie::delete_cookie(cookies);
+        UserCookie::delete_cookie(&mut cookies);
         Ok(Flash::success(Redirect::to("/"), "Successfully logged out."))
     } else {
         Err(Redirect::to("/user"))
