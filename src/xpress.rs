@@ -22,7 +22,7 @@ use std::borrow::Cow;
 // use std::option::Option;
 // use std::sync::atomic::{AtomicUsize, Ordering};
 
-use zopfli;
+// use zopfli;
 use brotli;
 use rocket::request::{FromRequest, Request};
 use rocket::Outcome;
@@ -39,6 +39,9 @@ use libflate::deflate;
 
 
 use accept::*;
+
+use vcache::*;
+use rocket::State;
 
 const DEFAULT_TTL: isize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
 
@@ -237,6 +240,9 @@ impl Express {
         self.extras.insert(key, value);
         self
     }
+    // pub fn state(state: State<VCache>) -> Self {
+        
+    // }
     pub fn new(data: ExData) -> Express {
         Express {
             content_type: (&data).content_type(),

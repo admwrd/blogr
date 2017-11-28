@@ -38,8 +38,9 @@ extern crate postgres;
 extern crate r2d2;
 extern crate r2d2_postgres;
 
-extern crate rocket_file_cache;
+// extern crate rocket_file_cache;
 // extern crate concurrent_hashmap;
+extern crate chashmap;
 
 extern crate libflate;
 extern crate brotli;
@@ -59,10 +60,9 @@ extern crate dotenv;
 
 extern crate rocket_auth_login;
 
+mod vcache;
 mod accept;
 mod xpress;
-// mod cache;
-// mod express;
 mod layout;
 mod blog;
 mod data;
@@ -80,6 +80,7 @@ mod pages_administrator;
 // mod login_form_status;
 
 // use cache::*;
+use vcache::*;
 use xpress::*;
 use accept::*;
 use ral_administrator::*;
@@ -95,14 +96,15 @@ use hbs_templates::*;
 // use handlebars::Handlebars;
 use titlecase::titlecase;
 use regex::Regex;
-use std::time::Instant;
+use std::time::{Instant, Duration, SystemTime};
 
 use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::{Mutex, Arc};
 use std::collections::HashMap;
 
+use chashmap::*;
 // Rocket File Cache - Removed
 // use rocket_file_cache::{Cache, CachedFile};
 // use std::sync::Mutex;
@@ -116,9 +118,9 @@ use rocket::{Request, Data, Outcome, Response};
 use rocket::response::{content, NamedFile, Redirect, Flash, Responder, Content};
 use rocket::response::content::Html;
 use rocket::data::FromData;
-use rocket::request::{FlashMessage, Form, FromForm, FormItems};
+use rocket::request::{FlashMessage, Form, FromForm, FormItems, FromRequest};
 use rocket::http::{Cookie, Cookies, MediaType, ContentType, Status};
-
+use rocket::State;
 
 // use auth::userpass::UserPass;
 // use auth::status::{LoginStatus,LoginRedirect};
@@ -169,7 +171,8 @@ pub const MAX_CREATE_TAGS: usize = 250;
 // }
 
 #[get("/<file..>", rank=10)]
-fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
+// fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
+fn static_files(file: PathBuf, vcache: State<VCache>, encoding: AcceptCompression) -> Option<Express> {
 // fn static_files(file: PathBuf) -> Option<NamedFile> {
     // Without Expiration header:
     // NamedFile::open(Path::new("static/").join(file)).ok()
@@ -203,6 +206,24 @@ lazy_static! {
     static ref PGCONN: Mutex<DbConn> = Mutex::new( DbConn(init_pg_pool().get().expect("Could not connect to database.")) );
 }
 
+
+
+
+// impl<'a, 'r> FromRequest<'a, 'r> for VCache {
+//     type Error = ();
+    
+//     fn from_request(request: &'a Request<'r>) -> ::rocket::request::Outcome<VCache,Self::Error>{
+//         unimplemented!()
+//     }
+// }
+
+// impl<'a> Responder<'a> for Express {
+//     fn respond_to(self, req: &Request) -> response::Result<'a> {
+        
+//     }
+// }
+
+
 fn main() {
     // env_logger::init();
     // init_pg_pool();
@@ -211,11 +232,16 @@ fn main() {
     //     // (*pg_conn).connect();
     // }
     
+    
+    // let vcache: Arc<Mutex<VCache>> = Arc::new(Mutex::new( VCache(CHashMap::new()) ));
+    let vcache: VCache = VCache(CHashMap::new());
+    
     // let cache: Cache = Cache::new(1024 * 1024 * 40); // 40 MB
     init_pg_pool().get().unwrap();
     
     rocket::ignite()
         // .manage(cache)
+        .manage(vcache)
         .manage(data::init_pg_pool())
         .attach(Template::fairing())
         .mount("/", routes![
