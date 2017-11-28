@@ -40,8 +40,8 @@ use libflate::deflate;
 
 use accept::*;
 
-use vcache::*;
-use rocket::State;
+// use vcache::*;
+// use rocket::State;
 
 const DEFAULT_TTL: isize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
 

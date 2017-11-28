@@ -60,7 +60,7 @@ extern crate dotenv;
 
 extern crate rocket_auth_login;
 
-mod vcache;
+// mod vcache;
 mod accept;
 mod xpress;
 mod layout;
@@ -80,7 +80,7 @@ mod pages_administrator;
 // mod login_form_status;
 
 // use cache::*;
-use vcache::*;
+// use vcache::*;
 use xpress::*;
 use accept::*;
 use ral_administrator::*;
@@ -153,59 +153,74 @@ pub const MAX_CREATE_TAGS: usize = 250;
 
 
 
+#[get("/<file..>", rank=10)]
+fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
+    // if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
+    if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
+        let exp: Express = named.into();
+        Some( exp.compress(encoding) )
+    } else {
+        None
+    }
+}
+
+
+
 // #[get("/<file..>", rank=10)]
-// fn static_files(file: PathBuf, encoding: AcceptCompression, cache: State<Cache>) -> Option<Express> {
+// fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
 //     // if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
 //     if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
 //         let cached = CachedFile::open(named.path(), cache.inner());
         
 //         // let exp: Express = named.into();
 //         let exp: Express = cached.into();
-//         Some( exp )
+//         Some( exp.comprses(encoding) )
 //     } else {
 //         None
 //     }
-    
+// }
+
+
 // }
 // #[get("/<file..>")]
 // fn files(file: PathBuf, cache: State<Cache> ) -> Option<CachedFile> {
 //     CachedFile::open(Path::new("www/").join(file), cache.inner())
 // }
 
-#[get("/<file..>", rank=10)]
-// fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
-fn static_files(file: PathBuf, vcache: State<VCache>, encoding: AcceptCompression) -> Option<Express> {
-// fn static_files(file: PathBuf) -> Option<NamedFile> {
-    // Without Expiration header:
-    // NamedFile::open(Path::new("static/").join(file)).ok()
-    let start = Instant::now();
-    if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
-        let result: Option<Express>;
-        if let Some(output) = VCache::retrieve(named.path().to_path_buf(), vcache) {
-            // let express: Express = output.into();
+// #[get("/<file..>", rank=10)]
+// // fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
+// fn static_files(file: PathBuf, vcache: State<VCache>, encoding: AcceptCompression) -> Option<Express> {
+// // fn static_files(file: PathBuf) -> Option<NamedFile> {
+//     // Without Expiration header:
+//     // NamedFile::open(Path::new("static/").join(file)).ok()
+//     let start = Instant::now();
+//     if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
+//         let result: Option<Express>;
+//         if let Some(output) = VCache::retrieve(named.path().to_path_buf(), vcache) {
+//             // let express: Express = output.into();
             
-            let ctype = ContentType::from_extension(named.path().extension().unwrap_or(OsStr::new("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain);
-            let express: Express = output.into();
-            // express.compress(encoding)
-            result = Some( express.set_content_type(ctype).compress(encoding) );
+//             let ctype = ContentType::from_extension(named.path().extension().unwrap_or(OsStr::new("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain);
+//             let express: Express = output.into();
+//             // express.compress(encoding)
+//             result = Some( express.set_content_type(ctype).compress(encoding) );
             
-        } else {
-            println!("Cache retrieve failed, falling back to named file");
-            let exp: Express = named.into();
-            result = Some( exp.compress(encoding) );
-        }
+//         } else {
+//             println!("Cache retrieve failed, falling back to named file");
+//             let exp: Express = named.into();
+//             result = Some( exp.compress(encoding) );
+//         }
         
-        let end = start.elapsed();
-        println!("Served static file in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//         let end = start.elapsed();
+//         println!("Served static file in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
         
-        result
-        // let exp: Express = named.into();
-        // Some( exp )
-    } else {
-        None
-    }
+//         result
+//         // let exp: Express = named.into();
+//         // Some( exp )
+//     } else {
+//         None
+//     }
     
-}
+// }
 
 
 #[error(404)]
@@ -229,22 +244,6 @@ lazy_static! {
 
 
 
-
-// impl<'a, 'r> FromRequest<'a, 'r> for VCache {
-//     type Error = ();
-    
-//     fn from_request(request: &'a Request<'r>) -> ::rocket::request::Outcome<VCache,Self::Error>{
-//         unimplemented!()
-//     }
-// }
-
-// impl<'a> Responder<'a> for Express {
-//     fn respond_to(self, req: &Request) -> response::Result<'a> {
-        
-//     }
-// }
-
-
 fn main() {
     // env_logger::init();
     // init_pg_pool();
@@ -254,15 +253,12 @@ fn main() {
     // }
     
     
-    // let vcache: Arc<Mutex<VCache>> = Arc::new(Mutex::new( VCache(CHashMap::new()) ));
-    let vcache: VCache = VCache(CHashMap::new());
+    // let vcache: VCache = VCache(CHashMap::new());
     
-    // let cache: Cache = Cache::new(1024 * 1024 * 40); // 40 MB
     init_pg_pool().get().unwrap();
     
     rocket::ignite()
-        // .manage(cache)
-        .manage(vcache)
+        // .manage(vcache)
         .manage(data::init_pg_pool())
         .attach(Template::fairing())
         .mount("/", routes![
