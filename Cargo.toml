@@ -30,7 +30,7 @@ rocket_codegen = "0.3.3"
 # rocket_codegen = "0.3.2"
 rocket-auth-login = {path = "../rocket-auth-login"}
 # rocket-auth-login = "0.2.*"
-# rocket-file-cache = "0.10.1"
+rocket-file-cache = "0.10.1"
 # rocket-file-cache = { path = "rocket-file-cache" }
 # rocket-simpleauth = {path = "auth-rs"}
 # rocket-simpleauth = "0.3.0"

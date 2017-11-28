@@ -38,7 +38,7 @@ extern crate postgres;
 extern crate r2d2;
 extern crate r2d2_postgres;
 
-// extern crate rocket_file_cache;
+extern crate rocket_file_cache;
 // extern crate concurrent_hashmap;
 
 extern crate libflate;
@@ -61,7 +61,7 @@ extern crate rocket_auth_login;
 
 mod accept;
 mod xpress;
-mod cache;
+// mod cache;
 // mod express;
 mod layout;
 mod blog;
@@ -79,7 +79,7 @@ mod pages_administrator;
 // mod users;
 // mod login_form_status;
 
-use cache::*;
+// use cache::*;
 use xpress::*;
 use accept::*;
 use ral_administrator::*;
@@ -149,6 +149,20 @@ pub const MAX_CREATE_TAGS: usize = 250;
 
 
 
+// #[get("/<file..>", rank=10)]
+// fn static_files(file: PathBuf, encoding: AcceptCompression, cache: State<Cache>) -> Option<Express> {
+//     // if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
+//     if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
+//         let cached = CachedFile::open(named.path(), cache.inner());
+        
+//         // let exp: Express = named.into();
+//         let exp: Express = cached.into();
+//         Some( exp )
+//     } else {
+//         None
+//     }
+    
+// }
 // #[get("/<file..>")]
 // fn files(file: PathBuf, cache: State<Cache> ) -> Option<CachedFile> {
 //     CachedFile::open(Path::new("www/").join(file), cache.inner())
@@ -161,36 +175,14 @@ fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
     // NamedFile::open(Path::new("static/").join(file)).ok()
     
     if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
-        
-        if let Some(file_bytes) = CacheEntry::retrieve(named.path()) {
-        
-            // let exp: Express = named.into();
-            let exp: Express = file_bytes.into();
-            Some( exp )
-        } else {
-            println!("error retrieving cached file: {}", named.path().display());
-            let exp: Express = named.into();
-            Some( exp )
-        }
+        let exp: Express = named.into();
+        Some( exp )
     } else {
         None
     }
     
 }
 
-
-lazy_static! {
-    static ref FILE_CACHE: Mutex<HashMap<PathBuf, CacheEntry>> = Mutex::new( HashMap::new() );
-    static ref CURRENT_CACHE_SIZE: Mutex<usize> = Mutex::new( 0 );
-    
-}
-
-// #[error(404)]
-// fn not_found(req: &rocket::Request) -> Html<String> {
-//     Html(format!("<p>Sorry, but '{}' is not a valid path!</p>
-//             <p>Try visiting /hello/&lt;name&gt;/&lt;age&gt; instead.</p>",
-//             req.uri()))
-// }
 
 #[error(404)]
 pub fn error_not_found(req: &Request) -> Express {
@@ -212,9 +204,6 @@ lazy_static! {
 }
 
 fn main() {
-    // use login::authorization::LoginCont;
-    // use ral_administrator::AdministratorForm;
-    
     // env_logger::init();
     // init_pg_pool();
     // if let Ok(pg_conn) = init_pg_pool().get() {

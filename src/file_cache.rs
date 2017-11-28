@@ -14,6 +14,13 @@ use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
+lazy_static! {
+    static ref FILE_CACHE: Mutex<HashMap<PathBuf, CacheEntry>> = Mutex::new( HashMap::new() );
+    static ref CURRENT_CACHE_SIZE: Mutex<usize> = Mutex::new( 0 );
+    
+}
+
+
 pub struct FileCache {
     pub entries: ,
     pub total_limit: u64,
