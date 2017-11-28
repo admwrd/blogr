@@ -42,13 +42,20 @@ unsafe impl Send for VCache {}
 
 impl VCache {
     pub fn retrieve(path: PathBuf, cache: State<VCache>) -> Option<Vec<u8>> {
+    // pub fn retrieve(&self, path: PathBuf, cache: State<VCache>) -> Option<Vec<u8>> {
         // check if the file is in the cache
+        
+        println!("Retreiving cache item: {}", &path.display());
+        
         if let Some(mut cached_item) = cache.0.get_mut(&path) {
             if let Ok(mut file) = File::open(&path) {
                 if let Ok(metadata) = file.metadata() {
                     // check if the cached item needs to be updated
                     if cached_item.added.elapsed().unwrap_or(Duration::new(UPDATE_AGE+1, 0)) > Duration::new(UPDATE_AGE, 0) {
                         if metadata.created().unwrap() > cached_item.created || metadata.modified().unwrap() > cached_item.modified {
+                            
+                            println!("Cache item is expired, updating {}", &path.display());
+                            
                             let mut buffer: Vec<u8> = Vec::new();
                             let bytes = file.read_to_end(&mut buffer);
                             
@@ -65,14 +72,19 @@ impl VCache {
                             
                         }
                     }
+                    
+                    println!("Updating cache item `{}` access count and returning {} bytes", &path.display(), cached_item.data.len());
+                    
                     cached_item.access = SystemTime::now();
                     cached_item.uses += 1;
                     cached_item.access = SystemTime::now();
                     Some(cached_item.data.clone())
                 } else {
+                    println!("Cache item `{}` retrieval failed 1", &path.display());
                     None
                 }
             } else {
+                println!("Cache item `{}` retrieval failed 2", &path.display());
                 None
             }
         } else {
@@ -102,6 +114,9 @@ impl VCache {
                                     path: path.clone(),
                                     data,
                     };
+                    
+                    println!("Inserting cache item: {} with {} bytes", &path.display(), item.data.len());
+                    
                     cache.0.insert_new(path, item);
                     
                     // Todo: Cache Size
@@ -109,9 +124,11 @@ impl VCache {
                     
                     Some(output)
                 } else {
+                    println!("Cache item `{}` retrieval failed 3", &path.display());
                     None
                 }
             } else {
+                println!("Cache item `{}` retrieval failed 4", &path.display());
                 None
             }
         }

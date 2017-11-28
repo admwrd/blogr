@@ -98,6 +98,7 @@ use titlecase::titlecase;
 use regex::Regex;
 use std::time::{Instant, Duration, SystemTime};
 
+use std::ffi::OsStr;
 use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
@@ -121,6 +122,7 @@ use rocket::data::FromData;
 use rocket::request::{FlashMessage, Form, FromForm, FormItems, FromRequest};
 use rocket::http::{Cookie, Cookies, MediaType, ContentType, Status};
 use rocket::State;
+
 
 // use auth::userpass::UserPass;
 // use auth::status::{LoginStatus,LoginRedirect};
@@ -176,10 +178,29 @@ fn static_files(file: PathBuf, vcache: State<VCache>, encoding: AcceptCompressio
 // fn static_files(file: PathBuf) -> Option<NamedFile> {
     // Without Expiration header:
     // NamedFile::open(Path::new("static/").join(file)).ok()
-    
+    let start = Instant::now();
     if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
-        let exp: Express = named.into();
-        Some( exp )
+        let result: Option<Express>;
+        if let Some(output) = VCache::retrieve(named.path().to_path_buf(), vcache) {
+            // let express: Express = output.into();
+            
+            let ctype = ContentType::from_extension(named.path().extension().unwrap_or(OsStr::new("")).to_str().unwrap_or("")).unwrap_or(ContentType::Plain);
+            let express: Express = output.into();
+            // express.compress(encoding)
+            result = Some( express.set_content_type(ctype).compress(encoding) );
+            
+        } else {
+            println!("Cache retrieve failed, falling back to named file");
+            let exp: Express = named.into();
+            result = Some( exp.compress(encoding) );
+        }
+        
+        let end = start.elapsed();
+        println!("Served static file in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+        
+        result
+        // let exp: Express = named.into();
+        // Some( exp )
     } else {
         None
     }
