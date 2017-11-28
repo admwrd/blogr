@@ -162,9 +162,16 @@ fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
     
     if let Some(named) = NamedFile::open(Path::new("static/").join(file)).ok() {
         
+        if let Some(file_bytes) = CacheEntry::retrieve(named.path()) {
         
-        let exp: Express = named.into();
-        Some( exp )
+            // let exp: Express = named.into();
+            let exp: Express = file_bytes.into();
+            Some( exp )
+        } else {
+            println!("error retrieving cached file: {}", named.path().display());
+            let exp: Express = named.into();
+            Some( exp )
+        }
     } else {
         None
     }

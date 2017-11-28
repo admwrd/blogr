@@ -90,57 +90,41 @@ impl CacheEntry {
             cache.remove(&pathbuf);
             return None;
         }
-        {
-        if let Some(mut cache_entry) = cache.get_mut(&pathbuf) {
-            // if exists in cache check if the elapsed time since it was added exceeds the max time
-            
-            if !cache_entry.is_current() {
+        { // used to separate mutable calls cache.get_mut() and cache.insert(pathbuf, cache_entry)
+            if let Some(mut cache_entry) = cache.get_mut(&pathbuf) {
+                // if exists in cache check if the elapsed time since it was added exceeds the max time
                 
-                // let f = BufReader::new(file);
-                if let Ok(metadata) = pathbuf.metadata() {
-                    if !metadata.is_file() {
-                        return None;
+                if !cache_entry.is_current() {
+                    if let Ok(metadata) = pathbuf.metadata() {
+                        if !metadata.is_file() {
+                            return None;
+                        } else {
+                            let mut buffer: Vec<u8> = Vec::new();
+                            let rst = cache_entry.file.read_to_end(&mut buffer);
+                            cache_entry.data = buffer;
+                            cache_entry.uses += 1;
+                            cache_entry.last_access = SystemTime::now();
+                            return Some(cache_entry.data.clone());
+                        }
                     } else {
-                        let mut buffer: Vec<u8> = Vec::new();
-                        let rst = cache_entry.file.read_to_end(&mut buffer);
-                        cache_entry.data = buffer;
-                        cache_entry.uses += 1;
-                        cache_entry.last_access = SystemTime::now();
-                        return Some(cache_entry.data.clone());
+                        return None;
                     }
-                    
                 } else {
-                    return None;
+                    cache_entry.uses += 1;
+                    cache_entry.last_access = SystemTime::now();
+                    return Some(cache_entry.data.clone());
                 }
-                
-                // if let Ok(file) = File::open() {
-                //     
-                // } else {
-                //     None
-                // }
-            } else {
-                cache_entry.uses += 1;
-                cache_entry.last_access = SystemTime::now();
-                return Some(cache_entry.data.clone());
-                
-            }
-        } 
+            } 
         }
-        // else {
-            if let Some(cache_entry) = CacheEntry::get_file(&pathbuf) {
-                let inserted = cache.insert(pathbuf, cache_entry);
-                // let c = cache.get(&pathbuf);
-                // if let Some() = cache.get(&pathbuf) {  }
-                Some(inserted.expect("error extracting inserted value").data.clone())
-            } else {
-                None
-            }
-        // }
-        
+        if let Some(cache_entry) = CacheEntry::get_file(&pathbuf) {
+            let inserted = cache.insert(pathbuf, cache_entry);
+            Some(inserted.expect("error extracting inserted value").data.clone())
+        } else {
+            None
+        }
     }
     
     pub fn get_file(pathbuf: &Path) -> Option<Self> {
-        // unimplemented!()
         if !pathbuf.exists() {
             None
         } else if let Ok(metadata) = pathbuf.metadata() {
@@ -170,11 +154,7 @@ impl CacheEntry {
         } else {
             None
         }
-        
     }
-    
-    
-    
 }
 
 
