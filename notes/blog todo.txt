@@ -32,11 +32,6 @@ Blogr
 		Builder:
 		https://docs.rs/rss/1.1.0/rss/struct.ItemBuilder.html#method.pub_date
 
-	If a user is signing in as an admin or regular user and has already signed in as another user type
-		check if the usernames/userid match, otherwise remove the old cookie
-		This prevents a user from being logged in as two separate users with different user types
-		Maybe set a flash message saying that the other user was logged out or something
-
 	Add etags to articles
 		set ttl to enable the caching thens
 		The hash should be: hash(title + current datetime)
@@ -46,6 +41,11 @@ Blogr
 	Add last modified (and created, if exists?) http headers to individual article pages
 		Maybe add a last modified header to articles page where the last modified
 		date value is the newest date of all the article dates
+	
+	Track page views and unique visitors
+	
+	
+	
 	
 	Add content to the about me page.
 	
@@ -66,9 +66,6 @@ Blogr
 		search
 		individual tag page (lists just one tag)
 		
-	
-	Maybe add email addresses?  The RSS author field is supposed to be an email. 
-		Probably not as it would increase spam
 
 	Add a TL;DR: section of articles
 		Should be optional (nullable in the database)
@@ -236,6 +233,12 @@ Rocket-auth-login:
 DONE
 	
 	
+	
+	If a user is signing in as an admin or regular user and has already signed in as another user type
+		check if the usernames/userid match, otherwise remove the old cookie
+		This prevents a user from being logged in as two separate users with different user types
+		Maybe set a flash message saying that the other user was logged out or something
+	
 	Change search, article, and articles templates to show an author.
 		Update the database to link each article to an author
 		Update the RSS page to reflect the author for each article, use a join query to get the author
@@ -255,7 +258,10 @@ DONE
 		Do not need a page to show author info, there is not enough info in the db about each user to display a full page
 		
 	Add author when submitting a new article, read the AdministratorCookie's user id
-	
+		
+	Maybe add email addresses?  The RSS author field is supposed to be an email. 
+		Probably not as it would increase spam
+
 	Add author link in article/articles
 		show author in articles
 		in the templates show a link to a page that will list all articles by that user

@@ -61,6 +61,7 @@ extern crate rocket_auth_login;
 
 mod accept;
 mod xpress;
+mod cache;
 // mod express;
 mod layout;
 mod blog;
@@ -78,6 +79,7 @@ mod pages_administrator;
 // mod users;
 // mod login_form_status;
 
+use cache::*;
 use xpress::*;
 use accept::*;
 use ral_administrator::*;
@@ -99,7 +101,7 @@ use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
-
+use std::collections::HashMap;
 
 // Rocket File Cache - Removed
 // use rocket_file_cache::{Cache, CachedFile};
@@ -166,6 +168,13 @@ fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
     } else {
         None
     }
+    
+}
+
+
+lazy_static! {
+    static ref FILE_CACHE: Mutex<HashMap<PathBuf, CacheEntry>> = Mutex::new( HashMap::new() );
+    static ref CURRENT_CACHE_SIZE: Mutex<usize> = Mutex::new( 0 );
     
 }
 

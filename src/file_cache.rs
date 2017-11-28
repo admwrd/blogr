@@ -5,8 +5,9 @@ use rocket::{Request, Data, Outcome, Response};
 use rocket::response::{content, NamedFile, Redirect, Flash, Responder, Content};
 use rocket::http::{Cookie, Cookies, MediaType, ContentType, Status};
 
-use concurrent_hashmap::*;
+// use concurrent_hashmap::*;
 
+use std::collections::HashMap;
 use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
