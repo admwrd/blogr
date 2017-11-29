@@ -21,16 +21,7 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
-	Set the password field to have focus when login attempt fails
-	Set username field to have focus when logging in without retry
-	
-	
-	Add a attempts and lockout fields in the user database, which can be null and would be set to a datetime
-		if it is not null do not allow successful login until the time has passed
-			set a flash message explaining the timeout
-		attempts counts the number of continuous attempts to login without success
-			every x attempts lock it, do not clear the attempts until successful login
-	
+
 	Add content to the about me page.
 	
 	Figure out how to add version badge to github readme.md file
@@ -46,7 +37,25 @@ Blogr
 		front page
 		search
 		individual tag page (lists just one tag)
+	Pagination will work by creating a type that stores:
+		current page (offset = rpp*page)
+		results per page  (limit = rpp)
+			could set a limit in the type name
+				could do something like Pagination50 for a pagination type that 
+				maxes out at 50 results per page
 		
+		must retrieve num of rows in the route
+		then call a method to generate the links
+			Pagination.nav_links(route="/route", num_results=213, relative_pages=3)
+			relative_pages is how many pages before and after the current page to show
+		
+		First page:
+		SELECT * FROM articles ORDER BY posted DESC LIMIT 10 OFFSET 0
+		Any other page:
+		SELECT * FROM articles ORDER BY posted DESC LIMIT 10 OFFSET rpp*page
+		
+		make a new method for the Pagination type so routes that have no query string
+			and are the first page can generate links with the new instance of Pagination
 
 	Add a TL;DR: section of articles
 		Should be optional (nullable in the database)
@@ -230,6 +239,17 @@ Rocket-auth-login:
 DONE
 	
 	
+	
+	
+	Set the password field to have focus when login attempt fails
+	Set username field to have focus when logging in without retry
+	
+	
+	Add a attempts and lockout fields in the user database, which can be null and would be set to a datetime
+		if it is not null do not allow successful login until the time has passed
+			set a flash message explaining the timeout
+		attempts counts the number of continuous attempts to login without success
+			every x attempts lock it, do not clear the attempts until successful login
 	
 	Use the rocket-file-cache crate to cache static files
 		https://crates.io/crates/rocket-file-cache
