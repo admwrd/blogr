@@ -243,7 +243,6 @@ lazy_static! {
 }
 
 
-
 fn main() {
     // env_logger::init();
     // init_pg_pool();

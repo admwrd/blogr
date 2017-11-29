@@ -26,34 +26,11 @@ Blogr
 			set a flash message explaining the timeout
 		attempts counts the number of continuous attempts to login without success
 			every x attempts lock it, do not clear the attempts until successful login
-
-	Maybe add last_build_date as last modified date for the channel
-		https://docs.rs/rss/1.1.0/rss/struct.ChannelBuilder.html#method.last_build_date
-		Builder:
-		https://docs.rs/rss/1.1.0/rss/struct.ItemBuilder.html#method.pub_date
-
-	Add etags to articles
-		set ttl to enable the caching thens
-		The hash should be: hash(title + current datetime)
-		Do not need to hash body contents, will just be slower, datetime will make it unique
-		Could retrieve hash from database in a query or by hashing in Rust, either way
-	
-	Add last modified (and created, if exists?) http headers to individual article pages
-		Maybe add a last modified header to articles page where the last modified
-		date value is the newest date of all the article dates
-	
-	Track page views and unique visitors
-	
-	
-	
 	
 	Add content to the about me page.
 	
 	Figure out how to add version badge to github readme.md file
 	
-
-	Use the rocket-file-cache crate to cache static files
-		https://crates.io/crates/rocket-file-cache
 
 	Convert blogr to ssl
 
@@ -102,16 +79,6 @@ Blogr
 		login rety (admin and user): username and failmsg
 		tag?<tag>: sanitize split_tags
 
-	Add unique visitors
-		Maybe create a file or in-memory list of ip addresses
-			every once and a while write them to database
-		IP Address Fairing Example:
-			https://github.com/lukaspustina/ifconfig-rs/blob/master/src/fairings.rs
-		Rocket Request.remote() method
-			https://api.rocket.rs/rocket/struct.Request.html#method.remote
-
-	Authenticate user properly with a database query
-
 	Create a signup page
 		ensure the user enters a password with a min length etc
 
@@ -130,7 +97,33 @@ Design:
 
 
 Future Todo:
+	
+	Add unique visitors
+		Maybe create a file or in-memory list of ip addresses
+			every once and a while write them to database
+		IP Address Fairing Example:
+			https://github.com/lukaspustina/ifconfig-rs/blob/master/src/fairings.rs
+		Rocket Request.remote() method
+			https://api.rocket.rs/rocket/struct.Request.html#method.remote
 
+	Track page views and unique visitors
+
+	
+	Maybe add last_build_date as last modified date for the channel
+		https://docs.rs/rss/1.1.0/rss/struct.ChannelBuilder.html#method.last_build_date
+		Builder:
+		https://docs.rs/rss/1.1.0/rss/struct.ItemBuilder.html#method.pub_date
+
+	Add etags to articles
+		set ttl to enable the caching thens
+		The hash should be: hash(title + current datetime)
+		Do not need to hash body contents, will just be slower, datetime will make it unique
+		Could retrieve hash from database in a query or by hashing in Rust, either way
+	
+	Add last modified (and created, if exists?) http headers to individual article pages
+		Maybe add a last modified header to articles page where the last modified
+		date value is the newest date of all the article dates
+	
 
 	Allow modifications to user info
 		GET /users
@@ -234,6 +227,9 @@ DONE
 	
 	
 	
+	Use the rocket-file-cache crate to cache static files
+		https://crates.io/crates/rocket-file-cache
+
 	If a user is signing in as an admin or regular user and has already signed in as another user type
 		check if the usernames/userid match, otherwise remove the old cookie
 		This prevents a user from being logged in as two separate users with different user types
