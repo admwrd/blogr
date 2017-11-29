@@ -66,7 +66,37 @@ function checkTags() {
     
 }
 
+function show_contact() {
+    // Email obfuscator script 2.1 by Tim Williams, University of Arizona
+    // Random encryption key feature coded by Andrew Moulden
+    // This code is freeware provided these four comment lines remain intact
+    // A wizard to generate this code is at http://www.jottings.com/obfuscator/
+    { coded = "uqyNFia.zNFqaJ@IWzyi.xtW"
+      key = "WKfChFt7lv4Ykz9nGrTJBIZXUPHeLs2ciAp6SDmNQq3doMR1E50a8OVxywugbj"
+      shift=coded.length
+      link=""
+      for (i=0; i<coded.length; i++) {
+        if (key.indexOf(coded.charAt(i))==-1) {
+          ltr = coded.charAt(i)
+          link += (ltr)
+        }
+        else {
+          ltr = (key.indexOf(coded.charAt(i))-shift+key.length) % key.length
+          link += (key.charAt(ltr))
+        }
+      }
+    document.write("<a href='mailto:"+link+"'>Andrew Prindle</a>")
+    }
+}
 
 
-
-
+function set_login_focus() {
+    var user = document.getElementById('usernameField');
+    var pass = document.getElementById('passwordField');
+    if (user && user.value) {
+        pass.focus();
+    } else {
+        user.focus();
+    }
+    
+}

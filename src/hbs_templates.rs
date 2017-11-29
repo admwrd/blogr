@@ -155,7 +155,7 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
     if user_opt.is_some() {
         admin_pages.push( TemplateMenu::new(String::from("User Dashboard"), String::from("/user"), page) );
         // admin_pages.push( TemplateMenu::separator() );
-        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/user_logout"), page) );
+        admin_pages.push( TemplateMenu::new(String::from("Logout User"), String::from("/user_logout"), page) );
     } else {
         admin_pages.push( TemplateMenu::new(String::from("User Login"), String::from("/user"), page) );
     }
@@ -164,7 +164,7 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
         admin_pages.push( TemplateMenu::new(String::from("Admin Dashboard"), String::from("/admin"), page) );
         admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create"), page) );
         // admin_pages.push( TemplateMenu::separator() );
-        admin_pages.push( TemplateMenu::new(String::from("Logout"), String::from("/admin_logout"), page) );
+        admin_pages.push( TemplateMenu::new(String::from("Logout Administrator"), String::from("/admin_logout"), page) );
     } else {
         admin_pages.push( TemplateMenu::new(String::from("Admin Login"), String::from("/admin"), page) );
     }
