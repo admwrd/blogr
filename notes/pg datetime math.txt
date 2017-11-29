@@ -1,0 +1,10 @@
+SELECT * FROM users WHERE lockout < LOCALTIMESTAMP
+
+
+SELECT  LOCALTIMESTAMP + interval '1 hour' as plus,  LOCALTIMESTAMP as now
+
+
+
+
+
+

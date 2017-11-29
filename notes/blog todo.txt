@@ -21,6 +21,10 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr	
+	Set the password field to have focus when login attempt fails
+	Set username field to have focus when logging in without retry
+	
+	
 	Add a attempts and lockout fields in the user database, which can be null and would be set to a datetime
 		if it is not null do not allow successful login until the time has passed
 			set a flash message explaining the timeout
