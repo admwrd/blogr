@@ -50,6 +50,35 @@ use accept::*;
 
 
 
+// #[get("/page")]
+// fn pagination_test(start: GenTimer, pages: Paginate<PaginateDefaults>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    
+//     /* the pages variable is populated with:
+//         Current page - pulled from query string/uri (call the parse_query method of the settings)
+//         Current route (pulled from request.uri())
+//         Settings (specified by Paginate<Settings>)
+//             Items per page
+        
+//     */
+//     // let pages = PaginateDefaults::new()
+    
+//     let qrystr = ::gen_query("SELECT * FROM articles", Some("posted"));
+    
+//     let articles = conn.articles(qrystr);
+    
+//     // enum TemplateBody :: PaginateArticles( Vec<Article>, T: Collate )
+//     let output = hbs_template(TemplateBody::PaginateArticles(articles, ), None, String::from("/"), admin, user, None, Some(start.0));
+    
+    
+//     // if let Ok(qry) = conn.query(qrystr, &[]) {
+//     //     if !qry.is_empty() && qry.len() != 0 {
+            
+//     //     }
+//     // }
+    
+    
+// }
+
 
 // #[get("/admin")]
 // pub fn hbs_admin_page(conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {

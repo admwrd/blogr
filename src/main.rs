@@ -61,6 +61,7 @@ extern crate dotenv;
 extern crate rocket_auth_login;
 
 // mod vcache;
+mod collate;
 mod accept;
 mod xpress;
 mod layout;

@@ -52,11 +52,11 @@ pub struct Paginate<T: PaginateSettings> {
 pub struct Pagination {
     /// Items per page
     pub ipp: u8,
-    /// number of links to show before and after
     
     // the following are not retrieved in a query string or URI path so
     // rely on the trait methods to retrieve these values.
     //
+    // /// number of links to show before and after
     // pub nav_relative: u8, 
     // /// number of links to show from first and last page.  
     // /// Example: 3 would give  1 2 3  ... 8 9 10
@@ -70,17 +70,18 @@ pub struct Pagination {
 
 /// Specifies methods that should be available to paginate data structures.
 pub trait Collate {
+    fn new(page: u32, ipp: u8, route) -> Paginate<Self>;
     
     // These should be overridden to return self.0.{var} in cases
     //     where the structure is a tuple-struct with a Pagination
     //     structure being the first/only item
-    fn ipp(&self) -> u8 { Self::default_ipp() };
+    fn ipp(&self) -> u8 { Self::default_ipp() }
     // rel abs and base were moved to below (below were renamed as above)
     // fn rel(&self) -> u8 { Self::default_rel() };
     // fn abs(&self) -> u8 { Self::default_abs() };
     // fn base(&self) -> &'static str { BLOG_URL };
-    fn min_ipp() -> u8 { 5 };
-    fn max_ipp() -> u8 { 50 };
+    fn min_ipp() -> u8 { 5 }
+    fn max_ipp() -> u8 { 50 }
     /// Checks if the current items per page is within the max and min
     /// specified by the `Collate` trait implementation
     fn ipp_valid(&self) -> Option<u8> {
@@ -96,15 +97,15 @@ pub trait Collate {
     // Default values
     /// Default items per page.
     /// The default implementation defaults to 20 items.
-    fn default_ipp() -> u8 { 20 };
+    fn default_ipp() -> u8 { 20 }
     /// Default number of relative page links.
     /// The default implementation defaults to 5 links.
     /// Example: rel_links = 2: 1 ... 5 6 7 8 9 ... 20
-    fn rel() -> u8 { 5 };
+    fn rel() -> u8 { 5 }
     /// Default number of absolute page links, from the beginning and end.
     /// The default implementation defaults to 3 links.
     /// Example abs_links = 3: 1 2 3 ... 25 ... 48 49 50
-    fn abs() -> u8 { 3 };
+    fn abs() -> u8 { 3 }
     
     /// Default link base, everything before the page.
     /// Example: localhost:8000/
@@ -136,12 +137,15 @@ pub trait Collate {
     
     fn gen_query(&self, qrystr: &str, orderby: Option<&str>) -> String {
         // add limit/offset or offset/fetch
+        // a space to end of the qrystr, before adding limit/offset etc
         unimplemented!()
     }
     
     // Retrieves the Paginate<Pagination20> which holds the specified
-    // PaginateSettings struct
+    // PaginateSettings struct.  Parses the query string for the page and ipp
     // fn req_guard() -> Option<Paginate<>> {
+    // or could also define it as:
+    // fn parse_query() -> (Option<u32>, Option<u8>)
     //     
     // }
 }
@@ -161,11 +165,11 @@ impl Paginate {
     }
     // page*ipp
     pub fn get_offset(&self) -> u32 {
-        self.page * self.settings.
+        self.page * self.settings.ipp();
     }
     // items per page
     pub fn get_ipp(&self) -> u32 {
-        
+        self.settings.ipp()
     }
     // change/set the page route for the nav links
     pub fn set_route(&mut self, route: &str) -> Self {
@@ -180,8 +184,20 @@ impl Paginate {
 }
 
 
-impl Pagination20 {
+impl PaginateDefaults {
     // pub fn new()
+}
+
+impl Collate for PaginateDefault {
+    fn ipp(&self) -> u8 {
+        self.ipp
+    }
+    fn min_ipp() -> u8 { 5 }
+    fn max_ipp() -> u8 { 50 }
+    fn default_ipp() -> u8 { 20 }
+    fn rel() -> u8 { 5 }
+    fn abs() -> u8 { 3 }
+    fn base() -> &'static str { BLOG_URL }
 }
 
 
