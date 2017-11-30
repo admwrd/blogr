@@ -13,6 +13,7 @@ use rocket::State;
 // use rocket::{Request, Data, Outcome, Response};
 use rocket_contrib::Template;
 
+use regex::Regex;
 use std::io::prelude::*;
 
 use super::BLOG_URL;
@@ -66,12 +67,47 @@ impl<T: Collate> Page<T> {
         
         qrystr
     }
+    
+    pub fn navigation(&self, total_items: u32) -> String {
+        // self.settings
+        // <a href="{base}{route}[?[page=x][[&]ipp=y]]">{page}</a>
+        // let something = T::default_ipp();
+        
+        // 50/20 = 2
+        let ipp = self.settings.ipp() as u32;
+        // integer division rounds towards zero, so if it does not evenly divide add 1
+        let num_pages = if total_items % ipp != 0 {
+            (total_items / ipp) + 1
+        } else {
+            total_items / ipp
+        };
+        
+        if num_pages == 1 {
+            return T::link(&self, 1);
+        }
+        
+        // abs ... 
+        if num_pages <= (T::abs_links() + T::abs_links() + T::rel_links() + T::rel_links() + 1) as u32 {
+            
+        }
+        
+        
+        
+        // if self.cur_page < self.settings.abs_links() {
+        //     if 
+        // }
+        
+        String::new()
+    }
 }
 
 pub trait Collate {
+    fn new(u8) -> Self;
     fn ipp(&self) -> u8;
     fn default_ipp() -> u8 { 20 }
-    fn rel_links() -> u8 { 5 }
+    // relative pages on each side of page
+    fn rel_links() -> u8 { 3 }
+    // number of pages to show from first and last page
     fn abs_links() -> u8 { 3 }
     fn link_base() -> &'static str { BLOG_URL }
     fn min_ipp() -> u8 { 5 }
@@ -105,25 +141,60 @@ pub trait Collate {
         
         link
     }
+    fn parse_uri(qrystr: &str, route: String) -> Page<Self> where Self: ::std::marker::Sized {
+        
+        let mut cur_page: u32 = 1;
+        let mut ipp: u8 = Self::default_ipp();
+        
+        lazy_static! {
+            static ref PARSE_QUERYSTRING: Regex = Regex::new(r#"^(?page=(?P<page>\d+))?&?(?:ipp=(?P<ipp>\d+))$"#).unwrap();
+        }
+        
+        for cap in PARSE_QUERYSTRING.captures(qrystr) {
+            if let Some(pg) = cap.name("page") {
+                cur_page = pg.as_str().parse().unwrap_or(1);
+            } else if let Some(ip) = cap.name("ipp") {
+                ipp = ip.as_str().parse().unwrap_or(Self::default_ipp());
+            }
+        }
+        
+        Page {
+            cur_page,
+            route,
+            settings: Self::new(ipp),
+        }
+    }
+    
 }
 
 
-// impl Collate for Pagination {
+impl Collate for Pagination {
+    fn new(ipp: u8) -> Self { Pagination { ipp } }
+    fn ipp(&self) -> u8 { self.ipp }
+}
+
+
+
+impl<'a, 'r, T: Collate> FromRequest<'a, 'r> for Page<T> {
+    type Error = ();
     
-// }
-
-
-
-// impl<'a, 'r> FromRequest<'a, 'r> for Paginate {
-//     type Error = ();
-    
-//     fn from_request(request: &'a Request<'r>) -> ::rocket::request::Outcome<Paginate,Self::Error>{
-//             let uri = request.uri();
-//             
-//             // Outcome::Success( page )
-//             // Outcome::Forward(())
-//     }
-// }
+    fn from_request(request: &'a Request<'r>) -> ::rocket::request::Outcome<Page<T>,Self::Error>{
+            let uri = request.uri();
+            let route = uri.path();
+            let query: &str;
+            if let Some(qrystr) = uri.query() {
+                Outcome::Success(T::parse_uri(qrystr, route.to_string()))
+            } else {
+                Outcome::Success(Page {
+                    cur_page: 1,
+                    route: route.to_string(),
+                    settings: T::new(T::default_ipp()),
+                })
+            }
+            // Outcome::Success( page )
+            // Outcome::Forward(())
+    }
+}
 
 
 
