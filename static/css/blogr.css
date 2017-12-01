@@ -47,7 +47,34 @@ a:active {
     color: #bd67fd;
 }
 
-.v-cur {
+
+/* 
+.v-collate {
+    display: inline-block;
+}
+
+.v-collate-prevnext {
+    display: inline-block;
+    width: 10ch;
+}
+.v-collate-links {
+    display: inline-block;
+    
+}
+
+.v-collate-current {
+    display: inline-block;
+    
+} */
+.v-collate-left {
+    text-align: right;
+}
+.v-collate-right {
+    text-align: left;
+}
+
+.v-collate-cur {
+    display: inline-block;
     font-weight: 700;
     font-size: 110%;
 }

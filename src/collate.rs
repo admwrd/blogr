@@ -183,7 +183,9 @@ impl<T: Collate> Page<T> {
             back.0.len() + back.1.len()
         };
         
-        let mut html: String = String::with_capacity((count_left + count_right) * 70 + 150 +70 + 100);
+        
+        let html_capacity = (count_left + count_right) * 70 + 150 +70 + 100;
+        let mut html: String = String::with_capacity(html_capacity);
         
         // println!(r"Pagination Debug:
         //     cur: {}, ipp: {}, num_pages: {},
@@ -201,11 +203,15 @@ impl<T: Collate> Page<T> {
         //     back
         //     );
         
+        html.push_str(r#"<div class="v-collate row">"#);
         
+        html.push_str(r#"<div class="v-collate-prevnext col-2">"#);
         if cur != 1 {
             html.push_str( &link(&self, cur-1, "[Previous]") );
         }
+        html.push_str("</div>");
         
+        html.push_str(r#"<div class="v-collate-left col-3">"#);
         if pages_left.len() != 0 {
             for page in pages_left {
                 html.push_str( &link(&self, page, &page.to_string()) );
@@ -219,9 +225,13 @@ impl<T: Collate> Page<T> {
                 html.push_str( &link(&self, page, &page.to_string()) );
             }
         }
+        html.push_str("</div>");
         
+        html.push_str(r#"<div class="v-collate-cur">"#);
         html.push_str( &link_active(&self, cur, &cur.to_string()) );
+        html.push_str("</div>");
         
+        html.push_str(r#"<div class="v-collate-right col-3">"#);
         if pages_right.len() != 0 {
             // print next page link
             // print link to all pages in the vector
@@ -237,10 +247,18 @@ impl<T: Collate> Page<T> {
                 html.push_str( &link(&self, page, &page.to_string()) );
             }
         }
+        html.push_str("</div>");
         
+        html.push_str(r#"<div class="v-collate-prevnext col-2">"#);
         if cur != num_pages {
             html.push_str( &link(&self, cur+1, "[Next]") );
         }
+        
+        html.push_str("</div>");
+        
+        html.push_str("</div>");
+        
+        if html.capacity() != html_capacity { println!("Capacity has changed from {} to: {}", html_capacity, html.capacity()); }
         
         html.shrink_to_fit();
         html
@@ -260,7 +278,7 @@ pub trait Collate {
     fn link_base() -> &'static str { BLOG_URL }
     fn min_ipp() -> u8 { 5 }
     fn max_ipp() -> u8 { 50 }
-    fn current_link() -> &'static str { "v-cur" } // active is bootstrap's default
+    fn current_link() -> &'static str { "v-collate-cur" } // active is bootstrap's default
     fn check_ipp(ipp: u8) -> u8 {
         if ipp < Self::min_ipp() {
             Self::min_ipp()
@@ -291,7 +309,6 @@ pub trait Collate {
         link
     }
     fn parse_uri(qrystr: &str, route: String) -> Page<Self> where Self: ::std::marker::Sized {
-        
         let mut cur_page: u32 = 1;
         let mut ipp: u8 = Self::default_ipp();
         
@@ -316,12 +333,10 @@ pub trait Collate {
     
 }
 
-
 impl Collate for Pagination {
     fn new(ipp: u8) -> Self { Pagination { ipp } }
     fn ipp(&self) -> u8 { self.ipp }
 }
-
 
 
 impl<'a, 'r, T: Collate> FromRequest<'a, 'r> for Page<T> {
@@ -342,17 +357,6 @@ impl<'a, 'r, T: Collate> FromRequest<'a, 'r> for Page<T> {
             }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
