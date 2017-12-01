@@ -29,20 +29,65 @@ use super::BLOG_URL;
     
 */
 
+#[derive(Debug, Clone)]
 pub struct Page<T: Collate> {
     pub cur_page: u32,
     pub route: String,
     pub settings: T,
 }
 
+#[derive(Debug, Clone)]
 pub struct Pagination {
     pub ipp: u8
 }
 
-impl<T: Collate> Page<T> {
+fn link<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String {
+    let url = T::link(page, cur_page-1);
+    // <a href="" class="active"></a>
+    // <a href=""></a>
+    let mut link = String::with_capacity(url.len() + text.len() + 15 + 10);
+    link.push_str("<a href=\"");
+    link.push_str(&url);
+    link.push_str("\">");
+    link.push_str(text);
+    link.push_str("</a>");
+    link
+}
+fn link_active<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String {
+    let url = T::link(page, cur_page-1);
+    // <a href="" class="active"></a>
+    // <a href=""></a>
+    let mut link = String::with_capacity(url.len() + text.len() + 30 + 20);
+    link.push_str("<a href=\"");
+    link.push_str(&url);
+    link.push_str("\" class=\"active\">");
+    link.push_str(text);
+    link.push_str("</a>");
+    link
+}
 
+
+impl<T: Collate> Page<T> {
+    
+    
+    /* 0 1 2 3 4    5 6 7 8 9    10 11 12 13 14 */
+    /// Returns the index number of the first item on the page.
+    /// If there are 5 items per page and the current page is 3
+    /// then the start() would return 10
+    pub fn start(&self) -> u32 {
+        // (cur_page - 1) * ipp
+        (self.cur_page - 1) * (self.settings.ipp() as u32)
+    }
+    
+    /// Returns the index number of the last item on the page.
+    /// If there are 5 items per page and the current page is 3
+    /// then the start() would return 14
+    pub fn end(&self) -> u32 {
+        // (cur_page * ipp) - 1
+        (self.cur_page * (self.settings.ipp() as u32)) - 1
+    }
+    
     pub fn sql(&self, query: &str, orderby: Option<&str>) -> String {
-        // unimplemented!()
         let mut qrystr: String;
         if let Some(order) = orderby {
             // orderby text, plus offset/limit is 20 characters, plus 20 character extra buffer
@@ -54,14 +99,16 @@ impl<T: Collate> Page<T> {
             qrystr.push_str(" LIMIT ");
             qrystr.push_str( &self.settings.ipp().to_string() );
             qrystr.push_str(" OFFSET ");
-            qrystr.push_str(&( self.cur_page * (self.settings.ipp()-1) as u32 ).to_string());
+            // qrystr.push_str(&( self.cur_page * (self.settings.ipp()-1) as u32 ).to_string());
+            qrystr.push_str(&( self.start() ).to_string());
         } else {
             qrystr = String::with_capacity(query.len() + 20 + 20);
             qrystr.push_str(query);
             qrystr.push_str(" LIMIT ");
             qrystr.push_str( &self.settings.ipp().to_string() );
             qrystr.push_str(" OFFSET ");
-            qrystr.push_str(&( self.cur_page * (self.settings.ipp()-1) as u32 ).to_string());
+            // qrystr.push_str(&( self.cur_page * (self.settings.ipp()-1) as u32 ).to_string());
+            qrystr.push_str(&( self.start() ).to_string());
         }
         // let mut qrystr = String::with_capacity(qrystr.len() +  );
         
@@ -86,10 +133,142 @@ impl<T: Collate> Page<T> {
             return T::link(&self, 1);
         }
         
-        // abs ... 
-        if num_pages <= (T::abs_links() + T::abs_links() + T::rel_links() + T::rel_links() + 1) as u32 {
+        
+        // 4       8
+        // 0100 -> 1000
+        //
+        
+        // let abs = T::abs_links();
+        // let rel = T::rel_links();
+        // let links_min = abs as u32 + abs as u32 + rel as u32 + rel as u32 + 1u32;
+        let abs = T::abs_links() as u32;
+        let rel = T::rel_links() as u32;
+        let links_min = abs + abs + rel + rel + 1;
+        let links_min = (abs << 2) + (rel << 2) + 1;
+        
+        let cur = if self.cur_page > num_pages { 
+            num_pages 
+        } else if self.cur_page == 0 {
+            1
+        } else { 
+            self.cur_page
+        };
+        
+        // abs ... rel cur rel ... abs
+        // add padding
+        
+        // rel left items
+        let mut rel_left = rel;
+        let mut rel_right = rel;
+        let mut abs_left = abs;
+        let mut abs_right = abs;
+        
+        let mut max = if abs > rel { abs } else { rel };
+        
+        // 1 2 3     4 5 6 7 8  9  10 11 12 13 14 15 16 17 18 19 20
+        // 1 2 3 ...     6 7 8 [9] 10 11 12            ... 18 19 20
+        
+        // 1 2 3 4 5 6 7
+        // 1 2 3 4 5 6 7
+        
+        // if cur_page != 1 {
+        //     // display first link
+        //     let url = T::link(self, cur_page-1);
+        //     // <a href="">Previous</a>
+        //     let mut link = String::with_capacity(url.len() + 23 + 10);
             
-        }
+        // }
+        
+        let first_page = link(&self, 1, "First Page");
+        
+        // only add ... if there is a gap of more than {padding} pages
+        // keep the +1 ???
+        // if cur <= rel+1 {
+        // if cur <= rel {
+        //     let start_front = cur - 1;  // TODO - fix this equation
+        //     let start_back = rel - cur; // TODO - fix this equation
+        //     // let end = num_pages - rel + 1; // Removed - forgetting absolutes for now
+            
+            
+        // } else if cur >= (num_pages-rel) {
+        //     let end_front = ;
+        //     let end_back = ;
+        //     // let start = ; // Removed - forgetting absolutes for now
+            
+            
+            
+        // } else {
+        //     // first page ... rels page 
+        //     // 
+            
+        // }
+        
+        // if cur_page != num_pages && num_pages > 1 {
+        //     // display next link
+        // }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        // if cur < max {
+        //     rel_front = 
+        //     rel_left = max - cur;
+        //     abs_left = 0;
+        // } else {
+        //     if cur > abs {
+        //         rel_left = rel;
+                
+        //     } else {
+                
+        //     }
+        // }
+        
+        
+        
+        
+        
+        
+        // let padding = T::links_padding();
+        // // add lenience to num_pages so that if there is ONE (or so) more page
+        // // more than the links_min it still shows all the pages.
+        // if num_pages + padding <= links_min {
+        //     if cur == 1 {
+                
+        //     } else if cur < abs {
+                 
+                
+                
+        //     } else if cur == num_pages {
+                
+        //     } else if cur > (num_pages - max) {
+                
+        //     }
+            
+        //     // show all links between start and end
+        //     // highlight current link
+        // } else if self.cur_page < abs {
+        //     // print first abs and last abs
+        //     // current page should fall in the first abs, highlight it
+            
+        // } else if self.cur_page >= num_pages - abs {
+        //     // print first abs and last abs
+        //     // current page should fall in the last abs, highlight it
+            
+        // } else if  {
+        //     // print first abs pages
+        //     // print rel links before and after
+        //     // print last abs pages
+        // }
         
         
         
@@ -105,13 +284,16 @@ pub trait Collate {
     fn new(u8) -> Self;
     fn ipp(&self) -> u8;
     fn default_ipp() -> u8 { 20 }
-    // relative pages on each side of page
+    /// relative pages on each side of page
     fn rel_links() -> u8 { 3 }
-    // number of pages to show from first and last page
+    /// number of pages to show from first and last page
     fn abs_links() -> u8 { 3 }
+    /// max number of pages above the min page links before not all pages are shown
+    fn links_padding() -> u8 { 4 }
     fn link_base() -> &'static str { BLOG_URL }
     fn min_ipp() -> u8 { 5 }
     fn max_ipp() -> u8 { 50 }
+    fn current_link() -> &'static str { "active" }
     fn check_ipp(ipp: u8) -> u8 {
         if ipp < Self::min_ipp() {
             Self::min_ipp()
