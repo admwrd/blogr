@@ -45,7 +45,8 @@ pub struct Pagination {
 }
 
 fn link<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String {
-    let url = T::link(page, cur_page-1);
+    // let url = T::link(page, cur_page-1);
+    let url = T::link(page, cur_page);
     // <a href="" class="active"></a>
     // <a href=""></a>
     let mut link = String::with_capacity(url.len() + text.len() + 15 + 10);
@@ -61,11 +62,11 @@ fn link_active<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String 
     // <a href="" class="active"></a>
     // <a href=""></a>
     let mut link = String::with_capacity(url.len() + text.len() + 30 + 20);
-    link.push_str("<a href=\"");
+    link.push_str(" <a href=\"");
     link.push_str(&url);
     link.push_str("\" class=\"active\">");
     link.push_str(text);
-    link.push_str("</a>");
+    link.push_str("</a> ");
     link
 }
 
@@ -245,6 +246,22 @@ impl<T: Collate> Page<T> {
         // current link plus buffer of 100 characters to avoid extra allocations
         let mut html: String = String::with_capacity((count_left + count_right) * 70 + 150 +70 + 100);
         
+        println!(r"Pagination Debug:
+            cur: {}, ipp: {}, num_pages: {},
+            abs: {}, rel: {}, links_min: {},
+            pages_left: {:?},
+            front: {:?},
+            pages_right: {:?}
+            back: {:?}
+            ", 
+            cur, ipp, num_pages, 
+            abs, rel, links_min,
+            pages_left,
+            front,
+            pages_right,
+            back
+            );
+        
         if pages_left.len() != 0 {
             for page in pages_left {
                 html.push_str( &link(&self, page, &page.to_string()) );
@@ -255,11 +272,13 @@ impl<T: Collate> Page<T> {
             for page in front.0 {
                 html.push_str( &link(&self, page, &page.to_string()) );
             }
+            html.push_str(" ... ");
             for page in front.1 {
                 html.push_str( &link(&self, page, &page.to_string()) );
             }
         }
         
+        html.push_str( &link_active(&self, cur, &cur.to_string()) );
         
         if pages_right.len() != 0 {
             // print next page link
@@ -271,6 +290,7 @@ impl<T: Collate> Page<T> {
             for page in back.0 {
                 html.push_str( &link(&self, page, &page.to_string()) );
             }
+            html.push_str(" ... ");
             for page in back.1 {
                 html.push_str( &link(&self, page, &page.to_string()) );
             }
@@ -418,7 +438,7 @@ pub trait Collate {
         link.push_str( &page.route );
         
         let mut has_qrystr = false;
-        if page.cur_page > 1 {
+        if page_num > 1 {
             link.push_str("?page=");
             link.push_str( &page.cur_page.to_string() );
             has_qrystr = true;
