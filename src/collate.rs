@@ -58,7 +58,7 @@ fn link<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String {
     link
 }
 fn link_active<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String {
-    let url = T::link(page, cur_page-1);
+    let url = T::link(page, cur_page);
     // <a href="" class="active"></a>
     // <a href=""></a>
     let mut link = String::with_capacity(url.len() + text.len() + 30 + 20);
@@ -226,9 +226,14 @@ impl<T: Collate> Page<T> {
         } else {
             // pages_right = (cur+1..rel+1)
             //     .chain((num_pages-abs+1)..num_pages+1)
-            back = ( (cur+1..rel+1).collect(), ((num_pages-abs+1)..num_pages+1).collect() );
+            back = ( (cur+1..cur+rel+1).collect(), ((num_pages-abs+1)..num_pages+1).collect() );
         }
         
+        
+        
+        
+        
+        // count links
         let count_left = if pages_left.len() != 0 {
             pages_left.len()
         } else {
@@ -440,7 +445,7 @@ pub trait Collate {
         let mut has_qrystr = false;
         if page_num > 1 {
             link.push_str("?page=");
-            link.push_str( &page.cur_page.to_string() );
+            link.push_str( &page_num.to_string() );
             has_qrystr = true;
         }
         
@@ -458,17 +463,32 @@ pub trait Collate {
         let mut cur_page: u32 = 1;
         let mut ipp: u8 = Self::default_ipp();
         
-        lazy_static! {
-            static ref PARSE_QUERYSTRING: Regex = Regex::new(r#"^(?page=(?P<page>\d+))?&?(?:ipp=(?P<ipp>\d+))$"#).unwrap();
+        for pair in qrystr.split('&') {
+            let chunks: Vec<&str> = pair.splitn(2, '=').collect();
+            if chunks.len() != 2 { continue; }
+            let key = chunks[0];
+            let value = chunks[1];
+            // for (key, value) in  {
+            // for &(key, value) in pair.splitn(2, '=').collect::<Vec<&str>>() {
+                match key {
+                    "page" => { cur_page = value.parse().unwrap_or(1); },
+                    "ipp" => { ipp = value.parse().unwrap_or(Self::default_ipp()); },
+                    _ => {},
+                }
+            // }
         }
         
-        for cap in PARSE_QUERYSTRING.captures(qrystr) {
-            if let Some(pg) = cap.name("page") {
-                cur_page = pg.as_str().parse().unwrap_or(1);
-            } else if let Some(ip) = cap.name("ipp") {
-                ipp = ip.as_str().parse().unwrap_or(Self::default_ipp());
-            }
-        }
+        // lazy_static! {
+        //     static ref PARSE_QUERYSTRING: Regex = Regex::new(r#"^(?page=(?P<page>\d+))?&?(?:ipp=(?P<ipp>\d+))$"#).unwrap();
+        // }
+        
+        // for cap in PARSE_QUERYSTRING.captures(qrystr) {
+        //     if let Some(pg) = cap.name("page") {
+        //         cur_page = pg.as_str().parse().unwrap_or(1);
+        //     } else if let Some(ip) = cap.name("ipp") {
+        //         ipp = ip.as_str().parse().unwrap_or(Self::default_ipp());
+        //     }
+        // }
         
         Page {
             cur_page,
