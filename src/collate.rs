@@ -178,40 +178,93 @@ impl<T: Collate> Page<T> {
         
         let mut pages_left: Vec<u32> = Vec::new();
         let mut pages_right: Vec<u32> = Vec::new();
+        let mut front: (Vec<u32>, Vec<u32>) = (Vec::new(), Vec::new());
+        let mut back: (Vec<u32>, Vec<u32>) = (Vec::new(), Vec::new());
+        
+        
         // print left side
         if cur <= links_min || num_pages <= links_min {
             if links_min > num_pages {
                 // prints everything but last page, which is taken care of in the middle
-                pages_left = (1..num_pages).map(|p| p ).collect();
+                // pages_left = (1..num_pages).map(|p| p ).collect();
+                pages_left = (1..num_pages).collect();
             } else {
-                pages_left = (1..cur).map(|p| p).collect();
+                // pages_left = (1..cur).map(|p| p).collect();
+                
+                pages_left = (1..cur).collect();
             }
         } else {
             // 1.. 3[4]    7.. 9[10]
             // 1 2 3 4 5 6 7 8 9 [10] 11 12 13 14 15 16 17 18 19 20
-            pages_left = (1..abs+1)
-                .map(|p| p)
-                .chain((cur-rel)..cur)
-                .collect();
+            // pages_left = (1..abs+1)
+            //     // .map(|p| p)
+            //     .chain((cur-rel)..cur)
+            //     .collect();
+            front = ( (1..abs+1).collect(), ((cur-rel)..cur).collect() );
         }
-        
-        // print middle (current page)
-        
         
         // 1 2 3 4 5 6 7 8 9 [10] 11 12 13 14 15 16 17 18 19 20
         // print right side
         // if cur >= (num_pages-)
         let right = num_pages - cur;
-        if right > links_min {
-            
+        if right <= links_min {
+            pages_right = (cur+1..num_pages+1).collect();
         } else {
-            
+            // pages_right = (cur+1..rel+1)
+            //     .chain((num_pages-abs+1)..num_pages+1)
+            back = ( (cur+1..rel+1).collect(), ((num_pages-abs+1)..num_pages+1).collect() );
+        }
+        
+        let count_left = if pages_left.len() != 0 {
+            pages_left.len()
+        } else {
+            front.0.len() + front.1.len()
+        };
+        let count_right = if pages_right.len() != 0 {
+            pages_right.len()
+        } else {
+            back.0.len() + back.1.len()
+        };
+        
+        // <a href="">10</a> + http://localhost:8000/pagination?page=10&ipp=20
+        // 65 characters roughly for each link
+        // Add 70 chars per link, plus 150 for previous/next links, plus 70 for the 
+        // current link plus buffer of 100 characters to avoid extra allocations
+        let mut html: String = String::with_capacity((count_left + count_right) * 70 + 150 +70 + 100);
+        
+        if pages_left.len() != 0 {
+            for page in pages_left {
+                html.push_str( &link(&self, page, &page.to_string()) );
+            }
+            // print previous page link
+            // print link to all pages in the vector
+        } else if front.0.len() !=0 || front.1.len() != 0 {
+            for page in front.0 {
+                html.push_str( &link(&self, page, &page.to_string()) );
+            }
+            for page in front.1 {
+                html.push_str( &link(&self, page, &page.to_string()) );
+            }
         }
         
         
+        if pages_right.len() != 0 {
+            // print next page link
+            // print link to all pages in the vector
+            for page in pages_right {
+                html.push_str( &link(&self, page, &page.to_string()) );
+            }
+        } else if back.0.len() != 0 || back.1.len() != 0 {
+            for page in back.0 {
+                html.push_str( &link(&self, page, &page.to_string()) );
+            }
+            for page in back.1 {
+                html.push_str( &link(&self, page, &page.to_string()) );
+            }
+        }
         
-        
-        
+        html.shrink_to_fit();
+        html
         
         
         
@@ -320,7 +373,7 @@ impl<T: Collate> Page<T> {
         //     if 
         // }
         
-        String::new()
+        // String::new()
     }
 }
 
