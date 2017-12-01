@@ -49,6 +49,10 @@ use accept::*;
 
 
 
+// TODO: Collate: make a route that takes a number in the route (not query string)
+//                use this number to determine how many pages to list
+//                on each page say the page number as determined in the Page structure
+
 
 // #[get("/page")]
 // fn pagination_test(start: GenTimer, pages: Paginate<PaginateDefaults>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
