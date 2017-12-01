@@ -130,7 +130,8 @@ impl<T: Collate> Page<T> {
         };
         
         if num_pages == 1 {
-            return T::link(&self, 1);
+            // return T::link(&self, 1);
+            return link(&self, 1, "1");
         }
         
         
@@ -143,8 +144,11 @@ impl<T: Collate> Page<T> {
         // let links_min = abs as u32 + abs as u32 + rel as u32 + rel as u32 + 1u32;
         let abs = T::abs_links() as u32;
         let rel = T::rel_links() as u32;
-        let links_min = abs + abs + rel + rel + 1;
-        let links_min = (abs << 2) + (rel << 2) + 1;
+        let links_min = abs + rel;
+        let links_total = (abs << 2) + (rel << 2) + 1;
+        
+        let links_total_original = abs + abs + rel + rel + 1;
+        assert_eq!(links_total, links_total_original);
         
         let cur = if self.cur_page > num_pages { 
             num_pages 
@@ -170,6 +174,37 @@ impl<T: Collate> Page<T> {
         
         // 1 2 3 4 5 6 7
         // 1 2 3 4 5 6 7
+        let first_page = link(&self, 1, "First Page");
+        
+        let mut pages_left: Vec<u32> = Vec::new();
+        let mut pages_right: Vec<u32> = Vec::new();
+        // print left side
+        if cur <= links_min || num_pages <= links_min {
+            if links_min > num_pages {
+                pages_left = (1..num_pages).into_iter().map(|p| p ).collect();
+            } else {
+                pages_left = (1..cur).into_iter().map(|p| p).collect();
+            }
+        } else {
+            pages_left = (1..links_min).into_iter().map(|p| p).collect();
+        }
+        
+        // print right side
+        // if cur >= (num_pages-)
+        let right = num_pages - cur;
+        if right > links_min {
+            
+        } else {
+            
+        }
+        
+        
+        
+        
+        
+        
+        
+        
         
         // if cur_page != 1 {
         //     // display first link
@@ -179,7 +214,6 @@ impl<T: Collate> Page<T> {
             
         // }
         
-        let first_page = link(&self, 1, "First Page");
         
         // only add ... if there is a gap of more than {padding} pages
         // keep the +1 ???
