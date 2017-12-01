@@ -20,7 +20,8 @@ Rocket-auth-login
 	Check the OWASP guide and also check which characters are in the unicode categories
 		allowed by the sanitize functions, basically just make sure they're secure
 
-Blogr	
+Blogr
+	Test collate module's sql
 
 	Add content to the about me page.
 	
