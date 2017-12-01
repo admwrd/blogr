@@ -47,6 +47,11 @@ a:active {
     color: #bd67fd;
 }
 
+.v-cur {
+    font-weight: 700;
+    font-size: 110%;
+}
+
 .v-nav-bar {
     /*background: url('../white-trans-bg.png');*/
 }

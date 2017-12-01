@@ -50,11 +50,11 @@ fn link<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String {
     // <a href="" class="active"></a>
     // <a href=""></a>
     let mut link = String::with_capacity(url.len() + text.len() + 15 + 10);
-    link.push_str("<a href=\"");
+    link.push_str(" <a href=\"");
     link.push_str(&url);
     link.push_str("\">");
     link.push_str(text);
-    link.push_str("</a>");
+    link.push_str("</a> ");
     link
 }
 fn link_active<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String {
@@ -64,9 +64,9 @@ fn link_active<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String 
     let mut link = String::with_capacity(url.len() + text.len() + 30 + 20);
     link.push_str(" <a href=\"");
     link.push_str(&url);
-    link.push_str("\" class=\"active\">");
+    link.push_str("\" class=\"active\">[");
     link.push_str(text);
-    link.push_str("</a> ");
+    link.push_str("]</a> ");
     link
 }
 
@@ -204,8 +204,7 @@ impl<T: Collate> Page<T> {
             //     // pages_left = (1..num_pages).map(|p| p ).collect();
             // } else {
             //     // pages_left = (1..cur).map(|p| p).collect();
-                
-                pages_left = (1..cur).collect();
+            pages_left = (1..cur).collect();
             // }
         } else {
             // 1.. 3[4]    7.. 9[10]
@@ -267,6 +266,11 @@ impl<T: Collate> Page<T> {
             back
             );
         
+        
+        if cur != 1 {
+            html.push_str( &link(&self, cur-1, "[Previous]") );
+        }
+        
         if pages_left.len() != 0 {
             for page in pages_left {
                 html.push_str( &link(&self, page, &page.to_string()) );
@@ -299,6 +303,10 @@ impl<T: Collate> Page<T> {
             for page in back.1 {
                 html.push_str( &link(&self, page, &page.to_string()) );
             }
+        }
+        
+        if cur != num_pages {
+            html.push_str( &link(&self, cur+1, "[Next]") );
         }
         
         html.shrink_to_fit();
@@ -428,7 +436,7 @@ pub trait Collate {
     fn link_base() -> &'static str { BLOG_URL }
     fn min_ipp() -> u8 { 5 }
     fn max_ipp() -> u8 { 50 }
-    fn current_link() -> &'static str { "active" }
+    fn current_link() -> &'static str { "v-cur" } // active is bootstrap's default
     fn check_ipp(ipp: u8) -> u8 {
         if ipp < Self::min_ipp() {
             Self::min_ipp()
