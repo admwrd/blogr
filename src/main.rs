@@ -272,6 +272,8 @@ fn main() {
             // pages::hbs_user_retry,
             // pages::hbs_user_process,
             
+            pages::pagination_test,
+            
             pages::hbs_all_articles,
             pages::hbs_articles_page,
             pages::hbs_tags_all,

@@ -36,6 +36,9 @@ pub struct Page<T: Collate> {
     pub settings: T,
 }
 
+// Can also make a custom structure based on this that
+// implements custom methods for the Collate trait
+// in order to ovveride defaults with custom values
 #[derive(Debug, Clone)]
 pub struct Pagination {
     pub ipp: u8
@@ -85,6 +88,16 @@ impl<T: Collate> Page<T> {
     pub fn end(&self) -> u32 {
         // (cur_page * ipp) - 1
         (self.cur_page * (self.settings.ipp() as u32)) - 1
+    }
+    
+    
+    pub fn num_pages(&self, total_items: u32) -> u32 {
+        let ipp = self.settings.ipp() as u32;
+        if total_items % ipp != 0 {
+            (total_items / ipp) + 1
+        } else {
+            total_items / ipp
+        }
     }
     
     pub fn sql(&self, query: &str, orderby: Option<&str>) -> String {
@@ -145,10 +158,10 @@ impl<T: Collate> Page<T> {
         let abs = T::abs_links() as u32;
         let rel = T::rel_links() as u32;
         let links_min = abs + rel;
-        let links_total = (abs << 2) + (rel << 2) + 1;
         
-        let links_total_original = abs + abs + rel + rel + 1;
-        assert_eq!(links_total, links_total_original);
+        // let links_total = (abs << 2) + (rel << 2) + 1;
+        // let links_total_original = abs + abs + rel + rel + 1;
+        // assert_eq!(links_total, links_total_original);
         
         let cur = if self.cur_page > num_pages { 
             num_pages 
