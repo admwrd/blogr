@@ -198,15 +198,15 @@ impl<T: Collate> Page<T> {
         
         // print left side
         if cur <= links_min || num_pages <= links_min {
-            if links_min > num_pages {
-                // prints everything but last page, which is taken care of in the middle
-                // pages_left = (1..num_pages).map(|p| p ).collect();
-                pages_left = (1..num_pages).collect();
-            } else {
-                // pages_left = (1..cur).map(|p| p).collect();
+            // if links_min > num_pages {
+            //     pages_left = (1..num_pages).collect();
+            //     // prints everything but last page, which is taken care of in the middle
+            //     // pages_left = (1..num_pages).map(|p| p ).collect();
+            // } else {
+            //     // pages_left = (1..cur).map(|p| p).collect();
                 
                 pages_left = (1..cur).collect();
-            }
+            // }
         } else {
             // 1.. 3[4]    7.. 9[10]
             // 1 2 3 4 5 6 7 8 9 [10] 11 12 13 14 15 16 17 18 19 20
