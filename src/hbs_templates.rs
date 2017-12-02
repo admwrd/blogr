@@ -408,7 +408,8 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
         },
         TemplateBody::ArticlesPages(articles, page, total, curinfo,  msg) => {
             let context = TemplateArticlesPages::new(articles, page, total, curinfo, msg, info);
-            Template::render("articles-template", &context)
+            // Template::render("articles-template", &context)
+            Template::render("articles-pagination-template", &context)
             // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
             // Template::render("general-template", &context)
         },

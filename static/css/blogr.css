@@ -79,6 +79,10 @@ a:active {
     font-size: 110%;
 }
 
+.v-pageinfo {
+    text-align: center;
+}
+
 .v-nav-bar {
     /*background: url('../white-trans-bg.png');*/
 }
