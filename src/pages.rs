@@ -554,7 +554,8 @@ pub fn hbs_view_articles(start: GenTimer, pagination: Page<Pagination>, conn: Db
             let count: i64 = row.get(0);
             let total_items: u32 = count as u32;
             let (ipp, cur, num_pages) = pagination.page_data(total_items);
-            let sql = pagination.sql("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", Some("posted DESC"));
+            // let sql = pagination.sql("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", Some("posted DESC"));
+            let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
             println!("Prepared paginated query:\n{}", sql);
             if let Some(results) = conn.articles(&sql) {
                 // let results: Vec<Article> = conn.articles(&sql);

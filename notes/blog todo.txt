@@ -21,6 +21,10 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr
+	 Add a database function that will take an article's description and body
+		if the description exists return that otherwise return a truncated body
+			if pg doesn't support nullable params then lookup the row by aid ( description(aid) )
+
 	Test collate module's sql
 	Implement the pagination on:
 		front page
