@@ -131,7 +131,7 @@ impl<T: Collate> Page<T> {
         
         let (ipp, cur, pages) = self.page_data(total_items);
         
-        format!("Showing page {cur} of {pages}.  {total} items found.", 
+        format!("Showing page {cur} of {pages} &nbsp; - &nbsp; {total} items found.", 
             cur=cur, pages=pages, total=total_items)
             // all available variables:
             // ipp=ipp, cur=cur, pages=pages, total=total_items);
