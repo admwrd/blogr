@@ -33,18 +33,43 @@ body {
     background-color: #15191b;
 }
 
+.dropdown-menu a {
+    /*color: #38dcef;*/
+    /*color: #0fabbd;*/
+    color: #19777f;
+    font-weight: 600;
+}
+.dropdown-menu a:hover {
+    color: #f00;
+}
+
+
 a {
     color: #8ceaf6;
     text-decoration: none;
+    /*text-decoration: underline;*/
+    /*text-decoration-color: rgb(33, 37, 41);*/
+    
+    /*text-decoration-color: #ffffff;*/
+    /*text-decoration: none;*/
 }
 a:visited {
-    color: #10b6cb;
+    /*color: #10b6cb;*/
+    color: #38dcef;
+    text-decoration: underline;
+    text-decoration-color: #999;
+    /*text-decoration-style: wavy;*/
+    /*color: #8ceaf6;*/
 }
 a:hover {
+    color: #fff
+}
+a:visited:hover {
     color: #bd67fd;
 }
+
 a:active {
-    color: #bd67fd;
+    color: #fff;
 }
 
 
