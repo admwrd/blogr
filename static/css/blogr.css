@@ -91,6 +91,11 @@ a:active {
     display: inline-block;
     
 } */
+
+.v-collate {
+    justify-content: center;
+}
+
 .v-collate-left {
     text-align: right;
 }
@@ -102,6 +107,12 @@ a:active {
     display: inline-block;
     font-weight: 700;
     font-size: 110%;
+}
+.v-collate-prevnext {
+    text-align: right;
+}
+.v-collate-prevnext:first-child {
+    text-align: left;
 }
 
 .v-pageinfo {
