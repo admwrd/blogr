@@ -996,32 +996,93 @@ pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCooki
 }
 
 #[get("/")]
-pub fn hbs_index(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
-    // let body = r#"Hello! This is a blog.<br><a href="/user">User page</a><br><a href="/admin">Go to admin page</a>"#;
-    // template(body)
-    // let start = Instant::now();
-    // let mut output: Html<String> = Html(String::new());
-    let output: Template;
+pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+    
     let fmsg: Option<String>;
     if let Some(flashmsg) = flash {
         fmsg = Some(alert_info( flashmsg.msg() ));
     } else {
         fmsg = None;
     }
-    let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
-    if results.len() != 0 {
-        output = hbs_template(TemplateBody::Articles(results, fmsg), None, String::from("/"), admin, user, None, Some(start.0));
-    } else if admin.is_some() {
-        output = hbs_template(TemplateBody::General("There are no articles.<br>\n<a href =\"/insert\">Create Article</a>".to_string(), None), None, String::from("/"), admin, user, None, Some(start.0));
-    } else {
-        output = hbs_template(TemplateBody::General("There are no articles.".to_string(), None), None, String::from("/"), admin, user, None, Some(start.0));
+    
+    let total_query = "SELECT COUNT(*) as count FROM articles";
+    let output: Template;
+    if let Ok(rst) = conn.query(total_query, &[]) {
+        if !rst.is_empty() && rst.len() == 1 {
+            let row = rst.get(0);
+            let count: i64 = row.get(0);
+            let total_items: u32 = count as u32;
+            let (ipp, cur, num_pages) = pagination.page_data(total_items);
+            let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
+            println!("Prepared paginated query:\n{}", sql);
+            if let Some(results) = conn.articles(&sql) {
+                if results.len() != 0 {
+                    // let page_information = pagination.page_info(total_items);
+                    let mut page_information: String;
+                    let pinfo = pagination.page_info(total_items);
+                    if cur == 1 {
+                        let welcome = r##"<h1>Welcome</h1>
+                            <p>This is the personal blog of Andrew Prindle.  My recent topics of interest include:
+                             the Rust programming language, web development, javascript, databases, cryptology, security, and compression.  
+                             Feel free to contact me at the email address at the bottom of the page.</p>
+                             <hr>
+                             <h3>All Articles By Date</h3>
+                             "##;
+                             // </div></div><div class="v-content"><div class="v-pageinfo">
+                        page_information = String::with_capacity(pinfo.len() + welcome.len() + 50);
+                        page_information.push_str( welcome );
+                        page_information.push_str( &pinfo );
+                    } else {
+                        // page_information = pagination.page_info(total_items);
+                        // page_information = String::with_capacity(pinfo.len() + 50);
+                        let welcome = r##"<h2>All Articles By Date</h2>
+                        "##;
+                        page_information = String::with_capacity(pinfo.len() + welcome.len() + 50);
+                        page_information.push_str( welcome );
+                        page_information.push_str( &pinfo );
+                    }
+                    
+                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), fmsg), None, String::from("/"), admin, user, None, Some(start.0));
+                    let express: Express = output.into();
+                    
+                    let end = start.0.elapsed();
+                    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+                    
+                    return express.compress( encoding );
+                }
+            }
+        }
     }
     
-    // let end = start.0.elapsed();
+    output = hbs_template(TemplateBody::General(alert_danger("No articles to show."), fmsg), None, String::from("/"), admin, user, None, Some(start.0));
+    let express: Express = output.into();
+    
     let end = start.0.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    let express: Express = output.into();
-    express.compress(encoding)
+    
+    express.compress( encoding )
+    
+    // let output: Template;
+    // let fmsg: Option<String>;
+    // if let Some(flashmsg) = flash {
+    //     fmsg = Some(alert_info( flashmsg.msg() ));
+    // } else {
+    //     fmsg = None;
+    // }
+    // let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
+    // if results.len() != 0 {
+    //     output = hbs_template(TemplateBody::Articles(results, fmsg), None, String::from("/"), admin, user, None, Some(start.0));
+    // } else if admin.is_some() {
+    //     output = hbs_template(TemplateBody::General("There are no articles.<br>\n<a href =\"/insert\">Create Article</a>".to_string(), None), None, String::from("/"), admin, user, None, Some(start.0));
+    // } else {
+    //     output = hbs_template(TemplateBody::General("There are no articles.".to_string(), None), None, String::from("/"), admin, user, None, Some(start.0));
+    // }
+    
+    // // let end = start.0.elapsed();
+    // let end = start.0.elapsed();
+    // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // let express: Express = output.into();
+    // express.compress(encoding)
 }
 
 

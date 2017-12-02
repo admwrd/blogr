@@ -301,7 +301,7 @@ impl<T: Collate> Page<T> {
 pub trait Collate {
     fn new(u8) -> Self;
     fn ipp(&self) -> u8;
-    fn default_ipp() -> u8 { 20 }
+    fn default_ipp() -> u8 { 10 }
     /// relative pages on each side of page
     fn rel_links() -> u8 { 3 }
     /// number of pages to show from first and last page
