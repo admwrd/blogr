@@ -455,41 +455,41 @@ pub fn hbs_logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Resul
 
 
 
-#[get("/view")]
-pub fn hbs_all_articles(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-    // let start = Instant::now();
-    let output: Template;
-    let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
+// #[get("/view")]
+// pub fn hbs_all_articles(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+//     // let start = Instant::now();
+//     let output: Template;
+//     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
     
-    if results.len() != 0 {
-        output = hbs_template(TemplateBody::Articles(results, None), Some("Viewing All Articles".to_string()), String::from("/"), admin, user, None, Some(start.0));
-    } else {
-        if admin.is_some() {
-            output = hbs_template(TemplateBody::General("There are no articles<br>\n<a href =\"/insert\">Create Article</a>".to_string(), None), Some("Viewing All Articles".to_string()), String::from("/"), admin, user, None, Some(start.0));
-        } else {
-            output = hbs_template(TemplateBody::General("There are no articles.".to_string(), None), Some("Viewing All Articles".to_string()), String::from("/"), admin, user, None, Some(start.0));
-        }
-    }
+//     if results.len() != 0 {
+//         output = hbs_template(TemplateBody::Articles(results, None), Some("Viewing All Articles".to_string()), String::from("/"), admin, user, None, Some(start.0));
+//     } else {
+//         if admin.is_some() {
+//             output = hbs_template(TemplateBody::General("There are no articles<br>\n<a href =\"/insert\">Create Article</a>".to_string(), None), Some("Viewing All Articles".to_string()), String::from("/"), admin, user, None, Some(start.0));
+//         } else {
+//             output = hbs_template(TemplateBody::General("There are no articles.".to_string(), None), Some("Viewing All Articles".to_string()), String::from("/"), admin, user, None, Some(start.0));
+//         }
+//     }
     
-    let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    let express: Express = output.into();
-    express.compress(encoding)
-}
+//     let end = start.0.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     let express: Express = output.into();
+//     express.compress(encoding)
+// }
 
-#[get("/view?<page>")]
-pub fn hbs_articles_page(start: GenTimer, page: ViewPage, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-    // let start = Instant::now();
-    let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
+// #[get("/view?<page>")]
+// pub fn hbs_articles_page(start: GenTimer, page: ViewPage, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+//     // let start = Instant::now();
+//     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);
     
-    // Todo: Change title to: Viewing Article Page x/z
-    let output: Template = hbs_template(TemplateBody::General("You are viewing paginated articles.".to_string(), None), Some("Viewing Articles".to_string()), String::from("/"), admin, user, None, Some(start.0));
+//     // Todo: Change title to: Viewing Article Page x/z
+//     let output: Template = hbs_template(TemplateBody::General("You are viewing paginated articles.".to_string(), None), Some("Viewing Articles".to_string()), String::from("/"), admin, user, None, Some(start.0));
     
-    let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    let express: Express = output.into();
-    express.compress(encoding)
-}
+//     let end = start.0.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     let express: Express = output.into();
+//     express.compress(encoding)
+// }
 
 
 #[get("/all_tags")]
@@ -541,6 +541,41 @@ pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCo
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
+}
+
+#[get("/view_articles")]
+pub fn hbs_view_articles(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    
+    let total_query = "SELECT COUNT(*) as count FROM articles";
+    let output: Template;
+    if let Ok(rst) = conn.query(total_query, &[]) {
+        if !rst.is_empty() && rst.len() == 1 {
+            let row = rst.get(0);
+            let count: i64 = row.get(0);
+            let total_items: u32 = count as u32;
+            let (ipp, cur, num_pages) = pagination.page_data(total_items);
+            let sql = pagination.sql("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", Some("posted DESC"));
+            println!("Prepared paginated query:\n{}", sql);
+            if let Some(results) = conn.articles(&sql) {
+                // let results: Vec<Article> = conn.articles(&sql);
+                if results.len() != 0 {
+                    let page_information = pagination.page_info(total_items);
+                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some(format!("Viewing All Articles - Page {} of {}", cur, num_pages)), String::from("/view_articles"), admin, user, None, Some(start.0));
+                    let express: Express = output.into();
+                    return express.compress( encoding );
+                }
+            }
+            // if let Ok(qry) = conn.query(sql, &[]) {
+            //     if !qry.is_empty() && rst.len() != 0 {
+                    
+            //     }
+            // }
+        }
+    }
+    
+    output = hbs_template(TemplateBody::General(alert_danger("Database query failed."), None), Some("Viewing All Articles".to_string()), String::from("/view_articles"), admin, user, None, Some(start.0));
+    let express: Express = output.into();
+    express.compress( encoding )
 }
 
 

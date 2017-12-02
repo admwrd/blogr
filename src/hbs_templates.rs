@@ -15,6 +15,7 @@ use std::time::{Instant, Duration};
 
 use super::BLOG_URL;
 use blog::*;
+use collate::*;
 use layout::*;
 // use users;
 
@@ -37,9 +38,16 @@ pub struct TagCount {
 /// The TemplateBody struct determines which template is used and what info is passed to it
 #[derive(Debug, Clone)]
 pub enum TemplateBody {
-    General(String, Option<String>),
-    Article(Article, Option<String>),
+    General(String, Option<String>), // page content and optional message
+    Article(Article, Option<String>), // article and optional message
     Articles(Vec<Article>, Option<String>), // articles and an optional message
+    ArticlesPages(
+        Vec<Article>,       // articles
+        Page<Pagination>,   // pagination info
+        u32,                // total number of items
+        Option<String>,     // an optional current page message
+        Option<String>      //optional message
+    ), 
     // Search(Vec<Article>, Option<String>, Option<String>), // articles and an optional message
     Search(Vec<Article>, Option<Search>, Option<String>), // articles and an optional message
     Login (
@@ -47,8 +55,8 @@ pub enum TemplateBody {
         Option<String>, // username that was entered
         Option<String>, // fail message
     ),
-    Create(String, Option<String>),
-    Tags(Vec<TagCount>, Option<String>),
+    Create(String, Option<String>), // form action url and optional message
+    Tags(Vec<TagCount>, Option<String>), // list of tags and their counts, and optional message
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -129,6 +137,14 @@ pub struct TemplateSearch {
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateTags {
     pub tags: Vec<TagCount>,
+    pub msg: String,
+    pub info: TemplateInfo,
+}
+#[derive(Debug, Clone, Serialize)]
+pub struct TemplateArticlesPages {
+    pub body: Vec<ArticleDisplay>,
+    pub links: String,
+    pub current: String,
     pub msg: String,
     pub info: TemplateInfo,
 }
@@ -324,6 +340,18 @@ impl TemplateTags {
         }
     }
 }
+impl TemplateArticlesPages {
+    pub fn new(content: Vec<Article>, page: Page<Pagination>, total_items: u32, info_opt: Option<String>, msg: Option<String>, info: TemplateInfo) -> TemplateArticlesPages {
+        let mut articles: Vec<ArticleDisplay> = content.iter().map(|a| a.to_display()).collect();
+        TemplateArticlesPages {
+            body: articles,
+            links: page.navigation(total_items),
+            current: if let Some(curinfo) = info_opt { curinfo } else { page.page_info(total_items) },
+            msg: if let Some(m) = msg { m } else { String::new() },
+            info,
+        }
+    }
+}
 
 
 
@@ -377,6 +405,12 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
         TemplateBody::Tags(tags, msg) => {
             let context = TemplateTags::new(tags, msg, info);
             Template::render("tags-template", &context)
+        },
+        TemplateBody::ArticlesPages(articles, page, total, curinfo,  msg) => {
+            let context = TemplateArticlesPages::new(articles, page, total, curinfo, msg, info);
+            Template::render("articles-template", &context)
+            // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
+            // Template::render("general-template", &context)
         },
     }
     

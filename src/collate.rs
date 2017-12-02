@@ -99,7 +99,11 @@ impl<T: Collate> Page<T> {
         }
     }
     
+        
     pub fn sql(&self, query: &str, orderby: Option<&str>) -> String {
+    // pub fn sql(&self, total_items: u32, query: &str, orderby: Option<&str>) -> String {
+        // let (ipp, cur, num_pages) = self.page_data(total_items);
+        
         let mut qrystr: String;
         if let Some(order) = orderby {
             // orderby text, plus offset/limit is 20 characters, plus 20 character extra buffer
@@ -123,7 +127,35 @@ impl<T: Collate> Page<T> {
         
         qrystr
     }
-    
+    pub fn page_info(&self, total_items: u32) -> String {
+        
+        let (ipp, cur, pages) = self.page_data(total_items);
+        
+        format!("Showing page {cur} of {pages}.  {total} items found.", 
+            cur=cur, pages=pages, total=total_items)
+            // all available variables:
+            // ipp=ipp, cur=cur, pages=pages, total=total_items);
+        
+    }
+    /// Returns the items per page, page number, and number of pages
+    pub fn page_data(&self, total_items: u32) -> (u8, u32, u32) {
+        let ipp8 = self.settings.ipp();
+        let ipp = ipp8 as u32;
+        let num_pages = if total_items % ipp != 0 {
+            (total_items / ipp) + 1
+        } else {
+            total_items / ipp
+        };
+        
+        let cur = if self.cur_page > num_pages { 
+            num_pages 
+        } else if self.cur_page == 0 {
+            1
+        } else { 
+            self.cur_page
+        };
+        (ipp8, cur, num_pages)
+    }
     pub fn navigation(&self, total_items: u32) -> String {
         // <a href="{base}{route}[?[page=x][[&]ipp=y]]">{page}</a>
         let ipp = self.settings.ipp() as u32;
@@ -134,9 +166,10 @@ impl<T: Collate> Page<T> {
             total_items / ipp
         };
         
-        if num_pages == 1 {
-            return link(&self, 1, "1");
-        }
+        // Will it work without this?
+        // if num_pages == 1 {
+        //     return link(&self, 1, "1");
+        // }
         
         let abs = T::abs_links() as u32;
         let rel = T::rel_links() as u32;

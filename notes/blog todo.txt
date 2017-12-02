@@ -22,6 +22,16 @@ Rocket-auth-login
 
 Blogr
 	Test collate module's sql
+	Implement the pagination on:
+		front page
+		search page
+		individual tag page
+	
+	Either change the create template to take an optional Page parameter
+	or make a new template for Editing an article
+		need to make sure form url points to edit route with the specified aid
+		prolly just create new template
+	
 
 	Add content to the about me page.
 	

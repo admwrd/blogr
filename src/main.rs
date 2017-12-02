@@ -274,8 +274,9 @@ fn main() {
             
             pages::pagination_test,
             
-            pages::hbs_all_articles,
-            pages::hbs_articles_page,
+            // pages::hbs_all_articles,
+            // pages::hbs_articles_page,
+            pages::hbs_view_articles,
             pages::hbs_tags_all,
             pages::hbs_articles_tag,
             pages::hbs_article_title,
