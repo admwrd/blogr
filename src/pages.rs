@@ -764,19 +764,20 @@ pub fn hbs_search_results(start: GenTimer, pagination: Page<Pagination>, search:
     let mut qrystr = String::with_capacity(750);
     // aid title posted body tag description userid display
     
-    qrystr.push_str(r#"
-SELECT a.aid, a.title, a.posted, 
-    ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body, 
-    a.tag, a.description, u.userid, u.display, u.username, 
-    ts_rank(a.fulltxt, fqry, 32) AS rank
-FROM articles a JOIN users u ON (a.author = u.userid),
-    plainto_tsquery('pg_catalog.english', '"#);
-    
+    // New Query:
 //     qrystr.push_str(r#"
-// SELECT a.aid, a.title, a.posted, a.tag, ts_rank(a.fulltxt, fqry, 32) AS rank, ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body,
-//     u.userid, u.display, u.username
+// SELECT a.aid, a.title, a.posted, 
+//     ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body, 
+//     a.tag, a.description, u.userid, u.display, u.username, 
+//     ts_rank(a.fulltxt, fqry, 32) AS rank
 // FROM articles a JOIN users u ON (a.author = u.userid),
-// plainto_tsquery('pg_catalog.english', '"#);
+//     plainto_tsquery('pg_catalog.english', '"#);
+    
+    qrystr.push_str(r#"
+SELECT a.aid, a.title, a.posted, a.tag, ts_rank(a.fulltxt, fqry, 32) AS rank, ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body,
+    u.userid, u.display, u.username
+FROM articles a JOIN users u ON (a.author = u.userid),
+plainto_tsquery('pg_catalog.english', '"#);
     
     // SC *** countqry.push_str(r##"SELECT COUNT(*) FROM articles a, plainto_tsquery('pg_catalog.english', '"##);
     // ts_headline([ config regconfig, ] document text, query tsquery [, options text ]) returns text

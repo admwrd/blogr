@@ -57,7 +57,11 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             {{#each info.admin_pages}}
                               {{#if this.separator}}
-                                  <div class="dropdown-divider"></div>
+                                  {{#if this.name}}
+                                  <h6 class="dropdown-header {{this.classes}}">{{this.name}}</h6>
+                                  {{else}}
+                                  <div class="dropdown-divider {{this.classes}}"></div>
+                                  {{/if}}
                               {{else}}
                                   <a class="dropdown-item {{this.classes}}" href="{{this.url}}">{{this.name}}</a>
                               {{/if}}

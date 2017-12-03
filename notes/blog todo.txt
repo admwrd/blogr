@@ -20,7 +20,25 @@ Rocket-auth-login
 	Check the OWASP guide and also check which characters are in the unicode categories
 		allowed by the sanitize functions, basically just make sure they're secure
 
+Blogr Theme
+	Maybe for multiple article pages show a scrollbar (overflow: scroll) and customize the scrollbars 
+		only for chrome, do not add scrollbars for other browsers
+	Maybe add height: 100% to html, body 
+		then add height: 60% to mainWrapper 
+		then height: 100% to v-body and v-content
+
+
 Blogr
+	Add a route that looks up an article by the date [and category] and name
+		convert spaces to - and remove non-word characters
+		route: /post/2017/12/02/
+	
+	Add a 'Read More' or 'See Full Article' link when listing multiple articles
+	
+	Add pagination to author page too
+		And view tag
+		And search?
+
 	Search pagination - not sure how to proceed
 	    -Need to be able to pass the search query to link
 	    -Reverting back for now
@@ -37,11 +55,7 @@ Blogr
 			if pg doesn't support nullable params then lookup the row by aid ( description(aid) )
 
 	Test collate module's sql
-	Implement the pagination on:
-		front page
-		search page
-		individual tag page
-	
+
 	Either change the create template to take an optional Page parameter
 	or make a new template for Editing an article
 		need to make sure form url points to edit route with the specified aid

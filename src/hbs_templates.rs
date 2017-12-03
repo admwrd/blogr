@@ -168,6 +168,10 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
     // if admin_opt.is_some() && user_opt.is_some() {
     //     admin_pages.push( TemplateMenu::separator() );
     // }
+    
+    // admin_pages.push( TemplateMenu { separator: true, name: "User Menu".to_string(), url: String::new(), classes: String::new() });
+    admin_pages.push( TemplateMenu::header("User Menu"));
+    
     if user_opt.is_some() {
         admin_pages.push( TemplateMenu::new(String::from("User Dashboard"), String::from("/user"), page) );
         // admin_pages.push( TemplateMenu::separator() );
@@ -175,7 +179,11 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
     } else {
         admin_pages.push( TemplateMenu::new(String::from("User Login"), String::from("/user"), page) );
     }
-    admin_pages.push( TemplateMenu::separator() );
+    // admin_pages.push( TemplateMenu::separator() );
+    
+    // admin_pages.push( TemplateMenu { separator: true, name: "Admin Menu".to_string(), url: String::new(), classes: String::new() });
+    admin_pages.push( TemplateMenu::header("Admin Menu"));
+    
     if admin_opt.is_some() {
         admin_pages.push( TemplateMenu::new(String::from("Admin Dashboard"), String::from("/admin"), page) );
         admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create"), page) );
@@ -212,6 +220,14 @@ impl TemplateMenu {
             separator: true,
             name: String::new(),
             url: String::new(),
+            classes: String::new(),
+        }
+    }
+    pub fn header(text: &str) -> TemplateMenu {
+        TemplateMenu {
+            separator: true, 
+            name: text.to_string(), 
+            url: String::new(), 
             classes: String::new(),
         }
     }
