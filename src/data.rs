@@ -74,12 +74,13 @@ pub struct DbConn(
 );
 
 impl DbConn {
+    /// If called like: conn.articles("") it will return all articles.  The description of the article is used if it exists otherwise a truncated body is returned; to return articles will their full body contents use `conn.articles_full("")`.
     pub fn articles(&self, qrystr: &str) -> Option<Vec<Article>> {
         
         let qryrst: Result<_, _> = if qrystr != "" {
             self.query(qrystr, &[])
         } else {
-            self.query("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", &[])
+            self.query(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description), a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), &[])
         };
         if let Ok(result) = qryrst {
             let mut articles: Vec<Article> = Vec::new();
@@ -104,6 +105,12 @@ impl DbConn {
         } else {
             None
         }
+    }
+    /// Runs a query returning articles from the database.  If the text passed in is equal to "" then the default 
+    /// query is to return all articles with full body content.
+    pub fn articles_full(&self, qrystr: &str) -> Option<Vec<Article>> {
+        let qry = if qrystr != "" { qrystr } else { "SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)" };
+        self.articles(qry)
     }
 }
 

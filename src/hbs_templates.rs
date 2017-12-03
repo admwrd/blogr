@@ -56,6 +56,9 @@ pub enum TemplateBody {
         Option<String>, // fail message
     ),
     Create(String, Option<String>), // form action url and optional message
+    Edit(String, Article, Option<String>), // form action url and optional message
+    // Paginated list of articles, 
+    // Manage(),
     Tags(Vec<TagCount>, Option<String>), // list of tags and their counts, and optional message
 }
 
@@ -97,6 +100,20 @@ pub struct TemplateLogin {
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateCreate {
     pub action_url: String,
+    pub msg: String,
+    pub info: TemplateInfo,
+}
+#[derive(Debug, Clone, Serialize)]
+pub struct TemplateEdit {
+    pub action_url: String,
+    pub body: ArticleDisplay,
+    pub msg: String,
+    pub info: TemplateInfo,
+}
+#[derive(Debug, Clone, Serialize)]
+pub struct TemplateManage {
+    pub action_url: String,
+    pub body: ArticleDisplay,
     pub msg: String,
     pub info: TemplateInfo,
 }
@@ -155,6 +172,8 @@ pub struct TemplateArticlesPages {
 // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
 
 
+
+
 pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt: &Option<UserCookie>) -> (Vec<TemplateMenu>, Vec<TemplateMenu>) {
     
     let mut pages: Vec<TemplateMenu> = vec![
@@ -200,9 +219,18 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
     (pages, admin_pages)
 }
 
+lazy_static! {
+    static ref BASE: &'static str = if BLOG_URL.ends_with("/") {
+        &BLOG_URL[..BLOG_URL.len()-1]
+    } else {
+        &BLOG_URL
+    };
+}
 
 impl TemplateMenu {
     pub fn new(name: String, url: String, current_page: &str) -> TemplateMenu {
+        
+        
         let classes = if &url == current_page {
             "active".to_string()
         } else {
@@ -212,7 +240,16 @@ impl TemplateMenu {
             separator: false,
             classes,
             name,
-            url,
+            url: {
+                if url.starts_with("http") || url.starts_with("www") {
+                    let mut u = String::with_capacity(BASE.len() + url.len() + 10);
+                    u.push_str(&BASE);
+                    u.push_str(&url);
+                    u
+                } else {
+                    url
+                }
+            },
         }
     }
     pub fn separator() -> TemplateMenu {
@@ -347,6 +384,16 @@ impl TemplateCreate {
         }
     }
 }
+impl TemplateEdit {
+        pub fn new(action_url: String, article: Article, msg: Option<String>, info: TemplateInfo) -> TemplateEdit {
+        TemplateEdit {
+            action_url,
+            body: article.to_display(),
+            msg: if let Some(m) = msg { m } else { String::new() },
+            info,
+        }
+    }
+}
 impl TemplateTags {
     pub fn new(tags: Vec<TagCount>, msg: Option<String>, info: TemplateInfo) -> TemplateTags {
         TemplateTags {
@@ -429,6 +476,13 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
             // let context = TemplateGeneral::new("ARTICLES NOT YET IMPLEMENTED.".to_string(), info);
             // Template::render("general-template", &context)
         },
+        TemplateBody::Edit(action, article, msg) => {
+            let context = TemplateEdit::new(action, article, msg, info);
+            Template::render("edit-article-template", &context)
+        }
+        // TemplateBody::Manage() => {
+            
+        // }
     }
     
 }

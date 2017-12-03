@@ -44,26 +44,17 @@ pub struct Pagination {
     pub ipp: u8
 }
 
-
 fn link<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String {
     // let url = T::link(page, cur_page-1);
     let url = T::link(page, cur_page);
     // <a href="" class="active"></a>
     // <a href=""></a>
-    // let mut link = String::with_capacity(url.len() + text.len() + 15 + 10);
-    // link.push_str(" <a href=\"");
-    // link.push_str(&url);
-    // link.push_str("\">");
-    // link.push_str(text);
-    // link.push_str("</a> ");
-    // link
-    // <li class="page-item"><a class="page-link" href="#">1</a></li>
-    let mut link = String::with_capacity(url.len() + text.len() + 70 + 10);
-    link.push_str(" <li class=\"page-item\"><a class=\"page-link\" href=\"");
+    let mut link = String::with_capacity(url.len() + text.len() + 15 + 10);
+    link.push_str(" <a href=\"");
     link.push_str(&url);
     link.push_str("\">");
     link.push_str(text);
-    link.push_str("</a></li> ");
+    link.push_str("</a> ");
     link
 }
 fn link_active<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String {
@@ -71,18 +62,11 @@ fn link_active<T: Collate>(page: &Page<T>, cur_page: u32, text: &str) -> String 
     // <a href="" class="active"></a>
     // <a href=""></a>
     let mut link = String::with_capacity(url.len() + text.len() + 30 + 20);
-    // link.push_str(" <a href=\"");
-    // link.push_str(&url);
-    // link.push_str("\" class=\"active\">[");
-    // link.push_str(text);
-    // link.push_str("]</a> ");
-    // link
-    let mut link = String::with_capacity(url.len() + text.len() + 120 + 20);
-    link.push_str(" <li class=\"page-item active\"><a class=\"page-link\" href=\"");
+    link.push_str(" <a href=\"");
     link.push_str(&url);
-    link.push_str("\">");
+    link.push_str("\" class=\"active\">[");
     link.push_str(text);
-    link.push_str("<span class=\"sr-only\">(current)</span></a></li> ");
+    link.push_str("]</a> ");
     link
 }
 
@@ -172,31 +156,6 @@ impl<T: Collate> Page<T> {
         };
         (ipp8, cur, num_pages)
     }
-    
-    
-/*
-Bootstrap:
-<nav aria-label="...">
-  <ul class="pagination">
-    <li class="page-item disabled">
-      <span class="page-link">Previous</span>
-    </li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item active">
-      <span class="page-link">
-        2
-        <span class="sr-only">(current)</span>
-      </span>
-    </li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item">
-      <a class="page-link" href="#">Next</a>
-    </li>
-  </ul>
-</nav>
-*/
-
-    
     pub fn navigation(&self, total_items: u32) -> String {
         // <a href="{base}{route}[?[page=x][[&]ipp=y]]">{page}</a>
         let ipp = self.settings.ipp() as u32;
@@ -277,21 +236,15 @@ Bootstrap:
         //     back
         //     );
         
-        // html.push_str(r#"<div class="v-collate row">"#);
-        html.push_str(r#"<nav><ul class="pagination">"#);
+        html.push_str(r#"<div class="v-collate row">"#);
         
-        // html.push_str(r#"<div class="v-collate-prevnext col-2">"#);
+        html.push_str(r#"<div class="v-collate-prevnext col-2">"#);
         if cur != 1 {
-            // html.push_str( &link(&self, cur-1, "[Previous]") );
-            // NEW - html.push_str("\n<li class=\"page-item\">");
-            html.push_str( &link(&self, cur-1, "Previous") );
-            // NEW - html.push_str("</li>\n");
-        } else {
-            html.push_str(r#"<li class="page-item disabled"><span class="page-link">Previous</span></li>"#);
+            html.push_str( &link(&self, cur-1, "[Previous]") );
         }
-        // html.push_str("</div>");
+        html.push_str("</div>");
         
-        // html.push_str(r#"<div class="v-collate-left col-3">"#);
+        html.push_str(r#"<div class="v-collate-left col-3">"#);
         if pages_left.len() != 0 {
             for page in pages_left {
                 html.push_str( &link(&self, page, &page.to_string()) );
@@ -305,14 +258,13 @@ Bootstrap:
                 html.push_str( &link(&self, page, &page.to_string()) );
             }
         }
-        // html.push_str("</div>");
+        html.push_str("</div>");
         
-        // html.push_str(r#"<div class="v-collate-cur">"#);
+        html.push_str(r#"<div class="v-collate-cur">"#);
         html.push_str( &link_active(&self, cur, &cur.to_string()) );
-        // html.push_str("</div>");
-        if html.capacity() != html_capacity { println!("0 Capacity has changed from {} to: {}", html_capacity, html.capacity()); }
+        html.push_str("</div>");
         
-        // html.push_str(r#"<div class="v-collate-right col-3">"#);
+        html.push_str(r#"<div class="v-collate-right col-3">"#);
         if pages_right.len() != 0 {
             // print next page link
             // print link to all pages in the vector
@@ -328,24 +280,18 @@ Bootstrap:
                 html.push_str( &link(&self, page, &page.to_string()) );
             }
         }
-        // html.push_str("</div>");
+        html.push_str("</div>");
         
-        // html.push_str(r#"<div class="v-collate-prevnext col-2">"#);
-        // if cur != num_pages {
-        //     html.push_str( &link(&self, cur+1, "[Next]") );
-        // }
+        html.push_str(r#"<div class="v-collate-prevnext col-2">"#);
         if cur != num_pages {
-            // html.push_str( &link(&self, cur-1, "[Previous]") );
-            html.push_str( &link(&self, cur+1, "Next") );
-        } else {
-            html.push_str(r#"<li class="page-item disabled"><span class="page-link">Next</span></li>"#);
+            html.push_str( &link(&self, cur+1, "[Next]") );
         }
         
-        // html.push_str("</div>");
+        html.push_str("</div>");
         
-        // html.push_str("</div>");
+        html.push_str("</div>");
         
-        if html.capacity() != html_capacity { println!("1 Capacity has changed from {} to: {}", html_capacity, html.capacity()); }
+        if html.capacity() != html_capacity { println!("Capacity has changed from {} to: {}", html_capacity, html.capacity()); }
         
         html.shrink_to_fit();
         html

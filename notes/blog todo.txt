@@ -29,6 +29,10 @@ Blogr Theme
 
 
 Blogr
+	Research how to use pieces of other templates in handlebars templates
+		so that each template only needs the minimum amount of code
+		-Will need to make separate partials for article vs articles due to the {{../}} part
+
 	Add a route that looks up an article by the date [and category] and name
 		convert spaces to - and remove non-word characters
 		route: /post/2017/12/02/
@@ -37,7 +41,7 @@ Blogr
 	
 	Add pagination to author page too
 		And view tag
-		And search?
+		NOT - And search?
 
 	Search pagination - not sure how to proceed
 	    -Need to be able to pass the search query to link
