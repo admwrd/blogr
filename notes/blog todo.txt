@@ -29,6 +29,8 @@ Blogr Theme
 
 
 Blogr
+	Add javascript to sort the tables
+
 	Research how to use pieces of other templates in handlebars templates
 		so that each template only needs the minimum amount of code
 		-Will need to make separate partials for article vs articles due to the {{../}} part

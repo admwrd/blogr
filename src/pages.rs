@@ -1099,8 +1099,8 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
                              the Rust programming language, web development, javascript, databases, cryptology, security, and compression.  
                              Feel free to contact me at the email address at the bottom of the page.</p>
                              <hr>
-                             <h3>All Articles By Date</h3>
                              "##;
+                             // <h3>All Articles By Date</h3>
                              // </div></div><div class="v-content"><div class="v-pageinfo">
                         page_information = String::with_capacity(pinfo.len() + welcome.len() + 50);
                         page_information.push_str( welcome );
