@@ -27,6 +27,12 @@ use rocket_auth_login::sanitization;
 use data::*;
 use sanitize::*;
 
+
+
+pub const DESC_LIMIT: usize = 300;
+
+
+
 // type ArticleId = u32;
 #[derive(Debug, Clone)]
 pub struct ArticleId {
@@ -52,6 +58,22 @@ pub struct Article {
     // pub author_id: u32,
     // pub author_name: String,
 }
+
+#[derive(Debug, Clone, FromForm)]
+pub struct ArticleWrapper {
+    pub aid: u32,
+    pub title: String,
+    pub posted: NaiveDateTimeWrapper,
+    pub userid: u32,
+    pub username: String,
+    pub body: String,
+    pub tags: String,
+    pub description: String,
+    // pub author_id: u32,
+    // pub author_name: String,
+}
+
+
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ArticleDisplay {
@@ -97,6 +119,36 @@ pub struct SearchDisplay {
     pub max: String,
 }
 
+#[derive(FromForm)]
+pub struct ViewPage {
+    pub page: u32,
+    // Articles Per Page
+    pub app: Option<u8>,
+}
+
+pub struct ArticleSearch {
+    // pub min_date: NaiveDate,
+    // pub max_date: NaiveDate,
+    pub keywords: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct User {
+    pub userid: u32,
+    pub username: String,
+    pub display: Option<String>,
+    pub email: Option<String>,
+    pub password: String,
+    pub is_admin: bool,
+    pub is_public: bool,
+}
+
+#[derive(Debug, Clone)]
+pub struct GenTimer (pub Instant);
+
+#[derive(Debug, Clone)]
+pub struct NaiveDateTimeWrapper(pub NaiveDateTime);
+
 impl SearchDisplay {
     pub fn default() -> SearchDisplay {
         SearchDisplay {
@@ -129,34 +181,21 @@ impl Search {
     }
 }
 
-
-
-#[derive(FromForm)]
-pub struct ViewPage {
-    pub page: u32,
-    // Articles Per Page
-    pub app: Option<u8>,
+impl ArticleWrapper {
+    pub fn to_article(self) -> Article {
+        // let tags: Vec<String> = self.tags.split(",").map(|t| ).collect();
+        Article {
+            aid: self.aid,
+            title: self.title,
+            posted: self.posted.0,
+            userid: self.userid,
+            username: self.username,
+            body: self.body,
+            tags: split_tags(self.tags),
+            description: self.description,
+        }
+    }
 }
-
-pub struct ArticleSearch {
-    // pub min_date: NaiveDate,
-    // pub max_date: NaiveDate,
-    pub keywords: Vec<String>,
-}
-
-#[derive(Debug, Clone)]
-pub struct User {
-    pub userid: u32,
-    pub username: String,
-    pub display: Option<String>,
-    pub email: Option<String>,
-    pub password: String,
-    pub is_admin: bool,
-    pub is_public: bool,
-}
-
-#[derive(Debug, Clone)]
-pub struct GenTimer (pub Instant);
 
 // use rocket::request::FromRequest;
 impl<'a, 'r> FromRequest<'a, 'r> for GenTimer {
@@ -189,7 +228,6 @@ impl<'a, 'r> FromRequest<'a, 'r> for GenTimer {
 // }
 
 
-pub const DESC_LIMIT: usize = 300;
 
 pub fn opt_col<T>(rst: Option<Result<T, T>>) -> T where T: Display + Default {
     match rst {
@@ -200,6 +238,11 @@ pub fn opt_col<T>(rst: Option<Result<T, T>>) -> T where T: Display + Default {
 }
 
 impl ArticleId {
+    pub fn new(aid: u32) -> ArticleId {
+        ArticleId {
+            aid
+        }
+    }
     pub fn exists(&self) -> bool {
         unimplemented!()
     }
@@ -292,6 +335,10 @@ pub fn get_len<T>(input: &Option<Vec<T>>) -> usize {
     }
 }
 
+pub fn slash_quotes(text: &str) -> String {
+    text.replace("\\", "").replace("'", "\'").replace("\"", "\\\"")
+}
+
 impl Article {
     pub fn to_display(&self) -> ArticleDisplay {
         ArticleDisplay {
@@ -311,7 +358,7 @@ impl Article {
     pub fn split_tags(string: String) -> Vec<String> {
         // Todo: call sanitize tags before splitting:
         let tags: Vec<String> = string.split(',')
-            .map(|s| s.trim().to_string())
+            .map( |s| sanitize_tag(s.trim()) )
             .filter(|s| s.as_str() != "" && s.as_str() != " ")
             .collect();
         tags
@@ -341,6 +388,55 @@ impl Article {
             } else { None }
         } else { None }
     }
+    
+    pub fn save(&self, conn: DbConn) -> Result<String, String> {
+        let vtags: Vec<String> = self.tags.clone();
+        let tagstr = format!( 
+            "{{{}}}", vtags
+            .iter()
+            // .split(",")
+            .map(
+                |s| format!("\"{}\"", s.trim().to_lowercase())
+            ).collect::<Vec<_>>()
+            .join(",")
+            // .replace(",''")
+        );
+        let qrystr = format!("
+            UPDATE articles 
+                SET title = '{title}',
+                    body = '{body}',
+                    tag = '{tag}',
+                    description = '{desc}'
+                WHERE aid = {aid}
+            ", 
+                    // posted = '{posted}',
+            title=slash_quotes(&self.title), 
+            // posted=slash_quotes(self.posted), 
+            body=slash_quotes(&self.body),
+            tag=tagstr,
+            desc=slash_quotes(&self.description),
+            aid=self.aid
+        );
+        
+        println!("Generated update query:\n{}", qrystr);
+        
+        if let Ok(num) = conn.execute(&qrystr, &[]) {
+            if num == 1 {
+                Ok(format!("Article {} successfully updated", self.aid))
+            } else if num > 1 {
+                println!("Update query updated too many rows.");
+                Err("Multiple rows updated".to_string())
+            } else {
+                println!("Update query updated no rows.");
+                Err(String::new())
+            }
+        } else {
+            println!("Update query failed.");
+            Err(String::new())
+        }
+        
+    } 
+    
     pub fn info(&self) -> String {
         format!("Aid: {aid}, Title: {title}, Posted on: {posted}, Description:<br>\n{desc}<br>\nBody:<br>\n{body}<br>\ntags: {tags:#?}", aid=self.aid, title=self.title, posted=self.posted, body=self.body, tags=self.tags, desc=self.description)
     }
@@ -665,8 +761,48 @@ impl<'f> FromForm<'f> for ArticleForm {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct NaiveDateTimeWrapper(pub NaiveDateTime);
+// impl<'f> FromForm<'f> for Article {
+//     type Error = &'static str;
+    
+//     fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
+        
+//         // Author should be blank string here, when saving the author can be identified from cookies
+//         // this prevents user from altering the userid in submitted form data when using a hidden field to save the userid
+        
+//         let mut aid: u32 = 0;
+//         let mut posted: String = String::new();
+//         let mut title: String = String::new();
+//         let mut body: String = String::new();
+//         let mut tags: String = String::new();
+//         let mut description: String = String::new();
+        
+//         for (field, value) in form_items {
+//             match field.as_str() {
+//                 "title" => { title = sanitize_title(value.url_decode().expect("URL Decode failed")) },
+//                 "body" => { body = sanitize_body(value.url_decode().expect("URL Decode failed")) },
+//                 "tags" => { tags = sanitize_tags(value.url_decode().expect("URL Decode failed")) },
+//                 "description" => { description = sanitize_body(value.url_decode().expect("URL Decode failed")) },
+//                 _ => {},
+//             }
+//         }
+//         if title.len() > MAX_CREATE_TITLE {
+//             title = title[..MAX_CREATE_TITLE].to_string();
+//         }
+//         if tags.len() > MAX_CREATE_TAGS {
+//             tags = tags[..MAX_CREATE_TAGS].to_string();
+//         }
+//         if description.len() > MAX_CREATE_DESCRIPTION {
+//             description = description[..MAX_CREATE_DESCRIPTION].to_string();
+//         }
+//         if title == "" || body == "" {
+//             Err("Missing a required field.")
+//         } else {
+//             Ok( ArticleForm::new(title, body, tags, description) )
+//         }
+//     }
+// }
+
+
 
 impl<'v> FromFormValue<'v> for NaiveDateTimeWrapper {
     type Error = ();

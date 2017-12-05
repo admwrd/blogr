@@ -2,30 +2,46 @@
                 <div class="v-content">
                 
 <!-- ---------- -->
-                    
+                    <!-- 
+                        Add hidden input field for aid
+                        Make hidden input field for posted (use posted_machine)
+                        Make hidden input field for userid
+                     -->
                     {{#if msg}}
                         {{{msg}}}
                     {{/if}}
                     <form method="post" action="{{action_url}}" name="insert_form">
                         <div class="col-md-7 mx-auto mb-3">
-                            <input name="title" type="text" maxlength="120" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">
+                            <input name="title" type="text" value="{{body.title}}" maxlength="120" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">
                         </div>
+                         <div class="row">
+                            <date class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</date>
+                                <div class="v-byline"> 
+                                     by 
+                                    <a href="{{info.base_url}}author/{{body.userid}}/{{body.username}}" class="v-author-link">{{body.username}}</a>
+                                </div>
+                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
+                            </div>
                         <div class="form-group">
                             <label for="input_description" class="v-form-label">Description</label>
-                            <textarea class="form-control" name="description" id="insert_desc" maxlength="400" rows="2"></textarea>
+                            <textarea class="form-control" name="description" value="{{{this.description}}}" id="insert_desc" maxlength="400" rows="2"></textarea>
                             <!-- <input name="description" type="text" class="v-form-control form-control" maxlength="250" id="insert-desc" placeholder="Description"> -->
                         </div>
                         <div class="form-group">
                             <label for="input_body" class="v-form-label">Contents</label>
-                            <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
+                            <textarea class="form-control" name="body" value="{{{this.body}}}" id="insert_body" rows="3"></textarea>
                         </div>
                         <div class="col-md-8 mx-auto">
                             <label for="insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
-                                <input name="tags" type="text" maxlength="250" class="v-centered-input v-form-control form-control" id="insert-tags" placeholder="Tags">
+                                <input name="tags" type="text" value="{{#each body.tags}}{{this}}{{/each}}" maxlength="250" class="v-centered-input v-form-control form-control" id="insert-tags" placeholder="Tags">
                                 <div class="v-form-message" id="tag-msg">
                                     Did you mean to <b>Comma Separate</b> the tags?
                                 </div>
                         </div>
+                        <input type="hidden" name="aid" value="{{body.aid}}">
+                        <input type="hidden" name="posted" value="{{body.posetd_machine}}">
+                        <input type="hidden" name="userid" value="{{body.userid}}">
+                        <input type="hidden" name="username" value="{{body.username}}">
                         <div class="v-submit">
                             <button type="submit" class="btn btn-primary">Create Article</button>
                         </div>

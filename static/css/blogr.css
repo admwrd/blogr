@@ -168,21 +168,22 @@ hr {
 
 
 
+/*
+orange:   #de6d11
+dark ora: #853c01
+*/
+
 .v-manage {
-    /*background-color: #32383e;*/
     background-color: #212529;
+    font-size: .9em;
+    /*background-color: #32383e;*/
     /*border-collapse: separate !important;*/
     /*border: 1px solid #666;*/
     /*border-radius: 1em;*/
     /*padding: 4px;*/
 }
 
-/*
-orange:   #de6d11
-dark ora: #853c01
-*/
-
-.v-manage tr th, .v-manage.table tr td {
+.v-manage tr th, .v-manage tr td {
     /*border-color: #888;*/
     background-color: #212529;
     /*border-color: #999;*/
@@ -190,6 +191,28 @@ dark ora: #853c01
     border-right: 1px dashed #853c01;
     border-left: 1px dashed #853c01;
     padding: 4px .7em;
+}
+
+.v-manage thead tr th:hover, 
+.v-manage thead tr td:hover 
+{
+    background-color: #944300;
+    /*background-color: #b50;*/
+    /*background-color: #de6d11;*/
+    /*background-color: #853c01;*/
+}
+.v-manage tbody tr th:hover, 
+.v-manage tbody tr td:hover 
+{
+    background-color: #de6d11;
+    color: #000;
+}
+
+.v-manage tbody tr:nth-of-type(odd) th:hover, 
+.v-manage tbody tr:nth-of-type(odd) td:hover 
+{
+    background-color: #de6d11;
+    color: #000;
 }
 
 .v-manage tbody tr:last-child th,
@@ -208,9 +231,18 @@ dark ora: #853c01
     border-bottom: 1px solid #de6d11;
 }
 
+.v-man-editcol {
+    border: 0px !important;
+    background-color: #212529 !important;
+    text-align: right;
+    padding-right: 1.5em !important;
+    width: 75px;
+    /*font-family: 'franklin gothic book', candara, 'segoe ui', calibri, arial, 'sans-serif', times, Geneva, ‘Lucida Sans’, ‘Lucida Grande’, ‘Lucida Sans Unicode’, Verdana;*/
+}
 
-
-
+.v-man-datecol {
+    width: 125px;
+}
 
 
 /*
@@ -387,6 +419,9 @@ OLD - OUTDATED PAGINATION STYLES
 }
 .v-centered-text {
     text-align: center;
+}
+.v-right-text {
+    text-align: right;
 }
 .v-centered-msg {
     margin-top: 1em;

@@ -3,6 +3,18 @@
 use regex::Regex;
 use htmlescape::*;
 
+pub fn sanitize_tag(tag: &str) -> String {
+    lazy_static! {
+        static ref IS_SANITARY_TAG: Regex = Regex::new(r#"^[\w\d\s]*$"#).unwrap();
+        static ref SANITIZE_TAG: Regex = Regex::new(r#"[^\w\d\s]+"#).unwrap();
+    }
+    if IS_SANITARY_TAG.is_match(tag) {
+        tag.to_string()
+    } else {
+        SANITIZE_TAG.replace_all(tag, "").to_string()
+    }
+}
+
 
 // used to sanitize usernames
 pub fn sanitize(string: &str) -> String {
@@ -33,7 +45,7 @@ pub fn sanitize_password(string: &str) -> String {
 
 // escapes html tags and special characters
 pub fn input_sanitize(string: String) -> String {
-    string
+    encode_minimal(&string)
 }
 // removes non-word characters
 pub fn strict_sanitize(string: String) -> String {
@@ -86,7 +98,7 @@ pub fn sanitize_tags(string: String) -> String {
     // unimplemented!()
 }
 pub fn split_tags(string: String) -> Vec<String> {
-    let tags: Vec<String> = string.to_lowercase().split(',').filter(|t| t != &"").map(|t| t.to_string()).collect();
+    let tags: Vec<String> = string.to_lowercase().split(',').filter(|t| t != &"").map(|t| sanitize_tag(t.trim())).collect();
     tags
 }
 

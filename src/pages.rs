@@ -1068,6 +1068,56 @@ pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCooki
     express.compress(encoding)
 }
 
+#[get("/edit/<aid>")]
+pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    
+    let output: Template;
+    let id = ArticleId::new(aid);
+    if let Some(article) = id.retrieve_with_conn(conn) {
+        let title = article.title.clone();
+        output = hbs_template(TemplateBody::Edit(EDIT_FORM_URL.to_string(), article, None), Some(format!("Editing '{}'", title)), String::from("/edit"), Some(admin), user, None, Some(start.0));
+        let express: Express = output.into();
+        return express.compress(encoding);
+    }
+    
+    // let qrystr = format!("a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {}", aid);
+    // if let Some(articles) = conn.articles(&qrystr) {
+    //     if articles.len() == 1 {
+    //         let article = &articles[0];
+    //         output = hbs_template(TemplateBody::Edit(EDIT_FORM_URL.to_string(), *article, None), Some(format!("Editing '{}'", &article.title)), String::from("/edit"), admin, user, None, Some(start.0));
+    //         let express: Express = output.into();
+    //         return express.compress(encoding);
+    //     }
+    // }
+    output = hbs_template(TemplateBody::General("This page is not implemented yet.  Soon it will tell a little about me.".to_string(), None), Some("About Me".to_string()), String::from("/about"), Some(admin), user, None, Some(start.0));
+    
+    let express: Express = output.into();
+    express.compress(encoding)
+}
+
+#[post("/edit", data = "<form>")]
+// pub fn hbs_edit_process(start: GenTimer, form: Form<Article>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {
+pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleWrapper>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {
+    
+    let wrapper: ArticleWrapper = form.into_inner();
+    let article: Article = wrapper.to_article();
+    let result = article.save(conn);
+    match result {
+        Ok(k) => {
+            Flash::success(Redirect::to(&format!("/edit/{}", &article.aid)), &k)
+        },
+        Err(ref e) if e == "" => {
+            Flash::success(Redirect::to(&format!("/edit/{}", &article.aid)), &e)
+            // Flash::error(Redirect::to(""), "")
+        },
+        Err(e) => {
+            Flash::success(Redirect::to(&format!("/edit/{}", &article.aid)), &e)
+            // Flash::error(Redirect::to(""), "")
+        }
+    }
+    
+}
+
 #[get("/")]
 pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     
