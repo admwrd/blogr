@@ -21,6 +21,15 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 Blogr Theme
+	NO - Maybe add like triangle to the corner or something like: (use trans parent bgs ?)
+		____________________
+		|Blog__________    |
+                |___/          \___|
+		|   |          |   |
+		|   | content  |   |
+		|   |          |   |
+		|   |          |   |
+
 	Maybe for multiple article pages show a scrollbar (overflow: scroll) and customize the scrollbars 
 		only for chrome, do not add scrollbars for other browsers
 	Maybe add height: 100% to html, body 
@@ -29,6 +38,15 @@ Blogr Theme
 
 
 Blogr
+	Article Template: Add edit link below the title and below the tags to the article template
+
+	Only allow delete from the manage page
+
+	Add manage page
+	
+	
+	
+	
 	Add javascript to sort the tables
 
 	Research how to use pieces of other templates in handlebars templates

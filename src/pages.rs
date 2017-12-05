@@ -543,6 +543,7 @@ pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCo
     express.compress(encoding)
 }
 
+// View paginated articles - pretty much just a test route
 #[get("/view_articles")]
 pub fn hbs_view_articles(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     
@@ -581,23 +582,123 @@ pub fn hbs_view_articles(start: GenTimer, pagination: Page<Pagination>, conn: Db
 
 
 #[get("/tag?<tag>", rank = 2)]
-pub fn hbs_articles_tag(start: GenTimer, tag: Tag, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-    // let start = Instant::now();
+pub fn hbs_articles_tag(start: GenTimer, tag: Tag, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     
     let output: Template;
-    let tags = Some(split_tags(medium_sanitize(tag.tag.clone())));
-    // limit, # body chars, min date, max date, tags, strings
-    let results = Article::retrieve_all(conn, 0, Some(-1), None, None, tags, None);
-    if results.len() != 0 {
-        output = hbs_template(TemplateBody::Articles(results, None), Some(format!("Viewing Articles with Tags: {}", tag.tag)), String::from("/all_tags"), admin, user, None, Some(start.0));
-    } else {
-        output = hbs_template(TemplateBody::General(alert_danger("Could not find any articles with the specified tag."), None), Some(format!("Could not find any articles with the tag(s): {}", medium_sanitize(tag.tag) )), String::from("/tag"), admin, user, None, Some(start.0));
-    }
     
-    let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // vtags - Vector of Tags - Vector<Tags>
+    let vtags = split_tags(tag.tag.clone());
+    if vtags.len() == 0 {
+            output = hbs_template(TemplateBody::General(alert_danger("No tag specified."), None), Some("No Tag Specified".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
+    } else {
+        let sql: String = if vtags.len() == 1 {
+            format!(" WHERE '{}' = ANY(a.tag)", sanitize_tag(&vtags[0]))
+        } else {
+            let mut tmp = String::with_capacity((vtags.len()*35) + 50);
+            // tmp.push_str(" WHERE ");
+            tmp.push_str(" WHERE '");
+            tmp.push_str(&sanitize_tag(&vtags[0]));
+            tmp.push_str("' = ANY(a.tag)");
+            // tmp.push_str("");
+            
+            for t in &vtags[1..] {
+                tmp.push_str(" AND '");
+                tmp.push_str(&sanitize_tag(t));
+                tmp.push_str("' = ANY(a.tag)");
+                // tmp.push_str("");
+            }
+            tmp
+        };
+        
+        let mut countqrystr = String::with_capacity(sql.len() + 40);
+        countqrystr.push_str("SELECT COUNT(*) as count FROM articles");
+        countqrystr.push_str(&sql);
+        
+        let mut qrystr = String::with_capacity(sql.len() + 40);
+        qrystr.push_str("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)");
+        qrystr.push_str(&sql);
+        
+        println!("\nTag count query: {}\nTag articles query: {}\n", countqrystr, qrystr);
+        
+        if let Ok(rst) = conn.query(&countqrystr, &[]) {
+            if !rst.is_empty() && rst.len() == 1 {
+                let countrow = rst.get(0);
+                let count: i64 = countrow.get(0);
+                let total_items: u32 = count as u32;
+                let (ipp, cur, num_pages) = pagination.page_data(total_items);
+                let pagesql = pagination.sql(&qrystr, Some("posted DESC"));
+                println!("Tag pagination query:\n{}", pagesql);
+                if let Some(results) = conn.articles(&pagesql) {
+                    if results.len() != 0 {
+                        let page_information = pagination.page_info(total_items);
+                        output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some(format!("Viewing Tag {} - Page {} of {}", tag.tag, cur, num_pages)), String::from("/tag"), admin, user, None, Some(start.0));
+                    } else {
+                        output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag."), None), Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
+                    }
+                } else {
+                        output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag."), None), Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
+                }
+            } else {
+                output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag."), None), Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
+            }
+        } else {
+                output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag."), None), Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
+        }
+    }
     let express: Express = output.into();
-    express.compress(encoding)
+    express.compress( encoding )
+    
+    
+    
+    
+    
+    // let total_query = "SELECT COUNT(*) as count FROM articles";
+    // let output: Template;
+    // if let Ok(rst) = conn.query(total_query, &[]) {
+    //     if !rst.is_empty() && rst.len() == 1 {
+    //         let row = rst.get(0);
+    //         let count: i64 = row.get(0);
+    //         let total_items: u32 = count as u32;
+    //         let (ipp, cur, num_pages) = pagination.page_data(total_items);
+    //         // let sql = pagination.sql("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", Some("posted DESC"));
+    //         let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
+    //         println!("Prepared paginated query:\n{}", sql);
+    //         if let Some(results) = conn.articles(&sql) {
+    //             // let results: Vec<Article> = conn.articles(&sql);
+    //             if results.len() != 0 {
+    //                 let page_information = pagination.page_info(total_items);
+    //                 output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some(format!("Viewing All Articles - Page {} of {}", cur, num_pages)), String::from("/view_articles"), admin, user, None, Some(start.0));
+    //                 let express: Express = output.into();
+    //                 return express.compress( encoding );
+    //             }
+    //         }
+    //         // if let Ok(qry) = conn.query(sql, &[]) {
+    //         //     if !qry.is_empty() && rst.len() != 0 {
+                    
+    //         //     }
+    //         // }
+    //     }
+    // }
+    
+    // output = hbs_template(TemplateBody::General(alert_danger("Database query failed."), None), Some("Viewing All Articles".to_string()), String::from("/view_articles"), admin, user, None, Some(start.0));
+    // let express: Express = output.into();
+    // express.compress( encoding )
+    
+    
+    // let output: Template;
+    // let tags = Some(split_tags(medium_sanitize(tag.tag.clone())));
+    // // limit, # body chars, min date, max date, tags, strings
+    // let results = Article::retrieve_all(conn, 0, Some(-1), None, None, tags, None);
+    // if results.len() != 0 {
+    //     output = hbs_template(TemplateBody::Articles(results, None), Some(format!("Viewing Articles with Tags: {}", tag.tag)), String::from("/all_tags"), admin, user, None, Some(start.0));
+    // } else {
+    //     output = hbs_template(TemplateBody::General(alert_danger("Could not find any articles with the specified tag."), None), Some(format!("Could not find any articles with the tag(s): {}", medium_sanitize(tag.tag) )), String::from("/tag"), admin, user, None, Some(start.0));
+    // }
+    
+    // let end = start.0.elapsed();
+    // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // let express: Express = output.into();
+    // express.compress(encoding)
 }
 
 #[get("/article/<aid>/<title>")]
@@ -1100,7 +1201,7 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
 
 #[post("/edit", data = "<form>")]
 // pub fn hbs_edit_process(start: GenTimer, form: Form<Article>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {
-pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleWrapper>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {
+pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleWrapper>, conn: DbConn, admin: AdministratorCookie, encoding: AcceptCompression) -> Flash<Redirect> {
     
     let wrapper: ArticleWrapper = form.into_inner();
     let article: Article = wrapper.to_article();
