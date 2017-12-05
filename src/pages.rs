@@ -1074,6 +1074,8 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
     let output: Template;
     let id = ArticleId::new(aid);
     if let Some(article) = id.retrieve_with_conn(conn) {
+        // println!("Retrieved article info: {}", article.info());
+        //
         let title = article.title.clone();
         output = hbs_template(TemplateBody::Edit(EDIT_FORM_URL.to_string(), article, None), Some(format!("Editing '{}'", title)), String::from("/edit"), Some(admin), user, None, Some(start.0));
         let express: Express = output.into();
@@ -1095,12 +1097,14 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
     express.compress(encoding)
 }
 
+
 #[post("/edit", data = "<form>")]
 // pub fn hbs_edit_process(start: GenTimer, form: Form<Article>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {
 pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleWrapper>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {
     
     let wrapper: ArticleWrapper = form.into_inner();
     let article: Article = wrapper.to_article();
+    println!("Processing Article info: {}", article.info());
     let result = article.save(conn);
     match result {
         Ok(k) => {

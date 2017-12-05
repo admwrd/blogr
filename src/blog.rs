@@ -809,15 +809,18 @@ impl<'v> FromFormValue<'v> for NaiveDateTimeWrapper {
 
     // fn from_form_value(form_value: &'v RawStr) -> Result<NaiveDateTime, &'v RawStr> {
     fn from_form_value(form_value: &'v RawStr) -> Result<NaiveDateTimeWrapper, ()> {
-        let val = form_value.as_str();
+        // let val = form_value.as_str();
+        let val = form_value.url_decode().unwrap_or(String::new());
         // match NaiveDateTime::from_str(val) {
         match val.parse::<NaiveDateTime>() {
             Ok(date) => Ok(NaiveDateTimeWrapper(date)),
-            Err(e) => Err(()),
+            Err(e) => {
+                println!("\n\nError processing NaiveDateTimeWrapper\nTried to process: {}\nOriginal Input: {}\nReturned Error: {}\n", val, form_value, e);
+                Err(())
+            },
         }
     }
 }
-
 
 
 

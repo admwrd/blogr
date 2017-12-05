@@ -288,7 +288,7 @@ fn main() {
             pages::hbs_create_unauthorized,
             pages::hbs_create_form,
             pages::hbs_edit,
-            // pages::hbs_edit_process,
+            pages::hbs_edit_process,
             // pages::hbs_manage,
             
             // pages::hbs_logout,

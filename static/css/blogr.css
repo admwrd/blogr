@@ -325,6 +325,7 @@ OLD - OUTDATED PAGINATION STYLES
 
 .v-article-header {
 }
+
 .v-article-title {
     font-size: 1.5em;
     /* Candara, Calibri, Segoe, "Segoe Ui", Optima, Arial, sans-serif */
@@ -434,6 +435,13 @@ OLD - OUTDATED PAGINATION STYLES
 }
 .v-author-link {
     font-style: italic;
+}
+
+#inputTitle {
+    font-family: vishusBlogTitle, 'Century Gothic', verdana, 'trebuchet ms', Tahoma, 'sans-serif', times;
+    font-family: 120%;
+    margin: 0px auto;
+    width: 380px;
 }
 
 .v-input-separator {
