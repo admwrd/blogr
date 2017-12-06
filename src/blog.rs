@@ -16,6 +16,8 @@ use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 use htmlescape::*;
 
+
+
 use postgres::{Connection};
 
 use super::{MAX_CREATE_TITLE, MAX_CREATE_DESCRIPTION, MAX_CREATE_TAGS};
@@ -149,6 +151,7 @@ pub struct GenTimer (pub Instant);
 #[derive(Debug, Clone)]
 pub struct NaiveDateTimeWrapper(pub NaiveDateTime);
 
+
 impl SearchDisplay {
     pub fn default() -> SearchDisplay {
         SearchDisplay {
@@ -161,6 +164,43 @@ impl SearchDisplay {
 }
 
 impl Search {
+        pub fn to_query(&self) -> String {
+        let mut output: String = String::with_capacity(120);
+        
+        let mut empty = true;
+        
+        if let Some(ref q) = self.q {
+            if empty {
+                output.push_str("q=");
+                output.push_str(&q);
+            } else {
+                output.push_str("&q=");
+                output.push_str(&q);
+                empty = false;
+            }
+        }
+        if let Some(ref min) = self.min {
+            if empty {
+                output.push_str("min=");
+                output.push_str( &format!("{}", min.0.format("%Y-%m-%d %H:%M:%S")) );
+            } else {
+                output.push_str("&min=");
+                output.push_str( &format!("{}", min.0.format("%Y-%m-%d %H:%M:%S")) );
+                empty = false;
+            }
+        }
+        if let Some(ref max) = self.max {
+            if empty {
+                output.push_str("max=");
+                output.push_str( &format!("{}", max.0.format("%Y-%m-%d %H:%M:%S")) );
+            } else {
+                output.push_str("&max=");
+                output.push_str( &format!("{}", max.0.format("%Y-%m-%d %H:%M:%S")) );
+                empty = false;
+            }
+        }
+        output
+    }
     pub fn to_display(&self) -> SearchDisplay {
         SearchDisplay {
             limit: if let Some(limit) = self.limit { limit } else { 0 },
@@ -853,5 +893,77 @@ impl<'r> FromParam<'r> for ArticleId {
         }
     }
 }
+
+
+
+
+impl<'r> FromParam<'r> for Search {
+    // use chrono::format::ParseResult;
+    type Error = &'r RawStr;
+
+    fn from_param(param: &'r RawStr) -> Result<Self, Self::Error> {
+        use chrono::format::ParseError;
+        
+        let decoded_opt = param.url_decode();
+        if let Ok(decoded) = decoded_opt {
+            
+            let parts: Vec<Vec<_>> = decoded
+                .split("&")
+                .map( |p|
+                    p.split("=").collect()
+                ).collect();
+            
+            let mut q: String = String::new();
+            let mut min: Option<NaiveDateTimeWrapper> = None;
+            let mut max: Option<NaiveDateTimeWrapper> = None;
+            
+            let mut min_rst: Option<Result<NaiveDateTime, ParseError>> = None;
+            let mut max_rst: Option<Result<NaiveDateTime, ParseError>> = None;
+            
+            for v in &parts {
+                if v.len() == 2 {
+                    match v[0] {
+                        "q" => { q = sanitization::sanitize_text(v[1]); },
+                        "min" => { min_rst = Some(NaiveDateTime::parse_from_str(&v[1], "%Y-%m-%d %H:%M:%S")); },
+                        "max" => { max_rst = Some(NaiveDateTime::parse_from_str(&v[1], "%Y-%m-%d %H:%M:%S")); },
+                        _ => {},
+                    }
+                }
+            }
+            
+            if let Some(Ok(min_date)) = min_rst {
+                let min = Some( NaiveDateTimeWrapper(min_date) );
+            }
+            if let Some(Ok(max_date)) = max_rst {
+                let max = Some( NaiveDateTimeWrapper(max_date) );
+            }
+            
+            Ok(Search {
+                limit: None,
+                o: None,
+                p: None,
+                q: Some(q),
+                min,
+                max
+            })
+        } else {
+            Err(param)
+        }
+        
+        
+        
+        // if !key.chars().all(|c| (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+        //     return Err(param);
+        // }
+
+        // val_str.parse().map(|value| {
+        //     MyParam {
+        //         key: key,
+        //         value: value
+        //     }
+        // }).map_err(|_| param)
+    }
+}
+
 
 

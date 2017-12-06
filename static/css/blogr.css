@@ -655,7 +655,8 @@ nav button[class*="navbar-toggler"] {
 }
 
 .dropdown-menu h6 {
-    border-bottom: 1px solid #aaa;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #ddd;
 }
 h6 ~ h6 {
     margin-top: 1em;

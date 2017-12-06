@@ -178,6 +178,10 @@ Design:
 
 
 Future Todo:
+
+	Convert structs containing strings to &str
+		See below for example
+		https://api.rocket.rs/rocket/request/trait.FromParam.html
 	
 	Add unique visitors
 		Maybe create a file or in-memory list of ip addresses

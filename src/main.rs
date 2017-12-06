@@ -294,6 +294,7 @@ fn main() {
             
             // pages::hbs_logout,
             pages::hbs_search_page,
+            pages::hbs_search_redirect,
             pages::hbs_search_results,
             pages::hbs_author_display,
             pages::hbs_author,

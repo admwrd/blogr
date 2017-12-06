@@ -836,6 +836,11 @@ pub fn hbs_search_page(start: GenTimer, conn: DbConn, admin: Option<Administrato
 }
 
 #[get("/search?<search>")]
+pub fn hbs_search_redirect(start: GenTimer, pagination: Page<Pagination>, search: Search, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Redirect {
+    Redirect::to( &format!( "/search/{}", search.to_query() ) )
+}
+
+#[get("/search/<search>")]
 pub fn hbs_search_results(start: GenTimer, pagination: Page<Pagination>, search: Search, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     /*
@@ -867,28 +872,29 @@ pub fn hbs_search_results(start: GenTimer, pagination: Page<Pagination>, search:
     
     println!("Search parameters:\n{:?}", search);
     
-    // SC *** let mut countqry = String::with_capacity(750);
+    let mut countqry = String::with_capacity(750);
     let mut qrystr = String::with_capacity(750);
     // aid title posted body tag description userid display
     
     // New Query:
-//     qrystr.push_str(r#"
-// SELECT a.aid, a.title, a.posted, 
-//     ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body, 
-//     a.tag, a.description, u.userid, u.display, u.username, 
-//     ts_rank(a.fulltxt, fqry, 32) AS rank
-// FROM articles a JOIN users u ON (a.author = u.userid),
-//     plainto_tsquery('pg_catalog.english', '"#);
-    
     qrystr.push_str(r#"
-SELECT a.aid, a.title, a.posted, a.tag, ts_rank(a.fulltxt, fqry, 32) AS rank, ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body,
-    u.userid, u.display, u.username
+SELECT a.aid, a.title, a.posted, 
+    ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body, 
+    a.tag, a.description, u.userid, u.display, u.username, 
+    ts_rank(a.fulltxt, fqry, 32) AS rank
 FROM articles a JOIN users u ON (a.author = u.userid),
-plainto_tsquery('pg_catalog.english', '"#);
+    plainto_tsquery('pg_catalog.english', '"#);
     
-    // SC *** countqry.push_str(r##"SELECT COUNT(*) FROM articles a, plainto_tsquery('pg_catalog.english', '"##);
+// Old Query
+//     qrystr.push_str(r#"
+// SELECT a.aid, a.title, a.posted, a.tag, ts_rank(a.fulltxt, fqry, 32) AS rank, ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = "<mark>", StopSel = "</mark>"') AS body,
+//     u.userid, u.display, u.username
+// FROM articles a JOIN users u ON (a.author = u.userid),
+// plainto_tsquery('pg_catalog.english', '"#);
+    
+    countqry.push_str(r##"SELECT COUNT(*) FROM articles a, plainto_tsquery('pg_catalog.english', '"##);
     // ts_headline([ config regconfig, ] document text, query tsquery [, options text ]) returns text
-    // qrystr.push_str(r#"SELECT ts_headline('english', body) FROM articles"#);
+    qrystr.push_str(r#"SELECT ts_headline('english', body) FROM articles"#);
     
     let mut wherestr = String::new();
     let original = search.clone();
@@ -896,14 +902,14 @@ plainto_tsquery('pg_catalog.english', '"#);
     let mut tags: Option<String> = None;
     if let Some(mut q) = search.q {
         if &q != "" {
-            // prevent most attacks on length and complexity of the sql query
+            // prevent attacks based on length and complexity of the sql query for full-text searches
             if q.len() > 200 {
                 q = q[..200].to_string();
             }
             // WHERE to_tsvector('english', body) @@ to_tsquery('english', 'friend');
             let sanitized = &sanitize_sql(q);
             qrystr.push_str(sanitized);
-            // SC *** countqry.push_str(sanitized);
+            countqry.push_str(sanitized);
             // do a full-text search on title, description, and body fields
             // for each word add: 'word' = ANY(tag)
             let ts = sanitized.split(" ").map(|s| format!("'{}' = ANY(a.tag)", s)).collect::<Vec<_>>().join(" OR ");
@@ -912,13 +918,13 @@ plainto_tsquery('pg_catalog.english', '"#);
         }
     }
     qrystr.push_str("') fqry WHERE fqry @@ a.fulltxt");
-    // SC *** countqry.push_str("') fqry WHERE fqry @@ a.fulltxt");
+    countqry.push_str("') fqry WHERE fqry @@ a.fulltxt");
     
     if let Some(t) = tags {
         qrystr.push_str(" OR ");
         qrystr.push_str(&t);
-        // SC *** countqry.push_str(" OR ");
-        // SC *** countqry.push_str(&t);
+        countqry.push_str(" OR ");
+        countqry.push_str(&t);
     }
     if let Some(min) = search.min {
         // after min
@@ -926,9 +932,9 @@ plainto_tsquery('pg_catalog.english', '"#);
         qrystr.push_str(&format!("{}", min.0.format("%Y-%m-%d %H:%M:%S")));
         qrystr.push_str("'");
         
-        // SC *** countqry.push_str(" AND a.posted > '");
-        // SC *** countqry.push_str(&format!("{}", min.0.format("%Y-%m-%d %H:%M:%S")));
-        // SC *** countqry.push_str("'");
+        countqry.push_str(" AND a.posted > '");
+        countqry.push_str(&format!("{}", min.0.format("%Y-%m-%d %H:%M:%S")));
+        countqry.push_str("'");
     }
     if let Some(max) = search.max {
         // before max
@@ -936,9 +942,9 @@ plainto_tsquery('pg_catalog.english', '"#);
         qrystr.push_str(&format!("{}", max.0.format("%Y-%m-%d %H:%M:%S")));
         qrystr.push_str("'");
         
-        // SC *** countqry.push_str(" AND a.posted < '");
-        // SC *** countqry.push_str(&format!("{}", max.0.format("%Y-%m-%d %H:%M:%S")));
-        // SC *** countqry.push_str("'");
+        countqry.push_str(" AND a.posted < '");
+        countqry.push_str(&format!("{}", max.0.format("%Y-%m-%d %H:%M:%S")));
+        countqry.push_str("'");
     }
     
     // qrystr.push_str(" ORDER BY rank DESC");
@@ -956,80 +962,80 @@ plainto_tsquery('pg_catalog.english', '"#);
     //     countqry.push_str(" LIMIT 40");
     // }
     
-    // println!("Generated the following SQL Query:\nCount:\n{}\n\nSearch Query:\n{}", countqry, qrystr);
-    println!("Generated the following SQL Query:\n{}", qrystr);
+    println!("Generated the following SQL Query:\nCount:\n{}\n\nSearch Query:\n{}", countqry, qrystr);
+    // println!("Generated the following SQL Query:\n{}", qrystr);
     
-    // let total_query = countqry;
-    // let output: Template;
-    // if let Ok(rst) = conn.query(&total_query, &[]) {
-    //     if !rst.is_empty() && rst.len() == 1 {
-    //         let row = rst.get(0);
-    //         let count: i64 = row.get(0);
-    //         let total_items: u32 = count as u32;
-    //         let (ipp, cur, num_pages) = pagination.page_data(total_items);
-    //         // let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
-    //         let sql = pagination.sql(&qrystr, Some("rank DESC"));
-    //         println!("Prepared paginated query:\n{}", sql);
-    //         if let Some(results) = conn.articles(&sql) {
-    //             if results.len() != 0 {
-    //                 // let page_information = pagination.page_info(total_items);
-    //                 let pinfo = pagination.page_info(total_items);
-    //                 let welcome = r##"<h1>Search Results</h1>"##;
-                    
-    //                 let mut page_information = String::with_capacity(pinfo.len() + welcome.len() + 50);
-    //                 page_information.push_str(welcome);
-    //                 page_information.push_str(&pinfo);
-                    
-    //                 output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
-    //                 let express: Express = output.into();
-                    
-    //                 let end = start.0.elapsed();
-    //                 println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-                    
-    //                 return express.compress( encoding );
-    //             }
-    //         }
-    //     }
-    // }
-    
-    // output = hbs_template(TemplateBody::General(alert_danger("No articles to show."), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
-    // let express: Express = output.into();
-    
-    // let end = start.0.elapsed();
-    // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    
-    // express.compress( encoding )
-    
-    let mut articles: Vec<Article> = Vec::new();
-    let qry = conn.query(&qrystr, &[]);
+    let total_query = countqry;
     let output: Template;
-    if let Ok(result) = qry {
-        for row in &result {
-            
-            let display: Option<String> = row.get(7);
-            let username: String = if let Some(disp) = display { disp } else { row.get(8) };
-            
-            let a = Article {
-                aid: row.get(0),
-                title: row.get(1),
-                posted: row.get(2),
-                tags: row.get_opt(3).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()),
-                body: row.get(5),
-                description: String::new(),
-                userid: row.get(6),
-                username: titlecase( &username ),
-            };
-            articles.push(a);
+    if let Ok(rst) = conn.query(&total_query, &[]) {
+        if !rst.is_empty() && rst.len() == 1 {
+            let row = rst.get(0);
+            let count: i64 = row.get(0);
+            let total_items: u32 = count as u32;
+            let (ipp, cur, num_pages) = pagination.page_data(total_items);
+            // let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
+            let sql = pagination.sql(&qrystr, Some("rank DESC"));
+            println!("Prepared paginated query:\n{}", sql);
+            if let Some(results) = conn.articles(&sql) {
+                if results.len() != 0 {
+                    // let page_information = pagination.page_info(total_items);
+                    let pinfo = pagination.page_info(total_items);
+                    let welcome = r##"<h1>Search Results</h1>"##;
+                    
+                    let mut page_information = String::with_capacity(pinfo.len() + welcome.len() + 50);
+                    page_information.push_str(welcome);
+                    page_information.push_str(&pinfo);
+                    
+                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
+                    let express: Express = output.into();
+                    
+                    let end = start.0.elapsed();
+                    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+                    
+                    return express.compress( encoding );
+                }
+            }
         }
-        output = hbs_template(TemplateBody::Search(articles, Some(original), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
-    } else {
-        println!("Query failed. Query: {}", qrystr);
-        output = hbs_template(TemplateBody::General(alert_danger("No results were found."), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
     }
+    
+    output = hbs_template(TemplateBody::General(alert_danger("No articles to show."), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
+    let express: Express = output.into();
+    
     let end = start.0.elapsed();
     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    let express: Express = output.into();
-    express.compress(encoding)
+    
+    express.compress( encoding )
+    
+    // let mut articles: Vec<Article> = Vec::new();
+    // let qry = conn.query(&qrystr, &[]);
+    // let output: Template;
+    // if let Ok(result) = qry {
+    //     for row in &result {
+            
+    //         let display: Option<String> = row.get(7);
+    //         let username: String = if let Some(disp) = display { disp } else { row.get(8) };
+            
+    //         let a = Article {
+    //             aid: row.get(0),
+    //             title: row.get(1),
+    //             posted: row.get(2),
+    //             tags: row.get_opt(3).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()),
+    //             body: row.get(5),
+    //             description: String::new(),
+    //             userid: row.get(6),
+    //             username: titlecase( &username ),
+    //         };
+    //         articles.push(a);
+    //     }
+    //     output = hbs_template(TemplateBody::Search(articles, Some(original), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
+    // } else {
+    //     println!("Query failed. Query: {}", qrystr);
+    //     output = hbs_template(TemplateBody::General(alert_danger("No results were found."), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
+    // }
+    // let end = start.0.elapsed();
+    // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // let express: Express = output.into();
+    // express.compress(encoding)
 }
 
 // application/rss+xml
