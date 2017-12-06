@@ -44,8 +44,12 @@ Blogr
 
 	Add manage page
 	
-	
-	
+	Add pagination to search page
+		Redirect from the route /search?q=... to /search/q
+			which will fix all problems with routes and querystrings
+		
+	Maybe hardcode the tag and search links/form to go to the non querystring pages
+		instead of relying on redirection, although should leave redirections there in case	
 	
 	Add javascript to sort the tables
 

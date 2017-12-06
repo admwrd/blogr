@@ -279,6 +279,7 @@ fn main() {
             // pages::hbs_articles_page,
             pages::hbs_view_articles,
             pages::hbs_tags_all,
+            pages::hbs_articles_tag_redirect,
             pages::hbs_articles_tag,
             pages::hbs_article_title,
             pages::hbs_article_id,

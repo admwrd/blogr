@@ -580,14 +580,20 @@ pub fn hbs_view_articles(start: GenTimer, pagination: Page<Pagination>, conn: Db
     express.compress( encoding )
 }
 
+#[get("/tag?<tag>")]
+pub fn hbs_articles_tag_redirect(tag: Tag) -> Redirect {
+    Redirect::to(&format!("/tag/{}", tag.tag))
+}
 
-#[get("/tag?<tag>", rank = 2)]
-pub fn hbs_articles_tag(start: GenTimer, tag: Tag, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+#[get("/tag/<tag>")]
+pub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     
     let output: Template;
     
+    // let tag = 
+    
     // vtags - Vector of Tags - Vector<Tags>
-    let vtags = split_tags(tag.tag.clone());
+    let vtags = split_tags(tag.clone());
     if vtags.len() == 0 {
             output = hbs_template(TemplateBody::General(alert_danger("No tag specified."), None), Some("No Tag Specified".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
     } else {
@@ -611,11 +617,11 @@ pub fn hbs_articles_tag(start: GenTimer, tag: Tag, pagination: Page<Pagination>,
         };
         
         let mut countqrystr = String::with_capacity(sql.len() + 40);
-        countqrystr.push_str("SELECT COUNT(*) as count FROM articles");
+        countqrystr.push_str("SELECT COUNT(*) as count FROM articles a");
         countqrystr.push_str(&sql);
         
         let mut qrystr = String::with_capacity(sql.len() + 40);
-        qrystr.push_str("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)");
+        qrystr.push_str(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT));
         qrystr.push_str(&sql);
         
         println!("\nTag count query: {}\nTag articles query: {}\n", countqrystr, qrystr);
@@ -631,7 +637,7 @@ pub fn hbs_articles_tag(start: GenTimer, tag: Tag, pagination: Page<Pagination>,
                 if let Some(results) = conn.articles(&pagesql) {
                     if results.len() != 0 {
                         let page_information = pagination.page_info(total_items);
-                        output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some(format!("Viewing Tag {} - Page {} of {}", tag.tag, cur, num_pages)), String::from("/tag"), admin, user, None, Some(start.0));
+                        output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some(format!("Viewing Tag {} - Page {} of {}", tag, cur, num_pages)), String::from("/tag"), admin, user, None, Some(start.0));
                     } else {
                         output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag."), None), Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
                     }
