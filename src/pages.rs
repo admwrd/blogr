@@ -837,12 +837,36 @@ pub fn hbs_search_page(start: GenTimer, conn: DbConn, admin: Option<Administrato
 
 #[get("/search?<search>")]
 pub fn hbs_search_redirect(start: GenTimer, pagination: Page<Pagination>, search: Search, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Redirect {
-    Redirect::to( &format!( "/search/{}", search.to_query() ) )
+    // Add min/max date later, its not implemented in the search page anyways
+    // let min = if let Some(mi) = search.min {
+    //     format!("{}", mi.0.format("%Y-%m-%d %H:%M:%S"))
+    // } else {
+    //     String::new()
+    // };
+    // let max = if let Some(mi) = search.min {
+    //     format!("{}", mi.0.format("%Y-%m-%d %H:%M:%S"))
+    // } else {
+    //     String::new()
+    // };
+    if let Some(q) = search.q {
+        Redirect::to( &format!( "/search/{}", q ) )
+    } else {
+        Redirect::to( "/search" )
+    }
 }
 
-#[get("/search/<search>")]
-pub fn hbs_search_results(start: GenTimer, pagination: Page<Pagination>, search: Search, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-    // let start = Instant::now();
+#[get("/search/<searchstr>")]
+pub fn hbs_search_results(start: GenTimer, pagination: Page<Pagination>, searchstr: String, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    
+    let search = Search {
+        limit: None,
+        o: None,
+        p: None,
+        q: Some(searchstr),
+        min: None,
+        max: None,
+    };
+    
     /*
         SELECT  
             a.aid, 
@@ -894,7 +918,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
     
     countqry.push_str(r##"SELECT COUNT(*) FROM articles a, plainto_tsquery('pg_catalog.english', '"##);
     // ts_headline([ config regconfig, ] document text, query tsquery [, options text ]) returns text
-    qrystr.push_str(r#"SELECT ts_headline('english', body) FROM articles"#);
+    // qrystr.push_str(r#"SELECT ts_headline('english', body) FROM articles"#);
     
     let mut wherestr = String::new();
     let original = search.clone();
