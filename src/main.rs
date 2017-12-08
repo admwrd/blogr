@@ -142,6 +142,7 @@ pub const ADMIN_LOGIN_URL: &'static str = "http://localhost:8000/admin";
 pub const TEST_LOGIN_URL: &'static str = "http://localhost:8000/login";
 pub const CREATE_FORM_URL: &'static str = "http://localhost:8000/create";
 pub const EDIT_FORM_URL: &'static str = "http://localhost:8000/edit";
+pub const MANAGE_URL: &'static str = "http://localhost:8000/manage";
 pub const MAX_CREATE_TITLE: usize = 120;
 pub const MAX_CREATE_DESCRIPTION: usize = 400;
 pub const MAX_CREATE_TAGS: usize = 250;
@@ -301,6 +302,9 @@ fn main() {
             pages::hbs_about,
             pages::rss_page,
             pages::hbs_index,
+            
+            pages::hbs_manage_basic,
+            pages::hbs_manage_full,
             
             // pages_administrator::dashboard_admin_unauthorized,
             pages::hbs_dashboard_admin_authorized,

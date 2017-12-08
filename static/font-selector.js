@@ -1,4 +1,11 @@
 
+/* Todo
+    Make the current target underlined
+        If target is all then underline all targets
+
+*/
+
+
 /* KEYS
     l or h (lowercase L or h)
         next logo font

@@ -616,11 +616,11 @@ pub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Paginatio
             tmp
         };
         
-        let mut countqrystr = String::with_capacity(sql.len() + 40);
+        let mut countqrystr = String::with_capacity(sql.len() + 60);
         countqrystr.push_str("SELECT COUNT(*) as count FROM articles a");
         countqrystr.push_str(&sql);
         
-        let mut qrystr = String::with_capacity(sql.len() + 40);
+        let mut qrystr = String::with_capacity(sql.len() + 60);
         qrystr.push_str(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT));
         qrystr.push_str(&sql);
         
@@ -1258,6 +1258,81 @@ pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleWrapper>, conn: DbCon
     }
     
 }
+
+#[get("/manage")]
+pub fn hbs_manage_basic(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+    hbs_manage_full(start, "".to_string(), "".to_string(), pagination, conn, admin, user, flash, encoding)
+}
+
+#[get("/manage/<sortstr>/<orderstr>")]
+pub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagination: Page<Pagination>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+    
+    let output: Template;
+    
+    let fmsg: Option<String>;
+    if let Some(flashmsg) = flash {
+        fmsg = Some(alert_info( flashmsg.msg() ));
+    }  else {
+        fmsg = None;
+    }
+    
+    let mut total_query = "SELECT COUNT(*) AS count FROM articles";
+    
+    // let mut querystr: String = "SELECT a.aid, a.title, a.posted, description({}, a.body, a.description), a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)".to_string();
+    let mut page_query = "SELECT a.aid, a.title, a.posted, '' as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)";
+    
+    // let order_str = sortstr.to_lowercase();
+    let order = match sortstr.to_lowercase().as_ref() {
+        "date" if &orderstr == "desc" => "posted DESC",
+        "date" if &orderstr == "asc" => "posted",
+        "date" => "posted DESC",
+        "title" if &orderstr == "desc" => "title DESC",
+        "title" if &orderstr == "asc" => "title",
+        "title" => "title",
+        _ if &orderstr == "desc" => "posted DESC",
+        _ if &orderstr == "asc" => "posted",
+        _ => "posted DESC",
+    };
+    
+    let sort_options: Sort = match order {
+        "posted DESC" => Sort::Date(true),
+        "posted" => Sort::Date(false),
+        "title" => Sort::Title(false),
+        "title DESC" => Sort::Title(true),
+        _ => Sort::Date(true),
+    };
+    
+    if let Ok(rst) = conn.query(total_query, &[]) {
+        if !rst.is_empty() && rst.len() == 1 {
+            let countrow = rst.get(0);
+            let count: i64 = countrow.get(0);
+            let total_items: u32 = count as u32;
+            let (ipp, cur, num_pages) = pagination.page_data(total_items);
+            let pagesql = pagination.sql(page_query, Some(order));
+            println!("Manage paginated query: {}", pagesql);
+            if let Some(results) = conn.articles(&pagesql) {
+                if results.len() != 0 {
+                    // let page_info = pagination.page_info(total_items);
+                    
+                    output = hbs_template(TemplateBody::Manage(results, pagination, total_items, sort_options, None), Some(format!("Manage Articles - Page {} of {}", cur, num_pages)), String::from("/manage"), Some(admin), user, None, Some(start.0));
+                    
+                    let express: Express = output.into();
+                    return express.compress(encoding);
+                    
+                }
+            }
+            
+            
+        }
+    }
+    
+    output = hbs_template(TemplateBody::General(alert_danger("No articles found."), None), Some("Manage Articles".to_string()), String::from("/manage"), Some(admin), user, None, Some(start.0));
+    
+    let express: Express = output.into();
+    express.compress(encoding)
+    
+}
+
 
 #[get("/")]
 pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {

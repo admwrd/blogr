@@ -341,6 +341,8 @@ Bootstrap:
             html.push_str(r#"<li class="page-item disabled"><span class="page-link">Next</span></li>"#);
         }
         
+        html.push_str("</ul></nav>");
+        
         // html.push_str("</div>");
         
         // html.push_str("</div>");

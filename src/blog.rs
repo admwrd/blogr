@@ -151,6 +151,33 @@ pub struct GenTimer (pub Instant);
 #[derive(Debug, Clone)]
 pub struct NaiveDateTimeWrapper(pub NaiveDateTime);
 
+pub type Descending = bool;
+
+#[derive(Debug, Clone, Serialize)]
+pub enum Sort {
+    Title(Descending),
+    Date(Descending),
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SortDisplay {
+    sort_title: bool,
+    sort_date: bool,
+    sort_desc: bool,
+    sort_asc: bool,
+}
+
+impl Sort {
+    pub fn to_display(&self) -> SortDisplay {
+        match self {
+            &Sort::Title(desc) if desc == true => SortDisplay { sort_title: true, sort_date: false, sort_desc: true, sort_asc: false },
+            &Sort::Title(desc) => SortDisplay { sort_title: true, sort_date: false, sort_desc: false, sort_asc: true },
+            &Sort::Date(desc) if desc == true => SortDisplay { sort_title: false, sort_date: true, sort_desc: true, sort_asc: false },
+            &Sort::Date(desc) => SortDisplay { sort_title: false, sort_date: true, sort_desc: false, sort_asc: true },
+            _ => SortDisplay { sort_title: true, sort_date: false, sort_desc: true, sort_asc: false },
+        }
+    }
+}
 
 impl SearchDisplay {
     pub fn default() -> SearchDisplay {

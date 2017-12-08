@@ -38,6 +38,9 @@ Blogr Theme
 
 
 Blogr
+	Change manage's links in the table to a different color when the col is highlighted
+		when the col is highlighted the links are not very readble
+
 	Article Template: Add edit link below the title and below the tags to the article template
 
 	Only allow delete from the manage page

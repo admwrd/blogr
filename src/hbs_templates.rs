@@ -45,8 +45,8 @@ pub enum TemplateBody {
         Vec<Article>,       // articles
         Page<Pagination>,   // pagination info
         u32,                // total number of items
-        Option<String>,     // an optional current page message
-        Option<String>      //optional message
+        Option<String>,     // an optional current page message - page description etc
+        Option<String>      //optional flash message
     ), 
     // Search(Vec<Article>, Option<String>, Option<String>), // articles and an optional message
     Search(Vec<Article>, Option<Search>, Option<String>), // articles and an optional message
@@ -58,9 +58,18 @@ pub enum TemplateBody {
     Create(String, Option<String>), // form action url and optional message
     Edit(String, Article, Option<String>), // form action url and optional message
     // Paginated list of articles, 
-    // Manage(),
+    // need to find a way to indicate which column is being sorted on and which way its sorted
+    // manage/desc|asc/date
+    // turn sort into sort display
+    
+    // Manage(String, String, Vec<Article>, Page<Pagination>, u32, Sort, Option<String>), // Edit action, delete action, articles, pagination, total items, sort info
+    Manage(Vec<Article>, Page<Pagination>, u32, Sort, Option<String>), // Articles, pagination, total items, sort info
+    
     Tags(Vec<TagCount>, Option<String>), // list of tags and their counts, and optional message
 }
+
+
+
 
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateMenu {
@@ -110,13 +119,13 @@ pub struct TemplateEdit {
     pub msg: String,
     pub info: TemplateInfo,
 }
-#[derive(Debug, Clone, Serialize)]
-pub struct TemplateManage {
-    pub action_url: String,
-    pub body: ArticleDisplay,
-    pub msg: String,
-    pub info: TemplateInfo,
-}
+// #[derive(Debug, Clone, Serialize)]
+// pub struct TemplateManage {
+//     pub action_url: String,
+//     pub body: ArticleDisplay,
+//     pub msg: String,
+//     pub info: TemplateInfo,
+// }
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateGeneral {
     pub body: String,
@@ -165,6 +174,17 @@ pub struct TemplateArticlesPages {
     pub msg: String,
     pub info: TemplateInfo,
 }
+#[derive(Debug, Clone, Serialize)]
+pub struct TemplateManage {
+    // pub action_url: String,
+    pub body: Vec<ArticleDisplay>,
+    pub links: String,
+    pub sort: SortDisplay,
+    pub msg: String,
+    pub info: TemplateInfo,
+}
+
+
 
 // END TEMPLATEBODY STRUCTS
 
@@ -415,7 +435,19 @@ impl TemplateArticlesPages {
         }
     }
 }
-
+impl TemplateManage {
+    pub fn new(content: Vec<Article>, page: Page<Pagination>, total_items: u32, sort: Sort, msg: Option<String>, info: TemplateInfo) -> TemplateManage {
+        let mut articles: Vec<ArticleDisplay> = content.iter().map(|a| a.to_display()).collect();
+        TemplateManage {
+            // action_url,
+            body: articles,
+            links: page.navigation(total_items),
+            sort: sort.to_display(),
+            msg: if let Some(m) = msg { m } else { String::new() },
+            info,
+        }
+    }
+}
 
 
 
@@ -479,6 +511,14 @@ pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, 
         TemplateBody::Edit(action, article, msg) => {
             let context = TemplateEdit::new(action, article, msg, info);
             Template::render("edit-article-template", &context)
+        }
+        // TemplateBody::Manage(edit_action, delete_action, articles, page, total, sort, msg) => {
+        //     let context = TemplateManage::new(edit_action, delete_action, articles, page, total, sort, msg, info);
+        //     Template::render("manage-pagination-template", &context)
+        // }
+        TemplateBody::Manage(articles, page, total, sort, msg) => {
+            let context = TemplateManage::new(articles, page, total, sort, msg, info);
+            Template::render("manage-pagination-template", &context)
         }
         // TemplateBody::Manage() => {
             
