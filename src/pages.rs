@@ -229,20 +229,23 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 
 
 #[get("/admin", rank = 1)]
-pub fn hbs_dashboard_admin_authorized(start: GenTimer, conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_admin_authorized(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
-    let flash = if let Some(flash) = flash_msg_opt {
-        Some( alert_warning(flash.msg()) )
-    } else {
-        None
-    };
+    // let flash = if let Some(flash) = flash_msg_opt {
+    //     Some( alert_warning(flash.msg()) )
+    // } else {
+    //     None
+    // };
     
-    let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=admin.username), flash), Some("Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start.0));
+    // let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=admin.username), flash), Some("Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start.0));
     
-    let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    let express: Express = output.into();
-    express.compress(encoding)
+    // let end = start.0.elapsed();
+    // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // let express: Express = output.into();
+    // express.compress(encoding)
+    
+    hbs_manage_full(start, "".to_string(), "".to_string(), pagination, conn, admin, user, flash_msg_opt, encoding)
+    
 }
 
 #[get("/admin", rank = 2)]
