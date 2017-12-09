@@ -1,0 +1,19 @@
+#32383e
+#212529
+
+Odd Items
+.v-am-list li:nth-of-type(odd)
+    /*background-color: #3c4146;*/
+    /*background-color: #24282a;*/
+    /*background-color: #121315;*/
+    /*background-color: rgba(0,0,0,.05);*/
+
+.v-am-item
+    /*background-color: #3c4146;*/
+    /*background-color: #2a2f31;*/
+    /*background-color: #363d3f;*/
+    /*background-color: #212529;*/
+
+
+
+

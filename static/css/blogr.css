@@ -24,6 +24,10 @@
     
 }
 
+#mainWrapper {
+    min-width: 470px;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: vishusBlogTitle;
 }
@@ -172,6 +176,73 @@ hr {
 orange:   #de6d11
 dark ora: #853c01
 */
+
+.v-am-list {
+    list-style-type: none;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.v-am-item-bottom {
+    padding-top: 0.4em;
+}
+
+.v-am-list li:nth-of-type(odd) {
+    background-color: #32383e;
+}
+
+.v-am-item {
+    background-color: #212529;
+    border-left: 3px solid #de6d11;
+    border-right: 1px solid #853c01;
+    border-bottom: 1px solid #853c01;
+    border-top: 1px solid #853c01;
+    padding: 0px 9px 0.4em 10px;
+    margin-left: 0px;
+    margin-right: 0px;
+    min-width: 100%;
+    margin-bottom: 1.5em;
+    border-radius: 1em;
+    
+}
+
+.v-am-item:hover {
+    border-left: 8px solid #de6d11;
+    border-right: 5px solid #de6d11;
+    border-top: 1px solid #de6d11;
+    border-bottom: 1px solid #de6d11;
+    padding-left: 5px;
+    padding-right: 4px;
+}
+
+.v-am-itemlink {
+    font-family:  vishusBlogTitle, 'Century Gothic', verdana, 'trebuchet ms', Tahoma, 'sans-serif', times;
+    font-size: 110%;
+    padding-left: 1em;
+    width: 100%;
+    padding-top: 0.4rem;
+    padding-bottom: .5rem;
+    margin-left: 10px;
+    margin-right: 11px;
+    border-radius: 0.5em 0.5em 0px 0px;
+    /*border-bottom: 1px dashed #666; */
+}
+
+.v-am-itemlink:hover {
+    background-color: #de6d11;
+}
+
+.v-am-item-posted {
+    font-size: 90%;
+}
+
+
+.v-am-item-description {
+    text-align: center;
+}
+
+
+
 
 .v-manage {
     background-color: #212529;

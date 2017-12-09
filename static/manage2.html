@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         
         <!-- Font Awesome -->
-        <!-- <link rel="stylesheet" href="css/font-awesome.min.css"> -->
+        <link rel="stylesheet" href="css/font-awesome.min.css">
         
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
@@ -101,44 +101,123 @@
 <!-- Maybe add js to sort the table -->
 <h3 class="v-centered-text">Edit Articles</h3>
 <p class="v-right-text">Or <a href="create">Add A New Post</a></p>
-<table id="v-manage" class="v-manage table table-sm table-hover table-striped table-dark">
-    <thead>
-        <tr scope="row">
-            <th class="v-man-editcol" scope="col"></th>
-            <th scope="col">Id</th>
-            <th scope="col">Title</th>
-            <!-- <th scope="col">Author</th> -->
-            <th scope="col"><a href="{{base_url}}manage/">Date</a></th>
-            <th scope="col" title="Description">Desc</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr scope="row">
-            <th class="v-man-editcol" scope="row"><a href="/edit/1">Edit</a></th>
-            <td>1</td>
-            <td> <a href="{{info.base_url}}edit/13">Cats take over the world and ban all dogs - true story watch tonight on news 5000000</a></td>
-            <!-- <td>Otto</td> -->
-            <td class="v-man-datecol">2017-12-03</td>
-            <td>No</td>
-        </tr>
-        <tr scope="row">
-            <th class="v-man-editcol" scope="row"><a href="/edit/1">Edit</a></th>
-            <td>2</td>
-            <td>Jacob</td>
-            <!-- <td>Thornton</td> -->
-            <td>@fat</td>
-            <td>Yes</td>
-        </tr>
-        <tr scope="row">
-            <th class="v-man-editcol" scope="row"><a href="/edit/1">Edit</a></th>
-            <td>3</td>
-            <td>Larry</td>
-            <!-- <td>the Bird</td> -->
-            <td>@twitter</td>
-            <td>No</td>
-        </tr>
-    </tbody>
-</table>
+<!--   v-admin-manage-   into:   v-am-   -->
+<div class="v-am-table">
+    <ul class="v-am-list">
+        <li class="v-am-item container">
+            <div class="v-am-item-top row">
+                <a href="{{../info.base_url}}eidt/{{this.aid}}" class="v-am-itemlink">
+                    <!-- <i class="fa fa-pencil-square-o" aria-hidden="true"></i> -->
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    This Is a Test Article Blah
+                </a>
+            </div>
+            <div class="v-am-item-bottom row">
+                <!-- <div class="v-am-item-aid col">13</div> -->
+                <div class="v-am-item-viewlink col-auto">
+                    <a class="" href="{{../info.base_url}}article/{{this.aid}}/{{this.title}}">13 - View</a>
+                </div>
+                <div class="v-am-item-author col-4">
+                    Andrew Prindle
+                </div>
+                <div class="v-am-item-posted col-4">
+                    2017-10-27&nbsp;@&nbsp;06:41pm
+                </div>
+                <div class="v-am-item-description col-1">
+                    <i class="fa fa-newspaper-o" aria-hidden="true" data-toggle="tooltip" data-html="true" title="Has Description"></i>
+                    <!-- Desc -->
+                </div>
+                <div class="v-am0item-detele col-auto">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </div>
+            </div>
+        </li>
+        <li class="v-am-item container">
+            <div class="v-am-item-top row">
+                <a href="{{../info.base_url}}eidt/{{this.aid}}" class="v-am-itemlink">
+                    <!-- <i class="fa fa-pencil-square-o" aria-hidden="true"></i> -->
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    This Is a Test Article Blah
+                </a>
+            </div>
+            <div class="v-am-item-bottom row">
+                <!-- <div class="v-am-item-aid col">13</div> -->
+                <div class="v-am-item-viewlink col-auto">
+                    <a class="" href="{{../info.base_url}}article/{{this.aid}}/{{this.title}}">13 - View</a>
+                </div>
+                <div class="v-am-item-author col-4">
+                    Andrew Prindle
+                </div>
+                <div class="v-am-item-posted col-4">
+                    2017-10-27&nbsp;@&nbsp;06:41pm
+                </div>
+                <div class="v-am-item-description col-1">
+                    <i class="fa fa-newspaper-o" aria-hidden="true" data-toggle="tooltip" data-html="true" title="Has Description"></i>
+                    <!-- Desc -->
+                </div>
+                <div class="v-am0item-detele col-auto">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </div>
+            </div>
+        </li>
+        <li class="v-am-item container">
+            <div class="v-am-item-top row">
+                <a href="{{../info.base_url}}eidt/{{this.aid}}" class="v-am-itemlink">
+                    <!-- <i class="fa fa-pencil-square-o" aria-hidden="true"></i> -->
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    This Is a Test Article Blah
+                </a>
+            </div>
+            <div class="v-am-item-bottom row">
+                <!-- <div class="v-am-item-aid col">13</div> -->
+                <div class="v-am-item-viewlink col-auto">
+                    <a class="" href="{{../info.base_url}}article/{{this.aid}}/{{this.title}}">13 - View</a>
+                </div>
+                <div class="v-am-item-author col-4">
+                    Andrew Prindle
+                </div>
+                <div class="v-am-item-posted col-4">
+                    2017-10-27&nbsp;@&nbsp;06:41pm
+                </div>
+                <div class="v-am-item-description col-1">
+                    <i class="fa fa-newspaper-o" aria-hidden="true" data-toggle="tooltip" data-html="true" title="Has Description"></i>
+                    <!-- Desc -->
+                </div>
+                <div class="v-am0item-detele col-auto">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </div>
+            </div>
+        </li>
+        <li class="v-am-item container">
+            <div class="v-am-item-top row">
+                <a href="{{../info.base_url}}eidt/{{this.aid}}" class="v-am-itemlink">
+                    <!-- <i class="fa fa-pencil-square-o" aria-hidden="true"></i> -->
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    This Is a Test Article Blah
+                </a>
+            </div>
+            <div class="v-am-item-bottom row">
+                <!-- <div class="v-am-item-aid col">13</div> -->
+                <div class="v-am-item-viewlink col-auto">
+                    <a class="" href="{{../info.base_url}}article/{{this.aid}}/{{this.title}}">13 - View</a>
+                </div>
+                <div class="v-am-item-author col-4">
+                    Andrew Prindle
+                </div>
+                <div class="v-am-item-posted col-4">
+                    2017-10-27&nbsp;@&nbsp;06:41pm
+                </div>
+                <div class="v-am-item-description col-1">
+                    <i class="fa fa-newspaper-o" aria-hidden="true" data-toggle="tooltip" data-html="true" title="Has Description"></i>
+                    <!-- Desc -->
+                </div>
+                <div class="v-am0item-detele col-auto">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
                             
                         
                         
