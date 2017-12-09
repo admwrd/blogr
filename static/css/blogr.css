@@ -208,7 +208,7 @@ dark ora: #853c01
 
 .v-am-item:hover {
     border-left: 8px solid #de6d11;
-    border-right: 5px solid #de6d11;
+    border-right: 6px solid #de6d11;
     border-top: 1px solid #de6d11;
     border-bottom: 1px solid #de6d11;
     padding-left: 5px;
@@ -270,12 +270,12 @@ dark ora: #853c01
 .v-am-item-tag-divider {
     size: 1px;
     border-top: 1px solid #666;
-    margin: 1.5em 0px 0.5em 0px;
+    margin: 1em 0px 0.5em 0px;
 }
 hr.v-am-item-tag-divider:after {
     content: "Tags";
     position: relative;
-    top: -.8em;
+    top: -.7em;
     margin: 0px auto;
     left: 50%;
     /*left: 2em;*/

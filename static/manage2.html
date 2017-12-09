@@ -167,6 +167,68 @@
         </li>
         
         
+        
+        <li class="v-am-item container">
+            <div class="v-am-item-top row">
+                <a href="{{../info.base_url}}eidt/{{this.aid}}" class="v-am-itemlink">
+                    <!-- <i class="fa fa-pencil-square-o" aria-hidden="true"></i> -->
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    This Is a Test Article Blah
+                </a>
+            </div>
+            <div class="v-am-item-bottom row">
+                <!-- <div class="v-am-item-aid col">13</div> -->
+                <div class="v-am-item-viewlink col-auto">
+                    <a href="{{../info.base_url}}article/{{this.aid}}/{{this.title}}" data-toggle="tooltip" data-html="false" title="View Article" class="v-am-item-viewlink-a" target="_blank">View</a>
+                    <span data-toggle="tooltip" data-html="false" title="Article ID">13</span>
+                </div>
+                <div class="v-am-item-author col-4" data-toggle="tooltip" data-html="false" title="Author">
+                    Andrew Prindle
+                </div>
+                <div class="v-am-item-posted col-4" data-toggle="tooltip" data-html="false" title="Created On">
+                    2017-10-27&nbsp;@&nbsp;06:41pm
+                </div>
+                <!-- 
+                <div class="v-am-item-description col-1">
+                    ==== <a class="fa fa-newspaper-o" aria-hidden="true" data-toggle="tooltip" data-html="true" title="Has Description"></a> ====
+                    <a href="" data-toggle="tooltip" title="This article has a description.">
+                        <i class="fa fa-newspaper-o" aria-hidden="true"></i>
+                    </a>
+                </div>
+                 -->
+                <!-- <div class="v-am-item-description{{#if this.description}} v-has-desc{{/if}} col-1"> -->
+                <div class="v-am-item-description v-has-desc col-1">
+                    <i class="fa fa-newspaper-o" aria-hidden="true" data-toggle="tooltip" data-html="true" title="{{#if this.description}}<span style='color: #5bff5b;'>Has Description</span>{{else}}<span style='color: #f00;'>No Description</span>{{/if}}"></i>
+                    <!-- Desc -->
+                </div>
+                <div class="v-am-item-detele col-auto">
+                    <a onclick="return confirm_action('Delete this article?');" href="{{../info.base_url}}delete/{{this.aid}}">
+                        <i class="fa fa-trash-o" aria-hidden="false" data-toggle="tooltip" data-html="false" title="Delete"></i>
+                    </a>
+                </div>
+                <!--  If there are tags show the following div -->
+                <div class="v-am-divider"><hr class="v-am-item-tag-divider"></div>
+                <div class="v-am-item-tags row">
+                    <span class="v-am-item-tag col-auto">article</span>
+                    <span class="v-am-item-tag col-auto">lipsum</span>
+                    <span class="v-am-item-tag col-auto">admin</span>
+                    <span class="v-am-item-tag col-auto">cool</span>
+                    <span class="v-am-item-tag col-auto">awesome ness</span>
+                    <span class="v-am-item-tag col-auto">article</span>
+                    <span class="v-am-item-tag col-auto">lipsum</span>
+                    <span class="v-am-item-tag col-auto">admin</span>
+                    <span class="v-am-item-tag col-auto">cool</span>
+                    <span class="v-am-item-tag col-auto">awesome ness</span>
+                    <span class="v-am-item-tag col-auto">article</span>
+                    <span class="v-am-item-tag col-auto">lipsum</span>
+                    <span class="v-am-item-tag col-auto">admin</span>
+                    <span class="v-am-item-tag col-auto">cool</span>
+                    <span class="v-am-item-tag col-auto">awesome ness</span>
+                </div>
+            </div>
+        </li>
+        
+        
         <li class="v-am-item container">
             <div class="v-am-item-top row">
                 <a href="{{../info.base_url}}eidt/{{this.aid}}" class="v-am-itemlink">
