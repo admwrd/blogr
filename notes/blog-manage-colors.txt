@@ -71,6 +71,24 @@ Erased:
 
 
 
+Mange Template
+<h3 class="v-centered-text">Edit Articles</h3>
+    
+    {{{links}}}
+    <p class="v-right-text">
+        Sort By: 
+        <a href="{{info.base_url}}manage/title/{{#if sort.sort_date}}asc{{else}}{{#if sort.sort_desc}}asc{{else}}desc{{/if}}{{/if}}">Title</a>
+        <a href="{{info.base_url}}manage/date/{{#if sort.sort_title}}desc{{else}}{{#if sort.sort_desc}}asc{{else}}desc{{/if}}{{/if}}">Date</a>
+        <a href="{{info.base_url}}create">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            Add A New Post
+        </a>
+    </p>
+    <div class="v-am-table">
+
+
+
+
 
 
 

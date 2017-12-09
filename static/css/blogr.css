@@ -245,7 +245,8 @@ dark ora: #853c01
 }
 
 .v-am-item-tags {
-    margin: .25em 11px -7px 10px;
+    /*margin: .25em 11px -7px 10px;*/
+    margin: .25em 11px .2em 10px;
     /*border-top: 1px dashed #777;*/
     /*padding-top: 0.5em;*/
 }
