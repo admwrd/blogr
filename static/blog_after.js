@@ -156,3 +156,14 @@ if (tag_form) {
     }, false);
 }
 
+var manage = document.getElementById('v-am-list');
+if (manage) {
+    
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+}
+
+
+
+

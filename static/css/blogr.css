@@ -222,6 +222,7 @@ dark ora: #853c01
     width: 100%;
     padding-top: 0.4rem;
     padding-bottom: .5rem;
+    padding-right: 1em;
     margin-left: 10px;
     margin-right: 11px;
     border-radius: 0.5em 0.5em 0px 0px;
@@ -232,17 +233,95 @@ dark ora: #853c01
     background-color: #de6d11;
 }
 
+.v-am-itemlink i {
+    color: #fff;
+}
+.v-am-item-viewlink-a {
+    padding-right: 1em;
+}
+
 .v-am-item-posted {
     font-size: 90%;
 }
 
+.v-am-item-tags {
+    margin: .25em 11px -7px 10px;
+    /*border-top: 1px dashed #777;*/
+    /*padding-top: 0.5em;*/
+}
 
-.v-am-item-description {
-    text-align: center;
+.v-am-item-tag {
+    
+}
+
+.v-am-divider {
+    clear: both;
+}
+.v-am-item-tag-divider {
+    size: 1px;
+    border-top: 1px dashed #777;
+}
+
+.v-am-divider {
+    /* clear: both; */
+    width: 100%;
+    padding: 0px 11px 0px 10px;
+}
+.v-am-item-tag-divider {
+    size: 1px;
+    border-top: 1px solid #666;
+    margin: 1.5em 0px 0.5em 0px;
+}
+hr.v-am-item-tag-divider:after {
+    content: "Tags";
+    position: relative;
+    top: -.8em;
+    margin: 0px auto;
+    left: 50%;
+    /*left: 2em;*/
+    /*background-color: #333;*/
+    background-color: #212529;
+    display: inline-block;
+    color: #888;
+    padding: 0px 0.2em;
+}
+
+
+.v-am-list li:nth-of-type(odd) hr.v-am-item-tag-divider:after {
+    background-color: #32383e;
 }
 
 
 
+/* Article Has No Description */
+.v-am-item-description {
+    text-align: center;
+    color: #777;
+}
+/* Article Has A Description */
+.v-am-item-description.v-has-desc {
+    color: #ddd;
+}
+.v-am-item-top a {
+    color: #e06500;
+}
+.v-am-item-top a:hover {
+    color: #fff;
+}
+
+.v-am-item-detele i {
+    color: #dc3545;
+}
+
+
+
+
+/*.v-am-item-desription .tooltip-inner {
+    color: #f00 !important;
+}
+.v-am-item-desription.v-has-desc .tooltip-inner {
+    color: #fff;
+}*/
 
 .v-manage {
     background-color: #212529;

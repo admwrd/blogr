@@ -15,5 +15,69 @@ Odd Items
     /*background-color: #212529;*/
 
 
+.v-am-itemlink (title link)
+    /*color: #82e6ff;*/
+    /*color: #c9f0f6;*/
+    /*color: #fa9441;*/
+    /*color: #ff8622;*/
+    /*color: #e06500;*/
+    /*color: #ffcca4;*/
+
+
+Experimental - make the edit icon change color on hover - does not work
+i > .v-am-itemlink:hover {
+    color: #000;
+}
+
+Experimental - make the first letter of every tag uppercase
+span.v-am-item-tag ::first-letter {
+    text-transform: uppercase;
+    color: #f00;
+}
+
+.v-am-item-tags
+
+.v-am-item-tags {
+    /*padding: .25em 1.5em;*/
+    /*margin: .25em 0.5em;
+    border-top: 1px dashed #777;
+    padding-top: 0.5em;
+    background-color: #333;*/
+    /*margin: .25em 6px -7px 5px;*/
+    margin: .25em 11px -7px 10px;
+    border-top: 1px dashed #777;
+    padding-top: 0.5em;
+    background-color: #212529;
+    /*background-color: #262c30;*/
+    /* border-left: 8px solid #333; */
+    /* border-right: 8px solid #333; */
+    /*background-color: #212529;*/
+    border-radius: 0px 0px 1em 1em;
+}
+.v-am-list li:nth-of-type(odd) .v-am-item-tags {
+    /*background-color: #32383e;*/
+    background-color: #333;
+    /*background-color: rgba(0,0,0,0.25);*/
+}
+Erased:
+.v-am-list li:nth-of-type(odd) .v-am-item-tags {
+    /*background-color: #32383e;*/
+    /*background-color: #333;*/
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
