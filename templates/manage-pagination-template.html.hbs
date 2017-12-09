@@ -11,7 +11,7 @@
         {{{links}}}
         <p class="v-right-text">Or <a href="{{info.base_url}}create">Add A New Post</a></p>
         
-        <table class="v-manage table table-sm table-hover table-striped table-dark">
+        <table id="v-manage" class="v-manage table table-sm table-hover table-striped table-dark">
             <thead>
                 <tr scope="row">
                     <th class="v-man-editcol" scope="col"></th>
@@ -21,10 +21,10 @@
                     <th scope="col" title="Description">Desc</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="v-manage-rows">
                 {{#each body}}
                 <tr scope="row">
-                    <th class="v-man-editcol" scope="row"><a href="{{../info.base_url}}edit/{{this.aid}}">Edit</a></th>
+                    <th class="v-man-editcol" scope="row"><a href="">X</a><a href="{{../info.base_url}}edit/{{this.aid}}">Edit</a></th>
                     <td>{{this.aid}}</td>
                     <td> <a href="{{../info.base_url}}edit/{{this.aid}}">{{this.title}}</a></td>
                     <td class="v-man-datecol">{{this.posted_human}}</td>

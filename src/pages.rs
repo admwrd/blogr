@@ -1186,7 +1186,7 @@ pub fn hbs_author_display(start: GenTimer, authorid: u32, authorname: Option<&Ra
 pub fn hbs_author(start: GenTimer, authorid: u32, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     // unimplemented!()
     let output: Template;
-    let results = conn.articles( &format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE userid = {}", authorid) );
+    let results = conn.articles( &format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description), a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE userid = {}", DESC_LIMIT, authorid) );
     
     if let Some(articles) = results {
         output = hbs_template(TemplateBody::Articles(articles, None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));

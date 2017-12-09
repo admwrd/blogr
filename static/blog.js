@@ -100,3 +100,13 @@ function set_login_focus() {
     }
     
 }
+
+function confirm_action(text) {
+    var agree = confirm(text);
+    if (agree) {
+        return true;
+    } else {
+        return false;
+    }
+}
+

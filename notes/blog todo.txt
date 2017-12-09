@@ -38,6 +38,9 @@ Blogr Theme
 
 
 Blogr
+	Make a delete route that will do a confirm before deleting
+		or use javascript to confirm the action before continuing
+	
 	Change manage's links in the table to a different color when the col is highlighted
 		when the col is highlighted the links are not very readble
 
