@@ -38,6 +38,58 @@ Blogr Theme
 
 
 Blogr
+
+Edit and Create pages
+	When editing:
+	check markdown box if the markdown column is not empty
+	Check to see if the frist non-whitespace characters are ** or __ or other markdown characters
+		if so then check the markdown box
+	when saving if the markdown box is NOT checked then delete the contents of the markdown column
+		
+	When creating:
+	check markdown box by default
+
+	Add a checkbox to indicate whether the contents should be parsed as markdown or not
+		Display a warning box when going from markdown to html saying that once going to html
+			you cannot go back to markdown easily 
+				not until the html to markdown parser is done
+	
+	Implement a js and rust markdown parser
+		Could make a custom html <-> markdown parser which could add custom markdown for 
+		custom html code in the blog
+
+	Make a simple html to markdown converter
+		when saving a page that has a null markdown column and the markdown box is checked
+		convert from html to markdown to store the converted contents in the markdown column
+		
+		https://github.com/domchristie/to-markdown/tree/turndown
+		https://github.com/domchristie/turndown-plugin-gfm
+
+		or maybe
+		https://github.com/netgusto/upndown
+
+
+	Add a noscript message by the preview button
+
+	Add hidden input that tells the rust app whether javascript processed the body contents as
+	markdown already or if the js failed or was disabled and the contents need to be converted yet
+		If markdown box is checked and the processed hidden input is false
+			 then have rust convert it from markdown to html
+
+	Do no need a markdown editor - just use a converter to go from markdown to html
+	OR use a markdown parser to convert from
+
+	On manage page make dimmed description icons dark red for articles with no description
+
+	Make a data type that will track hits and unique visitors
+		the data type will implement FromRequest which will give it access to the Request
+		The Request will allow access to the global rocket state
+
+
+
+
+
+
 	For the edit/create page use the pagination html/css to switch between html/md/raw views
 		just use the active page css class with the current view
 

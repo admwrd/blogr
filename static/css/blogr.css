@@ -497,7 +497,8 @@ OLD - OUTDATED PAGINATION STYLES
 }
 
 .v-article-title a {
-    color: #ffffff;
+    /*color: #ffffff;*/
+    color: #e06500;
     text-decoration: none;
 }
 

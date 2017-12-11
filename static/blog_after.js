@@ -167,16 +167,25 @@ if (manage) {
 
 var prev_start = document.getElementById('preview-edit-start');
 var prev_end = document.getElementById('preview-edit-end');
-// if (prev_start && prev_end) {
 if (prev_start && prev_end) {
-    prev_start.onclick = function() {
+    prev_start.addEventListener('click', function() {
         // alert('Submitted');
         preview_edit();
-    };
-    prev_end.onclick = function () {
+    });
+    prev_start.addEventListener('keydown', function () {
+        if (event.keyCode === 13) {
+            preview_edit();
+        }
+    });
+    prev_end.addEventListener('click', function () {
         // alert('Submitted');
         preview_edit_end();
-    };
+    });
+    prev_end.addEventListener('keydown', function () {
+        if (event.keyCode === 13) {
+            preview_edit_end();
+        }
+    });
 } else {
     console.log("Preview buttons not present.");
 }
