@@ -26,6 +26,27 @@ use std::net::Ipv4Addr;
         then in the from_request() delete the pagestr variable (which is also cloned, double bad)
 */
 
+
+
+pub struct ViewsTotal(pub AtomicUsize);
+
+impl ViewsTotal {
+    pub fn new() -> ViewsTotal {
+        ViewsTotal(AtomicUsize::new(0))
+    }
+}
+
+// impl<'a, 'r> FromRequest<'a, 'r> for ViewsTotal {
+//     type Error = ();
+    
+//     // fn from_request(req: &'a Request<'r>) -> ::rocket::request::Outcome<PageCount,Self::Error>{
+//     fn from_request(req: &'a Request<'r>) -> ::rocket::request::Outcome<ViewsTotal,Self::Error>{
+        
+//     }
+// }
+
+
+
 pub struct PageCount {
     pub count: Mutex<HashMap<String, usize>>,
 }
@@ -38,7 +59,9 @@ impl PageCount {
     }
 }
 
-pub struct Hits(pub String, pub usize);
+
+// current page/route, page views, total site hits/views
+pub struct Hits(pub String, pub usize, pub usize);
 
 
 
@@ -73,6 +96,11 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
             let counter = req.guard::<State<PageCount>>()?;
             let mut pages = counter.count.lock().unwrap();
             
+            let views_state = req.guard::<State<ViewsTotal>>()?;
+            let mut views = views_state.0.load(Ordering::Relaxed);
+            views_state.0.store(views+1, Ordering::Relaxed);
+            views += 1;
+            
             // // Method 1 - and_modify() - Nightly Only
             // pages.entry(page)
             //    .and_modify(|p| { *p += 1 })
@@ -85,7 +113,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
             let mut hits = pages.entry(pagestr.clone()).or_insert(0);
             *hits += 1;
             
-            Outcome::Success( Hits(pagestr, *hits) )
+            
+            
+            Outcome::Success( Hits(pagestr, *hits, views) )
     }
 }
 

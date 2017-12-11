@@ -1342,7 +1342,8 @@ pub fn hit_count(hits: Hits) -> String {
     // let (page, count) = hits;
     let page = hits.0;
     let count = hits.1;
-    format!("The page `{}` has {} page views.", page, count)
+    let views = hits.2;
+    format!("The page `{}` has {} page views.\nTotal views: {}", page, count, views)
 }
 
 
@@ -1351,7 +1352,8 @@ pub fn hit_count2(hits: Hits) -> String {
     // let (page, count) = hits;
     let page = hits.0;
     let count = hits.1;
-    format!("The page `{}` has {} page views.", page, count)
+    let views = hits.2;
+    format!("The page `{}` has {} page views.\nTotal views: {}", page, count, views)
 }
 
 
@@ -1360,7 +1362,8 @@ pub fn hit_count3(hits: Hits) -> String {
     // let (page, count) = hits;
     let page = hits.0;
     let count = hits.1;
-    format!("The page `{}` has {} page views.", page, count)
+    let views = hits.2;
+    format!("The page `{}` has {} page views.\nTotal views: {}", page, count, views)
 }
 
 

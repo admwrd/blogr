@@ -259,6 +259,7 @@ fn main() {
     // }
     
     let hitcount: PageCount = PageCount::new();
+    let views: ViewsTotal = ViewsTotal::new();
     // let vcache: VCache = VCache(CHashMap::new());
     
     init_pg_pool().get().unwrap();
@@ -267,6 +268,7 @@ fn main() {
         // .manage(vcache)
         .manage(data::init_pg_pool())
         .manage(hitcount)
+        .manage(views)
         .attach(Template::fairing())
         .mount("/", routes![
             
