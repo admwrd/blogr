@@ -99,7 +99,8 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
             let views_state = req.guard::<State<ViewsTotal>>()?;
             let mut views = views_state.0.load(Ordering::Relaxed);
             views_state.0.store(views+1, Ordering::Relaxed);
-            views += 1;
+            // views += 1;
+            views.wrapping_add(1);
             
             // // Method 1 - and_modify() - Nightly Only
             // pages.entry(page)
@@ -111,7 +112,8 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
             
             // Method 3
             let mut hits = pages.entry(pagestr.clone()).or_insert(0);
-            *hits += 1;
+            // *hits += 1;
+            (*hits).wrapping_add(1);
             
             
             
