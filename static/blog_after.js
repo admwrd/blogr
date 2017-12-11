@@ -165,5 +165,24 @@ if (manage) {
 }
 
 
+var prev_start = document.getElementById('preview-edit-start');
+var prev_end = document.getElementById('preview-edit-end');
+// if (prev_start && prev_end) {
+if (prev_start && prev_end) {
+    prev_start.onclick = function() {
+        // alert('Submitted');
+        preview_edit();
+    };
+    prev_end.onclick = function () {
+        // alert('Submitted');
+        preview_edit_end();
+    };
+} else {
+    console.log("Preview buttons not present.");
+}
+
+
+
+
 
 

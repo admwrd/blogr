@@ -40,7 +40,8 @@ extern crate r2d2_postgres;
 
 // extern crate rocket_file_cache;
 // extern crate concurrent_hashmap;
-extern crate chashmap;
+// extern crate chashmap;
+extern crate markdown;
 
 extern crate libflate;
 extern crate brotli;
@@ -106,7 +107,8 @@ use std::path::{Path, PathBuf};
 use std::sync::{Mutex, Arc};
 use std::collections::HashMap;
 
-use chashmap::*;
+// use chashmap::*;
+
 // Rocket File Cache - Removed
 // use rocket_file_cache::{Cache, CachedFile};
 // use std::sync::Mutex;

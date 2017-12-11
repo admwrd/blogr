@@ -1,3 +1,10 @@
+
+// https://stackoverflow.com/a/39914235/7891095
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 (function() {
     'use strict';
     window.addEventListener('load', function() {
@@ -111,4 +118,94 @@ function confirm_action(text) {
         return false;
     }
 }
+
+
+// http://shebang.brandonmintern.com/foolproof-html-escaping-in-javascript/
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    
+    // return div.innerHTML;
+    
+    var output = div.innerHTML;
+    div = undefined;
+    return output;
+}
+
+
+function preview_edit() {
+    var preview_form = document.getElementById('v-edit-preview');
+    var edit_form = document.getElementById('v-edit');
+    // var edit_form = document.getElementById('insert_form');
+    
+    if (edit_form && preview_form) {
+        var title = document.getElementById('inputTitle');
+        var desc = document.getElementById('insert_desc');
+        var body = document.getElementById('insert_body');
+        var tags = document.getElementById('insert-tags');
+        var prev_title = document.getElementById('prev-title');
+        var prev_desc = document.getElementById('prev-desc');
+        var prev_body = document.getElementById('prev-body');
+        var prev_tags = document.getElementById('prev-tags');
+        
+        if (!title || !desc || !body || !tags || !prev_title || !prev_desc || !prev_body || !prev_tags) {
+            console.log("One of the fields was blank.");
+            return;
+        }
+        
+        var base_url = document.getElementById('base_url').value;
+        
+        var tags_html = "";
+        var tags_array = tags.value.split(',');
+        if (tags_array && tags_array.length > 0) {
+            for(var i=0; i < tags_array.length; i++) {
+                var cur_tag = escapeHtml(tags_array[i]);
+                tags_html += " <a href=\"" + base_url + "tag?tag=" + cur_tag + "\">" + cur_tag + "</a> ";
+            }
+        }
+        
+        prev_title.innerHTML = title.value;
+        prev_desc.innerHTML = desc.value;
+        prev_body.innerHTML = body.value;
+        prev_tags.innerHTML = tags_html;
+        
+        edit_form.style.display = 'none';
+        preview_form.style.display = 'block';
+        
+    } else {
+        console.log("Edit form not present");
+    }
+}
+
+function preview_edit_end() {
+    var preview_form = document.getElementById('v-edit-preview');
+    var edit_form = document.getElementById('v-edit');
+    if (preview_form && edit_form) {
+        preview_form.style.display = 'none';
+        edit_form.style.display = 'block';
+    }
+}
+
+
+
+// var vTextChanged = false;
+// 
+// function vTextKeyPress() {
+//     vTextChanged = true;
+// }
+// 
+// async function start_timer() {
+//     vTextChanged = false;
+//     await sleep(2000);
+//     if (vTextChanged) {
+//         
+//     }
+//     
+// }
+
+
+
+
+
+
 

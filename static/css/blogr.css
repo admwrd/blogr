@@ -170,12 +170,19 @@ hr {
     border-top: 1px solid #777;
 }
 
+hr.preview-divider {
+    height: 0px;
+    border-top: 1px dashed #aaa;
+}
+
 
 
 /*
 orange:   #de6d11
 dark ora: #853c01
 */
+
+/*  #de6d11 #853c01  */
 
 .v-am-list {
     list-style-type: none;
@@ -556,6 +563,21 @@ OLD - OUTDATED PAGINATION STYLES
     margin: 1.5em 1em 0em 1em;
     text-align: right;
 }
+#inputTitle:focus {
+    border: 2px solid #de6d11;
+}
+
+#insert_desc:focus {
+    border: 2px solid #de6d11;
+}
+
+#insert_body:focus {
+    border: 2px solid #de6d11;
+}
+
+#insert-tags:focus {
+    border: 2px solid #de6d11;
+}
 
 /* input:-webkit-autofill:hover */
 /* input:-webkit-autofill:focus */
@@ -808,6 +830,7 @@ nav button[class*="navbar-toggler"] {
 .dropdown-menu h6 {
     border-top: 1px solid #aaa;
     border-bottom: 1px solid #ddd;
+    background-color: #eee;
 }
 h6 ~ h6 {
     margin-top: 1em;
@@ -961,7 +984,9 @@ h6 ~ h6 {
     display: none;
 }
 
-
+.start-hidden {
+    display: none;
+}
 
 
 @font-face {

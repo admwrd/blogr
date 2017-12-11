@@ -61,6 +61,21 @@ pub struct Article {
     // pub author_name: String,
 }
 
+// AritlceSource contains the original markdown code if it was used to create the article body (html)
+#[derive(Debug, Clone)]
+pub struct ArticleSource {
+    pub aid: u32,
+    pub title: String,
+    pub posted: NaiveDateTime,
+    pub userid: u32,
+    pub username: String,
+    pub body: String,
+    pub markdown: String,
+    pub tags: Vec<String>,
+    pub description: String,
+}
+
+
 #[derive(Debug, Clone, FromForm)]
 pub struct ArticleWrapper {
     pub aid: u32,
@@ -351,6 +366,38 @@ impl ArticleId {
         // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         // let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid))) WHERE a.aid = {id}", id=self.aid), &[]);
         let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
+        let rawqry = pgconn.query(&qrystr, &[]);
+        println!("Running query:\n{}", qrystr);
+        if let Ok(aqry) = rawqry {
+            // userid 6
+            // display 7
+            // username 8
+            println!("Querying articles: found {} rows", aqry.len());
+            if !aqry.is_empty() && aqry.len() == 1 {
+                let row = aqry.get(0); // get first row
+                let display: Option<String> = row.get(7);
+                let username: String = if let Some(disp) = display { disp } else { row.get(8) };
+                Some( Article {
+                    aid: row.get(0),
+                    title: row.get(1), // todo: call sanitize title here
+                    posted: row.get(2),
+                    body: row.get(3), // Todo: call sanitize body here
+                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
+                    description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
+                    userid: row.get(6),
+                    username: titlecase( &sanitization::sanitize(&username) ),
+                    
+                    // author_id: row.get(6),
+                    // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
+                })
+            } else { None }
+        } else { None }
+    }
+    // use the description field to store the markdown and body to store the original body (html)
+    pub fn retrieve_markdown(&self, pgconn: DbConn) -> Option<Article> {
+        // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
+        // let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid))) WHERE a.aid = {id}", id=self.aid), &[]);
+        let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.markdown, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
         let rawqry = pgconn.query(&qrystr, &[]);
         println!("Running query:\n{}", qrystr);
         if let Ok(aqry) = rawqry {

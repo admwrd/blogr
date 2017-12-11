@@ -38,6 +38,9 @@ Blogr Theme
 
 
 Blogr
+	For the edit/create page use the pagination html/css to switch between html/md/raw views
+		just use the active page css class with the current view
+
 	Maybe add link on the edit page to view the original post (in new tab/window)
 
 	Make a delete route that will do a confirm before deleting
