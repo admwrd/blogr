@@ -82,7 +82,7 @@ dependencies = [
 
 [[package]]
 name = "blogr"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
  "brotli 1.0.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "chashmap 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",

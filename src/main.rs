@@ -62,6 +62,7 @@ extern crate dotenv;
 extern crate rocket_auth_login;
 
 // mod vcache;
+mod counter;
 mod collate;
 mod accept;
 mod xpress;
@@ -83,6 +84,7 @@ mod pages_administrator;
 
 // use cache::*;
 // use vcache::*;
+use counter::*;
 use xpress::*;
 use accept::*;
 use ral_administrator::*;
@@ -256,7 +258,7 @@ fn main() {
     //     // (*pg_conn).connect();
     // }
     
-    
+    let hitcount: PageCount = PageCount::new();
     // let vcache: VCache = VCache(CHashMap::new());
     
     init_pg_pool().get().unwrap();
@@ -264,6 +266,7 @@ fn main() {
     rocket::ignite()
         // .manage(vcache)
         .manage(data::init_pg_pool())
+        .manage(hitcount)
         .attach(Template::fairing())
         .mount("/", routes![
             
@@ -334,6 +337,11 @@ fn main() {
             pages_administrator::compress_gzip,
             pages_administrator::compress_deflate,
             pages_administrator::compress_brotli,
+            
+            pages::hit_count,
+            pages::hit_count2,
+            pages::hit_count3,
+            
             static_files
         ])
         .catch(errors![ error_internal_error, error_not_found ])

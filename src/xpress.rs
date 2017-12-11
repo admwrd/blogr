@@ -338,6 +338,11 @@ fn express_deflate(data: Vec<u8>) -> Vec<u8> {
 
 impl<'a> Responder<'a> for Express {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
+        
+        if let Some(ip) = req.remote() {
+            println!("Remote address: {}", ip);
+        }
+        
         let mut response = Response::build();
         let extras = self.extras;
         

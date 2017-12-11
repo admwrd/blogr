@@ -34,6 +34,7 @@ use titlecase::titlecase;
 // use administrator::*;
 // use roles::*;
 use super::*;
+use counter::*;
 use collate::*;
 use layout::*;
 use blog::*;
@@ -1334,6 +1335,32 @@ pub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagin
     let express: Express = output.into();
     express.compress(encoding)
     
+}
+
+#[get("/hit")]
+pub fn hit_count(hits: Hits) -> String {
+    // let (page, count) = hits;
+    let page = hits.0;
+    let count = hits.1;
+    format!("The page `{}` has {} page views.", page, count)
+}
+
+
+#[get("/hit2")]
+pub fn hit_count2(hits: Hits) -> String {
+    // let (page, count) = hits;
+    let page = hits.0;
+    let count = hits.1;
+    format!("The page `{}` has {} page views.", page, count)
+}
+
+
+#[get("/hit3")]
+pub fn hit_count3(hits: Hits) -> String {
+    // let (page, count) = hits;
+    let page = hits.0;
+    let count = hits.1;
+    format!("The page `{}` has {} page views.", page, count)
 }
 
 
