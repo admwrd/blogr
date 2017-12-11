@@ -172,8 +172,6 @@ function preview_edit() {
         edit_form.style.display = 'none';
         preview_form.style.display = 'block';
         
-    } else {
-        console.log("Edit form not present");
     }
 }
 

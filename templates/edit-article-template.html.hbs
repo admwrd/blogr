@@ -33,7 +33,7 @@
                                 <button onclick="return confirm_action('This will reset the article to the original state, all changes that have been made since saving will be lost.  Are you sure you want to continue?');" type="reset" class="btn btn-danger" value="Reset">Reset</button>
                             </div>
                             <div class="col v-centered-text">
-                                    <button id="preview-edit-start2" type="button" class="btn btn-success">Preview</button>
+                                    <button id="preview-edit-start" type="button" class="btn btn-success">Preview</button>
                             </div>
                             <div class="col-auto">
                                 <button type="submit" class="btn btn-primary">Save Article</button>
@@ -56,10 +56,10 @@
                         <!-- Tags -->
                         <div class="col-md-8 mx-auto">
                             <label for="insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
-                                <input name="tags" type="text" value="{{#each body.tags}}{{this}},{{/each}}" maxlength="250" class="v-centered-input v-form-control form-control" id="insert-tags" placeholder="Tags">
-                                <div class="v-form-message" id="tag-msg">
-                                    Did you mean to <b>Comma Separate</b> the tags?
-                                </div>
+                            <input name="tags" type="text" value="{{#each body.tags}}{{this}},{{/each}}" maxlength="250" class="v-centered-input v-form-control form-control" id="insert-tags" placeholder="Tags">
+                            <div class="v-form-message" id="tag-msg">
+                                Did you mean to <b>Comma Separate</b> the tags?
+                            </div>
                         </div>
                         
                         <!-- Hidden input fields for non-editable fields -->
@@ -88,32 +88,6 @@
                         <input type="hidden" id="base_url" value="{{info.base_url}}">
                     </div>
                     
-                    <!-- 
-                    <div class="start-hidden" id="v-edit-preview">
-                        <div class="col mb-3">
-                            <input name="title" type="text" maxlength="120" class="v-centered-input v-form-control form-control" id="prev-inputTitle" placeholder="Title">
-                        </div>
-                        <div class="form-group">
-                            <label for="prev-input_desc" class="v-form-label">Description</label>
-                            <textarea class="form-control" name="description" id="prev-insert_desc" maxlength="400" rows="2"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="prev-input_body" class="v-form-label">Contents</label>
-                            <textarea class="form-control" name="body" id="prev-insert_body" rows="3"></textarea>
-                        </div>
-                        <div class="col-md-8 mx-auto">
-                            <label for="prev-insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
-                                <input name="tags" type="text" maxlength="250" class="v-centered-input v-form-control form-control" id="prev-insert-tags" placeholder="Tags">
-                                <div class="v-form-message" id="prev-tag-msg">
-                                    Did you mean to <b>Comma Separate</b> the tags?
-                                </div>
-                        </div>
-                        <div class="v-submit">
-                            <button type="submit" class="btn btn-primary">Create Article</button>
-                        </div>
-                    </div>
-                    -->
-                    
                     <script>
                         StartText();
                     </script>
@@ -122,38 +96,51 @@
                 </div>
                 
                 <article id="v-edit-preview" class="start-hidden v-article v-article-signle">
+                    <!-- Header -->
                     <header class="v-article-header">
+                        <!-- Title -->
                         <h2 class="v-article-title"><a id="prev-title" href="{{info.base_url}}article/{{body.aid}}/{{body.title}}">{{body.title}}</a></h2>
                         <div class="row">
+                            <!-- Date -->
                             <date class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</date> 
+                            <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
                             <div class="v-byline"> 
                                  by 
+                                <!-- Author -->
                                 <a href="{{info.base_url}}author/{{body.userid}}/{{body.username}}" class="v-author-link">{{body.username}}</a>
                             </div>
-                            <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
                         </div>
                     </header>
+                    
+                    <!-- Button - End Preview -->
                     <div class="v-centered-text">
                         <button id="preview-edit-end" type="button" class="btn btn-success">End Preview</button>
                     </div>
+                    
+                    <!-- Description -->
                     <div id="prev-desc">
                         {{{body.description}}}
                     </div>
+                    
                     <hr class="preview-divider">
+                    
+                    <!-- Body -->
                     <div id="prev-body">
-                    <p>
-                        {{{body.body}}}
-                    </p>
+                        <p>
+                            {{{body.body}}}
+                        </p>
                     </div>
+                    
+                    <!-- Tags -->
                     <div id="prev-tags" class="v-article-tags">
                         {{#each body.tags}}
                         <a href="{{../info.base_url}}tag?tag={{this}}">{{this}}</a>
                         {{/each}}
                     </div>
                     
-                    <!-- <div class="v-right-text"> -->
+                    <!-- Button - End Preview -->
                     <div class="v-centered-text">
-                        <button id="preview-edit-end" type="button" class="btn btn-success">End Preview</button>
+                        <button id="preview-edit-end2" type="button" class="btn btn-success">End Preview</button>
                     </div>
                 </article>
                 

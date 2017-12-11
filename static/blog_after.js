@@ -166,10 +166,11 @@ if (manage) {
 
 
 var prev_start = document.getElementById('preview-edit-start');
+var prev_start2 = document.getElementById('preview-edit-start2');
 var prev_end = document.getElementById('preview-edit-end');
+var prev_end2 = document.getElementById('preview-edit-end2');
 if (prev_start && prev_end) {
     prev_start.addEventListener('click', function() {
-        // alert('Submitted');
         preview_edit();
     });
     prev_start.addEventListener('keydown', function () {
@@ -178,7 +179,6 @@ if (prev_start && prev_end) {
         }
     });
     prev_end.addEventListener('click', function () {
-        // alert('Submitted');
         preview_edit_end();
     });
     prev_end.addEventListener('keydown', function () {
@@ -186,10 +186,27 @@ if (prev_start && prev_end) {
             preview_edit_end();
         }
     });
-} else {
-    console.log("Preview buttons not present.");
 }
-
+if (prev_start2) {
+    prev_start2.addEventListener('click', function() {
+        preview_edit();
+    });
+    prev_start2.addEventListener('keydown', function () {
+        if (event.keyCode === 13) {
+            preview_edit();
+        }
+    });
+}
+if (prev_end2) {
+    prev_end2.addEventListener('click', function () {
+        preview_edit_end();
+    });
+    prev_end2.addEventListener('keydown', function () {
+        if (event.keyCode === 13) {
+            preview_edit_end();
+        }
+    });
+}
 
 
 
