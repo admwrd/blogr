@@ -263,7 +263,7 @@ fn main() {
     // let hitcount: Counter = Counter::new();
     // let views: TotalHits = TotalHits::new();
     let hitcount: Counter = Counter::load();
-    let views: TotalHits = TotalHits::new();
+    let views: TotalHits = TotalHits::load();
     
     
     // let hitcount: PageCount = PageCount::new();
