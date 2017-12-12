@@ -8,6 +8,7 @@ use rocket::response::{content, NamedFile, Content};
 use rocket_contrib::Template;
 use rocket::http::ContentType;
 
+use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 use std::mem;
 use std::collections::HashMap;
 use std::ffi::OsStr;
@@ -336,12 +337,69 @@ fn express_deflate(data: Vec<u8>) -> Vec<u8> {
 }
 
 
+pub fn find_ip(req: &Request) -> Ipv4Addr {
+    let mut ipaddy: Ipv4Addr = Ipv4Addr::new(0, 0, 0, 0);
+    
+    if let Some(sock) = req.remote() {
+        // println!("Remote address: {}", sock.ip());
+        let ip = sock.ip();
+        // let mut ipaddy: Ipv4Addr = Ipv4Addr::new(127, 0, 0, 1);
+        
+        match ip {
+            IpAddr::V4(ip4) => {
+                ipaddy = ip4;
+                println!("Found IPv4 Address, setting ip address to IPv4 address {}", ipaddy);
+            },
+            IpAddr::V6(ip6) => {
+                if let Some(ipnew) = ip6.to_ipv4() {
+                    if ipnew == Ipv4Addr::new(0, 0, 0, 1) {
+                        ipaddy = Ipv4Addr::new(127, 0, 0, 1);
+                    } else {
+                        ipaddy = ipnew;
+                    }
+                    
+                    println!("Found an IPv6 Address, converted successfully to IPv4: {}", ipaddy);
+                } else {
+                    println!("Found an IPv6 Address.  Attempt to convert to IPv4 failed.");
+                }
+            },
+            _ => {
+                println!("Ip Address was neither IPv4 nor IPv6.");
+            },
+        }
+    } else {
+        println!("No ip address found.");
+    }
+    
+    ipaddy
+}
+
+
 impl<'a> Responder<'a> for Express {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         
-        if let Some(ip) = req.remote() {
-            println!("Remote address: {}", ip);
-        }
+        
+        println!("Ip address is: {}", find_ip(req));
+        
+        // if let Some(ip) = req.remote() {
+            // println!("Remote address: {}", ip);
+        
+            
+        //     if ip.is_ipv6() {
+        //         if let IpAddr::V6
+        //         if let Some(ip4) = ip.to_ipv4() {
+        //             ipaddy = ip4;
+        //             println!("Found IPv4 address: {}", &ipaddy);
+        //         } else {
+        //             println!("Could not convert IPv6 address to IPv4 address");
+        //         }
+        //     } else if ip.is_ipv4() {
+        //         println!("Ip address was already IPv4, using that ip address.");
+        //         ipaddy = ip;
+        //     } else {
+        //         println!("Ip address was neither IPv4 nor IPv6.");
+        //     }
+            
         
         let mut response = Response::build();
         let extras = self.extras;
