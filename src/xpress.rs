@@ -378,28 +378,7 @@ pub fn find_ip(req: &Request) -> Ipv4Addr {
 impl<'a> Responder<'a> for Express {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         
-        
-        println!("Ip address is: {}", find_ip(req));
-        
-        // if let Some(ip) = req.remote() {
-            // println!("Remote address: {}", ip);
-        
-            
-        //     if ip.is_ipv6() {
-        //         if let IpAddr::V6
-        //         if let Some(ip4) = ip.to_ipv4() {
-        //             ipaddy = ip4;
-        //             println!("Found IPv4 address: {}", &ipaddy);
-        //         } else {
-        //             println!("Could not convert IPv6 address to IPv4 address");
-        //         }
-        //     } else if ip.is_ipv4() {
-        //         println!("Ip address was already IPv4, using that ip address.");
-        //         ipaddy = ip;
-        //     } else {
-        //         println!("Ip address was neither IPv4 nor IPv6.");
-        //     }
-            
+        // println!("Ip address is: {}", find_ip(req));
         
         let mut response = Response::build();
         let extras = self.extras;

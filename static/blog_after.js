@@ -169,6 +169,7 @@ var prev_start = document.getElementById('preview-edit-start');
 var prev_start2 = document.getElementById('preview-edit-start2');
 var prev_end = document.getElementById('preview-edit-end');
 var prev_end2 = document.getElementById('preview-edit-end2');
+
 if (prev_start && prev_end) {
     prev_start.addEventListener('click', function() {
         preview_edit();
@@ -204,6 +205,31 @@ if (prev_end2) {
     prev_end2.addEventListener('keydown', function () {
         if (event.keyCode === 13) {
             preview_edit_end();
+        }
+    });
+}
+
+var formins = document.getElementById('insert_form');
+var prev_save = document.getElementById('preview-save');
+var prev_save2 = document.getElementById('preview-save2');
+
+if (formins && prev_save) {
+    prev_save.addEventListener('click', function () {
+            formins.submit();
+    });
+    prev_save.addEventListener('keydown', function () {
+        if (event.keyCode === 13) {
+            formins.submit();
+        }
+    });
+}
+if (formins && prev_save2) {
+    prev_save2.addEventListener('click', function () {
+            formins.submit();
+    });
+    prev_save2.addEventListener('keydown', function () {
+        if (event.keyCode === 13) {
+            formins.submit();
         }
     });
 }

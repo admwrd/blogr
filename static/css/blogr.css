@@ -989,6 +989,9 @@ h6 ~ h6 {
     display: none;
 }
 
+.v-invisible {
+    visibility: hidden;
+}
 
 @font-face {
   font-family: vishusBlog;
