@@ -260,8 +260,11 @@ fn main() {
     //     // (*pg_conn).connect();
     // }
     
-    let hitcount: Counter = Counter::new();
+    // let hitcount: Counter = Counter::new();
+    // let views: TotalHits = TotalHits::new();
+    let hitcount: Counter = Counter::load();
     let views: TotalHits = TotalHits::new();
+    
     
     // let hitcount: PageCount = PageCount::new();
     // let views: ViewsTotal = ViewsTotal::new();

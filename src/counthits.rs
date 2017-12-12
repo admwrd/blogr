@@ -78,7 +78,35 @@ impl Counter {
     pub fn new() -> Counter {
         Counter { stats: Mutex::new( PageStats::new() ) }
     }
-    
+    pub fn save(buffer: &str) {
+        let filename = cur_dir_file("page_stats.json");
+        
+        let mut f = File::create(&filename)
+            .expect("Could not create file for Counter.");
+        
+        let bytes = f.write( buffer.as_bytes() );
+    }
+    pub fn load() -> Counter {
+        let filename = cur_dir_file("page_stats.json");
+        let mut f_rst = File::open(&filename);
+        if let Ok(mut f) = f_rst {
+            let mut buffer: String = String::with_capacity(1000);
+            f.read_to_string(&mut buffer);
+            
+            let page_stats = PageStats::des(buffer);
+            
+            Counter {
+                stats: Mutex::new( page_stats ),
+            }
+        } else {
+            let new = PageStats::new();
+            let buffer = new.ser();
+            Counter::save(&buffer);
+            Counter {
+                stats: Mutex::new( new )
+            }
+        }
+    }
 }
 
 
@@ -86,7 +114,20 @@ impl PageStats {
     pub fn new() -> PageStats {
         PageStats { map: HashMap::new() }
     }
-    
+    pub fn ser(&self) -> String {
+        let ser: String = ::serde_json::to_string_pretty(self)
+            .expect("Could not serialize PageStats");
+        ser
+    }
+    pub fn des(mut buffer: String) -> Self {
+        let des_rst = ::serde_json::from_str(&mut buffer);
+        if let Ok(des) = des_rst {
+            des
+        } else {
+            println!("Deserialization failed for PageStats.");
+            PageStats::new()
+        }
+    }
 }
 
 
@@ -124,16 +165,24 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
         
         
         let page_views: usize;
+        let ser_stats: String;
         {
             let counter = req.guard::<State<Counter>>()?;
             let mut stats = counter.stats.lock().expect("Could not unlock Counter stats mutex.");
-            
-            let mut hits = stats.map.entry(pagestr.clone()).or_insert(0);
-            *hits += 1;
-            page_views = *hits;
+            {
+                let mut hits = stats.map.entry(pagestr.clone()).or_insert(0);
+                *hits += 1;
+                page_views = *hits;
+            }
+            ser_stats = stats.ser();
         }
         // (*hits).wrapping_add(1);
         // page_views = (*hits);
+        if total % 10 == 0 {
+            println!("Save interval reached. Saving page stats.");
+            Counter::save(&ser_stats);
+        }
+        
         
         Outcome::Success( Hits(pagestr, page_views, total) )
         
