@@ -40,6 +40,13 @@ Blogr Theme
 Blogr
 
 Edit and Create pages
+	If body is empty but markdown is not then generate the html using rust
+		use a CommonMark crate to process the html
+	JS will generate different (maybe better?) results so rely on that first
+
+	Does saving work correctly?  - is the html filtered/sanitized out?
+
+
 	When editing:
 	check markdown box if the markdown column is not empty
 	Check to see if the frist non-whitespace characters are ** or __ or other markdown characters

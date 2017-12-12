@@ -172,6 +172,11 @@ function preview_edit() {
         edit_form.style.display = 'none';
         preview_form.style.display = 'block';
         
+        if (rm) {
+            var html = process_markdown();
+            preview_markdown(html);
+            submit_markdown(html);
+        }
     }
 }
 
@@ -184,7 +189,12 @@ function preview_edit_end() {
     }
 }
 
-
+function save_html() {
+    if (rm) {
+        var html = process_markdown();
+        submit_markdown(html);
+    }
+}
 
 // var vTextChanged = false;
 // 
@@ -201,6 +211,43 @@ function preview_edit_end() {
 //     
 // }
 
+// Process the body text into markdown
+function process_markdown() {
+    var body = document.getElementById('insert_body');
+    
+    var html = rm.render(body.value);
+    
+    return html;
+}
+
+// Put the markdown rendered output into the preview body's innerHTML
+function preview_markdown(html) {
+    if (!rm) { return; }
+    
+    var preview_form = document.getElementById('v-edit-preview');
+    var edit_form = document.getElementById('v-edit');
+    // var edit_form = document.getElementById('insert_form');
+    
+    if (edit_form && preview_form) {
+        var body = document.getElementById('prev-body');
+        body.innerHTML = html;
+    }
+}
+
+// add markdown to a hidden markdown input field
+function submit_markdown(html) {
+    if (!rm) { return; }
+    
+    var preview_form = document.getElementById('v-edit-preview');
+    var edit_form = document.getElementById('v-edit');
+    // var edit_form = document.getElementById('insert_form');
+    var bodymd = document.getElementById('mdhtml');
+    
+    if (edit_form && preview_form && bodymd) {
+        // var body = document.getElementById('insert_body');
+        bodymd.innerHTML = html;
+    }
+}
 
 
 

@@ -1,58 +1,6 @@
 
 var resizeInput = document.getElementById("inputTitle");
 
-
-
-// var chWidth;
-// function getChWidth() {
-//     var tmp = document.createElement("span");
-//     tmp.innerHTML = 'm';
-    
-//     document.body.appendChild(tmp);
-//     var width = tmp.getBoundingClientRect().width;
-//     document.body.removeChild(tmp);
-//     return width;
-// }
-// chWidth = getChWidth();
-
-
-// if (resizeInput) {
-//     $("#inputTitle").keyup(function(){
-    
-//     var container = document.getElementById('v-footer');
-    
-//     var width;
-//     var extra = 10;
-//     if(this.value.length>0){
-//         // this.style.width = ((this.value.length + 1) * 8) + 'px';
-//         // this.style.width = this.value.length + 5 + 'ch';
-//         width = this.value.length;
-//     }
-    
-//     if (width < 20) {
-//         width = 20;
-//     } else if (width+extra > 66) {
-//         width = 66-extra;
-//     }
-    
-    
-//     var contWidth = container.getBoundingClientRect().width;
-//     this.style.width = width + extra + 'ch';
-//     if (this.getBoundingClientRect().width + 127 > contWidth) {
-//         this.width = contWidth-127;
-//     }
-    
-//     // console.log("The width is: " + this.style.width);
-//     // else{
-//       // this.style.width = ((this.getAttribute('placeholder').length + 1) * 8) + 'px';
-//       // this.style.width = (this.getAttribute('placeholder').length + 5) + 'ch';
-//     // }
-
-// });
-// }
-
-
-
 // https://stackoverflow.com/a/3395975/7891095
 if (resizeInput) {
     adjustWidthOfInput();
@@ -112,10 +60,7 @@ function adjustWidthOfInput() {
 
 
 
-
-
 // var searchform = document.getElementById('search-form').element["q"].style.display = 'none';
-
 var searchfield = document.getElementById('search-form').q;
 var searchbtn = document.getElementById('search-form').lastElementChild;
 if (searchfield && searchbtn) {
@@ -233,6 +178,107 @@ if (formins && prev_save2) {
         }
     });
 }
+
+var save_btn = document.getElementById('save-article');
+var save_btn2 = document.getElementById('save-article2');
+if (formins && save_btn) {
+    save_btn.addEventListener('click', function () {
+        // formins.submit();
+        if (rm) {
+            save_html();
+        }
+    });
+    save_btn.addEventListener('keydown', function () {
+        if (event.keyCode === 13) {
+            // formins.submit();
+            save_html();
+        }
+    });
+}
+if (formins && save_btn2) {
+    save_btn2.addEventListener('click', function () {
+        // formins.submit();
+        if (rm) {
+            save_html();
+        }
+    });
+    save_btn2.addEventListener('keydown', function () {
+        if (event.keyCode === 13) {
+            // formins.submit();
+            save_html();
+        }
+    });
+}
+
+if (formins) {
+    
+    
+    // var md = new Remarkable();
+    // console.log(md.render('# Remarkable rulezz!'));
+    
+    // var rm = new Remarkable();
+    
+    // Actual default values
+    var rm = new Remarkable({
+        html:         true,        // Enable HTML tags in source
+        xhtmlOut:     false,        // Use '/' to close single tags (<br />)
+        breaks:       true,        // Convert '\n' in paragraphs into <br>
+        langPrefix:   'language-',  // CSS language prefix for fenced blocks
+        linkify:      true,        // Autoconvert URL-like text to links
+        
+        // Enable some language-neutral replacement + quotes beautification
+        typographer:  true,
+        
+        // Double + single quotes replacement pairs, when typographer enabled,
+        // and smartquotes on. Set doubles to '«»' for Russian, '„“' for German.
+        quotes: '“”‘’',
+        
+        // Highlighter function. Should return escaped HTML,
+        // or '' if the source string is not changed
+        // highlight: function (/*str, lang*/) { return ''; }
+        highlight: function (str, lang) {
+            if (lang && hljs.getLanguage(lang)) {
+                try {
+                    return hljs.highlight(lang, str).value;
+                } catch (err) {}
+            }
+            try {
+                return hljs.highlightAuto(str).value;
+            } catch (err) {}
+            
+            return ''; // use external default escaping
+        }
+    });
+    // console.log(rm.render('# Remarkable rulezz!'));
+  
+}
+
+
+/* Buttons
+    Edit Save - submit_markdown()
+    Edit Prev - preview_markdown() and submit_markdown()
+    
+    Prev Save - submit_markdown()
+    
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

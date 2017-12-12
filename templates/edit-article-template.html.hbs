@@ -36,7 +36,7 @@
                                     <button id="preview-edit-start" type="button" class="btn btn-success">Preview</button>
                             </div>
                             <div class="col-auto">
-                                <button type="submit" class="btn btn-primary">Save Article</button>
+                                <button type="submit" id="save-article" class="btn btn-primary">Save Article</button>
                             </div>
                         </div>
                         
@@ -50,7 +50,7 @@
                         <!-- Body -->
                         <div class="form-group">
                             <label for="input_body" class="v-form-label">Contents</label>
-                            <textarea class="form-control" name="body" id="insert_body" rows="3">{{{body.body}}}</textarea>
+                            <textarea class="form-control" name="markdown" id="insert_body" rows="3">{{{body.markdown}}}</textarea>
                         </div>
                         
                         <!-- Tags -->
@@ -67,6 +67,7 @@
                         <input type="hidden" name="posted" value="{{body.posted_machine}}">
                         <input type="hidden" name="userid" value="{{body.userid}}">
                         <input type="hidden" name="username" value="{{body.username}}">
+                        <input type="hidden" name="body" id="mdhtml" value="{{body.body}}">
                         
                         <!-- Buttons - Save Reset Preview -->
                         <div class="row">
@@ -77,7 +78,7 @@
                                     <button id="preview-edit-start2" type="button" class="btn btn-success">Preview</button>
                             </div>
                             <div class="col-auto">
-                                <button type="submit" class="btn btn-primary">Save Article</button>
+                                <button type="submit" id="save-article2" class="btn btn-primary">Save Article</button>
                             </div>
                         </div>
                         <!-- <div class="v-submit"></div> -->
