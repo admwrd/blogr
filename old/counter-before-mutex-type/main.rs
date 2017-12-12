@@ -62,8 +62,7 @@ extern crate dotenv;
 extern crate rocket_auth_login;
 
 // mod vcache;
-mod counthits;
-// mod counter;
+mod counter;
 mod collate;
 mod accept;
 mod xpress;
@@ -85,8 +84,7 @@ mod pages_administrator;
 
 // use cache::*;
 // use vcache::*;
-use counthits::*;
-// use counter::*;
+use counter::*;
 use xpress::*;
 use accept::*;
 use ral_administrator::*;
@@ -260,14 +258,10 @@ fn main() {
     //     // (*pg_conn).connect();
     // }
     
-    let hitcount: Counter = Counter::new();
-    let views: TotalHits = TotalHits::new();
-    
     // let hitcount: PageCount = PageCount::new();
     // let views: ViewsTotal = ViewsTotal::new();
-    
-    // let hitcount: PageCount = PageCount::load();
-    // let views: ViewsTotal = ViewsTotal::load();
+    let hitcount: PageCount = PageCount::load();
+    let views: ViewsTotal = ViewsTotal::load();
     
     
     // let vcache: VCache = VCache(CHashMap::new());

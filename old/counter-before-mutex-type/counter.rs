@@ -51,47 +51,6 @@ pub fn cur_dir_file(name: &str) -> PathBuf {
 #[derive(Debug)]
 pub struct ViewsTotal(pub AtomicUsize);
 
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct PageCount {
-    // pub count: Mutex<HashMap<String, usize>>,
-    pub count: Mutex<PageStats>,
-}
-
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct PageGhost {
-    pub count: HashMap<String, usize>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct PageStats (pub HashMap<String, usize>);
-
-
-// Implements a Request Guard to pull data into a route
-// current page/route, page views, total site hits/views
-#[derive(Debug, Clone, Serialize)]
-pub struct Hits(pub String, pub usize, pub usize);
-
-
-
-impl PageStats {
-    pub fn serialize(&self) -> String {
-        let ser: String = ::serde_json::to_string_pretty(self).expect("Could not serialize PageStats");
-        ser
-    }
-    pub fn deserialize(mut buffer: String) -> Self {
-        let des_rst: Self = ::serde_json::from_str(&mut buffer);
-        if let Ok(des) = des_rst {
-            des
-        } else {
-            println!("Deserialization failed for PageStats.");
-            PageStats::new()
-        }
-    }
-}
-
-
 impl ViewsTotal {
     pub fn new() -> ViewsTotal {
         ViewsTotal(AtomicUsize::new(0))
@@ -127,6 +86,15 @@ impl ViewsTotal {
 }
 
 
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PageCount {
+    pub count: Mutex<HashMap<String, usize>>,
+}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PageGhost {
+    pub count: HashMap<String, usize>,
+}
 
 impl PageCount {
     pub fn new() -> PageCount {
@@ -186,6 +154,11 @@ impl PageCount {
 }
 
 
+// current page/route, page views, total site hits/views
+#[derive(Debug, Clone, Serialize)]
+pub struct Hits(pub String, pub usize, pub usize);
+
+
 
 // https://rocket.rs/guide/state/#within-guards
 // https://api.rocket.rs/rocket/http/uri/struct.URI.html
@@ -227,7 +200,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
             // Retrieve hit count for the current route and increment
             // let mut hits = pages.entry(pagestr.clone()).or_insert(0);
             let hit: usize;
-            // {
+            {
                 let mut pages = counter.count.lock().unwrap();
                 let mut hits;
                 hits = pages.entry(pagestr.clone()).or_insert(0);
@@ -235,7 +208,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
                 hit = (*hits);
                 // *hits += 1;
                 
-            // }
+            }
             
             
             // Every 100 page views save the stats
@@ -243,10 +216,8 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
                 // println!("Save interval reached, saving.");
                 
                 // ViewsTotal::save(*hits);
-                // '''''
-                // ViewsTotal::save(hit);
-                // counter.save();
-                // '''''
+                ViewsTotal::save(hit);
+                counter.save();
                 // println!("Saving finished.");
             // }
             
