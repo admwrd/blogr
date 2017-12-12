@@ -124,12 +124,14 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
         
         
         let page_views: usize;
-        let counter = req.guard::<State<Counter>>()?;
-        let mut stats = counter.stats.lock().expect("Could not unlock Counter stats mutex.");
-        
-        let mut hits = stats.map.entry(pagestr.clone()).or_insert(0);
-        *hits += 1;
-        page_views = *hits;
+        {
+            let counter = req.guard::<State<Counter>>()?;
+            let mut stats = counter.stats.lock().expect("Could not unlock Counter stats mutex.");
+            
+            let mut hits = stats.map.entry(pagestr.clone()).or_insert(0);
+            *hits += 1;
+            page_views = *hits;
+        }
         // (*hits).wrapping_add(1);
         // page_views = (*hits);
         
