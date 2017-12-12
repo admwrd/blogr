@@ -118,16 +118,20 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
         
         let total_state = req.guard::<State<TotalHits>>()?;
         let mut total = total_state.total.load(Ordering::Relaxed);
-        total.wrapping_add(1);
+        // total.wrapping_add(1);
+        total += 1;
         total_state.total.store( total, Ordering::Relaxed );
         
         
         let page_views: usize;
         let counter = req.guard::<State<Counter>>()?;
         let mut stats = counter.stats.lock().expect("Could not unlock Counter stats mutex.");
+        
         let mut hits = stats.map.entry(pagestr.clone()).or_insert(0);
-        (*hits).wrapping_add(1);
-        page_views = (*hits);
+        *hits += 1;
+        page_views = *hits;
+        // (*hits).wrapping_add(1);
+        // page_views = (*hits);
         
         Outcome::Success( Hits(pagestr, page_views, total) )
         
