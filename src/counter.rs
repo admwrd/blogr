@@ -29,7 +29,7 @@ use std::net::Ipv4Addr;
         then in the from_request() delete the pagestr variable (which is also cloned, double bad)
 */
 
-
+pub const HITS_SAVE_INTERVAL: usize = 5;
 
 
 pub fn cur_dir_file(name: &str) -> PathBuf {
@@ -63,7 +63,7 @@ impl ViewsTotal {
             let mut buf: String = String::with_capacity(50);
             f.read_to_string(&mut buf);
             let des: usize = ::serde_json::from_str(&mut buf).unwrap_or(0);
-            
+            println!("\nSuccessfully loaded ViewsTotal.  Data:\n{}\n", &buf);
             ViewsTotal( AtomicUsize::new(des) )
         } else {
             if let Ok(mut f) = File::create(&filename) {
@@ -79,6 +79,7 @@ impl ViewsTotal {
         let mut f = File::create(&filename).expect("Could not create ViewsTotal file.");
         
         let ser: String = ::serde_json::to_string_pretty(&views).expect("Could not serialize ViewsTotal.");
+        println!("\nSaving ViewsTotal.  Data:\n{}\n", ser);
         println!("Saving ViewsTotal to: {}.  Data: {}", filename.display(), ser);
         let bytes = f.write(ser.as_bytes());
     }
@@ -89,6 +90,10 @@ impl ViewsTotal {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PageCount {
     pub count: Mutex<HashMap<String, usize>>,
+}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PageGhost {
+    pub count: HashMap<String, usize>,
 }
 
 impl PageCount {
@@ -105,12 +110,14 @@ impl PageCount {
             let mut buf: String = String::with_capacity(1500);
             f.read_to_string(&mut buf);
             let des: PageCount = ::serde_json::from_str(&mut buf).unwrap_or( PageCount::new() );
+            println!("\nSuccessfully loaded PageCount data:\n{}\n", &buf);
             des
             
             // ViewsTotal( AtomicUsize::new(des) )
         } else {
             if let Ok(mut f) = File::create(&filename) {
                 let new = PageCount::new();
+                println!("Saving blank PageCount");
                 new.save();
                 new
                 // let mut buf: String = String::with_capacity(50);
@@ -125,7 +132,22 @@ impl PageCount {
         let filename = cur_dir_file("page_count.json");
         let mut f = File::create(&filename).expect("Could not create PageCount file.");
         
-        let ser: String = ::serde_json::to_string_pretty(self).expect("Could not serialize PageCount.");
+        // let ser: String = ::serde_json::to_string_pretty(&self.count.lock().expect("Could not unlock count hashmap to serialize")).expect("Could not serialize PageCount.");
+        // let ser: String = ::serde_json::to_string_pretty( &self.count.get_mut().expect("Could not unlock PageCount mutex to serialize") ).expect("Could not serialize PageCount.");
+        // let ser: String = ::serde_json::to_string_pretty( &*(self.count.lock().expect("Could not unlock PageCount mutex to serialize")) ).expect("Could not serialize PageCount.");
+        // let ser: String = ::serde_json::to_string_pretty(&*(self).count.lock().expect("unlock PageCount mutex serialization failed")).expect("Could not serialize PageCount.");
+        // let ser: String = ::serde_json::to_string_pretty(&*(self).count.lock().expect("unlock PageCount mutex serialization failed")).expect("Could not serialize PageCount.");
+        
+        // let ser: String = ::serde_json::to_string_pretty(& PageGhost { count: &*(self).count.lock().expect("unlock PageCount mutex serialization failed") }  ).expect("Could not serialize PageCount.");
+        
+        // let ser: String = ::serde_json::to_string_pretty(& PageGhost { count: &*(self).count.lock().expect("unlock PageCount mutex serialization failed") }  ).expect("Could not serialize PageCount.");
+        
+        let ghostvalue = self.count.lock().expect("Could not unlock PageCount for serialization");
+        let ghost = PageGhost{ count: ghostvalue.clone() };
+        let ser: String = ::serde_json::to_string_pretty(&ghost).expect("Could not serialize PageCount");
+        
+        
+        println!("\nSaving PageCount.  Data:\n{}\n", ser);
         println!("Saving PageCount to: {}.  Data: {}", filename.display(), ser);
         let bytes = f.write(ser.as_bytes());
     }
@@ -167,35 +189,40 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
             
             // https://doc.rust-lang.org/std/collections/hash_map/enum.Entry.html
             let counter = req.guard::<State<PageCount>>()?;
-            let mut pages = counter.count.lock().unwrap();
             
+            // Retrieve and increment ViewsTotal
             let views_state = req.guard::<State<ViewsTotal>>()?;
             let mut views = views_state.0.load(Ordering::Relaxed);
             views_state.0.store(views+1, Ordering::Relaxed);
             // views += 1;
             views.wrapping_add(1);
             
-            // // Method 1 - and_modify() - Nightly Only
-            // pages.entry(page)
-            //    .and_modify(|p| { *p += 1 })
-            //    .or_insert(1);
-            
-            // // Method 2
-            // *pages.entry(page).or_insert(1) += 1;
-            
-            // Method 3
-            let mut hits = pages.entry(pagestr.clone()).or_insert(0);
-            // *hits += 1;
-            (*hits).wrapping_add(1);
-            
-            // let hit = *hits;
-            // Every 100 page views save the stats
-            if (*hits) % 100usize == 0 {
+            // Retrieve hit count for the current route and increment
+            // let mut hits = pages.entry(pagestr.clone()).or_insert(0);
+            let hit: usize;
+            {
+                let mut pages = counter.count.lock().unwrap();
+                let mut hits;
+                hits = pages.entry(pagestr.clone()).or_insert(0);
+                (*hits).wrapping_add(1);
+                hit = (*hits);
+                // *hits += 1;
                 
             }
             
             
-            Outcome::Success( Hits(pagestr, *hits, views) )
+            // Every 100 page views save the stats
+            // if (*hits) > 5 && (*hits) % HITS_SAVE_INTERVAL == 0 {
+                // println!("Save interval reached, saving.");
+                
+                // ViewsTotal::save(*hits);
+                ViewsTotal::save(hit);
+                counter.save();
+                // println!("Saving finished.");
+            // }
+            
+            // Outcome::Success( Hits(pagestr, *hits, views) )
+            Outcome::Success( Hits(pagestr, hit, views) )
     }
 }
 

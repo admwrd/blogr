@@ -258,8 +258,12 @@ fn main() {
     //     // (*pg_conn).connect();
     // }
     
-    let hitcount: PageCount = PageCount::new();
-    let views: ViewsTotal = ViewsTotal::new();
+    // let hitcount: PageCount = PageCount::new();
+    // let views: ViewsTotal = ViewsTotal::new();
+    let hitcount: PageCount = PageCount::load();
+    let views: ViewsTotal = ViewsTotal::load();
+    
+    
     // let vcache: VCache = VCache(CHashMap::new());
     
     init_pg_pool().get().unwrap();
