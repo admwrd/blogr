@@ -231,7 +231,7 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 
 
 #[get("/admin", rank = 1)]
-pub fn hbs_dashboard_admin_authorized(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_admin_authorized(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {
     // let start = Instant::now();
     // let flash = if let Some(flash) = flash_msg_opt {
     //     Some( alert_warning(flash.msg()) )
@@ -246,7 +246,7 @@ pub fn hbs_dashboard_admin_authorized(start: GenTimer, pagination: Page<Paginati
     // let express: Express = output.into();
     // express.compress(encoding)
     
-    hbs_manage_full(start, "".to_string(), "".to_string(), pagination, conn, admin, user, flash_msg_opt, encoding)
+    hbs_manage_full(start, "".to_string(), "".to_string(), pagination, conn, admin, user, flash_msg_opt, encoding, hits)
     
 }
 
@@ -498,7 +498,7 @@ pub fn hbs_logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Resul
 
 
 #[get("/all_tags")]
-pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     // let start = Instant::now();
     
     let qrystr = "SELECT COUNT(*) as cnt, unnest(tag) as untag FROM articles GROUP BY untag ORDER BY cnt DESC;";
@@ -550,7 +550,7 @@ pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCo
 
 // View paginated articles - pretty much just a test route
 #[get("/view_articles")]
-pub fn hbs_view_articles(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_view_articles(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     
     let total_query = "SELECT COUNT(*) as count FROM articles";
     let output: Template;
@@ -591,7 +591,7 @@ pub fn hbs_articles_tag_redirect(tag: Tag) -> Redirect {
 }
 
 #[get("/tag/<tag>")]
-pub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     
     let output: Template;
     
@@ -714,17 +714,17 @@ pub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Paginatio
 
 #[get("/article/<aid>/<title>")]
 
-pub fn hbs_article_title(start: GenTimer, aid: ArticleId, title: Option<&RawStr>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-    hbs_article_view(start, aid, conn, admin, user, encoding)
+pub fn hbs_article_title(start: GenTimer, aid: ArticleId, title: Option<&RawStr>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+    hbs_article_view(start, aid, conn, admin, user, encoding, hits)
 }
 
 #[get("/article/<aid>")]
-pub fn hbs_article_id(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-    hbs_article_view(start, aid, conn, admin, user, encoding)
+pub fn hbs_article_id(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+    hbs_article_view(start, aid, conn, admin, user, encoding, hits)
 }
 
 #[get("/article?<aid>")]
-pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     // let start = Instant::now();
     let rst = aid.retrieve_with_conn(conn); // retrieve result
     let mut output: Template; 
@@ -741,7 +741,7 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
 }
 
 #[get("/article")]
-pub fn hbs_article_not_found(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_article_not_found(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     // let start = Instant::now();
     let output: Template = hbs_template(TemplateBody::General(alert_danger("Article not found"), None), Some("Article not found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
     let end = start.0.elapsed();
@@ -787,7 +787,7 @@ pub fn hbs_create_unauthorized(start: GenTimer, conn: DbConn, admin: Option<Admi
 }
 
 #[get("/create")]
-pub fn hbs_create_form(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_create_form(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     // let start = Instant::now();
     
     let output: Template;
@@ -828,7 +828,7 @@ pub fn hbs_create_form(start: GenTimer, conn: DbConn, admin: Option<Administrato
 // https://www.postgresql.org/docs/current/static/functions-textsearch.html
 
 #[get("/search")]
-pub fn hbs_search_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_search_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     // unimplemented!()
     
     //show an advanced search form
@@ -861,7 +861,7 @@ pub fn hbs_search_redirect(start: GenTimer, pagination: Page<Pagination>, search
 }
 
 #[get("/search/<searchstr>")]
-pub fn hbs_search_results(start: GenTimer, pagination: Page<Pagination>, searchstr: String, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_search_results(start: GenTimer, pagination: Page<Pagination>, searchstr: String, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     
     let search = Search {
         limit: None,
@@ -1070,7 +1070,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
 // application/rss+xml
 #[get("/rss.xml")]
 // EXPRESS X - pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>) -> String {
-pub fn rss_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn rss_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     use rss::{Channel, ChannelBuilder, Guid, GuidBuilder, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};
     use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
     use urlencoding::encode;
@@ -1180,12 +1180,12 @@ pub fn rss_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie
 // }
 
 #[get("/author/<authorid>/<authorname>")]
-pub fn hbs_author_display(start: GenTimer, authorid: u32, authorname: Option<&RawStr>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-    hbs_author(start, authorid, conn, admin, user, encoding)
+pub fn hbs_author_display(start: GenTimer, authorid: u32, authorname: Option<&RawStr>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+    hbs_author(start, authorid, conn, admin, user, encoding, hits)
 }
 
 #[get("/author/<authorid>")]
-pub fn hbs_author(start: GenTimer, authorid: u32, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_author(start: GenTimer, authorid: u32, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     // unimplemented!()
     let output: Template;
     let results = conn.articles( &format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description), a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE userid = {}", DESC_LIMIT, authorid) );
@@ -1203,7 +1203,7 @@ pub fn hbs_author(start: GenTimer, authorid: u32, conn: DbConn, admin: Option<Ad
 }
 
 #[get("/about")]
-pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     // don't forget to put the start Instant in the hbs_template() function
     let output = hbs_template(TemplateBody::General("This page is not implemented yet.  Soon it will tell a little about me.".to_string(), None), Some("About Me".to_string()), String::from("/about"), admin, user, None, Some(start.0));
     let express: Express = output.into();
@@ -1211,7 +1211,7 @@ pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCooki
 }
 
 #[get("/edit/<aid>")]
-pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     
     let output: Template;
     let id = ArticleId::new(aid);
@@ -1265,12 +1265,12 @@ pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleSourceWrapper>, conn:
 }
 
 #[get("/manage")]
-pub fn hbs_manage_basic(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
-    hbs_manage_full(start, "".to_string(), "".to_string(), pagination, conn, admin, user, flash, encoding)
+pub fn hbs_manage_basic(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {
+    hbs_manage_full(start, "".to_string(), "".to_string(), pagination, conn, admin, user, flash, encoding, hits)
 }
 
 #[get("/manage/<sortstr>/<orderstr>")]
-pub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagination: Page<Pagination>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagination: Page<Pagination>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {
     
     let output: Template;
     
@@ -1369,7 +1369,7 @@ pub fn hit_count3(hits: Hits) -> String {
 
 
 #[get("/")]
-pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {
     
     let fmsg: Option<String>;
     if let Some(flashmsg) = flash {

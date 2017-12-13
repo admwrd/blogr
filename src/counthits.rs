@@ -185,12 +185,17 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
         
         // let page = route;
         // let pagestr = page.to_string();
-        
         // let mut page: &str = route;
+        
         let mut page: &str;
         let pagestr: String;
-        if let Some(pos) = route[1..].find("/") {
-            let (p, q) = route[1..].split_at(pos);
+        
+        // This first if statement allows customizable home page name in the tracking
+        if route == "/" {
+            page = "/";
+            pagestr = "/".to_string();
+        } else if let Some(pos) = route[1..].find("/") {
+            let (p, _) = route[1..].split_at(pos);
             // println!("Found route `{}`, splitting at {} to get `{}`", route, pos, p);
             if p == "article" {
                 page = route;

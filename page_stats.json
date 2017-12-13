@@ -1,7 +1,12 @@
 {
   "map": {
-    "/hit3": 53,
     "/hit2": 24,
-    "/hit": 33
+    "/article/13/Woo%20All_tags%20Page%20Added%205": 1,
+    "/hit3": 53,
+    "author": 2,
+    "/hit": 33,
+    "/": 4,
+    "/article/1/An%20Awesome%20Article": 1,
+    "tag": 2
   }
 }
