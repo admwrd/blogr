@@ -28,11 +28,11 @@ pub const HITS_SAVE_INTERVAL: usize = 5;
 pub fn cur_dir_file(name: &str) -> PathBuf {
     if let Ok(mut dir) = env::current_exe() {
         dir.pop();
-        println!("Climbing directory tree into: {}", &dir.display());
+        // println!("Climbing directory tree into: {}", &dir.display());
         dir.pop();
-        println!("Loading into directory: {}", &dir.display());
+        // println!("Loading into directory: {}", &dir.display());
         dir.set_file_name(name);
-        println!("Load file is: {}", &dir.display());
+        // println!("Load file is: {}", &dir.display());
         dir
     } else {
         PathBuf::from(name)
@@ -182,21 +182,29 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
     fn from_request(req: &'a Request<'r>) -> ::rocket::request::Outcome<Hits,Self::Error>{
         let uri = req.uri();
         let route = uri.path();
-        let page: &str;
+        
+        // let page = route;
+        // let pagestr = page.to_string();
+        
+        // let mut page: &str = route;
+        let mut page: &str;
         let pagestr: String;
         if let Some(pos) = route[1..].find("/") {
-            let (p, _) = route[1..].split_at(pos);
-            println!("Found route `{}`, splitting at {} to get `{}`", route, pos, p);
-            page = p;
-            pagestr = p.to_string();
+            let (p, q) = route[1..].split_at(pos);
+            // println!("Found route `{}`, splitting at {} to get `{}`", route, pos, p);
+            if p == "article" {
+                page = route;
+                pagestr = route.to_string();
+            } else {
+                page = p;
+                pagestr = p.to_string();
+            }
         } else {
             // page = route.to_string();
-            println!("Found route: {}", route);
+            // println!("Found route: {}", route);
             page = route;
             pagestr = route.to_string();
         }
-        
-        // https://doc.rust-lang.org/std/collections/hash_map/enum.Entry.html
         
         let total_state = req.guard::<State<TotalHits>>()?;
         let mut total = total_state.total.load(Ordering::Relaxed);
@@ -211,6 +219,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
             let counter = req.guard::<State<Counter>>()?;
             let mut stats = counter.stats.lock().expect("Could not unlock Counter stats mutex.");
             {
+                // https://doc.rust-lang.org/std/collections/hash_map/enum.Entry.html
                 let mut hits = stats.map.entry(pagestr.clone()).or_insert(0);
                 *hits += 1;
                 page_views = *hits;
@@ -220,16 +229,14 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
         // (*hits).wrapping_add(1);
         // page_views = (*hits);
         if total % 10 == 0 {
-            println!("Save interval reached. Saving page stats.");
+            // println!("Save interval reached. Saving page stats.");
             Counter::save(&ser_stats);
-            println!("Saved page stats, saving total hits.");
+            // println!("Saved page stats, saving total hits.");
             total_state.save();
-            println!("Saved total hits.");
+            // println!("Saved total hits.");
         }
         
-        
         Outcome::Success( Hits(pagestr, page_views, total) )
-        
     }
 }
 

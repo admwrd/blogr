@@ -70,10 +70,13 @@ a:visited {
     /*color: #8ceaf6;*/
 }
 a:hover {
-    color: #fff
+    /*color: #fff;*/
+    color: #ff8f31;
 }
 a:visited:hover {
-    color: #bd67fd;
+    /*color: #bd67fd;*/
+    /*color: #853c01;*/
+    color: #e06601;
 }
 
 a:active {
@@ -177,10 +180,10 @@ hr.preview-divider {
 
 
 
-/*
+/*{
 orange:   #de6d11
 dark ora: #853c01
-*/
+}*/
 
 /*  #de6d11 #853c01  */
 
@@ -503,14 +506,27 @@ OLD - OUTDATED PAGINATION STYLES
 }
 
 .v-article-title a:link {
-    color: #ffffff;
+    /*color: #ffffff;*/
+    color: #e06500;
+}
+.v-article-title a:visited:hover {
+    color: #bd67fd !important;
+    /*color: #2af !important;*/
 }
 .v-article-title a:hover {
-    color: #bd67fd;
+    /*color: #bd67fd;*/
+    /*color: #ff4415 !important;*/
+    color: #2af !important;
 }
-.v-article-title a:visted {
-    color: #eeeeee;
+.v-article-title a:visited {
+    /*color: #eeeeee;*/
+    /*color: #b95300;*/
+    /*color: #e06500;*/
+    color: #c65900;
 }
+.v-article-title a:active {
+}
+
 
 .v-article-date {
     margin: 0px 0px 0px 1em;
@@ -832,6 +848,7 @@ nav button[class*="navbar-toggler"] {
     border-top: 1px solid #aaa;
     border-bottom: 1px solid #ddd;
     background-color: #eee;
+    cursor: default;
 }
 h6 ~ h6 {
     margin-top: 1em;

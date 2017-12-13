@@ -35,11 +35,11 @@ pub const HITS_SAVE_INTERVAL: usize = 5;
 pub fn cur_dir_file(name: &str) -> PathBuf {
     if let Ok(mut dir) = env::current_exe() {
         dir.pop();
-        println!("Climbing directory tree into: {}", &dir.display());
+        // println!("Climbing directory tree into: {}", &dir.display());
         dir.pop();
-        println!("Loading into directory: {}", &dir.display());
+        // println!("Loading into directory: {}", &dir.display());
         dir.set_file_name(name);
-        println!("Load file is: {}", &dir.display());
+        // println!("Load file is: {}", &dir.display());
         dir
     } else {
         PathBuf::from(name)
@@ -104,7 +104,7 @@ impl ViewsTotal {
             let mut buf: String = String::with_capacity(50);
             f.read_to_string(&mut buf);
             let des: usize = ::serde_json::from_str(&mut buf).unwrap_or(0);
-            println!("\nSuccessfully loaded ViewsTotal.  Data:\n{}\n", &buf);
+            // println!("\nSuccessfully loaded ViewsTotal.  Data:\n{}\n", &buf);
             ViewsTotal( AtomicUsize::new(des) )
         } else {
             if let Ok(mut f) = File::create(&filename) {
@@ -120,8 +120,8 @@ impl ViewsTotal {
         let mut f = File::create(&filename).expect("Could not create ViewsTotal file.");
         
         let ser: String = ::serde_json::to_string_pretty(&views).expect("Could not serialize ViewsTotal.");
-        println!("\nSaving ViewsTotal.  Data:\n{}\n", ser);
-        println!("Saving ViewsTotal to: {}.  Data: {}", filename.display(), ser);
+        // println!("\nSaving ViewsTotal.  Data:\n{}\n", ser);
+        // println!("Saving ViewsTotal to: {}.  Data: {}", filename.display(), ser);
         let bytes = f.write(ser.as_bytes());
     }
 }
@@ -142,14 +142,14 @@ impl PageCount {
             let mut buf: String = String::with_capacity(1500);
             f.read_to_string(&mut buf);
             let des: PageCount = ::serde_json::from_str(&mut buf).unwrap_or( PageCount::new() );
-            println!("\nSuccessfully loaded PageCount data:\n{}\n", &buf);
+            // println!("\nSuccessfully loaded PageCount data:\n{}\n", &buf);
             des
             
             // ViewsTotal( AtomicUsize::new(des) )
         } else {
             if let Ok(mut f) = File::create(&filename) {
                 let new = PageCount::new();
-                println!("Saving blank PageCount");
+                // println!("Saving blank PageCount");
                 new.save();
                 new
                 // let mut buf: String = String::with_capacity(50);
@@ -179,13 +179,23 @@ impl PageCount {
         let ser: String = ::serde_json::to_string_pretty(&ghost).expect("Could not serialize PageCount");
         
         
-        println!("\nSaving PageCount.  Data:\n{}\n", ser);
-        println!("Saving PageCount to: {}.  Data: {}", filename.display(), ser);
+        // println!("\nSaving PageCount.  Data:\n{}\n", ser);
+        // println!("Saving PageCount to: {}.  Data: {}", filename.display(), ser);
         let bytes = f.write(ser.as_bytes());
     }
 }
 
-
+// Specialized Page Count
+// fn reroute(page: &str, part: &str) -> String {
+//     let mut output: String = String::with_capacity(page.len() + part.len() + 20);
+//     output.push_str(page);
+//     match page {
+//         "article" | "author" | "search" | "tag" => {
+//             output.push_str(part);
+//         },
+//         _ => {},
+//     }
+// }
 
 // https://rocket.rs/guide/state/#within-guards
 // https://api.rocket.rs/rocket/http/uri/struct.URI.html
@@ -200,17 +210,26 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
             
             let page: &str;
             let pagestr: String;
-            if let Some(pos) = route[1..].find("/") {
-                let (p, _) = route[1..].split_at(pos);
-                println!("Found route `{}`, splitting at {} to get `{}`", route, pos, p);
-                page = p;
-                pagestr = p.to_string();
-            } else {
-                // page = route.to_string();
-                println!("Found route: {}", route);
-                page = route;
-                pagestr = route.to_string();
-            }
+            // // Specialized Page Count
+            // if let Some(pos) = route[1..].find("/") {
+            //     let (p, _) = route[1..].split_at(pos);
+            //     // println!("Found route `{}`, splitting at {} to get `{}`", route, pos, p);
+            //     // page = p;
+            //     // pagestr = p.to_string();
+            //     pagestr = reroute(p);
+            //     page = &pagestr;
+            // } else {
+            //     // page = route.to_string();
+            //     // println!("Found route: {}", route);
+            //     page = route;
+            //     pagestr = route.to_string();
+            //     // pagestr = reroute(route);
+            //     // page = &pagestr;
+            // }
+            
+            // Non-specialized Page Count
+            page = route;
+            pagestr = route.to_string();
             
             // let hit_count_state = req.guard::<State<PageCount>>()?;
             
