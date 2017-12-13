@@ -3,11 +3,12 @@ use rocket::data::FromData;
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::{Cookie, Cookies, MediaType, ContentType, Method, Status};
 use rocket::Outcome;
+use rocket::Outcome::Success;
 use rocket::request::{FlashMessage, Form, FromForm, FormItems, FromRequest, Request};
 use rocket::response::{self, Response, content, NamedFile, Redirect, Flash, Responder, Content};
 use rocket::response::content::Html;
 use rocket::State;
-
+use rocket;
 
 use std::mem;
 use std::env;
@@ -71,6 +72,9 @@ pub struct Counter {
 #[derive(Debug, Clone, Serialize)]
 pub struct Hits(pub String, pub usize, pub usize);
 
+// Use this for error pages to track errors
+#[derive(Debug, Clone, Serialize)]
+pub struct ErrorHits(pub String, pub usize, pub usize);
 
 
 impl TotalHits {
@@ -172,44 +176,47 @@ impl PageStats {
 }
 
 
-
-// https://rocket.rs/guide/state/#within-guards
-// https://api.rocket.rs/rocket/http/uri/struct.URI.html
-// impl<'a, 'r> FromRequest<'a, 'r> for PageCount {
-impl<'a, 'r> FromRequest<'a, 'r> for Hits {
-    type Error = ();
+// fn route<'a>(req: &rocket::Request<'a>) -> String {
+fn route<'a>(req: &Request) -> String {
+    let uri = req.uri();
+    let route = uri.path();
     
-    fn from_request(req: &'a Request<'r>) -> ::rocket::request::Outcome<Hits,Self::Error>{
-        let uri = req.uri();
-        let route = uri.path();
-        
-        // let page = route;
-        // let pagestr = page.to_string();
-        // let mut page: &str = route;
-        
-        let mut page: &str;
-        let pagestr: String;
-        
-        // This first if statement allows customizable home page name in the tracking
-        if route == "/" {
-            page = "/";
-            pagestr = "/".to_string();
-        } else if let Some(pos) = route[1..].find("/") {
-            let (p, _) = route[1..].split_at(pos);
-            // println!("Found route `{}`, splitting at {} to get `{}`", route, pos, p);
-            if p == "article" {
-                page = route;
-                pagestr = route.to_string();
-            } else {
-                page = p;
-                pagestr = p.to_string();
-            }
-        } else {
-            // page = route.to_string();
-            // println!("Found route: {}", route);
+    // let page = route;
+    // let pagestr = page.to_string();
+    // let mut page: &str = route;
+    
+    let mut page: &str;
+    // let pagestr: String;
+    
+    // This first if statement allows customizable home page name in the tracking
+    if route == "/" {
+        page = "/";
+        // pagestr = "/".to_string();
+    } else if let Some(pos) = route[1..].find("/") {
+        let (p, _) = route[1..].split_at(pos);
+        // println!("Found route `{}`, splitting at {} to get `{}`", route, pos, p);
+        if p == "article" {
             page = route;
-            pagestr = route.to_string();
+            // pagestr = route.to_string();
+        } else {
+            page = p;
+            // pagestr = p.to_string();
         }
+    } else {
+        // page = route.to_string();
+        // println!("Found route: {}", route);
+        page = route;
+        // pagestr = route.to_string();
+    }
+    page.to_string()
+}
+
+fn req_guard(req: &Request, pagestr: String) -> ::rocket::request::Outcome<Hits,()> {
+        // let pagestr = page.to_string();
+        // let page = route(req);
+        // let page = &pagestr;
+        
+        // let pagestr = route(req);
         
         let total_state = req.guard::<State<TotalHits>>()?;
         let mut total = total_state.total.load(Ordering::Relaxed);
@@ -233,7 +240,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
         }
         // (*hits).wrapping_add(1);
         // page_views = (*hits);
-        if total % 10 == 0 {
+        if total % 10 == 0 || &pagestr == "save-hits" {
             // println!("Save interval reached. Saving page stats.");
             Counter::save(&ser_stats);
             // println!("Saved page stats, saving total hits.");
@@ -243,10 +250,79 @@ impl<'a, 'r> FromRequest<'a, 'r> for Hits {
         
         Outcome::Success( Hits(pagestr, page_views, total) )
     }
+
+
+// https://rocket.rs/guide/state/#within-guards
+// https://api.rocket.rs/rocket/http/uri/struct.URI.html
+// impl<'a, 'r> FromRequest<'a, 'r> for PageCount {
+impl<'a, 'r> FromRequest<'a, 'r> for Hits {
+    type Error = ();
+    
+    fn from_request(req: &'a Request<'r>) -> ::rocket::request::Outcome<Hits,Self::Error> {
+        req_guard(req, route(req))
+    }
 }
 
 
-
+impl ErrorHits {
+    pub fn error404(req: &Request) -> Hits {
+        // unimplemented!()
+        let route = req.uri().path();
+        let prepend = "!error404";
+        
+        let mut uri: String = String::with_capacity(route.len() + prepend.len() + 8);
+        uri.push_str(prepend);
+        uri.push_str(route);
+        
+        // req.set_uri(uri.as_ref());
+        // let hits = req.guard::<Hits>();
+        
+        let hits = req_guard(req, uri);
+        if let Success(hitcount) = hits {
+            hitcount
+        } else {
+            Hits(String::from("uError"), 0, 0)
+        }
+    }
+    pub fn error500(req: &Request) -> Hits {
+        // unimplemented!()
+                let route = req.uri().path();
+        let prepend = "!error500";
+        
+        let mut uri: String = String::with_capacity(route.len() + prepend.len() + 8);
+        uri.push_str(prepend);
+        uri.push_str(route);
+        
+        // req.set_uri(uri.as_ref());
+        // let hits = req.guard::<Hits>();
+        
+        let hits = req_guard(req, uri);
+        if let Success(hitcount) = hits {
+            hitcount
+        } else {
+            Hits(String::from("uError"), 0, 0)
+        }
+    }
+    pub fn error(req: &Request) -> Hits {
+        // unimplemented!()
+                let route = req.uri().path();
+        let prepend = "!error";
+        
+        let mut uri: String = String::with_capacity(route.len() + prepend.len() + 8);
+        uri.push_str(prepend);
+        uri.push_str(route);
+        
+        // req.set_uri(uri.as_ref());
+        // let hits = req.guard::<Hits>();
+        
+        let hits = req_guard(req, uri);
+        if let Success(hitcount) = hits {
+            hitcount
+        } else {
+            Hits(String::from("uError"), 0, 0)
+        }
+    }
+}
 
 
 

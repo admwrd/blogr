@@ -234,6 +234,9 @@ fn static_files(file: PathBuf, encoding: AcceptCompression) -> Option<Express> {
 
 #[error(404)]
 pub fn error_not_found(req: &Request) -> Express {
+    // let hits = req.guard::<Hits>();
+    ErrorHits::error404(req);
+    
     let content = format!( "The request page `{}` could not be found.", sanitize_text(req.uri().as_str()) );
     let output = hbs_template(TemplateBody::General(content, None), Some("404 Not Found.".to_string()), String::from("/404"), None, None, None, None);
     let express: Express = output.into();
@@ -241,6 +244,10 @@ pub fn error_not_found(req: &Request) -> Express {
 }
 #[error(500)]
 pub fn error_internal_error(req: &Request) -> Express {
+    // let hits = req.guard::<Hits>();
+    ErrorHits::error500(req);
+    
+    
     let content = format!( "An internal server error occurred procesing the page `{}`.", sanitize_text(req.uri().as_str()) );
     let output = hbs_template(TemplateBody::General(content, None), Some("500 Internal Error.".to_string()), String::from("/500"), None, None, None, None);
     let express: Express = output.into();
