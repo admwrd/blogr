@@ -56,7 +56,7 @@ pub enum TemplateBody {
         Option<String>, // fail message
     ),
     Create(String, Option<String>), // form action url and optional message
-    Edit(String, Article, Option<String>), // form action url and optional message
+    Edit(String, ArticleSource, Option<String>), // form action url and optional message
     // Paginated list of articles, 
     // need to find a way to indicate which column is being sorted on and which way its sorted
     // manage/desc|asc/date
@@ -115,7 +115,7 @@ pub struct TemplateCreate {
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateEdit {
     pub action_url: String,
-    pub body: ArticleDisplay,
+    pub body: ArticleSourceDisplay,
     pub msg: String,
     pub info: TemplateInfo,
 }
@@ -249,8 +249,6 @@ lazy_static! {
 
 impl TemplateMenu {
     pub fn new(name: String, url: String, current_page: &str) -> TemplateMenu {
-        
-        
         let classes = if &url == current_page {
             "active".to_string()
         } else {
@@ -262,12 +260,12 @@ impl TemplateMenu {
             name,
             url: {
                 if url.starts_with("http") || url.starts_with("www") {
+                    url
+                } else {
                     let mut u = String::with_capacity(BASE.len() + url.len() + 10);
                     u.push_str(&BASE);
                     u.push_str(&url);
                     u
-                } else {
-                    url
                 }
             },
         }
@@ -405,7 +403,7 @@ impl TemplateCreate {
     }
 }
 impl TemplateEdit {
-        pub fn new(action_url: String, article: Article, msg: Option<String>, info: TemplateInfo) -> TemplateEdit {
+        pub fn new(action_url: String, article: ArticleSource, msg: Option<String>, info: TemplateInfo) -> TemplateEdit {
         TemplateEdit {
             action_url,
             body: article.to_display(),

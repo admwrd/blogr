@@ -245,7 +245,7 @@ function submit_markdown(html) {
     
     if (edit_form && preview_form && bodymd) {
         // var body = document.getElementById('insert_body');
-        bodymd.innerHTML = html;
+        bodymd.value = html;
     }
 }
 

@@ -1215,7 +1215,7 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
     
     let output: Template;
     let id = ArticleId::new(aid);
-    if let Some(article) = id.retrieve_with_conn(conn) {
+    if let Some(article) = id.retrieve_markdown(conn) {
         // println!("Retrieved article info: {}", article.info());
         //
         let title = article.title.clone();
@@ -1242,11 +1242,11 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
 
 #[post("/edit", data = "<form>")]
 // pub fn hbs_edit_process(start: GenTimer, form: Form<Article>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {
-pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleWrapper>, conn: DbConn, admin: AdministratorCookie, encoding: AcceptCompression) -> Flash<Redirect> {
+pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleSourceWrapper>, conn: DbConn, admin: AdministratorCookie, encoding: AcceptCompression) -> Flash<Redirect> {
     
-    let wrapper: ArticleWrapper = form.into_inner();
-    let article: Article = wrapper.to_article();
-    println!("Processing Article info: {}", article.info());
+    let wrapper: ArticleSourceWrapper = form.into_inner();
+    let article: ArticleSource = wrapper.to_article();
+    // println!("Processing Article info: {}", article.info());
     let result = article.save(conn);
     match result {
         Ok(k) => {

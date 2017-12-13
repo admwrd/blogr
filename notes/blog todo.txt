@@ -38,8 +38,15 @@ Blogr Theme
 
 
 Blogr
+	Need to allow markdown column in the data structure and template
 
-Edit and Create pages
+	In the FromRequest guard, make the hit counter counter hits for individual articles
+		and maybe even tags
+			/author/<id>
+			/search/<searchstr>
+			/article/<aid>
+			/tag/<tag>
+
 	If body is empty but markdown is not then generate the html using rust
 		use a CommonMark crate to process the html
 	JS will generate different (maybe better?) results so rely on that first
@@ -47,6 +54,7 @@ Edit and Create pages
 	Does saving work correctly?  - is the html filtered/sanitized out?
 
 
+Edit and Create pages
 	When editing:
 	check markdown box if the markdown column is not empty
 	Check to see if the frist non-whitespace characters are ** or __ or other markdown characters
