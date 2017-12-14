@@ -23,6 +23,9 @@ Rocket-auth-login
 
 
 Blogr
+	Items Per Page Selector Errors:
+		page 2 @ 6ipp	=> 8ipp 	page=2&ipp=8
+
 	Add edit to article template
 
 	Add a Items Per Page dropdown menu next to pagination links

@@ -278,13 +278,32 @@ if (ippform && ippsel && ipptotalitems && ippcurpage) {
     ippsel.addEventListener('change', function () {
         // Ensure the current page is within the new last page
         if (ipptotal && ippcurpage) {
-            if ( (ipptotal * ippsel.value) > ipptotal ) {
-                if ( (ipptotal % ippsel.value) == 0 ) {
-                    ippcurpage.value = Math.floor(ipptotal/ippsel.value)+1;
-                } else {
-                    ippcurpage.value = Math.floor(ipptotal/ippsel.value);
-                }
+            // if ( (ipptotal * ippsel.value) > ipptotal ) {
+            //     if ( (ipptotal % ippsel.value) == 0 ) {
+            //         ippcurpage.value = Math.floor(ipptotal/ippsel.value)+1;
+            //     } else {
+            //         ippcurpage.value = Math.floor(ipptotal/ippsel.value);
+            //     }
+            // }
+            
+            var lastpage;
+            lastpage = Math.ceil(ipptotal / ippsel.value);
+            // Does not work correctly
+            // if (ipptotal % ippsel.value == 0 ) {
+            //     lastpage = ipptotal / ippsel.value + 1;
+            // } else {
+            //     lastpage = Math.ceil(ipptotal / ippsel.value);
+            // }
+            
+            // console.log("Last page should be " + lastpage);
+            
+            if (ippcurpage.value > lastpage) {
+                ippcurpage.value = lastpage;
             }
+            
+            // if( (ipptotal / ippsel.value) > ippcurpage.value ) {
+            //     ippcurpage.value = ipptotal/ipsel.value
+            // }
         }
         // Submit the form to change the items per page setting (and possibly current page if needed - see above if statement)
         ippform.submit();
