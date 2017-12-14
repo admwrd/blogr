@@ -182,7 +182,7 @@ a:active {
     align-self: center;
 }
 
-#pagination-ipp {
+.pagination-ipp {
     background-color: #444;
     color: #fff;
     border: 1px solid #de6d11;
@@ -190,7 +190,7 @@ a:active {
     padding: 4px;
 }
 
-#pagination-ipp option {
+.pagination-ipp option {
     background-color: #333;
 }
 
@@ -396,7 +396,8 @@ hr.v-am-item-tag-divider:after {
 }
 
 .v-spacer-del {
-    width: 100px;
+    display: inline-block;
+    width: 30px;
 }
 
 

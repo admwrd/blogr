@@ -266,49 +266,56 @@ if (formins) {
 // pagination-ipp
 
 
-var ippform = document.getElementById('ipp-form');
-var ipptotalitems = document.getElementById('ipp-total-items');
-var ippcurpage = document.getElementById('ipp-cur-page');
-var ippsel = document.getElementById('pagination-ipp');
-// var ipptotal, ippcur;
-var ipptotal;
-if (ippform && ippsel && ipptotalitems && ippcurpage) {
-    ipptotal = ipptotalitems.value;
-    // ippcur = ippcurpage.value();
-    ippsel.addEventListener('change', function () {
-        // Ensure the current page is within the new last page
-        if (ipptotal && ippcurpage) {
-            // if ( (ipptotal * ippsel.value) > ipptotal ) {
-            //     if ( (ipptotal % ippsel.value) == 0 ) {
-            //         ippcurpage.value = Math.floor(ipptotal/ippsel.value)+1;
-            //     } else {
-            //         ippcurpage.value = Math.floor(ipptotal/ippsel.value);
-            //     }
-            // }
-            
-            var lastpage;
-            lastpage = Math.ceil(ipptotal / ippsel.value);
-            // Does not work correctly
-            // if (ipptotal % ippsel.value == 0 ) {
-            //     lastpage = ipptotal / ippsel.value + 1;
-            // } else {
-            //     lastpage = Math.ceil(ipptotal / ippsel.value);
-            // }
-            
-            // console.log("Last page should be " + lastpage);
-            
-            if (ippcurpage.value > lastpage) {
-                ippcurpage.value = lastpage;
+// SAFE VERSION - allows multiple ipp changers
+var ippforms = document.getElementsByClassName('ipp-form');
+if (ippforms) {
+    Array.prototype.forEach.call(ippforms, function(ippform) {
+        console.log("Looking at ipp form");
+        ippform.addEventListener('change', function() {
+            var itotel = ippform.children[0];
+            var icur = ippform.children[1];
+            var isel = ippform.children[2];
+            if (itotel && icur && isel) {
+                var itotal = itotel.value;
+                var icurval = icur.value;
+                var iselval = isel.value;
+                var lastpage;
+                lastpage = Math.ceil(itotal / iselval);
+                // console.log("Last page should be " + lastpage);
+                if (icurval > lastpage) {
+                    icur.value = lastpage;
+                }
             }
-            
-            // if( (ipptotal / ippsel.value) > ippcurpage.value ) {
-            //     ippcurpage.value = ipptotal/ipsel.value
-            // }
-        }
-        // Submit the form to change the items per page setting (and possibly current page if needed - see above if statement)
-        ippform.submit();
+            ippform.submit();
+        });
     });
 }
+
+// NOT SAFE VERSION - ONLY ALLOWS ONE INStANCE OF IPP CHANGER
+// var ippform = document.getElementById('ipp-form');
+// var ipptotalitems = document.getElementById('ipp-total-items');
+// var ippcurpage = document.getElementById('ipp-cur-page');
+// var ippsel = document.getElementById('pagination-ipp');
+// // var ipptotal, ippcur;
+// var ipptotal;
+// if (ippform && ippsel && ipptotalitems && ippcurpage) {
+//     ipptotal = ipptotalitems.value;
+//     // ippcur = ippcurpage.value();
+    
+//     ippsel.addEventListener('change', function () {
+//         // Ensure the current page is within the new last page
+//         if (ipptotal && ippcurpage) {
+//             var lastpage;
+//             lastpage = Math.ceil(ipptotal / ippsel.value);
+//             // console.log("Last page should be " + lastpage);
+//             if (ippcurpage.value > lastpage) {
+//                 ippcurpage.value = lastpage;
+//             }
+//         }
+//         // Submit the form to change the items per page setting (and possibly current page if needed - see above if statement)
+//         ippform.submit();
+//     });
+// }
 
 
 

@@ -346,14 +346,19 @@ Bootstrap:
         
         // html.push_str("</ul></nav>");
         
-        
+//         html.push_str( &format!(r##"</ul></nav></div>
+// <div class="v-pagnav-after col"> 
+// <form action="{}{}" method="GET" class="ipp-form" id="ipp-form">
+// <input type="hidden" class="ipp-total-items" id="ipp-total-items" value="{}">
+// <input type="hidden" class="ipp-curpage" id="ipp-cur-page" name="page" value="{}"># Articles 
+// <select name="ipp" class="pagination-ipp" id="pagination-ipp" size="1">"##, &BLOG_URL[..BLOG_URL.len()-1], &self.route, total_items, self.cur_page));
         
         html.push_str( &format!(r##"</ul></nav></div>
 <div class="v-pagnav-after col"> 
-<form action="{}{}" method="GET" id="ipp-form">
-<input type="hidden" id="ipp-total-items" value="{}">
-<input type="hidden" id="ipp-cur-page" name="page" value="{}"># Articles 
-<select name="ipp" id="pagination-ipp" size="1">"##, &BLOG_URL[..BLOG_URL.len()-1], &self.route, total_items, self.cur_page));
+<form action="{}{}" method="GET" class="ipp-form">
+<input type="hidden" class="ipp-total-items" value="{}">
+<input type="hidden" class="ipp-curpage" name="page" value="{}"># Articles 
+<select name="ipp" class="pagination-ipp" id="pagination-ipp" size="1">"##, &BLOG_URL[..BLOG_URL.len()-1], &self.route, total_items, self.cur_page));
         if T::min_ipp() <= 5 && T::max_ipp() >= 5 { if self.settings.ipp() == 5 { html.push_str(r#"<option value="5" SELECTED>5</option>"#); } else { html.push_str(r#"<option value="5">5</option>"#); } }
         if T::min_ipp() <= 6 && T::max_ipp() >= 6 { if self.settings.ipp() == 6 { html.push_str(r#"<option value="6" SELECTED>6</option>"#); } else { html.push_str(r#"<option value="6">6</option>"#); } }
         if T::min_ipp() <= 8 && T::max_ipp() >= 8 { if self.settings.ipp() == 8 { html.push_str(r#"<option value="8" SELECTED>8</option>"#); } else { html.push_str(r#"<option value="8">8</option>"#); } }
