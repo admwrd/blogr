@@ -297,20 +297,7 @@ fn main() {
         .attach(Template::fairing())
         .mount("/", routes![
             
-            // pages::hbs_admin_page,
-            // pages::hbs_admin_login,
-            // pages::hbs_admin_retry,
-            // pages::hbs_process_admin,
-            // pages::hbs_user_page,
-            // pages::hbs_user_login,
-            // pages::hbs_user_retry,
-            // pages::hbs_user_process,
-            
-            pages::pagination_test,
-            
-            // pages::hbs_all_articles,
-            // pages::hbs_articles_page,
-            pages::hbs_view_articles,
+            // pages::hbs_view_articles,
             pages::hbs_tags_all,
             pages::hbs_articles_tag_redirect,
             pages::hbs_articles_tag,
@@ -325,10 +312,8 @@ fn main() {
             pages::hbs_edit_process,
             pages::hbs_delete_confirm,
             pages::hbs_process_delete,
-            // pages::hbs_manage,
             
-            // pages::hbs_logout,
-            pages::hbs_search_page,
+            // pages::hbs_search_page,
             pages::hbs_search_redirect,
             pages::hbs_search_results,
             pages::hbs_author_display,
@@ -340,36 +325,31 @@ fn main() {
             pages::hbs_manage_basic,
             pages::hbs_manage_full,
             
-            // pages_administrator::dashboard_admin_unauthorized,
             pages::hbs_dashboard_admin_authorized,
             pages::hbs_dashboard_admin_flash,
             pages::hbs_dashboard_admin_retry_user,
-            // pages_administrator::dashboard_admin_retry_flash,
             pages::hbs_process_admin_login,
             pages::hbs_logout_admin,
             
             pages::hbs_dashboard_user_authorized,
-            // pages_administrator::dashboard_user_unauthorized,
-            // pages::dashboard_user_login,
             pages::hbs_dashboard_user_retry_user,
             pages::hbs_dashboard_user_flash,
-            // pages_administrator::dashboard_user_retry_flash,
             pages::hbs_process_user_login,
             pages::hbs_logout_user,
             
-            pages_administrator::resp_test,
-            pages_administrator::uncompressed,
-            pages_administrator::compress_test,
-            pages_administrator::compress_test2,
-            pages_administrator::compress_test3,
-            pages_administrator::compress_test4,
-            pages_administrator::compress_gzip,
-            pages_administrator::compress_deflate,
-            pages_administrator::compress_brotli,
+            // pages_administrator::resp_test,
+            // pages_administrator::uncompressed,
+            // pages_administrator::compress_test,
+            // pages_administrator::compress_test2,
+            // pages_administrator::compress_test3,
+            // pages_administrator::compress_test4,
+            // pages_administrator::compress_gzip,
+            // pages_administrator::compress_deflate,
+            // pages_administrator::compress_brotli,
             
-            pages::hit_count,
-            pages::hit_count2,
-            pages::hit_count3,
+            // pages::hit_count,
+            // pages::hit_count2,
+            // pages::hit_count3,
             
             static_files
         ])

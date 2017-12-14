@@ -564,42 +564,43 @@ pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCo
     express.compress(encoding)
 }
 
-// View paginated articles - pretty much just a test route
-#[get("/view_articles")]
-pub fn hbs_view_articles(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
-    
-    let total_query = "SELECT COUNT(*) as count FROM articles";
-    let output: Template;
-    if let Ok(rst) = conn.query(total_query, &[]) {
-        if !rst.is_empty() && rst.len() == 1 {
-            let row = rst.get(0);
-            let count: i64 = row.get(0);
-            let total_items: u32 = count as u32;
-            let (ipp, cur, num_pages) = pagination.page_data(total_items);
-            // let sql = pagination.sql("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", Some("posted DESC"));
-            let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
-            println!("Prepared paginated query:\n{}", sql);
-            if let Some(results) = conn.articles(&sql) {
-                // let results: Vec<Article> = conn.articles(&sql);
-                if results.len() != 0 {
-                    let page_information = pagination.page_info(total_items);
-                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some(format!("Viewing All Articles - Page {} of {}", cur, num_pages)), String::from("/view_articles"), admin, user, None, Some(start.0));
-                    let express: Express = output.into();
-                    return express.compress( encoding );
-                }
-            }
-            // if let Ok(qry) = conn.query(sql, &[]) {
-            //     if !qry.is_empty() && rst.len() != 0 {
-                    
-            //     }
-            // }
-        }
-    }
-    
-    output = hbs_template(TemplateBody::General(alert_danger("Database query failed."), None), Some("Viewing All Articles".to_string()), String::from("/view_articles"), admin, user, None, Some(start.0));
-    let express: Express = output.into();
-    express.compress( encoding )
-}
+// // NOT USED ANYMORE?
+// // View paginated articles - pretty much just a test route
+// #[get("/view_articles")]
+// pub fn hbs_view_articles(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+//     
+//     let total_query = "SELECT COUNT(*) as count FROM articles";
+//     let output: Template;
+//     if let Ok(rst) = conn.query(total_query, &[]) {
+//         if !rst.is_empty() && rst.len() == 1 {
+//             let row = rst.get(0);
+//             let count: i64 = row.get(0);
+//             let total_items: u32 = count as u32;
+//             let (ipp, cur, num_pages) = pagination.page_data(total_items);
+//             // let sql = pagination.sql("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", Some("posted DESC"));
+//             let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
+//             println!("Prepared paginated query:\n{}", sql);
+//             if let Some(results) = conn.articles(&sql) {
+//                 // let results: Vec<Article> = conn.articles(&sql);
+//                 if results.len() != 0 {
+//                     let page_information = pagination.page_info(total_items);
+//                     output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some(format!("Viewing All Articles - Page {} of {}", cur, num_pages)), String::from("/view_articles"), admin, user, None, Some(start.0));
+//                     let express: Express = output.into();
+//                     return express.compress( encoding );
+//                 }
+//             }
+//             // if let Ok(qry) = conn.query(sql, &[]) {
+//             //     if !qry.is_empty() && rst.len() != 0 {
+//                       
+//             //     }
+//             // }
+//         }
+//     }
+//     
+//     output = hbs_template(TemplateBody::General(alert_danger("Database query failed."), None), Some("Viewing All Articles".to_string()), String::from("/view_articles"), admin, user, None, Some(start.0));
+//     let express: Express = output.into();
+//     express.compress( encoding )
+// }
 
 #[get("/tag?<tag>")]
 pub fn hbs_articles_tag_redirect(tag: Tag) -> Redirect {
@@ -843,18 +844,15 @@ pub fn hbs_create_form(start: GenTimer, conn: DbConn, admin: Option<Administrato
 //     research using array_to_tsvector() in the future
 // https://www.postgresql.org/docs/current/static/functions-textsearch.html
 
-#[get("/search")]
-pub fn hbs_search_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
-    // unimplemented!()
+// // NOT IMPLEMENTED YET
+// #[get("/search")]
+// pub fn hbs_search_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+//     //show an advanced search form
     
-    //show an advanced search form
-     
-    
-    // don't forget to put the start Instant in the hbs_template() function
-    let output: Template = hbs_template(TemplateBody::General("Search page not implemented yet.  Please use the search form in the top right corner of the page.".to_string(), None), Some("Search".to_string()), String::from("/search"), admin, user, None, Some(start.0));
-    let express: Express = output.into();
-    express.compress(encoding)
-}
+//     let output: Template = hbs_template(TemplateBody::General("Search page not implemented yet.  Please use the search form in the top right corner of the page.".to_string(), None), Some("Search".to_string()), String::from("/search"), admin, user, None, Some(start.0));
+//     let express: Express = output.into();
+//     express.compress(encoding)
+// }
 
 #[get("/search?<search>")]
 pub fn hbs_search_redirect(start: GenTimer, pagination: Page<Pagination>, search: Search, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Redirect {

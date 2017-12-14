@@ -26,13 +26,8 @@ dark ora: #853c01
 
 
 Blogr
-	Display edit only for admins in the article template
-	Added pagination for author route
+	Cleanup source code and remove old comments
 
-
-	maybe just remove the /search route as the search form already works
-		and the complex search featuers don't really work yet anyways
-	
 	For pages that display flash messages, use different alert_* functions for different flash msg names
 		for error flash messages use alert_danger()
 		for warning flash messages use alert_warning()
@@ -40,12 +35,6 @@ Blogr
 		for all others use alert_info()
 			see the /manage route for an example
 	
-	
-	Add pagination to author page too
-		And view tag
-		NOT - And search?
-
-
 	Add content to the about me page.
 	
 	Figure out how to add version badge to github readme.md file
@@ -219,6 +208,14 @@ Rocket-auth-login:
 
 
 DONE
+	maybe just remove the /search route as the search form already works
+		and the complex search featuers don't really work yet anyways
+	
+	remove the test routes - compression and hit counters
+
+	Add pagination to author page too
+		And view tag
+		NOT - And search?
 
 	Add a 'Read More' or 'See Full Article' link when listing multiple articles
 
