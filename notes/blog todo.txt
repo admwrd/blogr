@@ -20,52 +20,17 @@ Rocket-auth-login
 	Check the OWASP guide and also check which characters are in the unicode categories
 		allowed by the sanitize functions, basically just make sure they're secure
 
-Blogr Theme
-	NO - Maybe add like triangle to the corner or something like: (use trans parent bgs ?)
-		____________________
-		|Blog__________    |
-                |___/          \___|
-		|   |          |   |
-		|   | content  |   |
-		|   |          |   |
-		|   |          |   |
-
-	Maybe for multiple article pages show a scrollbar (overflow: scroll) and customize the scrollbars 
-		only for chrome, do not add scrollbars for other browsers
-	Maybe add height: 100% to html, body 
-		then add height: 60% to mainWrapper 
-		then height: 100% to v-body and v-content
 
 
 Blogr
+	Add edit to article template
 
-
-
-	Add a noscript message by the preview button
-
-	On manage page make dimmed description icons dark red for articles with no description
-
-
-	For the edit/create page use the pagination html/css to switch between html/md/raw views
-		just use the active page css class with the current view
-
-	Maybe add link on the edit page to view the original post (in new tab/window)
+	Add a Items Per Page dropdown menu next to pagination links
 
 	Make a delete route that will do a confirm before deleting
 		or use javascript to confirm the action before continuing
 	
-	Change manage's links in the table to a different color when the col is highlighted
-		when the col is highlighted the links are not very readble
-
 	Article Template: Add edit link below the title and below the tags to the article template
-
-	Only allow delete from the manage page
-
-	Add manage page
-	
-	Add pagination to search page
-		Redirect from the route /search?q=... to /search/q
-			which will fix all problems with routes and querystrings
 		
 	Maybe hardcode the tag and search links/form to go to the non querystring pages
 		instead of relying on redirection, although should leave redirections there in case	
@@ -328,8 +293,29 @@ Rocket-auth-login:
 
 
 DONE
+
+
+
 	
+	No - preview has a link.  Maybe add link on the edit page to view the original post (in new tab/window)
+
+	Only allow delete from the manage page
+
+	Add manage page
 	
+	Add pagination to search page
+		Redirect from the route /search?q=... to /search/q
+			which will fix all problems with routes and querystrings
+
+		
+	Add a noscript message by the preview button
+
+	On manage page make dimmed description icons dark red for articles with no description
+
+
+	NO - using button - For the edit/create page use the pagination html/css to switch between html/md/raw views
+		just use the active page css class with the current view
+
 	
 	Add hidden input that tells the rust app whether javascript processed the body contents as
 	markdown already or if the js failed or was disabled and the contents need to be converted yet
@@ -636,6 +622,24 @@ DONE
 		not work correctly if the url is: 
 		localhost/view/category/blah
 	Finish implementing the Usertype module, make it an enum that holds whatever?
+
+
+
+Blogr Theme
+	NO - Maybe add like triangle to the corner or something like: (use trans parent bgs ?)
+		____________________
+		|Blog__________    |
+                |___/          \___|
+		|   |          |   |
+		|   | content  |   |
+		|   |          |   |
+		|   |          |   |
+
+	Maybe for multiple article pages show a scrollbar (overflow: scroll) and customize the scrollbars 
+		only for chrome, do not add scrollbars for other browsers
+	Maybe add height: 100% to html, body 
+		then add height: 60% to mainWrapper 
+		then height: 100% to v-body and v-content
 
 
 

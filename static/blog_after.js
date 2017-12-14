@@ -262,6 +262,35 @@ if (formins) {
     
 */
 
+// ipp-form
+// pagination-ipp
+
+
+var ippform = document.getElementById('ipp-form');
+var ipptotalitems = document.getElementById('ipp-total-items');
+var ippcurpage = document.getElementById('ipp-cur-page');
+var ippsel = document.getElementById('pagination-ipp');
+// var ipptotal, ippcur;
+var ipptotal;
+if (ippform && ippsel && ipptotalitems && ippcurpage) {
+    ipptotal = ipptotalitems.value;
+    // ippcur = ippcurpage.value();
+    ippsel.addEventListener('change', function () {
+        // Ensure the current page is within the new last page
+        if (ipptotal && ippcurpage) {
+            if ( (ipptotal * ippsel.value) > ipptotal ) {
+                if ( (ipptotal % ippsel.value) == 0 ) {
+                    ippcurpage.value = Math.floor(ipptotal/ippsel.value)+1;
+                } else {
+                    ippcurpage.value = Math.floor(ipptotal/ippsel.value);
+                }
+            }
+        }
+        // Submit the form to change the items per page setting (and possibly current page if needed - see above if statement)
+        ippform.submit();
+    });
+}
+
 
 
 

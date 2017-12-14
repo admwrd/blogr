@@ -278,7 +278,10 @@ Bootstrap:
         //     );
         
         // html.push_str(r#"<div class="v-collate row">"#);
-        html.push_str(r#"<nav><ul class="pagination">"#);
+        
+        // Before Tablizing Pagination
+        // html.push_str(r#"<nav><ul class="pagination">"#);
+        html.push_str(r#"<div class="row"><div class="v-pagnav-before col"></div><div class="v-pagnav-nav col"><nav><ul class="pagination">"#);
         
         // html.push_str(r#"<div class="v-collate-prevnext col-2">"#);
         if cur != 1 {
@@ -341,7 +344,36 @@ Bootstrap:
             html.push_str(r#"<li class="page-item disabled"><span class="page-link">Next</span></li>"#);
         }
         
-        html.push_str("</ul></nav>");
+        // html.push_str("</ul></nav>");
+        
+        
+        
+        html.push_str( &format!(r##"</ul></nav></div>
+<div class="v-pagnav-after col"> 
+<form action="{}{}" method="GET" id="ipp-form">
+<input type="hidden" id="ipp-total-items" value="{}">
+<input type="hidden" id="ipp-cur-page" name="page" value="{}"># Articles: 
+<select name="ipp" id="pagination-ipp" size="1">"##, &BLOG_URL[..BLOG_URL.len()-1], &self.route, total_items, self.cur_page));
+        if T::min_ipp() <= 5 && T::max_ipp() >= 5 { if self.settings.ipp() == 5 { html.push_str(r#"<option value="5" SELECTED>5</option>"#); } else { html.push_str(r#"<option value="5">5</option>"#); } }
+        if T::min_ipp() <= 6 && T::max_ipp() >= 6 { if self.settings.ipp() == 6 { html.push_str(r#"<option value="6" SELECTED>6</option>"#); } else { html.push_str(r#"<option value="6">6</option>"#); } }
+        if T::min_ipp() <= 8 && T::max_ipp() >= 8 { if self.settings.ipp() == 8 { html.push_str(r#"<option value="8" SELECTED>8</option>"#); } else { html.push_str(r#"<option value="8">8</option>"#); } }
+        if T::min_ipp() <= 10 && T::max_ipp() >= 10 { if self.settings.ipp() == 10 { html.push_str(r#"<option value="10" SELECTED>10</option>"#); } else { html.push_str(r#"<option value="10">10</option>"#); } }
+        if T::min_ipp() <= 15 && T::max_ipp() >= 15 { if self.settings.ipp() == 15 { html.push_str(r#"<option value="15" SELECTED>15</option>"#); } else { html.push_str(r#"<option value="15">15</option>"#); } }
+        if T::min_ipp() <= 20 && T::max_ipp() >= 20 { if self.settings.ipp() == 20 { html.push_str(r#"<option value="20" SELECTED>20</option>"#); } else { html.push_str(r#"<option value="20">20</option>"#); } }
+        if T::min_ipp() <= 25 && T::max_ipp() >= 25 { if self.settings.ipp() == 25 { html.push_str(r#"<option value="25" SELECTED>25</option>"#); } else { html.push_str(r#"<option value="25">25</option>"#); } }
+        if T::min_ipp() <= 30 && T::max_ipp() >= 30 { if self.settings.ipp() == 30 { html.push_str(r#"<option value="30" SELECTED>30</option>"#); } else { html.push_str(r#"<option value="30">30</option>"#); } }
+        if T::min_ipp() <= 35 && T::max_ipp() >= 35 { if self.settings.ipp() == 35 { html.push_str(r#"<option value="35" SELECTED>35</option>"#); } else { html.push_str(r#"<option value="35">35</option>"#); } }
+        if T::min_ipp() <= 40 && T::max_ipp() >= 40 { if self.settings.ipp() == 40 { html.push_str(r#"<option value="40" SELECTED>40</option>"#); } else { html.push_str(r#"<option value="40">40</option>"#); } }
+        if T::min_ipp() <= 50 && T::max_ipp() >= 50 { if self.settings.ipp() == 50 { html.push_str(r#"<option value="50" SELECTED>50</option>"#); } else { html.push_str(r#"<option value="50">50</option>"#); } }
+  // <option value="volvo">Volvo</option>
+  // <option value="saab">Saab</option>
+  // <option value="fiat">Fiat</option>
+  // <option value="audi">Audi</option>
+        html.push_str(r##"
+</select>
+</form>
+</div>
+</div>"##);
         
         // html.push_str("</div>");
         
@@ -379,6 +411,7 @@ pub trait Collate {
     }
     fn link<T: Collate>(page: &Page<T>, page_num: u32) -> String {
         let mut link = String::new();
+        link.push_str( &BLOG_URL[..BLOG_URL.len()-1] );
         link.push_str( &page.route );
         
         let mut has_qrystr = false;
