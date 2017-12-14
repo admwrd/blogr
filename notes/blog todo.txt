@@ -26,7 +26,8 @@ dark ora: #853c01
 
 
 Blogr
-	Fixed tag cloud links - prepended base_url
+	Display edit only for admins in the article template
+	Added pagination for author route
 
 
 	maybe just remove the /search route as the search form already works
@@ -39,7 +40,6 @@ Blogr
 		for all others use alert_info()
 			see the /manage route for an example
 	
-	Add a 'Read More' or 'See Full Article' link when listing multiple articles
 	
 	Add pagination to author page too
 		And view tag
@@ -220,6 +220,7 @@ Rocket-auth-login:
 
 DONE
 
+	Add a 'Read More' or 'See Full Article' link when listing multiple articles
 
 	Does blogr search page show a form with the date range?
 		I can't even remember, prolly not.

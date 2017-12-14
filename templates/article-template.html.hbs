@@ -19,7 +19,9 @@
                                         </div>
                                     </div>
                                     <div class="col v-editlink">
+                                    {{#if info.is_admin}}
                                         <a href="{{info.base_url}}edit/{{body.aid}}">Edit <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                    {{/if}}
                                     </div>
                                 </div>
                                 <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->

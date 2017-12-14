@@ -1196,18 +1196,46 @@ pub fn rss_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie
 // }
 
 #[get("/author/<authorid>/<authorname>")]
-pub fn hbs_author_display(start: GenTimer, authorid: u32, authorname: Option<&RawStr>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
-    hbs_author(start, authorid, conn, admin, user, encoding, hits)
+pub fn hbs_author_display(start: GenTimer, authorid: u32, pagination: Page<Pagination>, authorname: Option<&RawStr>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+    hbs_author(start, authorid, pagination, conn, admin, user, encoding, hits)
 }
 
 #[get("/author/<authorid>")]
-pub fn hbs_author(start: GenTimer, authorid: u32, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+pub fn hbs_author(start: GenTimer, authorid: u32, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     // unimplemented!()
     let output: Template;
-    let results = conn.articles( &format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description), a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE userid = {}", DESC_LIMIT, authorid) );
     
-    if let Some(articles) = results {
-        output = hbs_template(TemplateBody::Articles(articles, None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+    // let results = conn.articles( &format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description), a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE userid = {}", DESC_LIMIT, authorid) );
+    
+    // if let Some(articles) = results {
+    //     output = hbs_template(TemplateBody::Articles(articles, None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+    // } else {
+    //     output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string(), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+    // }
+    
+    let total_query = format!("SELECT COUNT(*) AS count FROM articles WHERE author = {}", authorid);
+    if let Ok(rst) = conn.query(&total_query, &[]) {
+        if !rst.is_empty() && rst.len() == 1 {
+            let row = rst.get(0);
+            let count: i64 = row.get(0);
+            let total_items: u32 = count as u32;
+            let (ipp, cur, num_pages) = pagination.page_data(total_items);
+            let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.author = {}", DESC_LIMIT, authorid), Some("posted DESC"));
+            println!("Prepared paginated query:\n{}", sql);
+            if let Some(results) = conn.articles(&sql) {
+                if results.len() != 0 {
+                    let page_information = pagination.page_info(total_items);
+                    
+                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+                } else {
+                    output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string(), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+                }
+            } else {
+                    output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string(), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+            }
+        } else {
+            output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string(), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+        }
     } else {
         output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string(), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
     }
@@ -1477,7 +1505,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
         fmsg = None;
     }
     
-    let total_query = "SELECT COUNT(*) as count FROM articles";
+    let total_query = "SELECT COUNT(*) AS count FROM articles";
     let output: Template;
     if let Ok(rst) = conn.query(total_query, &[]) {
         if !rst.is_empty() && rst.len() == 1 {
