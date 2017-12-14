@@ -851,7 +851,7 @@ pub fn hbs_search_page(start: GenTimer, conn: DbConn, admin: Option<Administrato
      
     
     // don't forget to put the start Instant in the hbs_template() function
-    let output: Template = hbs_template(TemplateBody::General("Search page not implemented yet".to_string(), None), Some("Search".to_string()), String::from("/search"), admin, user, None, Some(start.0));
+    let output: Template = hbs_template(TemplateBody::General("Search page not implemented yet.  Please use the search form in the top right corner of the page.".to_string(), None), Some("Search".to_string()), String::from("/search"), admin, user, None, Some(start.0));
     let express: Express = output.into();
     express.compress(encoding)
 }

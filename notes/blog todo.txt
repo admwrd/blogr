@@ -21,39 +21,23 @@ Rocket-auth-login
 		allowed by the sanitize functions, basically just make sure they're secure
 
 
+orange:   #de6d11
+dark ora: #853c01
+
 
 Blogr
+	Fixed tag cloud links - prepended base_url
+
+
+	maybe just remove the /search route as the search form already works
+		and the complex search featuers don't really work yet anyways
+	
 	For pages that display flash messages, use different alert_* functions for different flash msg names
 		for error flash messages use alert_danger()
 		for warning flash messages use alert_warning()
 		for success flash messages use alert_success()
 		for all others use alert_info()
 			see the /manage route for an example
-
-	Items Per Page Selector Errors:
-		page 2 @ 6ipp	=> 8ipp 	page=2&ipp=8
-
-	Add edit to article template
-
-	Add a Items Per Page dropdown menu next to pagination links
-
-	Make a delete route that will do a confirm before deleting
-		or use javascript to confirm the action before continuing
-	
-	Article Template: Add edit link below the title and below the tags to the article template
-		
-	Maybe hardcode the tag and search links/form to go to the non querystring pages
-		instead of relying on redirection, although should leave redirections there in case	
-	
-	NO - not needed. Add javascript to sort the tables
-
-	Research how to use pieces of other templates in handlebars templates
-		so that each template only needs the minimum amount of code
-		-Will need to make separate partials for article vs articles due to the {{../}} part
-
-	Add a route that looks up an article by the date [and category] and name
-		convert spaces to - and remove non-word characters
-		route: /post/2017/12/02/
 	
 	Add a 'Read More' or 'See Full Article' link when listing multiple articles
 	
@@ -61,86 +45,18 @@ Blogr
 		And view tag
 		NOT - And search?
 
-	Search pagination - not sure how to proceed
-	    -Need to be able to pass the search query to link
-	    -Reverting back for now
-
-		Create a new template for paginated search
-			Create a new Pagination type named SearchPages
-			override the link method to 
-			Do not take Page<Pagination> but instead take Page<SearchPages>
-			
-			NOT - For the paginated search page add the search query to the search button using javascript
-
-	 Add a database function that will take an article's description and body
-		if the description exists return that otherwise return a truncated body
-			if pg doesn't support nullable params then lookup the row by aid ( description(aid) )
-
-	Test collate module's sql
-
-	Either change the create template to take an optional Page parameter
-	or make a new template for Editing an article
-		need to make sure form url points to edit route with the specified aid
-		prolly just create new template
-	
 
 	Add content to the about me page.
 	
 	Figure out how to add version badge to github readme.md file
 	
-
 	Convert blogr to ssl
 
 	Get VPS
 
 	Force SSL unless in Dev mode
 
-	Add pagination and limit number of articles shown in the following pages:
-		front page
-		search
-		individual tag page (lists just one tag)
-	Pagination will work by creating a type that stores:
-		current page (offset = rpp*page)
-		results per page  (limit = rpp)
-			could set a limit in the type name
-				could do something like Pagination50 for a pagination type that 
-				maxes out at 50 results per page
-		
-		must retrieve num of rows in the route
-		then call a method to generate the links
-			Pagination.nav_links(route="/route", num_results=213, relative_pages=3)
-			relative_pages is how many pages before and after the current page to show
-		
-		First page:
-		SELECT * FROM articles ORDER BY posted DESC LIMIT 10 OFFSET 0
-		Any other page:
-		SELECT * FROM articles ORDER BY posted DESC LIMIT 10 OFFSET rpp*page
-		
-		make a new method for the Pagination type so routes that have no query string
-			and are the first page can generate links with the new instance of Pagination
-
-	Add a TL;DR: section of articles
-		Should be optional (nullable in the database)
-		Should also be included in the full-text column
-	
-	Add article "types"
-		The Markdown type will interpret the article contents as markdown and format it into HTML
-			Maybe index all h1 (# or Text\n====) and h2 (## or Text\n-----)
-				For each header add a <a name="lowercase_underscored_header">Header</a>
-				Maybe add a vertical menu using the scrollspy bootstrap plugin thingy
-		The HTML type will leave it as is, unprocessed
-	
-	Limit tags to only show top 50 tags, or maybe make a separate page that shows all of them
-
 	Eventually change the hbs_templates to have the flash message in the general parameters/info not in the TemplateBody
-
-	Does blogr search page show a form with the date range?
-		I can't even remember, prolly not.
-
-	Allow admin to delete posts and edit them
-
-	Maybe add a preview as a popup modal [for creating posts?]
-		display single article template in the modal template? (just the <article> and <script> tags)
 
 	When creating a blog post fails for reasons other than unauthorized
 		(or maybe even if its unauthorized)
@@ -148,7 +64,7 @@ Blogr
 		change the insert form template to include if statements to show msg
 			{{#if info.msg}}{{{info.msg}}}{{/if}}
 
-	Throttle brute force login attempts
+
 
 	sanitize:
 		login rety (admin and user): username and failmsg
@@ -305,6 +221,62 @@ Rocket-auth-login:
 DONE
 
 
+	Does blogr search page show a form with the date range?
+		I can't even remember, prolly not.
+
+	Allow admin to delete posts and edit them
+
+	Throttle brute force login attempts
+
+	No - Maybe add a preview as a popup modal [for creating posts?]
+		display single article template in the modal template? (just the <article> and <script> tags)
+
+	Search pagination - not sure how to proceed
+	    -Need to be able to pass the search query to link
+	    -Reverting back for now
+
+		Create a new template for paginated search
+			Create a new Pagination type named SearchPages
+			override the link method to 
+			Do not take Page<Pagination> but instead take Page<SearchPages>
+			
+			NOT - For the paginated search page add the search query to the search button using javascript
+
+	 Add a database function that will take an article's description and body
+		if the description exists return that otherwise return a truncated body
+			if pg doesn't support nullable params then lookup the row by aid ( description(aid) )
+
+	Test collate module's sql
+
+	Either change the create template to take an optional Page parameter
+	or make a new template for Editing an article
+		need to make sure form url points to edit route with the specified aid
+		prolly just create new template
+	
+	Items Per Page Selector Errors:
+		page 2 @ 6ipp	=> 8ipp 	page=2&ipp=8
+
+	Add edit to article template
+
+	Add a Items Per Page dropdown menu next to pagination links
+
+	Make a delete route that will do a confirm before deleting
+		or use javascript to confirm the action before continuing
+	
+	Article Template: Add edit link below the title and below the tags to the article template
+		
+	Maybe hardcode the tag and search links/form to go to the non querystring pages
+		instead of relying on redirection, although should leave redirections there in case	
+	
+	NO - not needed. Add javascript to sort the tables
+
+	Research how to use pieces of other templates in handlebars templates
+		so that each template only needs the minimum amount of code
+		-Will need to make separate partials for article vs articles due to the {{../}} part
+
+	Add a route that looks up an article by the date [and category] and name
+		convert spaces to - and remove non-word characters
+		route: /post/2017/12/02/
 
 	
 	No - preview has a link.  Maybe add link on the edit page to view the original post (in new tab/window)
@@ -409,6 +381,45 @@ DONE
 		Update the database to link each article to an author
 		Update the RSS page to reflect the author for each article, use a join query to get the author
 	
+
+
+	Add pagination and limit number of articles shown in the following pages:
+		front page
+		search
+		individual tag page (lists just one tag)
+	Pagination will work by creating a type that stores:
+		current page (offset = rpp*page)
+		results per page  (limit = rpp)
+			could set a limit in the type name
+				could do something like Pagination50 for a pagination type that 
+				maxes out at 50 results per page
+		
+		must retrieve num of rows in the route
+		then call a method to generate the links
+			Pagination.nav_links(route="/route", num_results=213, relative_pages=3)
+			relative_pages is how many pages before and after the current page to show
+		
+		First page:
+		SELECT * FROM articles ORDER BY posted DESC LIMIT 10 OFFSET 0
+		Any other page:
+		SELECT * FROM articles ORDER BY posted DESC LIMIT 10 OFFSET rpp*page
+		
+		make a new method for the Pagination type so routes that have no query string
+			and are the first page can generate links with the new instance of Pagination
+
+	Nah - Add a TL;DR: section of articles
+		Should be optional (nullable in the database)
+		Should also be included in the full-text column
+	
+	Add article "types"
+		The Markdown type will interpret the article contents as markdown and format it into HTML
+			Maybe index all h1 (# or Text\n====) and h2 (## or Text\n-----)
+				For each header add a <a name="lowercase_underscored_header">Header</a>
+				Maybe add a vertical menu using the scrollspy bootstrap plugin thingy
+		The HTML type will leave it as is, unprocessed
+	
+	Not Needed [Pagination] - Limit tags to only show top 50 tags, or maybe make a separate page that shows all of them
+
 	Add a email/contact links at the bottom of the page in the footer
 		Maybe change add an email link in the name of the copyright
 		(c) 2017 <a href="">Andrew Prindle</a>

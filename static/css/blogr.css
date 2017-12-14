@@ -613,6 +613,28 @@ OLD - OUTDATED PAGINATION STYLES
     /*display: inline;*/
     /*margin: 0px 0px 0px 2em;*/
 }
+
+
+.v-full-article {
+    /*padding: 1em 0em .5em;*/
+    padding: .1em 0em 0px;
+}
+.v-full-article a {
+    background-color: rgba(200,200,200,.05);
+    display: inline-block;
+    padding: 10px;
+    border-radius: 0.3rem;
+    border: 1px solid #853c01;
+}
+.v-full-article a:hover {
+    /*border-color: #de6d11;
+    border-color: #853c01;
+    border-color: rgb(222, 109, 17);
+    border-color: rgb(133, 60, 1);*/
+    background-color: rgba(222, 109, 17, .2);
+}
+
+
 #v-footer {
     /*border: 1px solid #aaa;*/
     border: 1px solid rgba(222, 109, 17, 1);
@@ -978,7 +1000,8 @@ h6 ~ h6 {
         margin: 0px;
     }
     .v-article-tags {
-        text-align: right;
+        /*text-align: right;*/
+        text-align: center;
         /*display: inline;*/
         /*margin: 0px 0px 0px 2em;*/
     }

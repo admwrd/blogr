@@ -1,22 +1,22 @@
 {
   "map": {
-    "/hit2": 25,
-    "/hit": 50,
-    "search": 55,
-    "edit": 2,
-    "/create": 2,
-    "/hit3": 79,
-    "/article/13/Woo%20All_tags%20Page%20Added%202": 15,
-    "/all_tags": 1,
-    "/admin": 30,
-    "/article/13/Woo%20All_tags%20Page%20Added%205": 1,
-    "/article/1/An%20Awesome%20Article": 1,
-    "/": 6,
+    "!error404//this-is-an-error": 2,
+    "/": 14,
     "/this-is-an-error": 1,
     "/rss.xml": 1,
-    "!error404//this-is-an-error": 2,
     "tag": 9,
+    "edit": 2,
+    "/create": 2,
+    "/hit": 50,
+    "/all_tags": 2,
+    "/hit3": 79,
+    "/admin": 30,
     "author": 3,
-    "": 37
+    "": 38,
+    "/article/13/Woo%20All_tags%20Page%20Added%205": 1,
+    "search": 55,
+    "/article/13/Woo%20All_tags%20Page%20Added%202": 15,
+    "/hit2": 25,
+    "/article/1/An%20Awesome%20Article": 1
   }
 }

@@ -146,7 +146,6 @@ use rocket::State;
 // use multipart::server::Multipart;
 
 
-
 // BLOG_URL MUST HAVE A TRAILING FORWARD SLASH /
 pub const BLOG_URL: &'static str = "http://localhost:8000/";
 pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
