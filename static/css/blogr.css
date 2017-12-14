@@ -307,11 +307,13 @@ hr.v-am-item-tag-divider:after {
 /* Article Has No Description */
 .v-am-item-description {
     text-align: center;
-    color: #777;
+    /*color: #777;*/
+    color: #800;
 }
 /* Article Has A Description */
 .v-am-item-description.v-has-desc {
-    color: #ddd;
+    /*color: #ddd;*/
+    color: #5bff5b;
 }
 .v-am-item-top a {
     color: #e06500;
@@ -324,6 +326,10 @@ hr.v-am-item-tag-divider:after {
     color: #dc3545;
 }
 
+.v-am-item-detele i:hover {
+    /*color: #ff394e;*/
+    color: #ff6d7b;
+}
 
 
 
