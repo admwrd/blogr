@@ -324,6 +324,8 @@ fn main() {
             pages::hbs_create_form,
             pages::hbs_edit,
             pages::hbs_edit_process,
+            pages::hbs_delete_confirm,
+            pages::hbs_process_delete,
             // pages::hbs_manage,
             
             // pages::hbs_logout,

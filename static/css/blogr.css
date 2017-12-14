@@ -179,8 +179,20 @@ a:active {
 
 .v-pagnav-after {
     text-align: center;
+    align-self: center;
 }
 
+#pagination-ipp {
+    background-color: #444;
+    color: #fff;
+    border: 1px solid #de6d11;
+    border-radius: .4em;
+    padding: 4px;
+}
+
+#pagination-ipp option {
+    background-color: #333;
+}
 
 hr {
     border-top: 1px solid #777;
@@ -363,6 +375,28 @@ hr.v-am-item-tag-divider:after {
 .v-am-item-detele i:hover {
     /*color: #ff394e;*/
     color: #ff6d7b;
+}
+
+#v-am-add {
+    /*color: #28a745;*/
+    /*color: #27ff27;*/
+    color: #5bff5b;
+}
+
+.v-am-sortbar {
+    padding: 0.5em 0em 0.5em 0em;
+}
+
+.v-del-confirm {
+    
+}
+
+.v-del-cancel {
+    
+}
+
+.v-spacer-del {
+    width: 100px;
 }
 
 

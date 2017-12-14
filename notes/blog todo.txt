@@ -23,6 +23,13 @@ Rocket-auth-login
 
 
 Blogr
+	For pages that display flash messages, use different alert_* functions for different flash msg names
+		for error flash messages use alert_danger()
+		for warning flash messages use alert_warning()
+		for success flash messages use alert_success()
+		for all others use alert_info()
+			see the /manage route for an example
+
 	Items Per Page Selector Errors:
 		page 2 @ 6ipp	=> 8ipp 	page=2&ipp=8
 
@@ -38,7 +45,7 @@ Blogr
 	Maybe hardcode the tag and search links/form to go to the non querystring pages
 		instead of relying on redirection, although should leave redirections there in case	
 	
-	Add javascript to sort the tables
+	NO - not needed. Add javascript to sort the tables
 
 	Research how to use pieces of other templates in handlebars templates
 		so that each template only needs the minimum amount of code

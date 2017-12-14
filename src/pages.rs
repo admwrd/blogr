@@ -1279,7 +1279,7 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
     //         return express.compress(encoding);
     //     }
     // }
-    output = hbs_template(TemplateBody::General("This page is not implemented yet.  Soon it will tell a little about me.".to_string(), None), Some("About Me".to_string()), String::from("/about"), Some(admin), user, None, Some(start.0));
+    output = hbs_template(TemplateBody::General("The reuqested article could not be found.".to_string(), None), Some("Edit".to_string()), String::from("/edit"), Some(admin), user, None, Some(start.0));
     
     let express: Express = output.into();
     express.compress(encoding)
@@ -1322,7 +1322,15 @@ pub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagin
     
     let fmsg: Option<String>;
     if let Some(flashmsg) = flash {
-        fmsg = Some(alert_info( flashmsg.msg() ));
+        if flashmsg.name() == "error" {
+            fmsg = Some(alert_danger( flashmsg.msg() ));
+        } else if flashmsg.name() == "warning" {
+            fmsg = Some(alert_warning( flashmsg.msg() ));
+        } else if flashmsg.name() == "success" {
+            fmsg = Some(alert_success( flashmsg.msg() ));
+        } else {
+            fmsg = Some(alert_info( flashmsg.msg() ));
+        }
     }  else {
         fmsg = None;
     }
@@ -1365,7 +1373,7 @@ pub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagin
                 if results.len() != 0 {
                     // let page_info = pagination.page_info(total_items);
                     
-                    output = hbs_template(TemplateBody::Manage(results, pagination, total_items, sort_options, None), Some(format!("Manage Articles - Page {} of {}", cur, num_pages)), String::from("/manage"), Some(admin), user, None, Some(start.0));
+                    output = hbs_template(TemplateBody::Manage(results, pagination, total_items, sort_options, fmsg), Some(format!("Manage Articles - Page {} of {}", cur, num_pages)), String::from("/manage"), Some(admin), user, None, Some(start.0));
                     
                     let express: Express = output.into();
                     return express.compress(encoding);
@@ -1377,7 +1385,7 @@ pub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagin
         }
     }
     
-    output = hbs_template(TemplateBody::General(alert_danger("No articles found."), None), Some("Manage Articles".to_string()), String::from("/manage"), Some(admin), user, None, Some(start.0));
+    output = hbs_template(TemplateBody::General(alert_danger("No articles found."), fmsg), Some("Manage Articles".to_string()), String::from("/manage"), Some(admin), user, None, Some(start.0));
     
     let express: Express = output.into();
     express.compress(encoding)
@@ -1411,6 +1419,51 @@ pub fn hit_count3(hits: Hits) -> String {
     let count = hits.1;
     let views = hits.2;
     format!("The page `{}` has {} page views.\nTotal views: {}", page, count, views)
+}
+
+#[get("/delete/<aid>")]
+pub fn hbs_delete_confirm(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    
+    let confirm = alert_warning(&format!(r#"
+        You are attempting to permanently delete an article, are you sure you want to continue?  
+        This action cannot be undone.
+        <form action="{}process_delete/{}" method="post" id="delete-form">
+            <input type="hidden" value="{}" id="manage-page">
+            <div class="v-centered-text">
+                <button type="submit" id="delete-button" class="v-del-confirm btn btn-danger">Delete</button>
+                <span class="v-spacer-del"></span>
+                <button type="button" id="delete-cancel" class="v-del-cancel btn btn-warning">Cancel</button>
+            </div>
+        </form>
+        "#, BLOG_URL, aid, MANAGE_URL));
+    
+    let output = hbs_template(TemplateBody::General(confirm, None), Some("Delete Article".to_string()), String::from("/delete"), Some(admin), user, None, Some(start.0));
+    
+    let express: Express = output.into();
+    express.compress( encoding )
+}
+
+#[post("/process_delete/<aid>")]
+pub fn hbs_process_delete(aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>) -> Result<Flash<Redirect>, Redirect> {
+    let qrystr = format!("DELETE FROM articles WHERE aid = {}", aid);
+    
+    println!("Delete query:\n{}\n", &qrystr);
+    
+    if let Ok(num) = conn.execute(&qrystr, &[]) {
+        if num == 1 {
+            println!("Delete succeeded");
+            Ok( Flash::success(Redirect::to("/manage"), &format!("Article {} successfully deleted.", aid)) )
+        } else if num == 0 {
+            println!("Delete failed - no articles deleted.");
+            Ok( Flash::error(Redirect::to("/manage"), &format!("Article {} was not deleted.", aid)) )
+        } else {
+            println!("Delete failed - multiple articles deleted!");
+            Ok( Flash::error(Redirect::to("/manage"), &format!("A mistake occurred. Multiple articles ({} articles) appear to have been deleted.", num)) )
+        }
+    } else {
+        println!("Delete failed.");
+        Err( Redirect::to("/manage") )
+    }
 }
 
 

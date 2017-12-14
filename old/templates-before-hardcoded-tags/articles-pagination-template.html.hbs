@@ -5,7 +5,14 @@
                     {{#if msg}}
                     {{{msg}}}
                     {{/if}}
+                    
+                    <div class="v-content">
+                        <div class="v-pageinfo">{{{current}}}</div>
+                        {{{links}}}
+                    </div>
+                    
                     {{#each body}}
+                    
                     <article class="v-article">
                         <header class="v-article-header">
                             <h2 class="v-article-title"><a href="{{../info.base_url}}article/{{this.aid}}/{{this.title}}">{{this.title}}</a></h2>
@@ -23,11 +30,17 @@
                         </p>
                         <div class="v-article-tags">
                             {{#each this.tags}}
-                            <a href="{{../../info.base_url}}tag/{{this}}">{{this}}</a>
+                            <a href="{{../../info.base_url}}tag?tag={{this}}">{{this}}</a>
                             {{/each}}
                         </div>
                     </article>
                     {{/each}}
+                    
+                    <div class="v-content">
+                        <!-- <div class="v-pageinfo">{{{current}}}</div> -->
+                        {{{links}}}
+                    </div>
+                    
                     
 <!-- ---------- -->
 

@@ -312,8 +312,27 @@ if (ippform && ippsel && ipptotalitems && ippcurpage) {
 
 
 
+// var delbtn = document.getElementById('delete-button');
+var delform = document.getElementById('delete-form');
+if (delform) {
+    delform.addEventListener('submit', function (event) {
+        if(!confirm_action('Delete article?')) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    });
+}
 
-
+var delcancel = document.getElementById('delete-cancel');
+var managepage = document.getElementById('manage-page');
+if (delcancel && managepage) {
+    delcancel.addEventListener('click', function () {
+        window.location = managepage.value;
+    });
+    delcancel.addEventListener('keydown', function () {
+        window.location = managepage.value;
+    });
+}
 
 
 
