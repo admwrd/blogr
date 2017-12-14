@@ -41,7 +41,13 @@ extern crate r2d2_postgres;
 // extern crate rocket_file_cache;
 // extern crate concurrent_hashmap;
 // extern crate chashmap;
-extern crate markdown;
+// Markdown crates:
+// - comrak has more features - allows inline html and autolink and tasklists and strikethrough and tagfilter
+//                              and footnotes and superscript and tables and hardbreaks and more
+// - pulldown-cmark is faster - allows inline html - can allow tables and footnotes
+// - markdown - DO NOT USE THE MARKDOWN CRATE - it is extremely slow and doesn't support many features
+extern crate comrak;
+// extern crate pulldown_cmark;
 
 extern crate libflate;
 extern crate brotli;

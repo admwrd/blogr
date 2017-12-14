@@ -1,0 +1,29 @@
+
+
+ComrakOptions::default();
+
+options.hardbreaks = true; // \n => <br>\n
+options.width = 120usize;
+options.github_pre_lang = false;
+options.ext_strikethrough = true; // hello ~world~ person.
+options.ext_tagfilter = true; // filters out certain html tags
+options.ext_table = true; // | a | b |\n|---|---|\n| c | d |
+options.ext_autolink = true;
+options.ext_tasklist = true; // * [x] Done\n* [ ] Not Done
+options.ext_superscript = true; // e = mc^2^
+options.ext_header_ids = None / Some("some-id-prefix-".to_string())
+option.ext_footnotes = true; // Hi[^x]\n\n[^x]: A footnote here\n
+
+let options = ComrakOptions {
+	ext_strikethrough: true,
+	..ComrakOptions::default()
+}
+
+
+
+
+
+
+
+
+

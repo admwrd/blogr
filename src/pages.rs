@@ -51,6 +51,22 @@ use accept::*;
 // use ::templates::*;
 
 
+use comrak::{markdown_to_html, ComrakOptions};
+
+const comrak_options: ComrakOptions = ComrakOptions {
+    hardbreaks: true,            // \n => <br>\n
+    width: 120usize,             
+    github_pre_lang: false,      
+    ext_strikethrough: true,     // hello ~world~ person.
+    ext_tagfilter: true,         // filters out certain html tags
+    ext_table: true,             // | a | b |\n|---|---|\n| c | d |
+    ext_autolink: true,          
+    ext_tasklist: true,          // * [x] Done\n* [ ] Not Done
+    ext_superscript: true,       // e = mc^2^
+    ext_header_ids: None,        // None / Some("some-id-prefix-".to_string())
+    ext_footnotes: true,         // Hi[^x]\n\n[^x]: A footnote here\n
+};
+
 
 // TODO: Collate: make a route that takes a number in the route (not query string)
 //                use this number to determine how many pages to list
@@ -1210,15 +1226,45 @@ pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCooki
     express.compress(encoding)
 }
 
+
 #[get("/edit/<aid>")]
 pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+
+    // let options = ComrakOptions {
+    //     hardbreaks: true,            // \n => <br>\n
+    //     width: 120usize,             
+    //     github_pre_lang: false,      
+    //     ext_strikethrough: true,     // hello ~world~ person.
+    //     ext_tagfilter: true,         // filters out certain html tags
+    //     ext_table: true,             // | a | b |\n|---|---|\n| c | d |
+    //     ext_autolink: true,          
+    //     ext_tasklist: true,          // * [x] Done\n* [ ] Not Done
+    //     ext_superscript: true,       // e = mc^2^
+    //     ext_header_ids: Some("section-".to_string()),        // None / Some("some-id-prefix-".to_string())
+    //     ext_footnotes: true,         // Hi[^x]\n\n[^x]: A footnote here\n
+    // };
+    
+    // let html: String = markdown_to_html(text, &ComrakOptions::default());
+    // let html: String = markdown_to_html(text, &comrak_options);
+    // html
+    
+    let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. comrak_options };
     
     let output: Template;
     let id = ArticleId::new(aid);
-    if let Some(article) = id.retrieve_markdown(conn) {
+    if let Some(mut article) = id.retrieve_markdown(conn) {
         // println!("Retrieved article info: {}", article.info());
         //
         let title = article.title.clone();
+        
+        // If the body is empty that means the javascript did not process the Markdown into HTML
+        // so convert the Markdown into HTML using Rust and the Comrak crate 
+        //      The Comrak crate is slower than the pulldown-cmark but more options
+        if &article.body == "" && &article.markdown != "" {
+            let html: String = markdown_to_html(&article.markdown, &cr_options);
+            article.body = html;
+        }
+        
         output = hbs_template(TemplateBody::Edit(EDIT_FORM_URL.to_string(), article, None), Some(format!("Editing '{}'", title)), String::from("/edit"), Some(admin), user, None, Some(start.0));
         let express: Express = output.into();
         return express.compress(encoding);
