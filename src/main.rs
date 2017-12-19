@@ -19,6 +19,7 @@
 #![feature(custom_derive)]
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
+#![plugin(dotenv_macros)]
 
 // extern crate multipart;
 extern crate rocket;
@@ -147,7 +148,8 @@ use rocket::State;
 
 
 // BLOG_URL MUST HAVE A TRAILING FORWARD SLASH /
-pub const BLOG_URL: &'static str = "http://localhost:8000/";
+// pub const BLOG_URL: &'static str = "http://localhost:8000/";
+pub const BLOG_URL: &'static str = dotenv!("BLOG_URL");
 pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
 pub const ADMIN_LOGIN_URL: &'static str = "http://localhost:8000/admin";
 pub const TEST_LOGIN_URL: &'static str = "http://localhost:8000/login";
@@ -271,6 +273,10 @@ fn main() {
     //     pg_conn;
     //     // (*pg_conn).connect();
     // }
+    
+    // dotenv().ok();
+    // let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    
     
     // let hitcount: Counter = Counter::new();
     // let views: TotalHits = TotalHits::new();

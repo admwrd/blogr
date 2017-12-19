@@ -11,6 +11,7 @@ chashmap = "2.2.0"
 comrak = "0.2.5"
 # concurrent_hashmap = "0.2.2"
 dotenv = "0.10.1"
+dotenv_macros = "0.10.0"
 # diesel = { version = "0.16.0", features = ["postgres"] }
 # diesel_codegen = { version = "0.16.0", features = ["postgres"] }
 # env_logger = "0.4.3"
