@@ -26,6 +26,18 @@ dark ora: #853c01
 
 
 Blogr
+	Make a database cache that is updated every 4 hours or on demand by a special route that caches:
+		all normal unfiltered select queries
+			also query sort by title as well as date, both asc and desc
+		queries for each tag in the tag cloud, or the top 200 tags
+		tag cloud
+		queries for each author
+		do not query authorization queries
+		
+	
+
+	Copy edit page into create page but remove default value attributes
+
 	Cleanup source code and remove old comments
 
 	For pages that display flash messages, use different alert_* functions for different flash msg names
