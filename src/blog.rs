@@ -142,6 +142,7 @@ pub struct ArticleForm {
     // pub userid: u32,
     pub title: String,
     pub body: String,
+    pub markdown: String,
     pub tags: String,
     pub description: String,
     // pub author_id: u32,
@@ -519,7 +520,18 @@ impl ArticleSource {
             // author_name: self.author_name.clone(),
         }
     }
-    
+    pub fn to_article(self) -> Article {
+        Article {
+            aid: self.aid,
+            title: self.title,
+            posted: self.posted,
+            userid: self.userid,
+            username: self.username,
+            body: self.body,
+            tags: self.tags,
+            description: self.description,
+        }
+    }
     pub fn save(&self, conn: DbConn) -> Result<String, String> {
         let vtags: Vec<String> = self.tags.clone();
         let tagstr = format!( 
@@ -772,29 +784,33 @@ impl Article {
 }
 
 impl ArticleForm {
-    pub fn new(title: String, body: String, tags: String, description: String) -> ArticleForm {
+    pub fn new(title: String, body: String, tags: String, description: String, markdown: String) -> ArticleForm {
         ArticleForm {
             title,
             body,
+            markdown,
             tags,
             description,
         }
     }
-    pub fn to_article(&self, userid: u32, username: &str) -> Article {
+    pub fn to_source(&self, userid: u32, username: &str) -> ArticleSource {
         // get next aid
         let next_aid = 0;
-        Article {
+        ArticleSource {
             aid: next_aid,
             title: sanitize_title(self.title.clone()),
             posted: Local::now().naive_local(), // This fn is only used when saving new articles
-            body: sanitize_body(self.body.clone()),
+            // body: sanitize_body(self.body.clone()),
+            body: self.body.clone(),
+            markdown: self.markdown.clone(),
             tags: split_tags(sanitize_tags(self.tags.clone())),
             description: sanitize_body(self.description.clone()),
             userid,
             username: titlecase( &sanitization::sanitize(username) ),
         }
     }
-    pub fn save(&self, conn: &DbConn, userid: u32, username: &str) -> Result<Article, String> {
+    // pub fn save(&self, conn: &DbConn, userid: u32, username: &str) -> Result<ArticleSource, String> {
+    pub fn save(self, conn: &DbConn, userid: u32, username: &str) -> Result<ArticleSource, String> {
         let now = Local::now().naive_local();
         
         // take blah, blah2, blah3 and convert into {'blah', 'blah2', 'blah3'}
@@ -810,8 +826,8 @@ impl ArticleForm {
             
         //  can return both id and posted date
         // let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid, posted",
-        let qrystr = format!("INSERT INTO articles (title, posted, body, tag, description) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}') RETURNING aid",
-            title=self.title, posted=now, body=self.body, tags=tagstr, desc=self.description);
+        let qrystr = format!("INSERT INTO articles (title, posted, body, tag, description, author, markdown) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}', {author}, '{md}') RETURNING aid",
+            title=&self.title, posted=&now, body=&self.body, tags=tagstr, desc=&self.description, author=userid, md=&self.markdown);
         println!("Insert query: {}", qrystr);
         let result = conn.query(&qrystr, &[]);
         match result {
@@ -819,13 +835,14 @@ impl ArticleForm {
             Ok(qry)  => {
                 if !qry.is_empty() && qry.len() == 1 {
                     let row = qry.get(0);
-                    Ok( Article {
+                    Ok( ArticleSource {
                         aid: row.get(0),
-                        title: self.title.clone(),
+                        title: self.title,
                         posted: now,
-                        body: self.body.clone(),
-                        tags: Article::split_tags(self.tags.clone()),
-                        description: self.description.clone(),
+                        body: self.body,
+                        markdown: self.markdown,
+                        tags: Article::split_tags(self.tags),
+                        description: self.description,
                         userid,
                         username: titlecase( &sanitization::sanitize(username) ), 
                     })
@@ -971,13 +988,15 @@ impl<'f> FromForm<'f> for ArticleForm {
         let mut body: String = String::new();
         let mut tags: String = String::new();
         let mut description: String = String::new();
+        let mut markdown: String = String::new();
         
         for (field, value) in form_items {
             match field.as_str() {
-                "title" => { title = sanitize_title(value.url_decode().expect("URL Decode failed")) },
-                "body" => { body = sanitize_body(value.url_decode().expect("URL Decode failed")) },
-                "tags" => { tags = sanitize_tags(value.url_decode().expect("URL Decode failed")) },
-                "description" => { description = sanitize_body(value.url_decode().expect("URL Decode failed")) },
+                "title" => { title = sanitize_title(value.url_decode().unwrap_or( String::new() )) },
+                "body" => { body = value.url_decode().unwrap_or( String::new() ) },
+                "markdown" => { markdown = value.url_decode().unwrap_or( String::new() ) },
+                "tags" => { tags = sanitize_tags(value.url_decode().unwrap_or( String::new() )) },
+                "description" => { description = sanitize_body(value.url_decode().unwrap_or( String::new() )) },
                 _ => {},
             }
         }
@@ -993,7 +1012,7 @@ impl<'f> FromForm<'f> for ArticleForm {
         if title == "" || body == "" {
             Err("Missing a required field.")
         } else {
-            Ok( ArticleForm::new(title, body, tags, description) )
+            Ok( ArticleForm::new(title, body, tags, description, markdown) )
         }
     }
 }

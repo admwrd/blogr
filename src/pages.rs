@@ -596,7 +596,7 @@ pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCo
 //             // }
 //         }
 //     }
-//     
+//    
 //     output = hbs_template(TemplateBody::General(alert_danger("Database query failed."), None), Some("Viewing All Articles".to_string()), String::from("/view_articles"), admin, user, None, Some(start.0));
 //     let express: Express = output.into();
 //     express.compress( encoding )
@@ -775,9 +775,20 @@ pub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbCon
     
     let username = if let Some(ref display) = admin.display { display.clone() } else { titlecase(&admin.username) };
     
-    let result = form.into_inner().save(&conn, admin.userid, &username);
+    let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. comrak_options };
+    
+    let mut article: ArticleForm = form.into_inner();
+    
+    if &article.body == "" && &article.markdown != "" {
+        let html: String = markdown_to_html(&article.markdown, &cr_options);
+        article.body = html;
+    }
+    
+    
+    let result = article.save(&conn, admin.userid, &username);
     match result {
-        Ok(article) => {
+        Ok(articlesrc) => {
+            let article = articlesrc.to_article();
             let title = article.title.clone();
             output = hbs_template(TemplateBody::Article(article, None), Some(title), String::from("/create"), Some(admin), user, None, Some(start.0));
         },
@@ -1316,8 +1327,16 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
 // pub fn hbs_edit_process(start: GenTimer, form: Form<Article>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {
 pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleSourceWrapper>, conn: DbConn, admin: AdministratorCookie, encoding: AcceptCompression) -> Flash<Redirect> {
     
+    let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. comrak_options };
+    
     let wrapper: ArticleSourceWrapper = form.into_inner();
-    let article: ArticleSource = wrapper.to_article();
+    let mut article: ArticleSource = wrapper.to_article();
+    
+    if &article.body == "" && &article.markdown != "" {
+        let html: String = markdown_to_html(&article.markdown, &cr_options);
+        article.body = html;
+    }
+    
     // println!("Processing Article info: {}", article.info());
     let result = article.save(conn);
     match result {

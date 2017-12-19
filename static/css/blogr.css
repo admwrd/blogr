@@ -718,7 +718,9 @@ OLD - OUTDATED PAGINATION STYLES
     text-align: center;
 }
 
-
+pre, code {
+    color: #fff;
+}
 
 .v-article-info {
     width: 100%;
@@ -727,6 +729,12 @@ OLD - OUTDATED PAGINATION STYLES
 .v-byline {
     text-align: center;
     width: 100%;
+}
+
+.v-create-note {
+    color: #bbb;
+    padding: .75em;
+    text-align: center;
 }
 
 .v-editlink {

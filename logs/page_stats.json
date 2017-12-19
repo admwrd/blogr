@@ -1,0 +1,22 @@
+{
+  "map": {
+    "/this-is-an-error": 1,
+    "/article/1/An%20Awesome%20Article": 1,
+    "/": 14,
+    "/all_tags": 2,
+    "!error404//this-is-an-error": 2,
+    "/create": 2,
+    "/hit2": 25,
+    "/admin": 30,
+    "/article/13/Woo%20All_tags%20Page%20Added%202": 15,
+    "/article/13/Woo%20All_tags%20Page%20Added%205": 1,
+    "tag": 9,
+    "author": 13,
+    "": 38,
+    "/hit": 50,
+    "search": 55,
+    "/hit3": 79,
+    "edit": 2,
+    "/rss.xml": 1
+  }
+}

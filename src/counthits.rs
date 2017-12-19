@@ -82,7 +82,7 @@ impl TotalHits {
         TotalHits { total: AtomicUsize::new(0) }
     }
     pub fn save(&self) {
-        let filename = cur_dir_file("total_views.json");
+        let filename = cur_dir_file("logs/total_views.json");
         
         let mut f = File::create(&filename)
             .expect("Could not create file for TotalHits.");
@@ -96,7 +96,7 @@ impl TotalHits {
         let bytes = f.write( ser.as_bytes() );
     }
     pub fn load() -> Self {
-        let filename = cur_dir_file("total_views.json");
+        let filename = cur_dir_file("logs/total_views.json");
         let mut f_rst = File::open(&filename);
         if let Ok(mut f) = f_rst {
             let mut buffer: String = String::with_capacity(100);
@@ -124,7 +124,7 @@ impl Counter {
         Counter { stats: Mutex::new( PageStats::new() ) }
     }
     pub fn save(buffer: &str) {
-        let filename = cur_dir_file("page_stats.json");
+        let filename = cur_dir_file("logs/page_stats.json");
         
         let mut f = File::create(&filename)
             .expect("Could not create file for Counter.");
@@ -132,7 +132,7 @@ impl Counter {
         let bytes = f.write( buffer.as_bytes() );
     }
     pub fn load() -> Counter {
-        let filename = cur_dir_file("page_stats.json");
+        let filename = cur_dir_file("logs/page_stats.json");
         let mut f_rst = File::open(&filename);
         if let Ok(mut f) = f_rst {
             let mut buffer: String = String::with_capacity(1000);
