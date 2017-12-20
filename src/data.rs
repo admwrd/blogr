@@ -52,9 +52,9 @@ use super::DATABASE_URL;
 /// Type alias for the r2d2 connection pool. Use this as a State<T> parameter
 /// in handlers that need a database connection.
 // pub type ConnectionPool = r2d2::Pool<r2d2_diesel::ConnectionManager<diesel::pg::PgConnection>>;
-
-
 type Pool = r2d2::Pool<PostgresConnectionManager>;
+
+
 
 /// Creates the database connection pool
 pub fn init_pg_pool() -> Pool {
@@ -147,11 +147,12 @@ impl Deref for DbConn {
 
 
 pub fn establish_connection() -> Connection {
-    dotenv().ok();
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    // dotenv().ok();
+    // let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     // PgConnection::establish(&database_url).expect("Error connecting to {}", database_url);
     // Connection::connect("postgres://postgres@localhost:5433", TlsMode::None).unwrap()
-    Connection::connect(database_url, postgres::TlsMode::None).unwrap()
+    // Connection::connect(database_url, postgres::TlsMode::None).unwrap()
+    Connection::connect(DATABASE_URL, postgres::TlsMode::None).unwrap()
 }
 
 // Commented out because the DotEnv crate isn't required anywhere else
