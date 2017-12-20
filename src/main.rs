@@ -150,17 +150,17 @@ use rocket::State;
 // BLOG_URL MUST HAVE A TRAILING FORWARD SLASH /
 // pub const BLOG_URL: &'static str = "http://localhost:8000/";
 pub const BLOG_URL: &'static str = dotenv!("BLOG_URL");
-pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
-pub const ADMIN_LOGIN_URL: &'static str = "http://localhost:8000/admin";
-pub const TEST_LOGIN_URL: &'static str = "http://localhost:8000/login";
-pub const CREATE_FORM_URL: &'static str = "http://localhost:8000/create";
-pub const EDIT_FORM_URL: &'static str = "http://localhost:8000/edit";
-pub const MANAGE_URL: &'static str = "http://localhost:8000/manage";
+pub const USER_LOGIN_URL: &'static str = dotenv!("USER_LOGIN_URL");
+pub const ADMIN_LOGIN_URL: &'static str = dotenv!("ADMIN_LOGIN_URL");
+pub const TEST_LOGIN_URL: &'static str = dotenv!("TEST_LOGIN_URL");
+pub const CREATE_FORM_URL: &'static str = dotenv!("CREATE_FORM_URL");
+pub const EDIT_FORM_URL: &'static str = dotenv!("EDIT_FORM_URL");
+pub const MANAGE_URL: &'static str = dotenv!("MANAGE_URL");
 pub const MAX_CREATE_TITLE: usize = 120;
 pub const MAX_CREATE_DESCRIPTION: usize = 400;
 pub const MAX_CREATE_TAGS: usize = 250;
 
-
+pub const DATABASE_URL: &'static str = dotenv!("DATABASE_URL");
 
 
 

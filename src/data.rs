@@ -32,6 +32,7 @@ use std::ops::Deref;
 use std;
 use std::env;
 use dotenv::dotenv;
+use super::DATABASE_URL;
 // use diesel;
 // use diesel::prelude::*;
 // use diesel::pg::PgConnection;
@@ -62,9 +63,9 @@ pub fn init_pg_pool() -> Pool {
     
     // let manager = PostgresConnectionManager::new("postgres://postgres:andrew@localhost/blog", TlsMode::None).unwrap();
     
-    dotenv().ok();
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    let manager = PostgresConnectionManager::new(database_url, TlsMode::None).expect("Could not connect to database using specified connection string.");
+    // dotenv().ok();
+    // let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let manager = PostgresConnectionManager::new(DATABASE_URL, TlsMode::None).expect("Could not connect to database using specified connection string.");
     
     r2d2::Pool::new(config, manager).expect("Could not create database pool")
 }
