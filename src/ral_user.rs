@@ -187,6 +187,10 @@ impl AuthorizeForm for UserForm {
         // The remainder is used so the total attempts can be tracked without having to reset it
         //   after each lockout has ended
         let attempt_qrystr = if attempts % MAX_ATTEMPTS == 0 {
+            // match attempts {
+            //     
+            // }
+            
             let inc_qrystr = format!("UPDATE users SET attempts = attempts+1, lockout = LOCALTIMESTAMP + interval '{lockout}' WHERE username = '{user}'", user=&self.username, lockout=LOCKOUT_DURATION);
             println!("Running query to lockout the user and increment attempts: {}", &inc_qrystr);
             conn.query(&inc_qrystr, &[]);

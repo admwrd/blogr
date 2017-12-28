@@ -13,7 +13,7 @@ Rocket-auth-login
 		let login: AdministratorForm = form.into_inner().form;
 
 	In examples, in the administrator module change the folowing
-		cookies.remove_private(Cookie::named(AdministratorCookie::cookie_id()));
+		cookies.remove_private(Cookie::named(AdministratorCooklie::cookie_id()));
 		to
 	        Administrator::delete_cookie();
 	
@@ -26,6 +26,17 @@ dark ora: #853c01
 
 
 Blogr
+	Add <meta> metadata keywords and descriptions
+
+	For user account lockout due to repeated unsuccessful attempts make levels or tiers of locking
+		after 6 attempts lock for 3 minutes
+		after 12 attempts lock for 6 minutes (total not 12 more attempts [that would be 6 more attempts after the first tier)
+		      
+		maybe make a lockout(minutes) function to help with this
+
+	Publish the xpress module 
+
+
 	Make a database cache that is updated every 4 hours or on demand by a special route that caches:
 		all normal unfiltered select queries
 			also query sort by title as well as date, both asc and desc
