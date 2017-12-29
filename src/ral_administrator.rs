@@ -8,14 +8,13 @@ use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 
 
-use super::PGCONN;
+use super::{PGCONN, MAX_ATTEMPTS, LOCKOUT_DURATION};
 // use password::*;
 use rocket_auth_login::authorization::*;
 use rocket_auth_login::sanitization::*;
 // use auth::sanitization::*;
 
-const MAX_ATTEMPTS: i16 = 8;
-const LOCKOUT_DURATION: u32 = 6; // 900 seconds = 15 minutes
+
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -160,8 +159,23 @@ impl AuthorizeForm for AdministratorForm {
                     
                     // return self.authenticate();
                 } else {
+                    // println!("User account is still locked!");
+                    // return Err( AuthFail::new(self.username.clone(), "User has been locked due to excessive login attempts.  Please try again later.".to_string()) );
+                    
                     println!("User account is still locked!");
-                    return Err( AuthFail::new(self.username.clone(), "User has been locked due to excessive login attempts.  Please try again later.".to_string()) );
+                    let lockout_diff = lockout.timestamp() - now.timestamp();
+                    // let lockout_period = if lockout_diff > 86400 {
+                    let lockout_period = if lockout_diff > 7200 { //3600
+                        format!("{} hours", lockout_diff/3600)
+                    // } else if lockout_diff > 3600 {
+                    } else if lockout_diff > 120 {
+                        format!("{} minutes", lockout_diff/60)
+                    } else {
+                        format!("{} seconds", lockout_diff)
+                    };
+                    // return Err( AuthFail::new(self.username.clone(), "User has been locked due to excessive login attempts.  Please try again later.".to_string()) );
+                    return Err( AuthFail::new(self.username.clone(), format!("User has been locked due to excessive login attempts.  Please wait for {}", lockout_period)) );
+                    
                 }
                 
             }
@@ -183,31 +197,8 @@ impl AuthorizeForm for AdministratorForm {
             }
         }
         
-        attempts += 1;
-        println!("{} have made {} attempts to login.", &self.username, attempts);
-        // Check the remainder of attempts divided by MAX_ATTEMPTS
-        // If the result is 0 that means they have already tried the maximum number of attempts
-        //   before the user account is locked
-        // The remainder is used so the total attempts can be tracked without having to reset it
-        //   after each lockout has ended
-        let attempt_qrystr = if attempts % MAX_ATTEMPTS == 0 {
-            let inc_qrystr = format!("UPDATE users SET attempts = attempts+1, lockout = LOCALTIMESTAMP + interval '{lockout}' WHERE username = '{user}'", user=&self.username, lockout=LOCKOUT_DURATION);
-            println!("Running query to lockout the user and increment attempts: {}", &inc_qrystr);
-            conn.query(&inc_qrystr, &[]);
-        } else {
-            let inc_qrystr = format!("UPDATE users SET attempts = attempts+1 WHERE username = '{}'", &self.username);
-            println!("Running query to increment attempts: {}", &inc_qrystr);
-            conn.query(&inc_qrystr, &[]);
-        };
         
         
-        // if adding one to the attempts made it evenly divide into MAX_ATTEMPTS
-        // then it means the user account should be locked
-        // if attempts % MAX_ATTEMPTS == 0 {
-        //     let lock 
-        // }
-        // // recent tries
-        // let tries = attempts % MAX_ATTEMPTS;
         
         
         
@@ -220,6 +211,64 @@ impl AuthorizeForm for AdministratorForm {
                 return Err(AuthFail::new(self.username.clone(), "User does not have administrator priveleges.".to_string()));
             }
         }
+        
+        // if adding one to the attempts made it evenly divide into MAX_ATTEMPTS
+        // then it means the user account should be locked
+        // if attempts % MAX_ATTEMPTS == 0 {
+        //     let lock 
+        // }
+        // // recent tries
+        // let tries = attempts % MAX_ATTEMPTS;
+        attempts += 1;
+        println!("{} have made {} attempts to login.", &self.username, attempts);
+        // Check the remainder of attempts divided by MAX_ATTEMPTS
+        // If the result is 0 that means they have already tried the maximum number of attempts
+        //   before the user account is locked
+        // The remainder is used so the total attempts can be tracked without having to reset it
+        //   after each lockout has ended
+        
+        // let attempt_qrystr = if attempts % MAX_ATTEMPTS == 0 {
+        //     let inc_qrystr = format!("UPDATE users SET attempts = attempts+1, lockout = LOCALTIMESTAMP + interval '{lockout}' WHERE username = '{user}'", user=&self.username, lockout=LOCKOUT_DURATION);
+        //     println!("Running query to lockout the user and increment attempts: {}", &inc_qrystr);
+        //     conn.query(&inc_qrystr, &[]);
+        // } else {
+        //     let inc_qrystr = format!("UPDATE users SET attempts = attempts+1 WHERE username = '{}'", &self.username);
+        //     println!("Running query to increment attempts: {}", &inc_qrystr);
+        //     conn.query(&inc_qrystr, &[]);
+        // };
+        let lock_interval: u32;
+        if attempts % MAX_ATTEMPTS == 0 {
+            // make the lockout intervals increase as attempts increase
+            // note: currently no formula or algorithm used to increase duration,
+            //         just basically picking numbers to multiply by
+            if attempts < (MAX_ATTEMPTS * 2) {
+                lock_interval = LOCKOUT_DURATION;
+            } else if attempts < (MAX_ATTEMPTS * 4) {
+                lock_interval = LOCKOUT_DURATION * 2;
+            } else if attempts < (MAX_ATTEMPTS * 8) {
+                lock_interval = LOCKOUT_DURATION * 8;
+            } else if attempts < (MAX_ATTEMPTS * 16) {
+                lock_interval = LOCKOUT_DURATION * 25;
+            } else {
+                lock_interval = LOCKOUT_DURATION * 100;
+            }
+            let qrylock = format!("UPDATE users SET attempts = attempts+1, lockout = LOCALTIMESTAMP + interval '{lockout}' WHERE username = '{user}'", user=&self.username, lockout=lock_interval);
+            let period = if lock_interval > 120 {
+                format!("{} minutes", ((lock_interval as f64) / 60f64).ceil())
+            } else {
+                format!("{} seconds", lock_interval)
+            };
+            println!("Running query to lockout the user for {} and incrementing attempts: {}", &period, &qrylock);
+            conn.query(&qrylock, &[]);
+        } else {
+            lock_interval = 0;
+            let inc_qrystr = format!("UPDATE users SET attempts = attempts+1 WHERE username = '{}'", &self.username);
+            println!("Running query to increment attempts: {}", &inc_qrystr);
+            conn.query(&inc_qrystr, &[]);
+        }
+        
+        
+        
         // Check if the password is correct
         if let Ok(eqry) = conn.query(&password_qrystr, &[]) {
             if eqry.is_empty() || eqry.len() == 0 {

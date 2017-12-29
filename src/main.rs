@@ -162,6 +162,8 @@ pub const MAX_CREATE_TAGS: usize = 250;
 
 pub const DATABASE_URL: &'static str = dotenv!("DATABASE_URL");
 
+const MAX_ATTEMPTS: i16 = 8; // 8
+const LOCKOUT_DURATION: u32 = 900; // 6 seconds // 900 seconds = 15 minutes
 
 
 
