@@ -28,6 +28,11 @@ dark ora: #853c01
 Blogr
 	Setup an ftp server on VPS
 
+	Add more address bar color changes for other browsers like apple and ms
+
+	Add a noscript note on addd and edit pages saying that different markup parser will be used if
+		javascript is disabled and the rendered output may differ from the javascript version
+
 	Make an admin route that will download a backup of the sql database
 	Make an admin route that will download a copy of the rust web app (everything but the /target folder)
 
