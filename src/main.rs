@@ -334,14 +334,14 @@ fn main() {
             pages::hbs_manage_full,
             
             pages::hbs_dashboard_admin_authorized,
-            pages::hbs_dashboard_admin_flash,
+            // pages::hbs_dashboard_admin_flash,
             pages::hbs_dashboard_admin_retry_user,
             pages::hbs_process_admin_login,
             pages::hbs_logout_admin,
             
             pages::hbs_dashboard_user_authorized,
             pages::hbs_dashboard_user_retry_user,
-            pages::hbs_dashboard_user_flash,
+            // pages::hbs_dashboard_user_flash,
             pages::hbs_process_user_login,
             pages::hbs_logout_user,
             

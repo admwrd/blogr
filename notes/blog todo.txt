@@ -26,13 +26,17 @@ dark ora: #853c01
 
 
 Blogr
+	Remove pagination test, hit counter tests, and other page tests
+	
+	In the /admin and /users routes add db column to retrieve the number of login attempts before calling flash_redirect()
+		then display the attempts in the flash message if the attempts is more than just a few or under MAX_ATTEMPTS
+	Somehow keep track of previous login attempts after logging in
+	or Add a message to the flash message upon successful login telling the user how many login attempts have been made
+		the purpose is to alert the user to any attempts to brute force or guess the user's password
+
 	Add <meta> metadata keywords and descriptions
 
-	For user account lockout due to repeated unsuccessful attempts make levels or tiers of locking
-		after 6 attempts lock for 3 minutes
-		after 12 attempts lock for 6 minutes (total not 12 more attempts [that would be 6 more attempts after the first tier)
-		      
-		maybe make a lockout(minutes) function to help with this
+
 
 	Publish the xpress module 
 
@@ -231,6 +235,12 @@ Rocket-auth-login:
 
 
 DONE
+	For user account lockout due to repeated unsuccessful attempts make levels or tiers of locking
+		after 6 attempts lock for 3 minutes
+		after 12 attempts lock for 6 minutes (total not 12 more attempts [that would be 6 more attempts after the first tier)
+		      
+		maybe make a lockout(minutes) function to help with this
+
 	maybe just remove the /search route as the search form already works
 		and the complex search featuers don't really work yet anyways
 	

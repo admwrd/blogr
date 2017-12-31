@@ -72,7 +72,8 @@ pub fn init_pg_pool() -> Pool {
 
 pub fn init_pg_conn() -> Connection {
     // let conn_str = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    Connection::connect("postgres://postgres:andrew@localhost/blog", postgres::TlsMode::None).unwrap()
+    // Connection::connect("postgres://postgres:andrew@localhost/blog", postgres::TlsMode::None).unwrap()
+    Connection::connect(DATABASE_URL, postgres::TlsMode::None).unwrap()
 }
 
 pub struct DbConn(

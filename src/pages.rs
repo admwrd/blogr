@@ -266,23 +266,24 @@ pub fn hbs_dashboard_admin_authorized(start: GenTimer, pagination: Page<Paginati
     
 }
 
-#[get("/admin", rank = 2)]
-pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
-    // let start = Instant::now();
-    let output: Template;
+// No longer needed - hbs_dashboard_admin_authorized takes care of flash messages
+// #[get("/admin", rank = 2)]
+// pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+//     // let start = Instant::now();
+//     let output: Template;
     
-    if let Some(flash_msg) = flash_msg_opt {
-        let flash = Some( alert_danger(flash_msg.msg()) );
-        output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, flash), Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
-    } else {
-        output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
-    }
+//     if let Some(flash_msg) = flash_msg_opt {
+//         let flash = Some( alert_danger(flash_msg.msg()) );
+//         output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, flash), Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+//     } else {
+//         output = hbs_template(TemplateBody::Login(URL_LOGIN_ADMIN.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+//     }
     
-    let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    let express: Express = output.into();
-    express.compress(encoding)
-}
+//     let end = start.0.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     let express: Express = output.into();
+//     express.compress(encoding)
+// }
 
 // No longer needed.  Was getting errors because the dashboard_admin_retry_user() route
 // named the qrystr parameter user which already has a variable binding, renamed and fixed it
@@ -383,23 +384,24 @@ pub fn hbs_dashboard_user_authorized(start: GenTimer, conn: DbConn, admin: Optio
     express.compress(encoding)
 }
 
-#[get("/user", rank = 2)]
-pub fn hbs_dashboard_user_flash(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
-    // let start = Instant::now();
-    let output: Template;
+// No longer needed - hbs_dhasboard_user_authorized handles flash messages
+// #[get("/user", rank = 2)]
+// pub fn hbs_dashboard_user_flash(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+//     // let start = Instant::now();
+//     let output: Template;
     
-    if let Some(flash_msg) = flash_msg_opt {
-        let flash = Some( alert_danger(flash_msg.msg()) );
-        output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, flash), Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
-    } else {
-        output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
-    }
+//     if let Some(flash_msg) = flash_msg_opt {
+//         let flash = Some( alert_danger(flash_msg.msg()) );
+//         output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, flash), Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
+//     } else {
+//         output = hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
+//     }
     
-    let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
-    let express: Express = output.into();
-    express.compress(encoding)
-}
+//     let end = start.0.elapsed();
+//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     let express: Express = output.into();
+//     express.compress(encoding)
+// }
 
 
 // #[get("/user", rank = 3)]
