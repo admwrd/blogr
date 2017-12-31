@@ -26,6 +26,13 @@ dark ora: #853c01
 
 
 Blogr
+	Setup an ftp server on VPS
+
+	Make an admin route that will download a backup of the sql database
+	Make an admin route that will download a copy of the rust web app (everything but the /target folder)
+
+	Viewing the layout on a mobile device is BROKEN
+
 	Remove pagination test, hit counter tests, and other page tests
 	
 	In the /admin and /users routes add db column to retrieve the number of login attempts before calling flash_redirect()

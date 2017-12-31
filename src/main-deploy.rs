@@ -149,18 +149,18 @@ use rocket::State;
 
 // BLOG_URL MUST HAVE A TRAILING FORWARD SLASH /
 // pub const BLOG_URL: &'static str = "http://localhost:8000/";
-pub const BLOG_URL: &'static str = dotenv!("BLOG_URL");
-pub const USER_LOGIN_URL: &'static str = dotenv!("USER_LOGIN_URL");
-pub const ADMIN_LOGIN_URL: &'static str = dotenv!("ADMIN_LOGIN_URL");
-pub const TEST_LOGIN_URL: &'static str = dotenv!("TEST_LOGIN_URL");
-pub const CREATE_FORM_URL: &'static str = dotenv!("CREATE_FORM_URL");
-pub const EDIT_FORM_URL: &'static str = dotenv!("EDIT_FORM_URL");
-pub const MANAGE_URL: &'static str = dotenv!("MANAGE_URL");
+pub const BLOG_URL: &'static str = "http://vishus.net/";
+pub const USER_LOGIN_URL: &'static str = "http://vishus.net/user";
+pub const ADMIN_LOGIN_URL: &'static str = "http://vishus.net/admin";
+pub const TEST_LOGIN_URL: &'static str = "http://vishus.net/login";
+pub const CREATE_FORM_URL: &'static str = "http://vishus.net/create";
+pub const EDIT_FORM_URL: &'static str = "http://vishus.net/edit";
+pub const MANAGE_URL: &'static str = "http://vishus.net/manage";
 pub const MAX_CREATE_TITLE: usize = 120;
 pub const MAX_CREATE_DESCRIPTION: usize = 400;
 pub const MAX_CREATE_TAGS: usize = 250;
 
-pub const DATABASE_URL: &'static str = dotenv!("DATABASE_URL");
+pub const DATABASE_URL: &'static str = "postgres://vishus:Mutex7892@localhost/blog";
 
 const MAX_ATTEMPTS: i16 = 8; // 8
 const LOCKOUT_DURATION: u32 = 900; // 6 seconds // 900 seconds = 15 minutes
