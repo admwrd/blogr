@@ -1177,6 +1177,7 @@ h6 ~ h6 {
 
 
 
+/*
 @font-face { font-family: vishusTest1; src: local("Cabin"), url('http://localhost:8000/fonts/Cabin-Medium-freeware.otf'); }
 @font-face { font-family: vishusTest2; src: local("Essence"), url('http://localhost:8000/fonts/Essence Sans Bold Italic-freeware.ttf'); }
 @font-face { font-family: vishusTest3; src: local("Essence"), url('http://localhost:8000/fonts/Essence Sans-freeware.ttf'); }
@@ -1193,6 +1194,6 @@ h6 ~ h6 {
 @font-face { font-family: vishusTest14; src: local("Aspergit"), url('http://localhost:8000/fonts/Aspergit Bold-freeware.ttf'); }
 @font-face { font-family: vishusTest15; src: local("Bowhouse"), url('http://localhost:8000/fonts/Bowhouse-Regular-freeware.ttf'); }
 @font-face { font-family: vishusTest16; src: local("OpenSans"), url('http://localhost:8000/fonts/OpenSans-Regular-freeware.ttf'); }
-
+*/
 
 
