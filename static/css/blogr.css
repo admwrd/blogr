@@ -641,6 +641,9 @@ OLD - OUTDATED PAGINATION STYLES
     /*margin: 0px 0px 0px 2em;*/
 }
 
+.v-article-tags ul {
+    text-align: center;
+}
 
 .v-full-article {
     /*padding: 1em 0em .5em;*/
@@ -921,9 +924,10 @@ mark, .v-term {
 }
 .blog-logo {
     font-family: vishusBlog;
-    font-size: 250%;
-    /*text-shadow: 0px 0px 8px #ff4801;*/
+    /*font-size: 250%;*/
+    font-size: 170%;
     text-shadow: 0px 0px 1px #000000;
+    /*text-shadow: 0px 0px 8px #ff4801;*/
 }
 #search-form {
     flex-flow: row nowrap;
@@ -1015,6 +1019,10 @@ h6 ~ h6 {
 
 @media (min-width: 768px) {
     
+    .blog-logo {
+        font-size: 200%;
+    }
+    
     nav .navbar-collapse ul[class*="v-nav navbar-nav"]{
         /*margin-left: auto;
         margin-right: auto;*/
@@ -1058,6 +1066,10 @@ h6 ~ h6 {
 /*@media (min-width: 978px) {*/
 @media (min-width: 992px) {
     
+    .blog-logo {
+        font-size: 250%;
+    }
+    
     .v-am-item-description { text-align: center; }
     
     .dropdown-menu h6 {
@@ -1089,6 +1101,10 @@ h6 ~ h6 {
     }
 }
 @media (min-width: 1170px) {
+    
+    .blog-logo {
+        font-size: 250%;
+    }
     
     .v-am-item-description { text-align: center; }
     
