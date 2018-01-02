@@ -363,6 +363,9 @@ hr.v-am-item-tag-divider:after {
     /*color: #ddd;*/
     color: #5bff5b;
 }
+
+.v-am-item-description { text-align: start; }
+
 .v-am-item-top a {
     color: #e06500;
 }
@@ -1054,6 +1057,9 @@ h6 ~ h6 {
 
 /*@media (min-width: 978px) {*/
 @media (min-width: 992px) {
+    
+    .v-am-item-description { text-align: center; }
+    
     .dropdown-menu h6 {
         /*text-align: center;*/
         padding-left: 3em;
@@ -1083,6 +1089,9 @@ h6 ~ h6 {
     }
 }
 @media (min-width: 1170px) {
+    
+    .v-am-item-description { text-align: center; }
+    
     .v-article, .v-content {
         padding: 1em 2.5em 1em 2.5em;
     }
