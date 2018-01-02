@@ -1,0 +1,11 @@
+server { 
+	listen 80;
+        server_name blog;
+
+	location ~* \.(css|js|ttf|otf|png|gif|jpg|jpeg)$ {
+		root /var/www/html;
+	}
+	location / {
+        	proxy_pass http://localhost:8000;
+	}
+}

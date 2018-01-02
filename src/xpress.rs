@@ -341,7 +341,7 @@ pub fn find_ip(req: &Request) -> Ipv4Addr {
     let mut ipaddy: Ipv4Addr = Ipv4Addr::new(0, 0, 0, 0);
     
     if let Some(sock) = req.remote() {
-        // println!("Remote address: {}", sock.ip());
+        println!("Remote address: {}", sock.ip());
         let ip = sock.ip();
         // let mut ipaddy: Ipv4Addr = Ipv4Addr::new(127, 0, 0, 1);
         
@@ -353,6 +353,7 @@ pub fn find_ip(req: &Request) -> Ipv4Addr {
             IpAddr::V6(ip6) => {
                 if let Some(ipnew) = ip6.to_ipv4() {
                     if ipnew == Ipv4Addr::new(0, 0, 0, 1) {
+                        println!("Ip address is invalid.  IPv6 -> IPv4 failed.");
                         ipaddy = Ipv4Addr::new(127, 0, 0, 1);
                     } else {
                         ipaddy = ipnew;
@@ -378,7 +379,7 @@ pub fn find_ip(req: &Request) -> Ipv4Addr {
 impl<'a> Responder<'a> for Express {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         
-        // println!("Ip address is: {}", find_ip(req));
+        // println!("Served to: {}", find_ip(req));
         
         let mut response = Response::build();
         let extras = self.extras;

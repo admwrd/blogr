@@ -27,13 +27,13 @@
                                 <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
                             </div>
                         </header>
-                        <p>
+                        <div class="v-article-content">
                             {{{body.body}}}
-                        </p>
-                        <div class="v-article-tags">
-                            {{#each body.tags}}
-                            <a href="{{../info.base_url}}tag/{{this}}">{{this}}</a>
-                            {{/each}}
+                            <div class="v-article-tags">
+                                {{#each body.tags}}
+                                <a href="{{../info.base_url}}tag/{{this}}">{{this}}</a>
+                                {{/each}}
+                            </div>
                         </div>
                     </article>
                     

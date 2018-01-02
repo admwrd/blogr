@@ -24,8 +24,58 @@ Rocket-auth-login
 orange:   #de6d11
 dark ora: #853c01
 
+Compile for production:
+	#!/bin/bash
+	 cargo rustc -- --cfg production
+
+
+Blog Theme
+
+	Add article header images
+		add database column in articles table, if null use a default image
+		set the image as a background so it fills the width of the container
+		could add text?
+
+	Maybe add another bubble inside the article bubble
+		separate the title author date etc in one bubble
+			and the article contents in another
+		make the backgrounds
+			rgba(80,80,80,0.1)
+
 
 Blogr
+	Add domain name configuration to the vps guide and commands text files
+
+	See if rocket can tell whether its https or http and subdomain stuff?
+		Find a way to have a single rust rocket app deliver both https and http content
+		https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/
+		http://nginx.org/en/docs/http/ngx_http_core_module.html
+
+	Figure out how to make a git repo on the server that can have files transfered to it that reflect the repo
+		maybe a script that will run
+
+
+	Find better system for development/production variables
+		Maybe serialized file, toml/yaml/haml/json/hjson (just not binary - not msgpack)
+		Maybe use conditional compilation to read the appropriate files
+			https://doc.rust-lang.org/reference/attributes.html
+			#[cfg(any(unix, windows))]
+			#[cfg(target_os = "macos")]
+			#[cfg(unix)]
+		Could also use conditional compilation but instead of testing for unix or windows
+			test to see if a variable was passed while building it
+				create a shell script that runs the 'cargo build --release'
+					but with --cfg PRODUCTION  or  --cfg 'BUILD_TARGET="PRODUCTION"'
+			
+
+	Make manage page display each manage item on a new line for mobile devices
+		use col-md-#
+	
+	Should human readable times have a leading zero
+
+	Make Blog title either smaller or overflow over the side
+		Make font smaller but for medium or larger displays make it the original size
+	
 	Setup an ftp server on VPS
 
 	Add more address bar color changes for other browsers like apple and ms
@@ -48,7 +98,9 @@ Blogr
 
 	Add <meta> metadata keywords and descriptions
 
-
+	Do RSS feeds have to show all the items?
+		Can it show the 50 most recent and any old items will persist in the RSS reader?
+			Or will rss reader remove them once no longer in the feed?
 
 	Publish the xpress module 
 

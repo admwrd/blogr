@@ -149,25 +149,92 @@ use rocket::State;
 
 // BLOG_URL MUST HAVE A TRAILING FORWARD SLASH /
 // pub const BLOG_URL: &'static str = "http://localhost:8000/";
-pub const BLOG_URL: &'static str = dotenv!("BLOG_URL");
-pub const USER_LOGIN_URL: &'static str = dotenv!("USER_LOGIN_URL");
-pub const ADMIN_LOGIN_URL: &'static str = dotenv!("ADMIN_LOGIN_URL");
-pub const TEST_LOGIN_URL: &'static str = dotenv!("TEST_LOGIN_URL");
-pub const CREATE_FORM_URL: &'static str = dotenv!("CREATE_FORM_URL");
-pub const EDIT_FORM_URL: &'static str = dotenv!("EDIT_FORM_URL");
-pub const MANAGE_URL: &'static str = dotenv!("MANAGE_URL");
+
+
+// pub const BLOG_URL: &'static str = dotenv!("BLOG_URL");
+// pub const USER_LOGIN_URL: &'static str = dotenv!("USER_LOGIN_URL");
+// pub const ADMIN_LOGIN_URL: &'static str = dotenv!("ADMIN_LOGIN_URL");
+// pub const TEST_LOGIN_URL: &'static str = dotenv!("TEST_LOGIN_URL");
+// pub const CREATE_FORM_URL: &'static str = dotenv!("CREATE_FORM_URL");
+// pub const EDIT_FORM_URL: &'static str = dotenv!("EDIT_FORM_URL");
+// pub const MANAGE_URL: &'static str = dotenv!("MANAGE_URL");
+// pub const MAX_CREATE_TITLE: usize = 120;
+// pub const MAX_CREATE_DESCRIPTION: usize = 400;
+// pub const MAX_CREATE_TAGS: usize = 250;
+// pub const DATABASE_URL: &'static str = dotenv!("DATABASE_URL");
+// const LOCKOUT_DURATION: u32 = 900; // 6 seconds // 900 seconds = 15 minutes
+// const MAX_ATTEMPTS: i16 = 8; // 8
+
+
+// #[cfg(production)]
+// pub const BLOG_URL: &'static str = "http://127.0.0.1:8000/";
+// #[cfg(not(production))]
+// pub const BLOG_URL: &'static str = "http://localhost:8000/";
+
+#[cfg(production)]
+pub const PRODUCTION: bool = true;
+#[cfg(not(production))]
+pub const PRODUCTION: bool = false;
+
+
+#[cfg(not(production))]
+pub const BLOG_URL: &'static str = "http://localhost:8000/";
+#[cfg(not(production))]
+pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
+#[cfg(not(production))]
+pub const ADMIN_LOGIN_URL: &'static str = "http://localhost:8000/admin";
+#[cfg(not(production))]
+pub const TEST_LOGIN_URL: &'static str = "http://localhost:8000/login";
+#[cfg(not(production))]
+pub const CREATE_FORM_URL: &'static str = "http://localhost:8000/create";
+#[cfg(not(production))]
+pub const EDIT_FORM_URL: &'static str = "http://localhost:8000/edit";
+#[cfg(not(production))]
+pub const MANAGE_URL: &'static str = "http://localhost:8000/manage";
+#[cfg(not(production))]
 pub const MAX_CREATE_TITLE: usize = 120;
+#[cfg(not(production))]
 pub const MAX_CREATE_DESCRIPTION: usize = 400;
+#[cfg(not(production))]
 pub const MAX_CREATE_TAGS: usize = 250;
-
-pub const DATABASE_URL: &'static str = dotenv!("DATABASE_URL");
-
+#[cfg(not(production))]
+pub const DATABASE_URL: &'static str = "postgres://postgres:andrew@localhost/blog";
+#[cfg(not(production))]
 const MAX_ATTEMPTS: i16 = 8; // 8
+#[cfg(not(production))]
+const LOCKOUT_DURATION: u32 = 8; // 6 seconds // 900 seconds = 15 minutes
+
+
+#[cfg(production)]
+pub const BLOG_URL: &'static str = "http://vishus.net/";
+#[cfg(production)]
+pub const USER_LOGIN_URL: &'static str = "http://vishus.net/user";
+#[cfg(production)]
+pub const ADMIN_LOGIN_URL: &'static str = "http://vishus.net/admin";
+#[cfg(production)]
+pub const TEST_LOGIN_URL: &'static str = "http://vishus.net/login";
+#[cfg(production)]
+pub const CREATE_FORM_URL: &'static str = "http://vishus.net/create";
+#[cfg(production)]
+pub const EDIT_FORM_URL: &'static str = "http://vishus.net/edit";
+#[cfg(production)]
+pub const MANAGE_URL: &'static str = "http://vishus.net/manage";
+#[cfg(production)]
+pub const MAX_CREATE_TITLE: usize = 50;
+#[cfg(production)]
+pub const MAX_CREATE_DESCRIPTION: usize = 500;
+#[cfg(production)]
+pub const MAX_CREATE_TAGS: usize = 250;
+#[cfg(production)]
+pub const DATABASE_URL: &'static str = "postgres://vishus:Mutex7892@localhost/blog";
+#[cfg(production)]
+const MAX_ATTEMPTS: i16 = 5; // 8
+#[cfg(production)]
 const LOCKOUT_DURATION: u32 = 900; // 6 seconds // 900 seconds = 15 minutes
 
-
-
-
+// lazy_static! {
+//     static ref B_URL: &'static str = ;
+// }
 
 
 
@@ -278,8 +345,11 @@ fn main() {
     
     // dotenv().ok();
     // let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    
-    
+    if PRODUCTION {
+        println!("Production mode");
+    } else {
+        println!("Dev mode");
+    }
     // let hitcount: Counter = Counter::new();
     // let views: TotalHits = TotalHits::new();
     let hitcount: Counter = Counter::load();
