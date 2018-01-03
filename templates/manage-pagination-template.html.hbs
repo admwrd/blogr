@@ -18,10 +18,22 @@
                 <a href="{{info.base_url}}manage/date/{{#if sort.sort_title}}desc{{else}}{{#if sort.sort_desc}}asc{{else}}desc{{/if}}{{/if}}">Date</a>
         </div>
         <div class="col v-right-text">
-            <a href="{{info.base_url}}create">
-                <i id="v-am-add" class="fa fa-plus-circle" aria-hidden="true"></i>
-                Add A New Post
-            </a>
+            <div class="row">
+                <div class="col">
+                    <a href="{{info.base_url}}create">
+                        <i id="v-am-add" class="fa fa-plus-circle" aria-hidden="true"></i>
+                        Add A New Post
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a href="{{info.base_url}}backup">
+                        <i class="v-am-db fa fa-database" aria-hidden="true"></i>
+                        Database Backup
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     <div class="v-am-table">

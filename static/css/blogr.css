@@ -388,6 +388,10 @@ hr.v-am-item-tag-divider:after {
     color: #5bff5b;
 }
 
+.v-am-db {
+    color: #ccc;
+}
+
 .v-am-sortbar {
     padding: 0.5em 0em 0.5em 0em;
 }

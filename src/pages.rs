@@ -1521,32 +1521,23 @@ pub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCook
     use std::process::Command;
     use rocket::http::hyper::header::{Headers, ContentDisposition, DispositionType, DispositionParam, Charset};
     
-    //  pg_dump --file "db_backup-1.sql" --format=p --no-owner --create --no-privileges --inserts --column-inserts -d="vishus:Mutex7892@localhost/blog"
-    
+    // "C:\Program Files\PostgreSQL\10\bin\pg_dump.exe"
     /*
     pg_dump --file "db_backup-2.sql" --format=p --no-owner --create 
         --no-privileges --inserts --column-inserts 
         --dbname="postgres://vishus:Mutex7892@localhost/blog"
-    */
-    
-    let constr = format!("--dbname=\"{}\"", DATABASE_URL);
-    
-    /*
+    */ /*
      "C:\Program Files\PostgreSQL\10\bin\pg_dump.exe" 
          --file "db_backup-testy.sql" --format=p --no-owner 
          --create --no-privileges --inserts --column-inserts 
          --dbname="postgres://postgres:andrew@localhost/blog"
+    */ /*
+        Content-Disposition: attachment; filename="MyFileName.ext"
+        Content-Transfer-Encoding: binary
+        Content-Length: 
     */
-    // println!("Conn string: {}\nShould be:   --dbname=\"postgres://postgres:andrew@localhost/blog\"", &constr);
     
-    
-    //  C:\Program Files\PostgreSQL\10\bin
-    // "C:\Program Files\PostgreSQL\10\bin\pg_dump.exe"
-    
-    
-    
-    
-    // let output_rst = Command::new(DB_BACKUP_SCRIPT)
+    let constr = format!("--dbname=\"{}\"", DATABASE_URL);
     
     #[cfg(not(production))]
     let output_rst = Command::new(DB_BACKUP_SCRIPT).output();
@@ -1554,34 +1545,6 @@ pub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCook
     let output_rst = Command::new(DB_BACKUP_SCRIPT)
         .arg(DB_BACKUP_ARG)
         .output();
-    
-    
-    // let output_rst = if cfg!(DB_BACKUP_ARG) { 
-    //     Command::new(DB_BACKUP_SCRIPT)
-    //     .arg(DB_BACKUP_ARG)
-    //     .output()
-    // } else { Command::new(DB_BACKUP_SCRIPT).output() };
-    
-    
-    // let output_rst = Command::new("\"C:\\Program Files\\PostgreSQL\\10\\bin\\pg_dump.exe\" --file \"db_backup-testy.sql\" --format=p --no-owner --create --no-privileges --inserts --column-inserts --dbname=\"postgres://postgres:andrew@localhost/blog\"")
-    // let output_rst = Command::new(r"C:\Program Files\PostgreSQL\10\bin\pg_dump.exe")
-    //                 .args(&[
-    //                     // "--file=\"C:\\code\\www\\db_backup-1.sql\"", 
-    //                     // "\"C:\\code\\www\\db_backup-1.sql\"", 
-    //                     "--format=p", 
-    //                     "--no-owner", 
-    //                     "--create", 
-    //                     "--no-privileges", 
-    //                     "--inserts", 
-    //                     "--column-inserts", 
-    //                     r#"--dbname="postgres://postgres:andrew@localhost/blog""#,
-    //                     // "--dbname=\"postgres://postgres:andrew@localhost/blog\"",
-    //                     // &constr,
-    //                     // "--dbname=\"postgres://vishus:Mutex7892@localhost/blog\"", 
-    //                     "\"blog\""
-    //                 ])
-    
-    // .output();
     
     if let Ok(output) = output_rst {
         let now = Local::now().naive_local();
@@ -1604,42 +1567,12 @@ pub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCook
         let express: Express = backup.into();
         express.set_content_type(ContentType::Binary)
                 .add_header(disposition)
-                // .add_extra("Content-Disposition", "Attachment")
-                // .add_extra("Content-Transfer-Encoding".to_string(), "Binary".to_string())
-                // .add_extra("Content-Length".to_string(), length.to_string())
-    // } else if let Err(errors) = output_rst { 
-    //     let error = if let Some(ioerr) = errors.get_ref() {
-    //         ioerr
-    //     } else {
-    //         "Unkown IO error....."
-    //     };
-        
-    //     let output = hbs_template(TemplateBody::General(alert_danger(&error), None), Some("Backup Failed".to_string()), String::from("/backup"), Some(admin), user, None, Some(start.0));
-        
-    //     let express: Express = output.into();
-    //     express.compress(encoding)
-    //     
-    }else {
-        
-        // let fail = if let Err()
-        
+    } else {
         let output = hbs_template(TemplateBody::General(alert_danger("Backup failed."), None), Some("Backup Failed".to_string()), String::from("/backup"), Some(admin), user, None, Some(start.0));
         
         let express: Express = output.into();
         express.compress(encoding)
-        
-        
     }
-    
-    /*
-        Content-Disposition: attachment; filename="MyFileName.ext"
-        Content-Transfer-Encoding: binary
-        Content-Length: 
-    */
-    
-            
-    
-    
 }
 
 
