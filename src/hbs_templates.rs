@@ -302,7 +302,16 @@ impl TemplateInfo {
               ) -> TemplateInfo {
         let gentime = if let Some(inst) = gen {
             let end = inst.elapsed();
-            format!("{}.{:08}", end.as_secs(), end.subsec_nanos())
+            format!("{}.{:09} seconds", end.as_secs(), end.subsec_nanos())
+            
+            // let secs = end.as_secs();
+            // let nanos = end.subsec_nanos();
+            // if secs != 0 {
+            //     format!("{} ms", ((end.subsec_nanos() as f64) /1000)  )
+            // } else {
+            //     format!("{}.{:08} seconds", end.as_secs(), end.subsec_nanos())
+            //     // format!("{}-{} seconds", end.as_secs(), end.subsec_nanos())
+            // }
         } else { 
             String::new() 
         };

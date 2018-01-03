@@ -1,5 +1,7 @@
 
+use std::{thread, time};
 use std::time::Instant;
+use std::time::Duration;
 use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
@@ -1575,6 +1577,26 @@ pub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCook
     }
 }
 
+
+// #[get("/sleep/<wait>")]
+// fn wait(mut wait: u64, start: GenTimer) -> String {
+//     // let start = Instant::now();
+//     // if wait > 1_000_000 {
+        
+//     // if wait > 1_000 {
+//     //     println!("Limiting wait to 1 second.");
+//     //     wait = 1_000;
+//     // }
+//     let duration = Duration::from_millis(wait);
+    
+//     thread::sleep(duration);
+    
+//     let end = start.0.elapsed();
+//     let output = format!("Waiting {} milliseconds\nServed in {}.{:09} seconds", wait, end.as_secs(), end.subsec_nanos());
+//     // let express: Express = output.into();
+//     // express
+//     output
+// }
 
 #[get("/")]
 pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {

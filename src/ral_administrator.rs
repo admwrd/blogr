@@ -8,7 +8,7 @@ use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 
 
-use super::{PGCONN, MAX_ATTEMPTS, LOCKOUT_DURATION};
+use super::{PGCONN, MAX_ATTEMPTS, LOCKOUT_DURATION, ADMIN_LOCK};
 // use password::*;
 use rocket_auth_login::authorization::*;
 use rocket_auth_login::sanitization::*;
@@ -121,8 +121,12 @@ impl AuthorizeForm for AdministratorForm {
                 
                 // let now = Local::now().naive_local();
                 
+                // next lock that occurs after 
+                if attempts >= ADMIN_LOCK {
+                    return Err(AuthFail::new(self.username.clone(), "Brute force attack detected, account locked.  Talk to administrator to unlock.".to_string()));
+                } else if now > lockout {
                 // if the lockout has expired unlock the account but do not reset the attempts
-                if now > lockout {
+                // if now > lockout {
                     // do not increment attempt it will be incremented when calling authenticate() again
                     println!("Lockout has expired, valid: {}", valid);
                     

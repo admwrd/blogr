@@ -205,6 +205,12 @@ const MAX_ATTEMPTS: i16 = 8; // 8
 const LOCKOUT_DURATION: u32 = 8; // 6 seconds // 900 seconds = 15 minutes
 #[cfg(not(production))]
 const DB_BACKUP_SCRIPT: &'static str = r"scripts\db_backup-dev.bat";
+// After the specified number of attempts, the next account lock will permanently lock the account
+#[cfg(not(production))]
+const ADMIN_LOCK: i16 = 20;
+// After the specified number of attempts, the next account lock will permanently lock the account
+#[cfg(not(production))]
+const USER_LOCK: i16 = 40;
 
 
 #[cfg(production)]
@@ -237,6 +243,14 @@ const LOCKOUT_DURATION: u32 = 900; // 6 seconds // 900 seconds = 15 minutes
 const DB_BACKUP_SCRIPT: &'static str = r"bash";
 #[cfg(production)]
 const DB_BACKUP_ARG: &'static str = r"scripts/db_backup-prod.sh";
+// After the specified number of attempts, the next account lock will permanently lock the account
+#[cfg(production)]
+const ADMIN_LOCK: i16 = 15;
+// After the specified number of attempts, the next account lock will permanently lock the account
+#[cfg(production)]
+const USER_LOCK: i16 = 40;
+
+
 
 // lazy_static! {
 //     static ref B_URL: &'static str = ;
@@ -416,6 +430,8 @@ fn main() {
             pages::hbs_logout_admin,
             
             pages::backup,
+            
+            // pages::wait,
             
             pages::hbs_dashboard_user_authorized,
             pages::hbs_dashboard_user_retry_user,

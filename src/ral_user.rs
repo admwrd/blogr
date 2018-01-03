@@ -7,15 +7,15 @@ use std::str::{from_utf8};
 use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 
-use super::PGCONN;
+use super::{PGCONN, MAX_ATTEMPTS, LOCKOUT_DURATION, USER_LOCK};
 // use password::*;
 use rocket_auth_login::authorization::*;
 use rocket_auth_login::sanitization::*;
 // use auth::sanitization::*;
 
 
-const MAX_ATTEMPTS: i16 = 8;
-const LOCKOUT_DURATION: u32 = 12; // 900 seconds = 15 minutes
+// const MAX_ATTEMPTS: i16 = 8;
+// const LOCKOUT_DURATION: u32 = 12; // 900 seconds = 15 minutes
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -126,7 +126,9 @@ impl AuthorizeForm for UserForm {
                 // let now = Local::now().naive_local();
                 
                 // if the lockout has expired unlock the account but do not reset the attempts
-                if now > lockout {
+                if attempts >= USER_LOCK {
+                    return Err(AuthFail::new(self.username.clone(), "Brute force attack detected, account locked.  Talk to administrator to unlock.".to_string()));
+                } else if now > lockout {
                     // do not increment attempt it will be incremented when calling authenticate() again
                     println!("Lockout has expired, valid: {}", valid);
                     

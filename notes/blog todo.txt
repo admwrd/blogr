@@ -30,6 +30,7 @@ Compile for production:
 
 
 Blog Theme
+	Verify and maybe change the generation timer to use 9 digits instead of 8
 
 	Add article header images
 		add database column in articles table, if null use a default image
@@ -44,6 +45,11 @@ Blog Theme
 
 
 Blogr
+	Display generation time in ms instead of seconds
+
+	Add link to go back to manage after saving or even before saving
+		if contents have changed ask user if they want to continue
+
 	Add domain name configuration to the vps guide and commands text files
 
 	See if rocket can tell whether its https or http and subdomain stuff?
