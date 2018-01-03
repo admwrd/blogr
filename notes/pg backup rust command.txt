@@ -1,0 +1,28 @@
+
+
+
+/*
+pg_dump --file "db_backup-1.sql" --format=p --no-owner --create --no-privileges --inserts --column-inserts "blog"
+*/
+
+use std::process::Command;
+
+
+let output = Command::new("pg_dump")
+			.args(&[
+				"--file", 
+				"\"db_backup-1.sql\"", 
+				"--format=p", 
+				"--no-owner", 
+				"--crate", 
+				"--no-privileges", 
+				"--inserts", 
+				"--column-inserts", 
+				"\"blog\""
+			])
+			.output()
+			.expect();
+let backup = String::from_utf8_lossy(&output.stdout);
+
+
+

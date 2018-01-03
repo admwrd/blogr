@@ -1,0 +1,71 @@
+
+pg_dumpall
+
+pg_dumpall -f db_backup.sql -O -x --inserts -dbname=postgres://vishus:Mutex7892@localhost --database=blog
+
+-f	output file
+-O	no owner
+-x	do not dump privileges
+--column-inserts	use INSERT INTO columns.  Slow but allows importing to non-pg dbs
+--inserts	dump data as insert commands rather than copy.  Slow but allows importing to non-pg dbs
+
+-d,--dbname=blah	db connection string. db is ignored
+-l,--database=blah		db to dump global objects
+
+
+
+
+pg_dump
+
+pg_dump -f db_dump.sql -F=plain 
+
+-F=format
+-O	no owner
+-x	no privileges
+--inserts
+
+-d,--dbname=
+-h=	host
+-p=	port
+-U=	username
+
+
+
+
+
+psql
+
+psql "dbname=blog host=localhost user=vishus password=Mutex7892 port=5432
+
+
+
+
+
+
+http://w-shadow.com/blog/2007/08/12/how-to-force-file-download-with-php/
+https://stackoverflow.com/questions/386845/http-headers-for-file-downloads
+http://elouai.com/force-download.php
+
+
+Content-Disposition: attachment; filename="MyFileName.ext"
+Content-Transfer-Encoding: binary
+Content-Length: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

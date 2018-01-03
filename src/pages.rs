@@ -19,6 +19,9 @@ use rocket::http::{Cookie, Cookies, RawStr};
 use regex::Regex;
 use titlecase::titlecase;
 
+use chrono::prelude::*;
+use chrono::{NaiveDate, NaiveDateTime};
+
 // use super::{BLOG_URL, ADMIN_LOGIN_URL, USER_LOGIN_URL, CREATE_FORM_URL, TEST_LOGIN_URL};
 
 // use super::RssContent;
@@ -1511,6 +1514,69 @@ pub fn hbs_process_delete(aid: u32, conn: DbConn, admin: AdministratorCookie, us
         println!("Delete failed.");
         Err( Redirect::to("/manage") )
     }
+}
+
+#[get("/backup")]
+pub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+    use std::process::Command;
+    use rocket::http::hyper::header::{Headers, ContentDisposition, DispositionType, DispositionParam, Charset};
+    
+    let output_rst = Command::new("pg_dump")
+                    .args(&[
+                        // "--file", 
+                        // "\"db_backup-1.sql\"", 
+                        "--format=p", 
+                        "--no-owner", 
+                        "--create", 
+                        "--no-privileges", 
+                        "--inserts", 
+                        "--column-inserts", 
+                        "\"blog\""
+                    ])
+                    .output();
+    if let Ok(output) = output_rst {
+        let now = Local::now().naive_local();
+        let today = now.date();
+        
+        let dl_name = now.format("db_blog_%Y-%m-%d.sql").to_string();
+        
+        let disposition = ContentDisposition {
+            disposition: DispositionType::Attachment,
+            parameters: vec![DispositionParam::Filename(
+              Charset::Iso_8859_1, // The character set for the bytes of the filename
+              None, // The optional language tag (see `language-tag` crate)
+                dl_name.into_bytes() // b"db_blog-".to_vec() // the actual bytes of the filename
+            )]
+        };
+        
+        let backup = String::from_utf8_lossy(&output.stdout).into_owned();
+        let length = backup.len();
+        let express: Express = backup.into();
+        express.set_content_type(ContentType::Binary)
+                .add_header(disposition)
+                // .add_extra("Content-Disposition", "Attachment")
+                .add_extra("Content-Transfer-Encoding".to_string(), "Binary".to_string())
+                .add_extra("Content-Length".to_string(), length.to_string())
+    } else {
+        
+        
+        let output = hbs_template(TemplateBody::General(alert_danger("Backup failed."), None), Some("Backup Failed".to_string()), String::from("/backup"), Some(admin), user, None, Some(start.0));
+        
+        let express: Express = output.into();
+        express.compress(encoding)
+        
+        
+    }
+    
+    /*
+        Content-Disposition: attachment; filename="MyFileName.ext"
+        Content-Transfer-Encoding: binary
+        Content-Length: 
+    */
+    
+            
+    
+    
 }
 
 

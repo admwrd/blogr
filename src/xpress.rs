@@ -7,6 +7,8 @@ use rocket::http::{Method, Status};
 use rocket::response::{content, NamedFile, Content};
 use rocket_contrib::Template;
 use rocket::http::ContentType;
+use rocket::http::Header;
+use rocket::http::HeaderMap;
 
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 use std::mem;
@@ -214,7 +216,7 @@ impl Express {
         self.ttl = ttl;
         self
     }
-    /// Set the data to a byte vector
+    /// Set the contents / data to a byte vector
     pub fn set_data<T: Into<ExData>>(mut self, data: T) -> Self {
         self.data = data.into();
         self
@@ -244,6 +246,15 @@ impl Express {
     // pub fn state(state: State<VCache>) -> Self {
         
     // }
+    pub fn add_header<'p, H: Into<Header<'p>>>(mut self, header: H) -> Self {
+        // Not the greatest solution; ideally the headers would be stored in a Vec<Header>
+        // or in a HeaderMap but since those both require lifetime parameters it would
+        // require everything to be rewritten.
+        let h: Header = header.into();
+        
+        self.extras.insert(h.name().to_string(), h.value().to_string());
+        self
+    }
     pub fn new(data: ExData) -> Express {
         Express {
             content_type: (&data).content_type(),

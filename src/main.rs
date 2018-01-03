@@ -409,6 +409,8 @@ fn main() {
             pages::hbs_process_admin_login,
             pages::hbs_logout_admin,
             
+            pages::backup,
+            
             pages::hbs_dashboard_user_authorized,
             pages::hbs_dashboard_user_retry_user,
             pages::hbs_dashboard_user_flash,
