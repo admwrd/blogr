@@ -1,0 +1,1 @@
+pg_dump --format=p --no-owner --create --no-privileges --inserts --column-inserts --dbname="postgres://vishus:Mutex7892@localhost/blog"

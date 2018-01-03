@@ -203,6 +203,8 @@ pub const DATABASE_URL: &'static str = "postgres://postgres:andrew@localhost/blo
 const MAX_ATTEMPTS: i16 = 8; // 8
 #[cfg(not(production))]
 const LOCKOUT_DURATION: u32 = 8; // 6 seconds // 900 seconds = 15 minutes
+#[cfg(not(production))]
+const DB_BACKUP_SCRIPT: &'static str = r"scripts\db_backup-dev.bat";
 
 
 #[cfg(production)]
@@ -231,6 +233,10 @@ pub const DATABASE_URL: &'static str = "postgres://vishus:Mutex7892@localhost/bl
 const MAX_ATTEMPTS: i16 = 5; // 8
 #[cfg(production)]
 const LOCKOUT_DURATION: u32 = 900; // 6 seconds // 900 seconds = 15 minutes
+#[cfg(production)]
+const DB_BACKUP_SCRIPT: &'static str = r"bash";
+#[cfg(production)]
+const DB_BACKUP_ARG: &'static str = r"scripts/db_backup-prod.sh";
 
 // lazy_static! {
 //     static ref B_URL: &'static str = ;
