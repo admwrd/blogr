@@ -45,6 +45,8 @@ Blog Theme
 
 
 Blogr
+	Make SEO friendly article links replace spaces with hyphens
+
 	Change initial size of title input fields to be much smaller
 
 	change copyright to 2008

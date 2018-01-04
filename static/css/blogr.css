@@ -551,6 +551,26 @@ OLD - OUTDATED PAGINATION STYLES
 
 
 /* ARTICLE SECTION */
+
+/*background: url(http://localhost:8000/imgs/vishus-1.jpg) center center no-repeat;*/
+/*.v-article-img {
+    height: 300px;
+    margin: 0em 0px;
+    border: 1px solid rgba(0,0,0,0);
+    border-radius: 0.5em 0.5em 0px 0px;
+}*/
+
+.v-article-header-sub {
+    background-color: #333333c9;
+    margin: 1em 0px;
+    padding: 1em 0px;
+}
+
+.v-article-single .v-article-header {
+    background: url(http://localhost:8000/imgs/vishus-1.jpg) center center no-repeat;
+    padding: 150px 0px 0px;
+}
+
 .v-article-header {
     border: 1px solid #853c01;
     border-radius: 0.5em;

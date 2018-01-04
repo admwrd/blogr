@@ -34,6 +34,7 @@ pub struct TagCount {
     pub size: u16,
 }
 
+//  style="background: url('') center center no-repeat"
 
 /// The TemplateBody struct determines which template is used and what info is passed to it
 #[derive(Debug, Clone)]
