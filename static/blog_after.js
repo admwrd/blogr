@@ -36,7 +36,7 @@ function adjustWidthOfInput() {
     if (!resizeInput) return;
     var w = getWidthOfInput();
     var extra = 180;
-    var min = 200;
+    var min = 80;
     var max = 735;
     var width;
     // if (w < 300) {
@@ -52,7 +52,7 @@ function adjustWidthOfInput() {
     } else {
         width = w;
     }
-    
+    console.log("Setting input width to " + (width+extra) + "px");
     resizeInput.style.width = width + extra + "px";
     // resizeInput.style.width = getWidthOfInput() + "px";
 }

@@ -86,6 +86,18 @@ const comrak_options: ComrakOptions = ComrakOptions {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 /* the pages variable is populated with:
     Current page - pulled from query string/uri (call the parse_query method of the settings)
     Current route (pulled from request.uri())
@@ -131,7 +143,7 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 //     let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=username), None), Some("Administrator Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start.0));
         
 //     let end = start.0.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
 //     output
 // }
 
@@ -142,7 +154,7 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 //     let output: Template = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start.0));
         
 //     let end = start.0.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
 //     output
 // }
 
@@ -155,7 +167,7 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 //     let output: Template = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), clean_user, clean_msg), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start.0));
         
 //     let end = start.0.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
 //     output
 // }
 
@@ -175,7 +187,7 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 //     }
     
 //     let end = start.0.elapsed();
-//     println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     println!("Processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     
 //     inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
 // }
@@ -191,7 +203,7 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 //     let output: Template = hbs_template(TemplateBody::General(format!("Welcome {user}.  You are viewing your dashboard page.", user=username), None), Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start.0));
         
 //     let end = start.0.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
 //     output
 // }
 
@@ -202,7 +214,7 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 //     let output: Template = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start.0));
         
 //     let end = start.0.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
 //     output
 // }
 
@@ -215,7 +227,7 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 //     let output: Template = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), clean_user, clean_msg), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start.0));
         
 //     let end = start.0.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
 //     output
 // }
 
@@ -235,7 +247,7 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 //     }
     
 //     let end = start.0.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     
 //     inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
 // }
@@ -263,7 +275,7 @@ pub fn hbs_dashboard_admin_authorized(start: GenTimer, pagination: Page<Paginati
     // let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=admin.username), flash), Some("Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start.0));
     
     // let end = start.0.elapsed();
-    // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     // let express: Express = output.into();
     // express.compress(encoding)
     
@@ -285,7 +297,7 @@ pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<Use
     }
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -310,7 +322,7 @@ pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Optio
     let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), username, flash), Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -347,7 +359,7 @@ pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<Administrat
     }
     
     let end = start.0.elapsed();
-    println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     output
 }
 
@@ -384,7 +396,7 @@ pub fn hbs_dashboard_user_authorized(start: GenTimer, conn: DbConn, admin: Optio
     let output: Template = hbs_template(TemplateBody::General(format!("Welcome User {user}.  You are viewing the User dashboard page.", user=user.username), flash), Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start.0));
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -403,7 +415,7 @@ pub fn hbs_dashboard_user_flash(start: GenTimer, conn: DbConn, admin: Option<Adm
     }
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -423,7 +435,7 @@ pub fn hbs_dashboard_user_retry_user(start: GenTimer, conn: DbConn, admin: Optio
     let output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), username, flash), Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -459,7 +471,7 @@ pub fn hbs_process_user_login(start: GenTimer, form: Form<LoginCont<UserForm>>, 
     }
     
     let end = start.0.elapsed();
-    println!("Processed in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     output
 }
 
@@ -500,7 +512,7 @@ pub fn hbs_logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Resul
 //     }
     
 //     let end = start.0.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
 //     let express: Express = output.into();
 //     express.compress(encoding)
 // }
@@ -514,7 +526,7 @@ pub fn hbs_logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Resul
 //     let output: Template = hbs_template(TemplateBody::General("You are viewing paginated articles.".to_string(), None), Some("Viewing Articles".to_string()), String::from("/"), admin, user, None, Some(start.0));
     
 //     let end = start.0.elapsed();
-//     println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
 //     let express: Express = output.into();
 //     express.compress(encoding)
 // }
@@ -566,7 +578,7 @@ pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCo
     let output: Template = hbs_template(TemplateBody::Tags(tags, None), Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start.0));
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -731,7 +743,7 @@ pub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Paginatio
     // }
     
     // let end = start.0.elapsed();
-    // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     // let express: Express = output.into();
     // express.compress(encoding)
 }
@@ -759,7 +771,7 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
         output = hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid.aid)), None), Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
     }
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -769,7 +781,7 @@ pub fn hbs_article_not_found(start: GenTimer, conn: DbConn, admin: Option<Admini
     // let start = Instant::now();
     let output: Template = hbs_template(TemplateBody::General(alert_danger("Article not found"), None), Some("Article not found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -805,7 +817,7 @@ pub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbCon
     }
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -816,7 +828,7 @@ pub fn hbs_create_unauthorized(start: GenTimer, conn: DbConn, admin: Option<Admi
     let output: Template = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE), None), Some("Not Authorized".to_string()), String::from("/create"), admin, user, None, Some(start.0));
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -833,7 +845,7 @@ pub fn hbs_create_form(start: GenTimer, conn: DbConn, admin: Option<Administrato
     }
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -1051,7 +1063,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
                     let express: Express = output.into();
                     
                     let end = start.0.elapsed();
-                    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+                    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
                     
                     return express.compress( encoding );
                 }
@@ -1063,7 +1075,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
     let express: Express = output.into();
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     
     express.compress( encoding )
     
@@ -1094,7 +1106,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
     //     output = hbs_template(TemplateBody::General(alert_danger("No results were found."), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
     // }
     // let end = start.0.elapsed();
-    // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     // let express: Express = output.into();
     // express.compress(encoding)
 }
@@ -1201,7 +1213,7 @@ pub fn rss_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie
     }
     
     let end = start.0.elapsed();
-    println!("RSS Generated in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("RSS Generated in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     rss
 }
 
@@ -1257,7 +1269,7 @@ pub fn hbs_author(start: GenTimer, authorid: u32, pagination: Page<Pagination>, 
     }
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -1272,7 +1284,7 @@ pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCooki
 
 
 #[get("/edit/<aid>")]
-pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash_opt: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {
 
     // let options = ComrakOptions {
     //     hardbreaks: true,            // \n => <br>\n
@@ -1292,6 +1304,8 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
     // let html: String = markdown_to_html(text, &comrak_options);
     // html
     
+    let flash = process_flash(flash_opt);
+    
     let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. comrak_options };
     
     let output: Template;
@@ -1309,7 +1323,7 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
             article.body = html;
         }
         
-        output = hbs_template(TemplateBody::Edit(EDIT_FORM_URL.to_string(), article, None), Some(format!("Editing '{}'", title)), String::from("/edit"), Some(admin), user, None, Some(start.0));
+        output = hbs_template(TemplateBody::Edit(EDIT_FORM_URL.to_string(), article, flash), Some(format!("Editing '{}'", title)), String::from("/edit"), Some(admin), user, None, Some(start.0));
         let express: Express = output.into();
         return express.compress(encoding);
     }
@@ -1323,7 +1337,7 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
     //         return express.compress(encoding);
     //     }
     // }
-    output = hbs_template(TemplateBody::General("The reuqested article could not be found.".to_string(), None), Some("Edit".to_string()), String::from("/edit"), Some(admin), user, None, Some(start.0));
+    output = hbs_template(TemplateBody::General("The reuqested article could not be found.".to_string(), flash), Some("Edit".to_string()), String::from("/edit"), Some(admin), user, None, Some(start.0));
     
     let express: Express = output.into();
     express.compress(encoding)
@@ -1578,25 +1592,7 @@ pub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCook
 }
 
 
-// #[get("/sleep/<wait>")]
-// fn wait(mut wait: u64, start: GenTimer) -> String {
-//     // let start = Instant::now();
-//     // if wait > 1_000_000 {
-        
-//     // if wait > 1_000 {
-//     //     println!("Limiting wait to 1 second.");
-//     //     wait = 1_000;
-//     // }
-//     let duration = Duration::from_millis(wait);
-    
-//     thread::sleep(duration);
-    
-//     let end = start.0.elapsed();
-//     let output = format!("Waiting {} milliseconds\nServed in {}.{:09} seconds", wait, end.as_secs(), end.subsec_nanos());
-//     // let express: Express = output.into();
-//     // express
-//     output
-// }
+
 
 #[get("/")]
 pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {
@@ -1649,7 +1645,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
                     let express: Express = output.into();
                     
                     let end = start.0.elapsed();
-                    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+                    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
                     
                     return express.compress( encoding );
                 }
@@ -1661,7 +1657,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
     let express: Express = output.into();
     
     let end = start.0.elapsed();
-    println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     
     express.compress( encoding )
     
@@ -1683,7 +1679,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
     
     // // let end = start.0.elapsed();
     // let end = start.0.elapsed();
-    // println!("Served in {}.{:08} seconds", end.as_secs(), end.subsec_nanos());
+    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     // let express: Express = output.into();
     // express.compress(encoding)
 }

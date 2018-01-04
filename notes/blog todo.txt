@@ -32,7 +32,7 @@ Compile for production:
 Blog Theme
 	Verify and maybe change the generation timer to use 9 digits instead of 8
 
-	Add article header images
+	Add article header images to articles
 		add database column in articles table, if null use a default image
 		set the image as a background so it fills the width of the container
 		could add text?
@@ -45,6 +45,10 @@ Blog Theme
 
 
 Blogr
+	Change initial size of title input fields to be much smaller
+
+	change copyright to 2008
+
 	Display generation time in ms instead of seconds
 
 	Add link to go back to manage after saving or even before saving

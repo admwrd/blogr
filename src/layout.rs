@@ -1,10 +1,13 @@
 
 
+use rocket::response::Flash;
+use rocket::request::FlashMessage;
 use rocket::response::content::Html;
 use blog::*;
 use titlecase::titlecase;
 
 use super::{BLOG_URL, USER_LOGIN_URL, ADMIN_LOGIN_URL};
+
 
 // pub const UNAUTHORIZED_POST_MESSAGE: &'static str = "You are not authorized to post articles.  Please login as an administrator.<br><a href=\"http://localhost:8000/admin\">Admin Login</a>";
 pub const UNAUTHORIZED_POST_MESSAGE: &'static str = "You are not authorized to post articles.  Please login as an administrator.<br><a href=\"admin\">Admin Login</a>";
@@ -52,6 +55,29 @@ pub fn admin_nav() -> &'static str {
 pub fn admin_nav_login() -> &'static str {
     r##"<li class="v-nav-item nav-item"><a class="nav-link" href="/admin">Login</a></li>"##
 }
+
+
+
+
+pub fn process_flash(flash_opt: Option<FlashMessage>) -> Option<String> {
+    let fmsg: Option<String>;
+    if let Some(flash) = flash_opt {
+        if flash.name() == "error" {
+            fmsg = Some(alert_danger( flash.msg() ));
+        } else if flash.name() == "warning" {
+            fmsg = Some(alert_warning( flash.msg() ));
+        } else if flash.name() == "success" {
+            fmsg = Some(alert_success( flash.msg() ));
+        } else {
+            fmsg = Some(alert_info( flash.msg() ));
+        }
+    }  else {
+        fmsg = None;
+    }
+    fmsg
+}
+
+
 
 
 pub fn alert_danger(msg: &str) -> String {

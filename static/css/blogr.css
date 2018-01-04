@@ -784,7 +784,8 @@ pre, code {
     font-family: vishusBlogTitle, 'Century Gothic', verdana, 'trebuchet ms', Tahoma, 'sans-serif', times;
     font-family: 120%;
     margin: 0px auto;
-    width: 380px;
+    /*width: 380px;*/
+    width: 260px;
 }
 
 .v-input-separator {
