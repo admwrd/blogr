@@ -69,6 +69,13 @@
                             </div>
                         </div>
                         
+                        <!-- Image -->
+                        <div class="col-md-6 mx-auto">
+                            <label for="article-image" class="v-center-label v-form-label">Article Image</label>
+                            <input name="image" type="text" value="{{body.image}}" maxlength="250" class="v-centered-input v-form-control form-control" id="article-image" placeholder="Image">
+                            <p class="v-centered-text v-image-note">Image can be left blank</p>
+                        </div>
+                        
                         <!-- Hidden input fields for non-editable fields -->
                         <input type="hidden" name="aid" value="{{body.aid}}">
                         <input type="hidden" name="posted" value="{{body.posted_machine}}">
@@ -108,10 +115,10 @@
                 
                 <!-- PREVIEW ARTICLE -->
                 
-                <article id="v-edit-preview" class="start-hidden v-article v-article-signle">
+                <article id="v-edit-preview" class="start-hidden v-article v-article-single">
                     <!-- Header -->
                     <!-- <header class="v-article-header"> -->
-                    <header class="v-article-header"{{#if body.image}} style="background: url('{{info.base_url}}imgs/{{body.image}}') center center no-repeat"{{/if}}>
+                    <header id="header-article" class="v-article-header"{{#if body.image}} style="background: url('{{info.base_url}}imgs/{{body.image}}') center center no-repeat"{{/if}}>
                         <div class="v-article-header-sub">
                             <!-- Title -->
                             <h2 class="v-article-title"><a id="prev-title" href="{{info.base_url}}article/{{body.aid}}/{{body.title}}">{{body.title}}</a></h2>

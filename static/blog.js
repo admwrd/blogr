@@ -49,8 +49,14 @@ function sleep(ms) {
 // https://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize
 // https://stackoverflow.com/a/25621277/7891095
 function ChangeHeight() {
+    var original = this.style.height;
     this.style.height = 'auto';
-    this.style.height = (this.scrollHeight) + 'px';
+    if(original != this.scrollHeight) {
+        this.style.height = (this.scrollHeight) + 'px';
+    } else {
+        // REMOVE THIS
+        console.log("Not updating height");
+    }
 }
 
 function StartText() {
@@ -143,6 +149,8 @@ function preview_edit() {
         var desc = document.getElementById('insert_desc');
         var body = document.getElementById('insert_body');
         var tags = document.getElementById('insert-tags');
+        var img = document.getElementById('article-image');
+        var header = document.getElementById('header-article');
         var prev_title = document.getElementById('prev-title');
         var prev_desc = document.getElementById('prev-desc');
         var prev_body = document.getElementById('prev-body');
@@ -154,6 +162,15 @@ function preview_edit() {
         }
         
         var base_url = document.getElementById('base_url').value;
+        
+        
+        if(img && header) {
+            imgsrc = img.value.trim();
+            if (imgsrc != "") {
+                header.style.background = "url('" + base_url + "imgs/" + imgsrc + "') center center no-repeat";
+            }
+        }
+        
         
         var tags_html = "";
         var tags_array = tags.value.split(',');
@@ -190,6 +207,8 @@ function preview_create() {
         var desc = document.getElementById('insert_desc');
         var body = document.getElementById('insert_body');
         var tags = document.getElementById('insert-tags');
+        var img = document.getElementById('article-image');
+        var header = document.getElementById('header-article');
         var prev_title = document.getElementById('prev-title');
         var prev_desc = document.getElementById('prev-desc');
         var prev_body = document.getElementById('prev-body');
@@ -201,6 +220,15 @@ function preview_create() {
         }
         
         var base_url = document.getElementById('base_url').value;
+        
+        
+        if(img && header) {
+            imgsrc = img.value.trim();
+            if (imgsrc != "") {
+                header.style.background = "url('" + base_url + "imgs/" + imgsrc + "') center center no-repeat";
+            }
+        }
+        
         
         var tags_html = "";
         var tags_array = tags.value.split(',');

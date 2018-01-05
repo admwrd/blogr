@@ -689,7 +689,9 @@ impl Article {
                 SET title = '{title}',
                     body = '{body}',
                     tag = '{tag}',
-                    description = '{desc}'
+                    description = '{desc}',
+                    markdown = '{src}',
+                    image = '{img}'
                 WHERE aid = {aid}
             ", 
                     // posted = '{posted}',
@@ -698,6 +700,8 @@ impl Article {
             body=slash_quotes(&self.body),
             tag=tagstr,
             desc=slash_quotes(&self.description),
+            src=slash_quotes(&self.markdown),
+            img=slash_quotes(&self.image),
             aid=self.aid
         );
         
@@ -864,8 +868,8 @@ impl ArticleForm {
             
         //  can return both id and posted date
         // let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid, posted",
-        let qrystr = format!("INSERT INTO articles (title, posted, body, tag, description, author, markdown) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}', {author}, '{md}') RETURNING aid",
-            title=&self.title, posted=&now, body=&self.body, tags=tagstr, desc=&self.description, author=userid, md=&self.markdown);
+        let qrystr = format!("INSERT INTO articles (title, posted, body, tag, description, author, markdown, image) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}', {author}, '{md}', '{img}') RETURNING aid",
+            title=&self.title, posted=&now, body=&self.body, tags=tagstr, desc=&self.description, author=userid, md=&self.markdown, img=&self.image);
         println!("Insert query: {}", qrystr);
         let result = conn.query(&qrystr, &[]);
         match result {

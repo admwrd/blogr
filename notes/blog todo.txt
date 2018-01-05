@@ -51,6 +51,8 @@ SCSS
 Blogr
 	Add image input field to create and edit forms
 
+	Add image field to javascript preview function(s)
+
 
 	Reorganize Modules
 		Split Blog module into several modules
