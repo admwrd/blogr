@@ -112,24 +112,29 @@
 
                 </div>
                 
+                <!-- PREVIEW ARTICLE -->
+                
                 <article id="v-edit-preview" class="start-hidden v-article v-article-signle">
                     <!-- Header -->
-                    <header class="v-article-header">
-                        <!-- Title -->
-                        <!-- <h2 class="v-article-title"><a id="prev-title" href="{{info.base_url}}">Title</a></h2> -->
-                        <h2 class="v-article-title"><a id="prev-title">Title</a></h2>
-                        <div class="v-create-note">
-                            Date and author information will appear here.
-                        </div>
-                        <!-- 
-                        <div class="row">
-                            <date class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</date> 
-                            <div class="v-byline"> 
-                                 by 
-                                <a href="{{info.base_url}}author/{{body.userid}}/{{body.username}}" class="v-author-link">{{body.username}}</a>
+                    <!-- <header class="v-article-header"> -->
+                    <header class="v-article-header"{{#if body.image}} style="background: url('{{info.base_url}}imgs/{{body.image}}') center center no-repeat"{{/if}}>
+                        <div class="v-article-header-sub">
+                            <!-- Title -->
+                            <!-- <h2 class="v-article-title"><a id="prev-title" href="{{info.base_url}}">Title</a></h2> -->
+                            <h2 class="v-article-title"><a id="prev-title">Title</a></h2>
+                            <div class="v-create-note">
+                                Date and author information will appear here.
                             </div>
+                            <!-- 
+                            <div class="row">
+                                <date class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</date> 
+                                <div class="v-byline"> 
+                                     by 
+                                    <a href="{{info.base_url}}author/{{body.userid}}/{{body.username}}" class="v-author-link">{{body.username}}</a>
+                                </div>
+                            </div>
+                            -->
                         </div>
-                        -->
                     </header>
                     <div class="v-article-content">
                         <!-- Button - End Preview -->

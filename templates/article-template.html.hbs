@@ -6,7 +6,7 @@
                         {{{msg}}}
                     {{/if}}
                     <article class="v-article v-article-single">
-                        <header class="v-article-header"{{img}}>
+                        <header class="v-article-header"{{#if body.image}} style="background: url('{{info.base_url}}imgs/{{body.image}}') center center no-repeat"{{/if}}>
                             <div class="v-article-header-sub">
                                 <h2 class="v-article-title"><a href="{{info.base_url}}article/{{body.aid}}/{{body.title}}">{{body.title}}</a></h2>
                                 <div class="row">

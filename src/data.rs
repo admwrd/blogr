@@ -95,6 +95,7 @@ impl DbConn {
                 
                 let display: Option<String> = row.get(7);
                 let username: String = if let Some(disp) = display { disp } else { row.get(8) };
+                let image: String = row.get_opt(9).unwrap_or(Ok(String::new())).unwrap_or(String::new());
                 
                 let a = Article {
                     aid: row.get(0),
@@ -105,6 +106,7 @@ impl DbConn {
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     userid: row.get(6),
                     username: titlecase( &username ),
+                    image,
                 };
                 articles.push(a);
             }

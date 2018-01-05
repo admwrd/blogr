@@ -57,6 +57,9 @@ pub struct Article {
     pub body: String,
     pub tags: Vec<String>,
     pub description: String,
+    pub image: String,
+    
+    
     // pub author_id: u32,
     // pub author_name: String,
 }
@@ -117,6 +120,9 @@ pub struct ArticleDisplay {
     pub body: String,
     pub tags: Vec<String>,
     pub description: String,
+    pub image: String,
+    
+    
     // pub author_id: u32,
     // pub author_name: String,
 }
@@ -306,6 +312,8 @@ impl ArticleWrapper {
             body: self.body,
             tags: split_tags(self.tags),
             description: self.description,
+            // ====Update-image=====
+            image: String::new(),
         }
     }
 }
@@ -381,7 +389,7 @@ impl ArticleId {
     pub fn retrieve(&self) -> Option<Article> {
         let pgconn = establish_connection();
         // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
-        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -391,7 +399,7 @@ impl ArticleId {
                 let username: String = if let Some(disp) = display { disp } else { row.get(8) };
                 // let username: String = row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(row.get(8)).to_string();
                 // row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(row.get(8));
-                
+                let image: String = row.get_opt(9).unwrap_or(Ok(String::new())).unwrap_or(String::new());
                 
                 Some( Article {
                     aid: row.get(0),
@@ -405,6 +413,7 @@ impl ArticleId {
                     // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
                     userid: row.get(6),
                     username: titlecase( &sanitization::sanitize(&username) ),
+                    image,
                 })
             } else { None }
         } else { None }
@@ -413,8 +422,9 @@ impl ArticleId {
     pub fn retrieve_with_conn(&self, pgconn: DbConn) -> Option<Article> {
         // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         // let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid))) WHERE a.aid = {id}", id=self.aid), &[]);
-        let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
+        let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
         let rawqry = pgconn.query(&qrystr, &[]);
+        
         println!("Running query:\n{}", qrystr);
         if let Ok(aqry) = rawqry {
             // userid 6
@@ -425,6 +435,7 @@ impl ArticleId {
                 let row = aqry.get(0); // get first row
                 let display: Option<String> = row.get(7);
                 let username: String = if let Some(disp) = display { disp } else { row.get(8) };
+                let image: String = row.get_opt(9).unwrap_or(Ok(String::new())).unwrap_or(String::new());
                 Some( Article {
                     aid: row.get(0),
                     title: row.get(1), // todo: call sanitize title here
@@ -434,7 +445,7 @@ impl ArticleId {
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     userid: row.get(6),
                     username: titlecase( &sanitization::sanitize(&username) ),
-                    
+                    image,
                     // author_id: row.get(6),
                     // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
                 })
@@ -530,6 +541,8 @@ impl ArticleSource {
             body: self.body,
             tags: self.tags,
             description: self.description,
+            // =====Update-image===== --maybe
+            image: String::new(),
         }
     }
     pub fn save(&self, conn: DbConn) -> Result<String, String> {
@@ -600,6 +613,8 @@ impl Article {
             description: self.description.clone(),
             userid: self.userid,
             username: self.username.clone(),
+            image: self.image.clone(),
+            
             // author_id: self.author_id,
             // author_name: self.author_name.clone(),
         }
@@ -614,7 +629,7 @@ impl Article {
     }
     pub fn retrieve(aid: u32) -> Option<Article> {
         let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE aid = {id}", id=aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON (a.author = u.userid) WHERE aid = {id}", id=aid), &[]);
         if let Ok(aqry) = rawqry {
             // println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -622,6 +637,7 @@ impl Article {
                 
                 let display: Option<String> = row.get(7);
                 let username: String = if let Some(disp) = display { disp } else { row.get(8) };
+                let image: String = row.get_opt(9).unwrap_or(Ok(String::new())).unwrap_or(String::new());
                 
                 Some( Article {
                     aid: row.get(0),
@@ -632,12 +648,14 @@ impl Article {
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     userid: row.get(6),
                     username: titlecase( &sanitization::sanitize(&username) ),
-                    
+                    image,
                 })
             } else { None }
         } else { None }
     }
     
+    
+    // =====Update-image=====
     pub fn save(&self, conn: DbConn) -> Result<String, String> {
         let vtags: Vec<String> = self.tags.clone();
         let tagstr = format!( 
@@ -699,12 +717,12 @@ impl Article {
         let mut qrystr: String = if let Some(summary) = description {
             if summary < 1 {
                 show_desc = true;
-                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)", DESC_LIMIT)
+                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) as body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON(a.author = u.userid)", DESC_LIMIT)
             } else {
-                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) AS body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)", summary)
+                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) AS body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON(a.author = u.userid)", summary)
             }
         } else {
-            String::from("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON(a.author = u.userid)")
+            String::from("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON(a.author = u.userid)")
         };
         if min_date.is_some() || max_date.is_some() || (tag.is_some() && get_len(&tag) != 0) || (search.is_some() && get_len(&search) != 0) {
             qrystr.push_str(" WHERE");
@@ -750,6 +768,7 @@ impl Article {
             for row in &result {
                 let display: Option<String> = row.get(7);
                 let username: String = if let Some(disp) = display { disp } else { row.get(8) };
+                let image: String = row.get_opt(9).unwrap_or(Ok(String::new())).unwrap_or(String::new());
                 
                 let a = Article {
                     aid: row.get(0),
@@ -770,6 +789,7 @@ impl Article {
                         },
                     userid: row.get(6),
                     username: titlecase( &sanitization::sanitize(&username) ),
+                    image,
                     
                 };
                 articles.push(a);

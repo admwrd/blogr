@@ -43,8 +43,17 @@ Blog Theme
 		make the backgrounds
 			rgba(80,80,80,0.1)
 
+SCSS
+	Find timestamp of the consumer css file and find the created date
+		look in git repo for all changes made after the created date
+
 
 Blogr
+	Maybe make a dropdown (select) box for choosing an image for each article
+		Could also choose randomly and eliminate the choice
+		Could also choose based on the tags
+		Could also choose based on the first letter of the title
+
 	Make SEO friendly article links replace spaces with hyphens
 
 	Change initial size of title input fields to be much smaller
