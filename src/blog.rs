@@ -57,6 +57,7 @@ pub struct Article {
     pub body: String,
     pub tags: Vec<String>,
     pub description: String,
+    pub markdown: String,
     pub image: String,
     
     
@@ -65,18 +66,18 @@ pub struct Article {
 }
 
 // AritlceSource contains the original markdown code if it was used to create the article body (html)
-#[derive(Debug, Clone)]
-pub struct ArticleSource {
-    pub aid: u32,
-    pub title: String,
-    pub posted: NaiveDateTime,
-    pub userid: u32,
-    pub username: String,
-    pub body: String,
-    pub markdown: String,
-    pub tags: Vec<String>,
-    pub description: String,
-}
+// #[derive(Debug, Clone)]
+// pub struct ArticleSource {
+//     pub aid: u32,
+//     pub title: String,
+//     pub posted: NaiveDateTime,
+//     pub userid: u32,
+//     pub username: String,
+//     pub body: String,
+//     pub markdown: String,
+//     pub tags: Vec<String>,
+//     pub description: String,
+// }
 
 
 #[derive(Debug, Clone, FromForm)]
@@ -89,24 +90,26 @@ pub struct ArticleWrapper {
     pub body: String,
     pub tags: String,
     pub description: String,
+    pub markdown: String,
+    pub image: String,
     // pub author_id: u32,
     // pub author_name: String,
 }
 
-#[derive(Debug, Clone, FromForm)]
-pub struct ArticleSourceWrapper {
-    pub aid: u32,
-    pub title: String,
-    pub posted: NaiveDateTimeWrapper,
-    pub userid: u32,
-    pub username: String,
-    pub body: String,
-    pub markdown: String,
-    pub tags: String,
-    pub description: String,
-    // pub author_id: u32,
-    // pub author_name: String,
-}
+// #[derive(Debug, Clone, FromForm)]
+// pub struct ArticleSourceWrapper {
+//     pub aid: u32,
+//     pub title: String,
+//     pub posted: NaiveDateTimeWrapper,
+//     pub userid: u32,
+//     pub username: String,
+//     pub body: String,
+//     pub markdown: String,
+//     pub tags: String,
+//     pub description: String,
+//     // pub author_id: u32,
+//     // pub author_name: String,
+// }
 
 
 #[derive(Debug, Clone, Serialize)]
@@ -120,6 +123,7 @@ pub struct ArticleDisplay {
     pub body: String,
     pub tags: Vec<String>,
     pub description: String,
+    pub markdown: String,
     pub image: String,
     
     
@@ -127,21 +131,21 @@ pub struct ArticleDisplay {
     // pub author_name: String,
 }
 
-#[derive(Debug, Clone, Serialize)]
-pub struct ArticleSourceDisplay {
-    pub aid: u32,
-    pub title: String,
-    pub posted_machine: String,
-    pub posted_human: String,
-    pub userid: u32,
-    pub username: String,
-    pub body: String,
-    pub markdown: String,
-    pub tags: Vec<String>,
-    pub description: String,
-    // pub author_id: u32,
-    // pub author_name: String,
-}
+// #[derive(Debug, Clone, Serialize)]
+// pub struct ArticleSourceDisplay {
+//     pub aid: u32,
+//     pub title: String,
+//     pub posted_machine: String,
+//     pub posted_human: String,
+//     pub userid: u32,
+//     pub username: String,
+//     pub body: String,
+//     pub markdown: String,
+//     pub tags: Vec<String>,
+//     pub description: String,
+//     // pub author_id: u32,
+//     // pub author_name: String,
+// }
 
 #[derive(Debug, Clone)]
 pub struct ArticleForm {
@@ -151,6 +155,7 @@ pub struct ArticleForm {
     pub markdown: String,
     pub tags: String,
     pub description: String,
+    pub image: String,
     // pub author_id: u32,
     // pub author_name: String,
 }
@@ -218,6 +223,17 @@ pub struct SortDisplay {
     sort_desc: bool,
     sort_asc: bool,
 }
+
+
+
+pub fn opt_col<T>(rst: Option<Result<T, T>>) -> T where T: Display + Default {
+    match rst {
+        Some(Ok(d)) => d,
+        Some(Err(e)) => { println!("Encountered an error retrieving the description. Error: {}", e); T::default() },
+        None => T::default(),
+    }
+}
+
 
 impl Sort {
     pub fn to_display(&self) -> SortDisplay {
@@ -312,28 +328,28 @@ impl ArticleWrapper {
             body: self.body,
             tags: split_tags(self.tags),
             description: self.description,
-            // ====Update-image=====
-            image: String::new(),
+            markdown: self.markdown,
+            image: self.image,
         }
     }
 }
 
-impl ArticleSourceWrapper {
-    pub fn to_article(self) -> ArticleSource {
-        // let tags: Vec<String> = self.tags.split(",").map(|t| ).collect();
-        ArticleSource {
-            aid: self.aid,
-            title: self.title,
-            posted: self.posted.0,
-            userid: self.userid,
-            username: self.username,
-            body: self.body,
-            markdown: self.markdown,
-            tags: split_tags(self.tags),
-            description: self.description,
-        }
-    }
-}
+// impl ArticleSourceWrapper {
+//     pub fn to_article(self) -> ArticleSource {
+//         // let tags: Vec<String> = self.tags.split(",").map(|t| ).collect();
+//         ArticleSource {
+//             aid: self.aid,
+//             title: self.title,
+//             posted: self.posted.0,
+//             userid: self.userid,
+//             username: self.username,
+//             body: self.body,
+//             markdown: self.markdown,
+//             tags: split_tags(self.tags),
+//             description: self.description,
+//         }
+//     }
+// }
 
 // use rocket::request::FromRequest;
 impl<'a, 'r> FromRequest<'a, 'r> for GenTimer {
@@ -367,13 +383,6 @@ impl<'a, 'r> FromRequest<'a, 'r> for GenTimer {
 
 
 
-pub fn opt_col<T>(rst: Option<Result<T, T>>) -> T where T: Display + Default {
-    match rst {
-        Some(Ok(d)) => d,
-        Some(Err(e)) => { println!("Encountered an error retrieving the description. Error: {}", e); T::default() },
-        None => T::default(),
-    }
-}
 
 impl ArticleId {
     pub fn new(aid: u32) -> ArticleId {
@@ -389,7 +398,7 @@ impl ArticleId {
     pub fn retrieve(&self) -> Option<Article> {
         let pgconn = establish_connection();
         // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
-        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
             println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -400,6 +409,7 @@ impl ArticleId {
                 // let username: String = row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(row.get(8)).to_string();
                 // row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(row.get(8));
                 let image: String = row.get_opt(9).unwrap_or(Ok(String::new())).unwrap_or(String::new());
+                
                 
                 Some( Article {
                     aid: row.get(0),
@@ -413,6 +423,7 @@ impl ArticleId {
                     // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
                     userid: row.get(6),
                     username: titlecase( &sanitization::sanitize(&username) ),
+                    markdown: row.get_opt(10).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     image,
                 })
             } else { None }
@@ -422,7 +433,7 @@ impl ArticleId {
     pub fn retrieve_with_conn(&self, pgconn: DbConn) -> Option<Article> {
         // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         // let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid))) WHERE a.aid = {id}", id=self.aid), &[]);
-        let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
+        let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
         let rawqry = pgconn.query(&qrystr, &[]);
         
         println!("Running query:\n{}", qrystr);
@@ -445,6 +456,7 @@ impl ArticleId {
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     userid: row.get(6),
                     username: titlecase( &sanitization::sanitize(&username) ),
+                    markdown: row.get_opt(10).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     image,
                     // author_id: row.get(6),
                     // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
@@ -453,37 +465,39 @@ impl ArticleId {
         } else { None }
     }
     // use the description field to store the markdown and body to store the original body (html)
-    pub fn retrieve_markdown(&self, pgconn: DbConn) -> Option<ArticleSource> {
-        // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
-        // let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid))) WHERE a.aid = {id}", id=self.aid), &[]);
-        let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, a.markdown, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
-        let rawqry = pgconn.query(&qrystr, &[]);
-        println!("Running query:\n{}", qrystr);
-        if let Ok(aqry) = rawqry {
-            println!("Querying articles: found {} rows", aqry.len());
-            if !aqry.is_empty() && aqry.len() == 1 {
-                let row = aqry.get(0); // get first row
-                let display: Option<String> = row.get(8);
-                let md: String = row.get_opt(6).unwrap_or(Ok(String::new())).unwrap_or(String::new());
-                let markdown: String = if &md == "" { row.get(3) } else { md };
-                let username: String = if let Some(disp) = display { disp } else { row.get(8) };
-                Some( ArticleSource {
-                    aid: row.get(0),
-                    title: row.get(1), // todo: call sanitize title here
-                    posted: row.get(2),
-                    body: row.get(3), // Todo: call sanitize body here
-                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
-                    description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
-                    markdown,
-                    userid: row.get(7),
-                    username: titlecase( &sanitization::sanitize(&username) ),
+    // pub fn retrieve_markdown(&self, pgconn: DbConn) -> Option<ArticleSource> {
+    //     // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
+    //     // let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid))) WHERE a.aid = {id}", id=self.aid), &[]);
+    //     let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, a.markdown, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
+    //     let rawqry = pgconn.query(&qrystr, &[]);
+    //     println!("Running query:\n{}", qrystr);
+    //     if let Ok(aqry) = rawqry {
+    //         println!("Querying articles: found {} rows", aqry.len());
+    //         if !aqry.is_empty() && aqry.len() == 1 {
+    //             let row = aqry.get(0); // get first row
+    //             let display: Option<String> = row.get(8);
+    //             let md: String = row.get_opt(6).unwrap_or(Ok(String::new())).unwrap_or(String::new());
+    //             let markdown: String = if &md == "" { row.get(3) } else { md };
+    //             let username: String = if let Some(disp) = display { disp } else { row.get(8) };
+    //             Some( ArticleSource {
+    //                 aid: row.get(0),
+    //                 title: row.get(1), // todo: call sanitize title here
+    //                 posted: row.get(2),
+    //                 body: row.get(3), // Todo: call sanitize body here
+    //                 tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
+    //                 description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
+    //                 markdown,
+    //                 userid: row.get(7),
+    //                 username: titlecase( &sanitization::sanitize(&username) ),
                     
-                    // author_id: row.get(6),
-                    // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
-                })
-            } else { None }
-        } else { None }
-    }
+    //                 // author_id: row.get(6),
+    //                 // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
+    //             })
+    //         } else { None }
+    //     } else { None }
+    // }
+    
+    
     // Possible Functions:
     // pub fn last_id() -> u32 {
     //     unimplemented!()
@@ -514,92 +528,92 @@ pub fn slash_quotes(text: &str) -> String {
 }
 
 
-impl ArticleSource {
-    pub fn to_display(self) -> ArticleSourceDisplay {
-        ArticleSourceDisplay {
-            aid: self.aid,
-            title: self.title,
-            posted_machine: self.posted.format("%Y-%m-%dT%H:%M:%S").to_string(),
-            posted_human: self.posted.format("%Y-%m-%d @ %I:%M%P").to_string(),
-            body: self.body,
-            markdown: self.markdown,
-            tags: self.tags,
-            description: self.description,
-            userid: self.userid,
-            username: self.username,
-            // author_id: self.author_id,
-            // author_name: self.author_name.clone(),
-        }
-    }
-    pub fn to_article(self) -> Article {
-        Article {
-            aid: self.aid,
-            title: self.title,
-            posted: self.posted,
-            userid: self.userid,
-            username: self.username,
-            body: self.body,
-            tags: self.tags,
-            description: self.description,
-            // =====Update-image===== --maybe
-            image: String::new(),
-        }
-    }
-    pub fn save(&self, conn: DbConn) -> Result<String, String> {
-        let vtags: Vec<String> = self.tags.clone();
-        let tagstr = format!( 
-            "{{{}}}", vtags
-            .iter()
-            // .split(",")
-            .map(
-                |s| format!("\"{}\"", s.trim().to_lowercase())
-            ).collect::<Vec<_>>()
-            .join(",")
-            // .replace(",''")
-        );
-        let qrystr = format!("
-            UPDATE articles 
-                SET title = '{title}',
-                    body = '{body}',
-                    markdown = '{src}',
-                    tag = '{tag}',
-                    description = '{desc}'
-                WHERE aid = {aid}
-            ", 
-                    // posted = '{posted}',
-            title=slash_quotes(&self.title), 
-            // posted=slash_quotes(self.posted), 
-            body=slash_quotes(&self.body),
-            src=slash_quotes(&self.markdown),
-            tag=tagstr,
-            desc=slash_quotes(&self.description),
-            aid=self.aid
-        );
+// impl ArticleSource {
+//     pub fn to_display(self) -> ArticleSourceDisplay {
+//         ArticleSourceDisplay {
+//             aid: self.aid,
+//             title: self.title,
+//             posted_machine: self.posted.format("%Y-%m-%dT%H:%M:%S").to_string(),
+//             posted_human: self.posted.format("%Y-%m-%d @ %I:%M%P").to_string(),
+//             body: self.body,
+//             markdown: self.markdown,
+//             tags: self.tags,
+//             description: self.description,
+//             userid: self.userid,
+//             username: self.username,
+//             // author_id: self.author_id,
+//             // author_name: self.author_name.clone(),
+//         }
+//     }
+//     pub fn to_article(self) -> Article {
+//         Article {
+//             aid: self.aid,
+//             title: self.title,
+//             posted: self.posted,
+//             userid: self.userid,
+//             username: self.username,
+//             body: self.body,
+//             tags: self.tags,
+//             description: self.description,
+//             // =====Update-image===== --maybe
+//             image: String::new(),
+//         }
+//     }
+//     pub fn save(&self, conn: DbConn) -> Result<String, String> {
+//         let vtags: Vec<String> = self.tags.clone();
+//         let tagstr = format!( 
+//             "{{{}}}", vtags
+//             .iter()
+//             // .split(",")
+//             .map(
+//                 |s| format!("\"{}\"", s.trim().to_lowercase())
+//             ).collect::<Vec<_>>()
+//             .join(",")
+//             // .replace(",''")
+//         );
+//         let qrystr = format!("
+//             UPDATE articles 
+//                 SET title = '{title}',
+//                     body = '{body}',
+//                     markdown = '{src}',
+//                     tag = '{tag}',
+//                     description = '{desc}'
+//                 WHERE aid = {aid}
+//             ", 
+//                     // posted = '{posted}',
+//             title=slash_quotes(&self.title), 
+//             // posted=slash_quotes(self.posted), 
+//             body=slash_quotes(&self.body),
+//             src=slash_quotes(&self.markdown),
+//             tag=tagstr,
+//             desc=slash_quotes(&self.description),
+//             aid=self.aid
+//         );
         
-        println!("Generated update query:\n{}", qrystr);
+//         println!("Generated update query:\n{}", qrystr);
         
-        if let Ok(num) = conn.execute(&qrystr, &[]) {
-            if num == 1 {
-                Ok(format!("Article {} successfully updated", self.aid))
-            } else if num > 1 {
-                println!("Update query updated too many rows.");
-                Err("Multiple rows updated".to_string())
-            } else {
-                println!("Update query updated no rows.");
-                Err(String::new())
-            }
-        } else {
-            println!("Update query failed.");
-            Err(String::new())
-        }
+//         if let Ok(num) = conn.execute(&qrystr, &[]) {
+//             if num == 1 {
+//                 Ok(format!("Article {} successfully updated", self.aid))
+//             } else if num > 1 {
+//                 println!("Update query updated too many rows.");
+//                 Err("Multiple rows updated".to_string())
+//             } else {
+//                 println!("Update query updated no rows.");
+//                 Err(String::new())
+//             }
+//         } else {
+//             println!("Update query failed.");
+//             Err(String::new())
+//         }
         
-    } 
+//     } 
     
-    pub fn info(&self) -> String {
-        format!("Aid: {aid}, Title: {title}, Posted on: {posted}, Description:<br>\n{desc}<br>\nSource:<br>{src}\n<br>\nBody:<br>\n{body}<br>\ntags: {tags:#?}", aid=self.aid, title=self.title, posted=self.posted, src=self.markdown, body=self.body, tags=self.tags, desc=self.description)
-    }
+//     pub fn info(&self) -> String {
+//         format!("Aid: {aid}, Title: {title}, Posted on: {posted}, Description:<br>\n{desc}<br>\nSource:<br>{src}\n<br>\nBody:<br>\n{body}<br>\ntags: {tags:#?}", aid=self.aid, title=self.title, posted=self.posted, src=self.markdown, body=self.body, tags=self.tags, desc=self.description)
+//     }
     
-}
+// }
 
 impl Article {
     pub fn to_display(&self) -> ArticleDisplay {
@@ -613,6 +627,7 @@ impl Article {
             description: self.description.clone(),
             userid: self.userid,
             username: self.username.clone(),
+            markdown: self.markdown.clone(),
             image: self.image.clone(),
             
             // author_id: self.author_id,
@@ -629,7 +644,7 @@ impl Article {
     }
     pub fn retrieve(aid: u32) -> Option<Article> {
         let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON (a.author = u.userid) WHERE aid = {id}", id=aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON (a.author = u.userid) WHERE aid = {id}", id=aid), &[]);
         if let Ok(aqry) = rawqry {
             // println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -648,6 +663,7 @@ impl Article {
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     userid: row.get(6),
                     username: titlecase( &sanitization::sanitize(&username) ),
+                    markdown: row.get_opt(10).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     image,
                 })
             } else { None }
@@ -717,12 +733,12 @@ impl Article {
         let mut qrystr: String = if let Some(summary) = description {
             if summary < 1 {
                 show_desc = true;
-                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) as body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON(a.author = u.userid)", DESC_LIMIT)
+                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) as body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON(a.author = u.userid)", DESC_LIMIT)
             } else {
-                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) AS body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON(a.author = u.userid)", summary)
+                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) AS body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON(a.author = u.userid)", summary)
             }
         } else {
-            String::from("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image FROM articles a JOIN users u ON(a.author = u.userid)")
+            String::from("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON(a.author = u.userid)")
         };
         if min_date.is_some() || max_date.is_some() || (tag.is_some() && get_len(&tag) != 0) || (search.is_some() && get_len(&search) != 0) {
             qrystr.push_str(" WHERE");
@@ -789,6 +805,7 @@ impl Article {
                         },
                     userid: row.get(6),
                     username: titlecase( &sanitization::sanitize(&username) ),
+                    markdown: row.get_opt(10).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     image,
                     
                 };
@@ -804,33 +821,34 @@ impl Article {
 }
 
 impl ArticleForm {
-    pub fn new(title: String, body: String, tags: String, description: String, markdown: String) -> ArticleForm {
+    pub fn new(title: String, body: String, tags: String, description: String, markdown: String, image: String) -> ArticleForm {
         ArticleForm {
             title,
             body,
             markdown,
             tags,
             description,
+            image,
         }
     }
-    pub fn to_source(&self, userid: u32, username: &str) -> ArticleSource {
-        // get next aid
-        let next_aid = 0;
-        ArticleSource {
-            aid: next_aid,
-            title: sanitize_title(self.title.clone()),
-            posted: Local::now().naive_local(), // This fn is only used when saving new articles
-            // body: sanitize_body(self.body.clone()),
-            body: self.body.clone(),
-            markdown: self.markdown.clone(),
-            tags: split_tags(sanitize_tags(self.tags.clone())),
-            description: sanitize_body(self.description.clone()),
-            userid,
-            username: titlecase( &sanitization::sanitize(username) ),
-        }
-    }
+    // pub fn to_source(&self, userid: u32, username: &str) -> ArticleSource {
+    //     // get next aid
+    //     let next_aid = 0;
+    //     ArticleSource {
+    //         aid: next_aid,
+    //         title: sanitize_title(self.title.clone()),
+    //         posted: Local::now().naive_local(), // This fn is only used when saving new articles
+    //         // body: sanitize_body(self.body.clone()),
+    //         body: self.body.clone(),
+    //         markdown: self.markdown.clone(),
+    //         tags: split_tags(sanitize_tags(self.tags.clone())),
+    //         description: sanitize_body(self.description.clone()),
+    //         userid,
+    //         username: titlecase( &sanitization::sanitize(username) ),
+    //     }
+    // }
     // pub fn save(&self, conn: &DbConn, userid: u32, username: &str) -> Result<ArticleSource, String> {
-    pub fn save(self, conn: &DbConn, userid: u32, username: &str) -> Result<ArticleSource, String> {
+    pub fn save(self, conn: &DbConn, userid: u32, username: &str) -> Result<Article, String> {
         let now = Local::now().naive_local();
         
         // take blah, blah2, blah3 and convert into {'blah', 'blah2', 'blah3'}
@@ -855,7 +873,7 @@ impl ArticleForm {
             Ok(qry)  => {
                 if !qry.is_empty() && qry.len() == 1 {
                     let row = qry.get(0);
-                    Ok( ArticleSource {
+                    Ok( Article {
                         aid: row.get(0),
                         title: self.title,
                         posted: now,
@@ -865,6 +883,7 @@ impl ArticleForm {
                         description: self.description,
                         userid,
                         username: titlecase( &sanitization::sanitize(username) ), 
+                        image: self.image,
                     })
                 } else if qry.is_empty() {
                     Err("Error inserting article, result is empty.".to_string())
@@ -903,17 +922,19 @@ impl<'f> FromForm<'f> for ArticleId {
         for (field, value) in form_items {
             if field.as_str() == "aid" {
                 aid = value.to_string().parse::<u32>().unwrap_or(0u32);
+                return Ok( ArticleId { aid } );
             }
             // match field.as_str() {
             //     "aid" => { aid = value.to_string().parse::<u32>().unwrap_or(0u32) },
             //     _ => {},
             // }
         }
-        if aid == 0  {
-            Err("Invalid user id specified")
-        } else {
-            Ok( ArticleId { aid} )
-        }
+        // if aid == 0  {
+        //     Err("Invalid user id specified")
+        // } else {
+        //     Ok( ArticleId { aid} )
+        // }
+        Ok( ArticleId { aid} )
     }
 }
 
@@ -1009,6 +1030,7 @@ impl<'f> FromForm<'f> for ArticleForm {
         let mut tags: String = String::new();
         let mut description: String = String::new();
         let mut markdown: String = String::new();
+        let mut image: String = String::new();
         
         for (field, value) in form_items {
             match field.as_str() {
@@ -1017,6 +1039,7 @@ impl<'f> FromForm<'f> for ArticleForm {
                 "markdown" => { markdown = value.url_decode().unwrap_or( String::new() ) },
                 "tags" => { tags = sanitize_tags(value.url_decode().unwrap_or( String::new() )) },
                 "description" => { description = sanitize_body(value.url_decode().unwrap_or( String::new() )) },
+                "image" => { image = value.url_decode().unwrap_or( String::new() ) },
                 _ => {},
             }
         }
@@ -1032,7 +1055,7 @@ impl<'f> FromForm<'f> for ArticleForm {
         if title == "" || body == "" {
             Err("Missing a required field.")
         } else {
-            Ok( ArticleForm::new(title, body, tags, description, markdown) )
+            Ok( ArticleForm::new(title, body, tags, description, markdown, image) )
         }
     }
 }

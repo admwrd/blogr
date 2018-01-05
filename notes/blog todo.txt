@@ -49,6 +49,25 @@ SCSS
 
 
 Blogr
+	Add image input field to create and edit forms
+
+
+	Reorganize Modules
+		Split Blog module into several modules
+			ArticleId
+			Article
+			ArticleDisplay
+			ArticleForm
+			ArticleWrapper
+			GenTimer
+			NaiveDateTimeWrapper
+			Search
+			SearchDisplay
+			Sort
+			SortDisplay
+			Tag
+			User
+			ViewPage
 	Maybe make a dropdown (select) box for choosing an image for each article
 		Could also choose randomly and eliminate the choice
 		Could also choose based on the tags

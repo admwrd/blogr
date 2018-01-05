@@ -57,7 +57,7 @@ pub enum TemplateBody {
         Option<String>, // fail message
     ),
     Create(String, Option<String>), // form action url and optional message
-    Edit(String, ArticleSource, Option<String>), // form action url and optional message
+    Edit(String, Article, Option<String>), // form action url and optional message
     // Paginated list of articles, 
     // need to find a way to indicate which column is being sorted on and which way its sorted
     // manage/desc|asc/date
@@ -116,7 +116,7 @@ pub struct TemplateCreate {
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateEdit {
     pub action_url: String,
-    pub body: ArticleSourceDisplay,
+    pub body: ArticleDisplay,
     pub msg: String,
     pub info: TemplateInfo,
 }
@@ -413,7 +413,7 @@ impl TemplateCreate {
     }
 }
 impl TemplateEdit {
-        pub fn new(action_url: String, article: ArticleSource, msg: Option<String>, info: TemplateInfo) -> TemplateEdit {
+        pub fn new(action_url: String, article: Article, msg: Option<String>, info: TemplateInfo) -> TemplateEdit {
         TemplateEdit {
             action_url,
             body: article.to_display(),

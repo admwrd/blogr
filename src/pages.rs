@@ -806,8 +806,8 @@ pub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbCon
     
     let result = article.save(&conn, admin.userid, &username);
     match result {
-        Ok(articlesrc) => {
-            let article = articlesrc.to_article();
+        Ok(article) => {
+            // let article = articlesrc.to_article();
             let title = article.title.clone();
             output = hbs_template(TemplateBody::Article(article, None), Some(title), String::from("/create"), Some(admin), user, None, Some(start.0));
         },
@@ -1310,7 +1310,7 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
     
     let output: Template;
     let id = ArticleId::new(aid);
-    if let Some(mut article) = id.retrieve_markdown(conn) {
+    if let Some(mut article) = id.retrieve_with_conn(conn) {
         // println!("Retrieved article info: {}", article.info());
         //
         let title = article.title.clone();
@@ -1346,12 +1346,12 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
 
 #[post("/edit", data = "<form>")]
 // pub fn hbs_edit_process(start: GenTimer, form: Form<Article>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {
-pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleSourceWrapper>, conn: DbConn, admin: AdministratorCookie, encoding: AcceptCompression) -> Flash<Redirect> {
+pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleWrapper>, conn: DbConn, admin: AdministratorCookie, encoding: AcceptCompression) -> Flash<Redirect> {
     
     let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. comrak_options };
     
-    let wrapper: ArticleSourceWrapper = form.into_inner();
-    let mut article: ArticleSource = wrapper.to_article();
+    let wrapper: ArticleWrapper = form.into_inner();
+    let mut article: Article = wrapper.to_article();
     
     if &article.body == "" && &article.markdown != "" {
         let html: String = markdown_to_html(&article.markdown, &cr_options);
