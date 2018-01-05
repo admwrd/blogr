@@ -31,7 +31,7 @@ use postgres::params::{ConnectParams, Host};
 use std::ops::Deref;
 use std;
 use std::env;
-use dotenv::dotenv;
+// use dotenv::dotenv;
 use super::DATABASE_URL;
 // use diesel;
 // use diesel::prelude::*;

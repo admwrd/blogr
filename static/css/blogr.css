@@ -567,7 +567,7 @@ OLD - OUTDATED PAGINATION STYLES
 }
 
 .v-article-single .v-article-header {
-    background: url(http://localhost:8000/imgs/vishus-1.jpg) center center no-repeat;
+    /*background: url(http://localhost:8000/imgs/vishus-1.jpg) center center no-repeat;*/
     padding: 150px 0px 0px;
 }
 
@@ -656,7 +656,7 @@ OLD - OUTDATED PAGINATION STYLES
 
 .v-article-date {
     margin: 0px 0px 0px 1em;
-    color: #aaa;
+    color: #ffffff;
     width: 100%;
     text-align: center;
 }

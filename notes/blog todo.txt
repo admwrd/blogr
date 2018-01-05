@@ -24,6 +24,14 @@ Rocket-auth-login
 orange:   #de6d11
 dark ora: #853c01
 
+Favorite Header Images:
+	1	feathers
+	2	sci-fi
+	3?	fire
+	6	green sphere things
+	10	red abstract
+
+
 Compile for production:
 	#!/bin/bash
 	 cargo rustc -- --cfg production
@@ -46,6 +54,10 @@ Blog Theme
 SCSS
 	Find timestamp of the consumer css file and find the created date
 		look in git repo for all changes made after the created date
+
+VPS
+	turn on the firewall
+		uwf ???
 
 
 Blogr

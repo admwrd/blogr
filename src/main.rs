@@ -19,7 +19,7 @@
 #![feature(custom_derive)]
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
-#![plugin(dotenv_macros)]
+// #![plugin(dotenv_macros)]
 
 // extern crate multipart;
 extern crate rocket;
@@ -60,7 +60,9 @@ extern crate titlecase;
 #[allow(unused_imports)]
 extern crate htmlescape;
 extern crate rss;
-extern crate dotenv;
+
+// extern crate dotenv;
+
 // #[macro_use] extern crate log;
 // extern crate env_logger;
 // #[macro_use] extern crate diesel_codegen;
@@ -171,85 +173,14 @@ use rocket::State;
 // #[cfg(not(production))]
 // pub const BLOG_URL: &'static str = "http://localhost:8000/";
 
-#[cfg(production)]
-pub const PRODUCTION: bool = true;
-#[cfg(not(production))]
-pub const PRODUCTION: bool = false;
 
-
-#[cfg(not(production))]
-pub const BLOG_URL: &'static str = "http://localhost:8000/";
-#[cfg(not(production))]
-pub const USER_LOGIN_URL: &'static str = "http://localhost:8000/user";
-#[cfg(not(production))]
-pub const ADMIN_LOGIN_URL: &'static str = "http://localhost:8000/admin";
-#[cfg(not(production))]
-pub const TEST_LOGIN_URL: &'static str = "http://localhost:8000/login";
-#[cfg(not(production))]
-pub const CREATE_FORM_URL: &'static str = "http://localhost:8000/create";
-#[cfg(not(production))]
-pub const EDIT_FORM_URL: &'static str = "http://localhost:8000/edit";
-#[cfg(not(production))]
-pub const MANAGE_URL: &'static str = "http://localhost:8000/manage";
-#[cfg(not(production))]
-pub const MAX_CREATE_TITLE: usize = 120;
-#[cfg(not(production))]
-pub const MAX_CREATE_DESCRIPTION: usize = 400;
-#[cfg(not(production))]
-pub const MAX_CREATE_TAGS: usize = 250;
-#[cfg(not(production))]
-pub const DATABASE_URL: &'static str = "postgres://postgres:andrew@localhost/blog";
-#[cfg(not(production))]
-const MAX_ATTEMPTS: i16 = 8; // 8
-#[cfg(not(production))]
-const LOCKOUT_DURATION: u32 = 8; // 6 seconds // 900 seconds = 15 minutes
-#[cfg(not(production))]
-const DB_BACKUP_SCRIPT: &'static str = r"scripts\db_backup-dev.bat";
-// After the specified number of attempts, the next account lock will permanently lock the account
-#[cfg(not(production))]
-const ADMIN_LOCK: i16 = 20;
-// After the specified number of attempts, the next account lock will permanently lock the account
-#[cfg(not(production))]
-const USER_LOCK: i16 = 40;
-
-
-#[cfg(production)]
-pub const BLOG_URL: &'static str = "http://vishus.net/";
-#[cfg(production)]
-pub const USER_LOGIN_URL: &'static str = "http://vishus.net/user";
-#[cfg(production)]
-pub const ADMIN_LOGIN_URL: &'static str = "http://vishus.net/admin";
-#[cfg(production)]
-pub const TEST_LOGIN_URL: &'static str = "http://vishus.net/login";
-#[cfg(production)]
-pub const CREATE_FORM_URL: &'static str = "http://vishus.net/create";
-#[cfg(production)]
-pub const EDIT_FORM_URL: &'static str = "http://vishus.net/edit";
-#[cfg(production)]
-pub const MANAGE_URL: &'static str = "http://vishus.net/manage";
-#[cfg(production)]
-pub const MAX_CREATE_TITLE: usize = 50;
-#[cfg(production)]
-pub const MAX_CREATE_DESCRIPTION: usize = 500;
-#[cfg(production)]
-pub const MAX_CREATE_TAGS: usize = 250;
-#[cfg(production)]
-pub const DATABASE_URL: &'static str = "postgres://vishus:Mutex7892@localhost/blog";
-#[cfg(production)]
-const MAX_ATTEMPTS: i16 = 5; // 8
-#[cfg(production)]
-const LOCKOUT_DURATION: u32 = 900; // 6 seconds // 900 seconds = 15 minutes
-#[cfg(production)]
-const DB_BACKUP_SCRIPT: &'static str = r"bash";
-#[cfg(production)]
-const DB_BACKUP_ARG: &'static str = r"scripts/db_backup-prod.sh";
-// After the specified number of attempts, the next account lock will permanently lock the account
-#[cfg(production)]
-const ADMIN_LOCK: i16 = 15;
-// After the specified number of attempts, the next account lock will permanently lock the account
-#[cfg(production)]
-const USER_LOCK: i16 = 40;
-
+// Global settings are separated into a file called settings.rs
+// This separation allows exclusion of the settings file from
+//   things like git repos and other publicly viewable areas.
+//   This allows passwords and server information to be kept
+//   safe and secure while the rest of the project is uploaded
+//   and can be viewed publicly.
+include!("settings.rs");
 
 
 // lazy_static! {
