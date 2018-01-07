@@ -362,7 +362,7 @@ fn main() {
             pages::hbs_logout_admin,
             
             pages::backup,
-            
+            pages::hbs_pageviews,
             // pages::wait,
             
             pages::hbs_dashboard_user_authorized,

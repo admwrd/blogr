@@ -196,7 +196,7 @@ fn route<'a>(req: &Request) -> String {
         let (p, _) = route[1..].split_at(pos);
         // println!("Found route `{}`, splitting at {} to get `{}`", route, pos, p);
         if p == "article" {
-            page = route;
+            page = if &route[0..1]== "/" { &route[1..] } else { route };
             // pagestr = route.to_string();
         } else {
             page = p;
@@ -205,7 +205,7 @@ fn route<'a>(req: &Request) -> String {
     } else {
         // page = route.to_string();
         // println!("Found route: {}", route);
-        page = route;
+        page = if &route[0..1]== "/" { &route[1..] } else { route };
         // pagestr = route.to_string();
     }
     page.to_string()
@@ -221,7 +221,9 @@ fn req_guard(req: &Request, pagestr: String) -> ::rocket::request::Outcome<Hits,
         let total_state = req.guard::<State<TotalHits>>()?;
         let mut total = total_state.total.load(Ordering::Relaxed);
         // total.wrapping_add(1);
-        total += 1;
+        if total < usize::max_value() {
+            total += 1;
+        }
         total_state.total.store( total, Ordering::Relaxed );
         
         
@@ -233,7 +235,9 @@ fn req_guard(req: &Request, pagestr: String) -> ::rocket::request::Outcome<Hits,
             {
                 // https://doc.rust-lang.org/std/collections/hash_map/enum.Entry.html
                 let mut hits = stats.map.entry(pagestr.clone()).or_insert(0);
-                *hits += 1;
+                if *hits < usize::max_value() {
+                    *hits += 1;
+                }
                 page_views = *hits;
             }
             ser_stats = stats.ser();
@@ -268,7 +272,7 @@ impl ErrorHits {
     pub fn error404(req: &Request) -> Hits {
         // unimplemented!()
         let route = req.uri().path();
-        let prepend = "!error404";
+        let prepend = "error404";
         
         let mut uri: String = String::with_capacity(route.len() + prepend.len() + 8);
         uri.push_str(prepend);
@@ -287,7 +291,7 @@ impl ErrorHits {
     pub fn error500(req: &Request) -> Hits {
         // unimplemented!()
                 let route = req.uri().path();
-        let prepend = "!error500";
+        let prepend = "error500";
         
         let mut uri: String = String::with_capacity(route.len() + prepend.len() + 8);
         uri.push_str(prepend);
@@ -306,7 +310,7 @@ impl ErrorHits {
     pub fn error(req: &Request) -> Hits {
         // unimplemented!()
                 let route = req.uri().path();
-        let prepend = "!error";
+        let prepend = "error";
         
         let mut uri: String = String::with_capacity(route.len() + prepend.len() + 8);
         uri.push_str(prepend);

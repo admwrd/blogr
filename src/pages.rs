@@ -1592,6 +1592,36 @@ pub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCook
 }
 
 
+#[get("/pageviews")]
+pub fn hbs_pageviews(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits, stats: State<Counter>) -> Express {
+    use urlencoding::decode;
+    use htmlescape::*;
+    
+    let output: Template;
+    let lockstats = stats.stats.lock();
+    // if let 
+    if let Ok(counter) = lockstats {
+        
+        let statistics: Vec<String> = counter.map.iter()
+            .map(|(n, v)| 
+                format!(r#"<div class="row v-stats"><div class="v-stats-page col">{}</div><div class="v-stats-hits col-auto">{}</div></div>"#, 
+                    encode_minimal(&decode(n).unwrap_or(String::new())), v))
+            .collect();
+        
+        
+        
+        let page: String = statistics.join("\n");
+        
+        output = hbs_template(TemplateBody::General(page, None), Some("Page Views".to_string()), String::from("/pageviews"), Some(admin), user, None, Some(start.0));
+    } else {
+        output = hbs_template(TemplateBody::General(alert_danger("Could not retrieve page statistics.<br>Failed to acquire mutex lock."), None), Some("Page Views".to_string()), String::from("/pageviews"), Some(admin), user, None, Some(start.0));
+    }
+    
+    let express: Express = output.into();
+    express.compress(encoding)
+    
+}
+
 
 
 #[get("/")]

@@ -409,6 +409,30 @@ hr.v-am-item-tag-divider:after {
     width: 30px;
 }
 
+.v-stats {
+    /*background: #212529;*/
+    margin: 0px;
+    padding: 5px 0px;
+}
+
+.v-stats:nth-of-type(odd) {
+    background: #32383e;
+    border-radius: .4em;
+}
+
+.v-stats:hover {
+    border: 1px solid #f00;
+    border-radius: .4em;
+    padding: 4px 0px;
+}
+
+.v-stats-page {
+    
+}
+
+.v-stats-hits {
+    
+}
 
 
 /*.v-am-item-desription .tooltip-inner {
