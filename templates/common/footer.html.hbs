@@ -1,13 +1,15 @@
 
                     
                     <footer id="v-footer">
-                        <div class="v-copyright">&copy; 2017 
+                        <div class="v-copyright"><span class="v-icon-copyright">&copy;</span> 2017 
                             <script type="text/javascript" language="javascript">
                                 show_contact();
                             </script><noscript>Andrew Prindle</noscript>
-                         | <a href="{{info.base_url}}rss.xml">RSS</a></div>
+                         | <a href="{{info.base_url}}rss.xml"><i class="v-icon-rss fa fa-rss" aria-hidden="true"></i> RSS</a></div>
                         {{#if info.gentime}}
-                        <div class="v-generation-time">Generated in {{info.gentime}}</div>
+                        <div class="v-generation-time">
+                            <i class="v-icon-pagegen fa fa-tachometer" aria-hidden="true"></i>
+                            Generated in {{info.gentime}}</div>
                         {{/if}}
                     </footer>
                 </div>
@@ -22,7 +24,7 @@
         <!-- Custom JavaScript -->
         <!-- <script src="sha256.js"></script> -->
         <!-- <script src="blog.js"></script> -->
-        <script src="{{info.base_url}}blog_after.js"></script>
+        <script src="{{info.base_url}}blog_after-2018-01-07.js"></script>
         <script>
             {{#if info.js}}
             {{{info.js}}}

@@ -1604,13 +1604,18 @@ pub fn hbs_pageviews(start: GenTimer, admin: AdministratorCookie, user: Option<U
         
         let statistics: Vec<String> = counter.map.iter()
             .map(|(n, v)| 
-                format!(r#"<div class="row v-stats"><div class="v-stats-page col">{}</div><div class="v-stats-hits col-auto">{}</div></div>"#, 
+                format!(r#"<div class="v-stats row"><div class="v-stats-page col">{}</div><div class="v-stats-hits col-auto">{}</div></div>"#, 
                     encode_minimal(&decode(n).unwrap_or(String::new())), v))
             .collect();
         
         
-        
-        let page: String = statistics.join("\n");
+        let pages = statistics.join("\n");
+        let mut page: String = String::with_capacity(pages.len() + 250);
+        page.push_str(r#"<div class="v-stats-container-totals container"><div class="v-stats v-stats-total row"><div class="v-stats-page col"><i class="fa fa-bar-chart" aria-hidden="true"></i> Total Hits</div><div class="v-stats-hits col-auto">"#);
+        page.push_str(&hits.2.to_string());
+        page.push_str(r#"</div></div></div><div class="v-stats-container container">"#);
+        page.push_str(&pages);
+        page.push_str(r#"</div>"#);
         
         output = hbs_template(TemplateBody::General(page, None), Some("Page Views".to_string()), String::from("/pageviews"), Some(admin), user, None, Some(start.0));
     } else {

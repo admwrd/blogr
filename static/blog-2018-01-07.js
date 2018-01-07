@@ -100,7 +100,8 @@ function show_contact() {
           link += (key.charAt(ltr))
         }
       }
-    document.write("<a href='mailto:"+link+"'>Andrew Prindle <i class=\"v-icon-at fa fa-at\" aria-hidden=\"true\"></i></a>")
+    // document.write("<a href='mailto:"+link+"'>Andrew Prindle</a>")
+    document.write("<a href='mailto:"+link+"'><i class=\"v-icon-at fa fa-at\" aria-hidden=\"true\"></i> Andrew Prindle</a>")
     }
 }
 

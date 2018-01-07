@@ -25,7 +25,10 @@
                         </div>
                         
                          <div class="row">
-                            <date class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</date>
+                            <date class="v-article-date" datetime="{{body.posted_machine}}">
+                                <i class="v-icon-date fa fa-calendar" aria-hidden="true"></i>
+                                {{body.posted_human}}
+                            </date>
                             <div class="v-byline"> 
                                  by 
                                 <a href="{{info.base_url}}author/{{body.userid}}/{{body.username}}" class="v-author-link">{{body.username}}</a>
@@ -75,7 +78,10 @@
                             <!-- <input name="image" type="text" value="{{body.image}}" maxlength="250" class="v-centered-input v-form-control form-control" id="article-image" placeholder="Image"> -->
                             <!-- <p class="v-centered-text v-image-note">Image can be left blank</p> -->
                             {{#if imgs}}
-                            <label for="article-image-select" class="v-center-label v-form-label">Article Image</label>
+                            <label for="article-image-select" class="v-center-label v-form-label">
+                                <i class="v-icon-image fa fa-picture-o" aria-hidden="true"></i>
+                                Article Image
+                            </label>
                             <select name="image" id="article-image-select" class="custom-select ">
                                 {{#each imgs}}
                                     <option value="{{this.image}}"{{#if this.selected}} SELECTED{{/if}}>{{this.image}}</option>

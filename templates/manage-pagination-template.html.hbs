@@ -13,9 +13,15 @@
     <div class="row">
         <div class="v-am-sortbar col">
                 Sort By: 
-                <a href="{{info.base_url}}manage/title/{{#if sort.sort_date}}asc{{else}}{{#if sort.sort_desc}}asc{{else}}desc{{/if}}{{/if}}">Title</a>
+                <a href="{{info.base_url}}manage/title/{{#if sort.sort_date}}asc{{else}}{{#if sort.sort_desc}}asc{{else}}desc{{/if}}{{/if}}">
+                    <i class="v-icon-title fa fa-header" aria-hidden="true"></i>
+                    Title
+                </a>
                 or
-                <a href="{{info.base_url}}manage/date/{{#if sort.sort_title}}desc{{else}}{{#if sort.sort_desc}}asc{{else}}desc{{/if}}{{/if}}">Date</a>
+                <a href="{{info.base_url}}manage/date/{{#if sort.sort_title}}desc{{else}}{{#if sort.sort_desc}}asc{{else}}desc{{/if}}{{/if}}">
+                    <i class="v-icon-date fa fa-calendar" aria-hidden="true"></i>
+                    Date
+                </a>
         </div>
         <div class="col v-right-text">
             <div class="row">
@@ -31,6 +37,13 @@
                     <a href="{{info.base_url}}backup">
                         <i class="v-am-db fa fa-database" aria-hidden="true"></i>
                         Database Backup
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a href="{{info.base_url}}pageviews">
+                        
                     </a>
                 </div>
             </div>

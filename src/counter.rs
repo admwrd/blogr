@@ -24,7 +24,10 @@ use std::sync::{Mutex};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::net::Ipv4Addr;
 
-pub const HITS_SAVE_INTERVAL: usize = 5;
+use htmlescape::*;
+
+use super::HITS_SAVE_INTERVAL;
+// pub const HITS_SAVE_INTERVAL: usize = 5;
 
 pub fn cur_dir_file(name: &str) -> PathBuf {
     if let Ok(mut dir) = env::current_exe() {
@@ -208,7 +211,7 @@ fn route<'a>(req: &Request) -> String {
         page = if &route[0..1]== "/" { &route[1..] } else { route };
         // pagestr = route.to_string();
     }
-    page.to_string()
+    if page != "" { page.to_string() } else { route.to_string() }
 }
 
 fn req_guard(req: &Request, pagestr: String) -> ::rocket::request::Outcome<Hits,()> {

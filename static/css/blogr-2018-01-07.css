@@ -411,6 +411,7 @@ hr.v-am-item-tag-divider:after {
 
 
 
+
 /* Stats page AKA pageviews */
 
 .v-stats-container {
@@ -457,23 +458,6 @@ hr.v-am-item-tag-divider:after {
 
 /* may have future use */
 .v-stats-hits {
-    
-}
-
-
-
-/* Icons */
-
-.v-icon-pagegen {
-    
-}
-.v-icon-rss {
-    
-}
-.v-icon-copyright {
-    
-}
-.v-icon-at {
     
 }
 

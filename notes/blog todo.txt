@@ -38,31 +38,131 @@ Compile for production:
 
 
 Blog Theme
+	Font awesome icons to use:
+		linode
+		rocket
+		rss in the rss link
+		font awesome
+		git
+		html5
+		linux
+		firefox chrome edge opera internet-expolorer
+		cubes		for cargo
+
+		fa-picture-o	create/edit image	<i class="fa fa-picture-o" aria-hidden="true"></i>
+
+
+	Possible font awesome icons to use:
+		microchip	for pagegen
+		sticky-note-o	and w/o -o	<i class="fa fa-sticky-note-o" aria-hidden="true"></i>
+		upload
+		spinner		load time
+		book
+		comment
+		clone
+		paintbrush
+		pencil
+		ban
+		server
+		toggle-on/toggle-off
+		trash
+		user-o
+		users
+		user-circle
+		remove
+		random
+		sitemap
+		exchange
+		external-link
+		paper-plane/send		<i class="fa fa-paper-plane" aria-hidden="true"></i>
+		archive
+		at		email		<i class="fa fa-at" aria-hidden="true"></i>
+		envelope	email		
+		sliders
+		file-zip-o	compressed stuff
+		desktop
+		key		authentication/login
+		plug
+		dashboard	pagegen / user/admin dashboard	<i class="fa fa-tachometer" aria-hidden="true"></i>
+		question-circle-o	about/help
+		download
+		*terminal*
+		*code*
+		font		edit stuff?
+		paperclip
+		list
+		binoculars			<i class="fa fa-binoculars" aria-hidden="true"></i>
+		link		hyperlink
+		info		maybe for about page
+		calendar
+		calendar-plus-o/calendar-minus-o
+		bar chart	page views	<i class="fa fa-bar-chart" aria-hidden="true"></i>
+		search				<i class="fa fa-search" aria-hidden="true"></i>
+		sign-in
+		tag & tags			<i class="fa fa-tag" aria-hidden="true"></i>
+						<i class="fa fa-tags" aria-hidden="true"></i>
+
+
+		calendar			<i class="fa fa-calendar" aria-hidden="true"></i>
+		clock				<i class="fa fa-clock-o" aria-hidden="true"></i>
+		
+		header				<i class="fa fa-header" aria-hidden="true"></i>
+		wrench				<i class="fa fa-wrench" aria-hidden="true"></i>
+		spinner				<i class="fa fa-spinner" aria-hidden="true"></i>
+		file-text-o	save		<i class="fa fa-file-text-o" aria-hidden="true"></i>
+		floppy-o	save		<i class="fa fa-floppy-o" aria-hidden="true"></i>
+		undo		reset		<i class="fa fa-undo" aria-hidden="true"></i>
+		eraser		reset
+		newspaper			<i class="fa fa-newspaper-o" aria-hidden="true"></i>
+		floppy/save	save		<i class="fa fa-floppy-o" aria-hidden="true"></i>
+		
+		
+
+v-icon-preview, v-icon-reset, v-icon-preview-end, v-icon-save, v-icon-tags, v-icon-image, v-icon-copyright, v-icon-title, v-icon-date
+v-icon-at, v-icon-rss, v-icon-pagegen
+
+
+	Cool animated font awesome loading icons:
+		http://fontawesome.io/examples/#animated
+		fa-spinner, fa-refresh, fa-circle-o-notch, and fa-cog with the fa-spin (smooth rotate) or fa-pulse (8 step rotate)
+	Stack font awesome icons:
+		http://fontawesome.io/examples/#stacked
+		use <span class="fa-stack fa-lg"> for large
+			fa-lg (33% increase) fa-2x fa-3x fa-4x fa-5x (make sure to have enough line-height if icons are cropped)
+
+
+
 	cancel siteground hosting from renewing - use support to find out how to stop automatic renewal
 
-	Verify and maybe change the generation timer to use 9 digits instead of 8
-
-	Add article header images to articles
-		add database column in articles table, if null use a default image
-		set the image as a background so it fills the width of the container
-		could add text?
-
-	Maybe add another bubble inside the article bubble
-		separate the title author date etc in one bubble
-			and the article contents in another
-		make the backgrounds
-			rgba(80,80,80,0.1)
 
 SCSS
 	Find timestamp of the consumer css file and find the created date
 		look in git repo for all changes made after the created date
 
 VPS
+	Make a directory to run the executable
+		copy the folders:
+			logs
+			scripts
+			templates?
+		and the fiels:
+			Rocket.toml
+
 	turn on the firewall
 		uwf ???
 
 
 Blogr
+	Make a login redirect page
+		/login-user  and  /login-admin
+		could use either query string or embed it in the route using /login-user/page/here
+		prolly query string since no need for pagination
+
+	Add versioning to css and js filenames
+		This allows caching but prevents stale cache items
+
+	Add link to pageviews page in admin page
+
 	Update copyright to 2018
 
 	Make a disclaimer page saying I am not responsible or liable for damages or anything caused by using 
@@ -154,7 +254,7 @@ Blogr
 	Make manage page display each manage item on a new line for mobile devices
 		use col-md-#
 	
-	Should human readable times have a leading zero
+	Should human readable times have a leading zero?
 
 	Make Blog title either smaller or overflow over the side
 		Make font smaller but for medium or larger displays make it the original size
@@ -242,7 +342,6 @@ Blogr
 
 
 
-
 Design:
 	Figure out a way to make the middle box backgrounds transparent and the outside black still
 		This allows a static background to be placed that will move with the page, 
@@ -250,7 +349,12 @@ Design:
 			only the content boxes moves, allowing their inside to display the image
 
 
-Future Todo:
+Future Todo:	
+	Maybe make logins case insenitive in regards to username
+		could just make the register page create all users with lowercase username
+			then lowercase the username in the auth query or when saving to form data
+
+
 	Database: Add a date modified column to the articles table
 	
 	Data Structures: Add a date modified field to the Article* structures
@@ -385,6 +489,19 @@ Rocket-auth-login:
 
 
 DONE
+	Verify and maybe change the generation timer to use 9 digits instead of 8
+
+	Add article header images to articles
+		add database column in articles table, if null use a default image
+		set the image as a background so it fills the width of the container
+		could add text?
+
+	Maybe add another bubble inside the article bubble
+		separate the title author date etc in one bubble
+			and the article contents in another
+		make the backgrounds
+			rgba(80,80,80,0.1)
+
 	For user account lockout due to repeated unsuccessful attempts make levels or tiers of locking
 		after 6 attempts lock for 3 minutes
 		after 12 attempts lock for 6 minutes (total not 12 more attempts [that would be 6 more attempts after the first tier)
