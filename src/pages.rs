@@ -40,7 +40,7 @@ use chrono::{NaiveDate, NaiveDateTime};
 // use roles::*;
 use super::*;
 // use counter::*;
-use counthits::*;
+use counter::*;
 use collate::*;
 use layout::*;
 use blog::*;

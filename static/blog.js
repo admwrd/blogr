@@ -209,10 +209,12 @@ function preview_create() {
         var tags = document.getElementById('insert-tags');
         var img = document.getElementById('article-image');
         var header = document.getElementById('header-article');
+        var imgs = document.getElementById('article-image-select');
         var prev_title = document.getElementById('prev-title');
         var prev_desc = document.getElementById('prev-desc');
         var prev_body = document.getElementById('prev-body');
         var prev_tags = document.getElementById('prev-tags');
+        
         
         if (!title || !desc || !body || !tags || !prev_title || !prev_desc || !prev_body || !prev_tags) {
             console.log("One of the fields was blank.");
@@ -223,7 +225,14 @@ function preview_create() {
         
         
         if(img && header) {
-            imgsrc = img.value.trim();
+            // if image field is a text input box
+            var imgsrc = img.value.trim();
+            if (imgsrc != "") {
+                header.style.background = "url('" + base_url + "imgs/" + imgsrc + "') center center no-repeat";
+            }
+        } else if(imgs && header) {
+            // if image field is a dropdown select box
+            var imgsrc = imgs.value.trim();
             if (imgsrc != "") {
                 header.style.background = "url('" + base_url + "imgs/" + imgsrc + "') center center no-repeat";
             }

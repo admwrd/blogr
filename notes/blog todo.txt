@@ -38,6 +38,8 @@ Compile for production:
 
 
 Blog Theme
+	cancel siteground hosting from renewing - use support to find out how to stop automatic renewal
+
 	Verify and maybe change the generation timer to use 9 digits instead of 8
 
 	Add article header images to articles
@@ -61,6 +63,25 @@ VPS
 
 
 Blogr
+	Update copyright to 2018
+
+	Make a disclaimer page saying I am not responsible or liable for damages or anything caused by using 
+		the code on the website or following the suggestion.
+		All opinions are my own and do not reflect any corporations or companies that may be mentioned
+	Privacy policy:
+		does not sell or transfer any information obtained by client
+		
+
+
+	Make an admin only page that shows the hit count
+
+	Make an image directory global variable
+		for production set it to:  /var/www/html/imgs
+		for development set it to: c:\code\lang\rust\proj\blogr\static\imgs
+		use this when making dropdowm img menu
+
+	
+
 	Add image input field to create and edit forms
 
 	Add image field to javascript preview function(s)
@@ -121,6 +142,14 @@ Blogr
 				create a shell script that runs the 'cargo build --release'
 					but with --cfg PRODUCTION  or  --cfg 'BUILD_TARGET="PRODUCTION"'
 			
+
+	Convert the current css file to scss files
+		make an assets folder with:
+			images
+			javascript
+			stylesheets
+			fonts
+			(etc)
 
 	Make manage page display each manage item on a new line for mobile devices
 		use col-md-#

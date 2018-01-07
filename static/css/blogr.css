@@ -1058,7 +1058,7 @@ h6 ~ h6 {
     }
     .v-article-header {
         /*margin: 0px 3em 1em 3em;*/
-        margin: 0px;
+        /*margin: 0px;*/
     }
     .v-article-title {
         /* Candara, Calibri, Segoe, "Segoe Ui", Optima, Arial, sans-serif */

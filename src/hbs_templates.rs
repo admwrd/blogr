@@ -13,7 +13,7 @@ use std::time::{Instant, Duration};
 // use admin_auth::*;
 // use user_auth::*;
 
-use super::BLOG_URL;
+use super::{BLOG_URL, INTERNAL_IMGS};
 use blog::*;
 use collate::*;
 use layout::*;
@@ -110,6 +110,7 @@ pub struct TemplateLogin {
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateCreate {
     pub action_url: String,
+    pub imgs: Vec<String>,
     pub msg: String,
     pub info: TemplateInfo,
 }
@@ -405,8 +406,29 @@ impl TemplateLogin {
 }
 impl TemplateCreate {
         pub fn new(action_url: String, msg: Option<String>, info: TemplateInfo) -> TemplateCreate {
+        use std::io;
+        use std::fs::{self, DirEntry, read_dir};
+        use std::path::Path;
+        
+        let dir_entries = read_dir(INTERNAL_IMGS);
+        let mut imgs: Vec<String> = Vec::new();
+        if let Ok(entries) = dir_entries {
+            for dir_entry in entries {
+                if let Ok(entry) = dir_entry {
+                    let path = entry.path();
+                    if !path.is_dir() {
+                        if let Some(name) = path.file_name() {
+                            let image = name.to_string_lossy().into_owned();
+                            imgs.push(image);
+                        }
+                    }
+                }
+            }
+        }
+        
         TemplateCreate {
             action_url,
+            imgs,
             msg: if let Some(m) = msg { m } else { String::new() },
             info,
         }

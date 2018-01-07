@@ -225,6 +225,11 @@ pub struct SortDisplay {
 }
 
 
+#[derive(Debug, Clone, FromForm)]
+pub struct QueryUser {
+    pub user: String,
+}
+
 
 pub fn opt_col<T>(rst: Option<Result<T, T>>) -> T where T: Display + Default {
     match rst {
