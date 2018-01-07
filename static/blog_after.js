@@ -52,7 +52,7 @@ function adjustWidthOfInput() {
     } else {
         width = w;
     }
-    console.log("Setting input width to " + (width+extra) + "px");
+    // console.log("Setting input width to " + (width+extra) + "px");
     resizeInput.style.width = width + extra + "px";
     // resizeInput.style.width = getWidthOfInput() + "px";
 }

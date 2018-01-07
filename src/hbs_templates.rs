@@ -80,6 +80,12 @@ pub struct TemplateMenu {
     pub classes: String,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct TemplateImg {
+    pub image: String,
+    pub selected: bool,
+}
+
 /// The TemplateInfo struct contains page metadata
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateInfo {
@@ -118,6 +124,7 @@ pub struct TemplateCreate {
 pub struct TemplateEdit {
     pub action_url: String,
     pub body: ArticleDisplay,
+    pub imgs: Vec<TemplateImg>,
     pub msg: String,
     pub info: TemplateInfo,
 }
@@ -436,9 +443,34 @@ impl TemplateCreate {
 }
 impl TemplateEdit {
         pub fn new(action_url: String, article: Article, msg: Option<String>, info: TemplateInfo) -> TemplateEdit {
+        use std::io;
+        use std::fs::{self, DirEntry, read_dir};
+        use std::path::Path;
+        
+        let dir_entries = read_dir(INTERNAL_IMGS);
+        let mut imgs: Vec<TemplateImg> = Vec::new();
+        if let Ok(entries) = dir_entries {
+            for dir_entry in entries {
+                if let Ok(entry) = dir_entry {
+                    let path = entry.path();
+                    if !path.is_dir() {
+                        if let Some(name) = path.file_name() {
+                            let image = name.to_string_lossy().into_owned();
+                            let img = TemplateImg {
+                                selected: if &image == &article.image { true } else { false },
+                                image,
+                            };
+                            imgs.push(img);
+                        }
+                    }
+                }
+            }
+        }
+        
         TemplateEdit {
             action_url,
             body: article.to_display(),
+            imgs,
             msg: if let Some(m) = msg { m } else { String::new() },
             info,
         }

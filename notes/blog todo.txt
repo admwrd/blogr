@@ -251,6 +251,9 @@ Design:
 
 
 Future Todo:
+	Database: Add a date modified column to the articles table
+	
+	Data Structures: Add a date modified field to the Article* structures
 
 	Convert structs containing strings to &str
 		See below for example

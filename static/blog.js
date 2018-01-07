@@ -140,6 +140,7 @@ function escapeHtml(str) {
 
 
 function preview_edit() {
+    console.log("article - editing");
     var preview_form = document.getElementById('v-edit-preview');
     var edit_form = document.getElementById('v-edit');
     // var edit_form = document.getElementById('insert_form');
@@ -151,6 +152,7 @@ function preview_edit() {
         var tags = document.getElementById('insert-tags');
         var img = document.getElementById('article-image');
         var header = document.getElementById('header-article');
+        var imgs = document.getElementById('article-image-select');
         var prev_title = document.getElementById('prev-title');
         var prev_desc = document.getElementById('prev-desc');
         var prev_body = document.getElementById('prev-body');
@@ -167,6 +169,14 @@ function preview_edit() {
         if(img && header) {
             imgsrc = img.value.trim();
             if (imgsrc != "") {
+                header.style.background = "url('" + base_url + "imgs/" + imgsrc + "') center center no-repeat";
+            }
+        } else if(imgs && header) {
+            // if image field is a dropdown select box
+            console.log("Select image");
+            var imgsrc = imgs.value.trim();
+            if (imgsrc != "") {
+                console.log("setting background");
                 header.style.background = "url('" + base_url + "imgs/" + imgsrc + "') center center no-repeat";
             }
         }
@@ -201,7 +211,7 @@ function preview_create() {
     var preview_form = document.getElementById('v-edit-preview');
     var edit_form = document.getElementById('v-edit');
     // var edit_form = document.getElementById('insert_form');
-    
+    console.log("article - creating");
     if (edit_form && preview_form) {
         var title = document.getElementById('inputTitle');
         var desc = document.getElementById('insert_desc');
@@ -232,8 +242,10 @@ function preview_create() {
             }
         } else if(imgs && header) {
             // if image field is a dropdown select box
+            console.log("Select image");
             var imgsrc = imgs.value.trim();
             if (imgsrc != "") {
+                console.log("setting background");
                 header.style.background = "url('" + base_url + "imgs/" + imgsrc + "') center center no-repeat";
             }
         }

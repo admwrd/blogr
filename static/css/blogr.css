@@ -747,6 +747,16 @@ OLD - OUTDATED PAGINATION STYLES
     border: 2px solid #de6d11;
 }
 
+.v-select-image {
+    margin-top: 1em;
+    margin-bottom: 2em;
+    text-align: center;
+}
+
+#article-image-select {
+}
+
+
 
 
 /* input:-webkit-autofill:hover */

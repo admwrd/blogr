@@ -74,11 +74,11 @@
                         </div>
                         
                         <!-- Image -->
-                        <div class="col-md-6 mx-auto">
+                        <div class="v-select-image col-md-6 mx-auto">
                             <!-- <p class="v-centered-text v-image-note">Image can be left blank</p> -->
                             {{#if imgs}}
                             <label for="article-image-select" class="v-center-label v-form-label">Article Image</label>
-                            <select name="image" id="article-image-select">
+                            <select name="image" id="article-image-select" class="custom-select">
                                 {{#each imgs}}
                                     <option value="{{this}}">{{this}}</option>
                                 {{/each}}
