@@ -411,6 +411,7 @@ hr.v-am-item-tag-divider:after {
 
 
 
+
 /* Stats page AKA pageviews */
 
 .v-stats-container {
@@ -459,41 +460,6 @@ hr.v-am-item-tag-divider:after {
 .v-stats-hits {
     
 }
-
-
-
-/* Icons */
-
-.v-icon-pagegen {
-    
-}
-.v-icon-rss {
-    
-}
-.v-icon-copyright {
-    
-}
-.v-icon-at {
-    
-}
-
-.v-icon-stats {
-    /*color: #ffcf00;*/
-    color: #de00ff;
-    font-size: 120%;
-}
-
-/* Code Formatting Styles */
-
-/* Code Formatting Styles */
-
-pre {
-    background: #222222aa;
-    padding: 1em;
-    overflow-x: auto;
-    border-radius: 1em;
-}
-
 
 
 /*.v-am-item-desription .tooltip-inner {

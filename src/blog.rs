@@ -529,9 +529,9 @@ pub fn get_len<T>(input: &Option<Vec<T>>) -> usize {
 }
 
 pub fn slash_quotes(text: &str) -> String {
-    text.replace("\\", "").replace("'", "\'").replace("\"", "\\\"")
+    // text.replace("\\", "").replace("'", "\\'").replace("\"", "\\\"")
+    text.replace("'", "''")
 }
-
 
 // impl ArticleSource {
 //     pub fn to_display(self) -> ArticleSourceDisplay {
@@ -1043,22 +1043,22 @@ impl<'f> FromForm<'f> for ArticleForm {
         
         for (field, value) in form_items {
             match field.as_str() {
-                "title" => { title = sanitize_title(value.url_decode().unwrap_or( String::new() )) },
-                "body" => { body = value.url_decode().unwrap_or( String::new() ) },
-                "markdown" => { markdown = value.url_decode().unwrap_or( String::new() ) },
-                "tags" => { tags = sanitize_tags(value.url_decode().unwrap_or( String::new() )) },
-                "description" => { description = sanitize_body(value.url_decode().unwrap_or( String::new() )) },
-                "image" => { image = value.url_decode().unwrap_or( String::new() ) },
+                "title" => { title = escape_sql_pg(sanitize_title(value.url_decode().unwrap_or( String::new() ))) },
+                "body" => { body = escape_sql_pg(value.url_decode().unwrap_or( String::new() )) },
+                "markdown" => { markdown = escape_sql_pg(value.url_decode().unwrap_or( String::new() )) },
+                "tags" => { tags = escape_sql_pg(sanitize_tags(value.url_decode().unwrap_or( String::new() ))) },
+                "description" => { description = escape_sql_pg(value.url_decode().unwrap_or( String::new() )) },
+                "image" => { image = escape_sql_pg(value.url_decode().unwrap_or( String::new() )) },
                 _ => {},
             }
         }
-        if title.len() > MAX_CREATE_TITLE {
+        if title.len()+1 > MAX_CREATE_TITLE {
             title = title[..MAX_CREATE_TITLE].to_string();
         }
-        if tags.len() > MAX_CREATE_TAGS {
+        if tags.len()+1 > MAX_CREATE_TAGS {
             tags = tags[..MAX_CREATE_TAGS].to_string();
         }
-        if description.len() > MAX_CREATE_DESCRIPTION {
+        if description.len()+1 > MAX_CREATE_DESCRIPTION {
             description = description[..MAX_CREATE_DESCRIPTION].to_string();
         }
         if title == "" || body == "" {

@@ -484,6 +484,18 @@ hr.v-am-item-tag-divider:after {
 }
 
 
+/* Code Formatting Styles */
+
+pre {
+    background: #222222aa;
+    padding: 1em;
+    overflow-x: auto;
+    border-radius: 1em;
+}
+
+
+
+
 /*.v-am-item-desription .tooltip-inner {
     color: #f00 !important;
 }

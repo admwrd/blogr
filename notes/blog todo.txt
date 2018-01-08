@@ -180,6 +180,14 @@ Design:
 			only the content boxes moves, allowing their inside to display the image
 
 
+Security
+	Could have a possible seuciry vulnerability in the admin create/edit pages
+		the FromForm impl for ArticleForm truncates long titles, tags, and descriptions
+		if the sequence cuts off between two single quotes it could be bad...
+			...end of text''
+			if the 250th character is the first single quote, then the sql string containing
+				the text would be quoted instead! Oh no's!
+
 Future Todo:	
 
 

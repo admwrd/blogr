@@ -60,6 +60,14 @@ pub fn medium_sanitize(string: String) -> String {
     encode_minimal(&string)
 }
 
+/// Postgres uses two single quotes to specify a single quote in text.
+/// The extra single quote acts as an escape since postgresql uses this by default
+/// instead of the Posix backslash escape which can be specified by prefixing the
+/// string in the sql statement with an E.
+pub fn escape_sql_pg(mut string: String) -> String {
+    string.replace("'", "''")
+}
+
 pub fn sanitize_sql(string: String) -> String {
     lazy_static! {
         static ref CLEAN_SQL: Regex = Regex::new(r#"(['"\\])"#).unwrap();
