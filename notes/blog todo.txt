@@ -52,73 +52,12 @@ Blog Theme
 		fa-picture-o	create/edit image	<i class="fa fa-picture-o" aria-hidden="true"></i>
 
 
-	Possible font awesome icons to use:
-		microchip	for pagegen
-		sticky-note-o	and w/o -o	<i class="fa fa-sticky-note-o" aria-hidden="true"></i>
-		upload
-		spinner		load time
-		book
-		comment
-		clone
-		paintbrush
-		pencil
-		ban
-		server
-		toggle-on/toggle-off
-		trash
-		user-o
-		users
-		user-circle
-		remove
-		random
-		sitemap
-		exchange
-		external-link
-		paper-plane/send		<i class="fa fa-paper-plane" aria-hidden="true"></i>
-		archive
-		at		email		<i class="fa fa-at" aria-hidden="true"></i>
-		envelope	email		
-		sliders
-		file-zip-o	compressed stuff
-		desktop
-		key		authentication/login
-		plug
-		dashboard	pagegen / user/admin dashboard	<i class="fa fa-tachometer" aria-hidden="true"></i>
-		question-circle-o	about/help
-		download
-		*terminal*
-		*code*
-		font		edit stuff?
-		paperclip
-		list
-		binoculars			<i class="fa fa-binoculars" aria-hidden="true"></i>
-		link		hyperlink
-		info		maybe for about page
-		calendar
-		calendar-plus-o/calendar-minus-o
-		bar chart	page views	<i class="fa fa-bar-chart" aria-hidden="true"></i>
-		search				<i class="fa fa-search" aria-hidden="true"></i>
-		sign-in
-		tag & tags			<i class="fa fa-tag" aria-hidden="true"></i>
-						<i class="fa fa-tags" aria-hidden="true"></i>
+
+v-icon-preview, v-icon-reset, v-icon-preview-end, v-icon-save, v-icon-tags, v-icon-tag 
+v-icon-image, v-icon-copyright, v-icon-title, v-icon-date, v-icon-sort, v-icon-author
+v-icon-stats, v-icon-sort, v-icon-sort-title, v-icon-sort-date, v-icon-user
 
 
-		calendar			<i class="fa fa-calendar" aria-hidden="true"></i>
-		clock				<i class="fa fa-clock-o" aria-hidden="true"></i>
-		
-		header				<i class="fa fa-header" aria-hidden="true"></i>
-		wrench				<i class="fa fa-wrench" aria-hidden="true"></i>
-		spinner				<i class="fa fa-spinner" aria-hidden="true"></i>
-		file-text-o	save		<i class="fa fa-file-text-o" aria-hidden="true"></i>
-		floppy-o	save		<i class="fa fa-floppy-o" aria-hidden="true"></i>
-		undo		reset		<i class="fa fa-undo" aria-hidden="true"></i>
-		eraser		reset
-		newspaper			<i class="fa fa-newspaper-o" aria-hidden="true"></i>
-		floppy/save	save		<i class="fa fa-floppy-o" aria-hidden="true"></i>
-		
-		
-
-v-icon-preview, v-icon-reset, v-icon-preview-end, v-icon-save, v-icon-tags, v-icon-image, v-icon-copyright, v-icon-title, v-icon-date
 v-icon-at, v-icon-rss, v-icon-pagegen
 
 
@@ -157,35 +96,24 @@ Blogr
 		/login-user  and  /login-admin
 		could use either query string or embed it in the route using /login-user/page/here
 		prolly query string since no need for pagination
+	Add link to go back to manage after saving or even before saving
+		if contents have changed ask user if they want to continue
 
-	Add versioning to css and js filenames
-		This allows caching but prevents stale cache items
+	Add more address bar color changes for other browsers like apple and ms
 
-	Add link to pageviews page in admin page
-
-	Update copyright to 2018
+	Find out how to prevent a specified file from being included in the git repo
+		like src/settings.rs
+		but also make a settings.example.rs that is included but does not include passwords or sensitive data
 
 	Make a disclaimer page saying I am not responsible or liable for damages or anything caused by using 
 		the code on the website or following the suggestion.
 		All opinions are my own and do not reflect any corporations or companies that may be mentioned
 	Privacy policy:
 		does not sell or transfer any information obtained by client
-		
 
-
-	Make an admin only page that shows the hit count
-
-	Make an image directory global variable
-		for production set it to:  /var/www/html/imgs
-		for development set it to: c:\code\lang\rust\proj\blogr\static\imgs
-		use this when making dropdowm img menu
-
-	
-
-	Add image input field to create and edit forms
-
-	Add image field to javascript preview function(s)
-
+	Make an admin page that can run different scripts that are in the `scripts` directory
+		allow arguments to be passed to the command and maybe even specify default arguments
+	Do not allow custom commands as a security mesasure
 
 	Reorganize Modules
 		Split Blog module into several modules
@@ -203,104 +131,13 @@ Blogr
 			Tag
 			User
 			ViewPage
-	Maybe make a dropdown (select) box for choosing an image for each article
-		Could also choose randomly and eliminate the choice
-		Could also choose based on the tags
-		Could also choose based on the first letter of the title
 
 	Make SEO friendly article links replace spaces with hyphens
 
-	Change initial size of title input fields to be much smaller
-
-	change copyright to 2008
-
-	Display generation time in ms instead of seconds
-
-	Add link to go back to manage after saving or even before saving
-		if contents have changed ask user if they want to continue
-
 	Add domain name configuration to the vps guide and commands text files
 
-	See if rocket can tell whether its https or http and subdomain stuff?
-		Find a way to have a single rust rocket app deliver both https and http content
-		https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/
-		http://nginx.org/en/docs/http/ngx_http_core_module.html
-
-	Figure out how to make a git repo on the server that can have files transfered to it that reflect the repo
-		maybe a script that will run
-
-
-	Find better system for development/production variables
-		Maybe serialized file, toml/yaml/haml/json/hjson (just not binary - not msgpack)
-		Maybe use conditional compilation to read the appropriate files
-			https://doc.rust-lang.org/reference/attributes.html
-			#[cfg(any(unix, windows))]
-			#[cfg(target_os = "macos")]
-			#[cfg(unix)]
-		Could also use conditional compilation but instead of testing for unix or windows
-			test to see if a variable was passed while building it
-				create a shell script that runs the 'cargo build --release'
-					but with --cfg PRODUCTION  or  --cfg 'BUILD_TARGET="PRODUCTION"'
-			
-
-	Convert the current css file to scss files
-		make an assets folder with:
-			images
-			javascript
-			stylesheets
-			fonts
-			(etc)
-
-	Make manage page display each manage item on a new line for mobile devices
-		use col-md-#
-	
-	Should human readable times have a leading zero?
-
-	Make Blog title either smaller or overflow over the side
-		Make font smaller but for medium or larger displays make it the original size
-	
-	Setup an ftp server on VPS
-
-	Add more address bar color changes for other browsers like apple and ms
-
-	Add a noscript note on addd and edit pages saying that different markup parser will be used if
-		javascript is disabled and the rendered output may differ from the javascript version
-
-	Make an admin route that will download a backup of the sql database
-	Make an admin route that will download a copy of the rust web app (everything but the /target folder)
-
-	Viewing the layout on a mobile device is BROKEN
-
-	Remove pagination test, hit counter tests, and other page tests
-	
-	In the /admin and /users routes add db column to retrieve the number of login attempts before calling flash_redirect()
-		then display the attempts in the flash message if the attempts is more than just a few or under MAX_ATTEMPTS
-	Somehow keep track of previous login attempts after logging in
-	or Add a message to the flash message upon successful login telling the user how many login attempts have been made
-		the purpose is to alert the user to any attempts to brute force or guess the user's password
-
-	Add <meta> metadata keywords and descriptions
-
-	Do RSS feeds have to show all the items?
-		Can it show the 50 most recent and any old items will persist in the RSS reader?
-			Or will rss reader remove them once no longer in the feed?
-
-	Publish the xpress module 
-
-
-	Make a database cache that is updated every 4 hours or on demand by a special route that caches:
-		all normal unfiltered select queries
-			also query sort by title as well as date, both asc and desc
-		queries for each tag in the tag cloud, or the top 200 tags
-		tag cloud
-		queries for each author
-		do not query authorization queries
-		
-	
-
-	Copy edit page into create page but remove default value attributes
-
 	Cleanup source code and remove old comments
+	Remove pagination test, hit counter tests, and other page tests
 
 	For pages that display flash messages, use different alert_* functions for different flash msg names
 		for error flash messages use alert_danger()
@@ -315,19 +152,13 @@ Blogr
 	
 	Convert blogr to ssl
 
-	Get VPS
-
 	Force SSL unless in Dev mode
-
-	Eventually change the hbs_templates to have the flash message in the general parameters/info not in the TemplateBody
 
 	When creating a blog post fails for reasons other than unauthorized
 		(or maybe even if its unauthorized)
 		redirect back to create page with all of the form data filled in
 		change the insert form template to include if statements to show msg
 			{{#if info.msg}}{{{info.msg}}}{{/if}}
-
-
 
 	sanitize:
 		login rety (admin and user): username and failmsg
@@ -350,14 +181,56 @@ Design:
 
 
 Future Todo:	
+
+
+	See if rocket can tell whether its https or http and subdomain stuff?
+		Find a way to have a single rust rocket app deliver both https and http content
+		https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/
+		http://nginx.org/en/docs/http/ngx_http_core_module.html
+
+	Figure out how to make a git repo on the server that can have files transfered to it that reflect the repo
+		maybe a script that will run
+
+	Convert the current css file to scss files
+		make an assets folder with:
+			images
+			javascript
+			stylesheets
+			fonts
+			(etc)
+
 	Maybe make logins case insenitive in regards to username
 		could just make the register page create all users with lowercase username
 			then lowercase the username in the auth query or when saving to form data
 
 
+	In the /admin and /users routes add db column to retrieve the number of login attempts before calling flash_redirect()
+		then display the attempts in the flash message if the attempts is more than just a few or under MAX_ATTEMPTS
+	Somehow keep track of previous login attempts after logging in
+	or Add a message to the flash message upon successful login telling the user how many login attempts have been made
+		the purpose is to alert the user to any attempts to brute force or guess the user's password
+
+
+	Do RSS feeds have to show all the items?
+		Can it show the 50 most recent and any old items will persist in the RSS reader?
+			Or will rss reader remove them once no longer in the feed?
+
+	Publish the xpress module 
+
+
+	Make a database cache that is updated every 4 hours or on demand by a special route that caches:
+		all normal unfiltered select queries
+			also query sort by title as well as date, both asc and desc
+		queries for each tag in the tag cloud, or the top 200 tags
+		tag cloud
+		queries for each author
+		do not query authorization queries
+		
 	Database: Add a date modified column to the articles table
 	
 	Data Structures: Add a date modified field to the Article* structures
+
+	Eventually change the hbs_templates to have the flash message in the general parameters/info not in the TemplateBody
 
 	Convert structs containing strings to &str
 		See below for example
@@ -489,6 +362,10 @@ Rocket-auth-login:
 
 
 DONE
+	Update copyright to 2018
+
+	Add link to pageviews page in admin page
+
 	Verify and maybe change the generation timer to use 9 digits instead of 8
 
 	Add article header images to articles
@@ -507,6 +384,66 @@ DONE
 		after 12 attempts lock for 6 minutes (total not 12 more attempts [that would be 6 more attempts after the first tier)
 		      
 		maybe make a lockout(minutes) function to help with this
+
+	
+
+	Add versioning to css and js filenames
+		This allows caching but prevents stale cache items
+
+	Make an admin only page that shows the hit count
+
+	Make an image directory global variable
+		for production set it to:  /var/www/html/imgs
+		for development set it to: c:\code\lang\rust\proj\blogr\static\imgs
+		use this when making dropdowm img menu
+	Maybe make a dropdown (select) box for choosing an image for each article
+		Could also choose randomly and eliminate the choice
+		Could also choose based on the tags
+		Could also choose based on the first letter of the title
+
+
+	Add image input field to create and edit forms
+
+	Add image field to javascript preview function(s)
+
+	Change initial size of title input fields to be much smaller
+
+	NO - Display generation time in ms instead of seconds
+
+	Find better system for development/production variables
+		Maybe serialized file, toml/yaml/haml/json/hjson (just not binary - not msgpack)
+		Maybe use conditional compilation to read the appropriate files
+			https://doc.rust-lang.org/reference/attributes.html
+			#[cfg(any(unix, windows))]
+			#[cfg(target_os = "macos")]
+			#[cfg(unix)]
+		Could also use conditional compilation but instead of testing for unix or windows
+			test to see if a variable was passed while building it
+				create a shell script that runs the 'cargo build --release'
+					but with --cfg PRODUCTION  or  --cfg 'BUILD_TARGET="PRODUCTION"'
+	Make manage page display each manage item on a new line for mobile devices
+		use col-md-#
+
+	Make Blog title either smaller or overflow over the side
+		Make font smaller but for medium or larger displays make it the original size
+	
+	Setup an ftp server on VPS
+
+	Should human readable times have a leading zero? Yes
+
+	Add a noscript note on addd and edit pages saying that different markup parser will be used if
+		javascript is disabled and the rendered output may differ from the javascript version
+
+	Make an admin route that will download a backup of the sql database
+	Make an admin route that will download a copy of the rust web app (everything but the /target folder)
+
+	Viewing the layout on a mobile device is BROKEN
+
+	Add <meta> metadata keywords and descriptions
+
+	Copy edit page into create page but remove default value attributes
+
+	Get VPS
 
 	maybe just remove the /search route as the search form already works
 		and the complex search featuers don't really work yet anyways

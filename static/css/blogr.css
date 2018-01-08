@@ -477,6 +477,12 @@ hr.v-am-item-tag-divider:after {
     
 }
 
+.v-icon-stats {
+    /*color: #ffcf00;*/
+    color: #de00ff;
+    font-size: 120%;
+}
+
 
 /*.v-am-item-desription .tooltip-inner {
     color: #f00 !important;
