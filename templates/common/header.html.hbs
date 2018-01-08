@@ -56,7 +56,7 @@
                           {{#if this.separator}}
                             <li class="v-nav-item nav-item v-divider {{this.classes}}"></li>
                           {{else}}
-                            <li class="v-nav-item nav-item {{this.classes}}"><a class="nav-link" href="{{this.url}}">{{this.name}}</a></li>
+                            <li class="v-nav-item nav-item {{this.classes}}"><a class="nav-link" href="{{this.url}}">{{{this.name}}}</a></li>
                           {{/if}}
                         {{/each}}
                         
@@ -69,12 +69,12 @@
                             {{#each info.admin_pages}}
                               {{#if this.separator}}
                                   {{#if this.name}}
-                                  <h6 class="dropdown-header {{this.classes}}">{{this.name}}</h6>
+                                  <h6 class="dropdown-header {{this.classes}}">{{{this.name}}}</h6>
                                   {{else}}
                                   <div class="dropdown-divider {{this.classes}}"></div>
                                   {{/if}}
                               {{else}}
-                                  <a class="dropdown-item {{this.classes}}" href="{{this.url}}">{{this.name}}</a>
+                                  <a class="dropdown-item {{this.classes}}" href="{{this.url}}">{{{this.name}}}</a>
                               {{/if}}
                             {{/each}}
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->
@@ -85,7 +85,10 @@
                     </ul>
                     <form id="search-form" action="{{info.base_url}}search" method="get" class="form-inline my-2 my-lg-0">
                         <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" value="{{#if search.q}}{{search.q}}{{/if}}" aria-label="Search">
-                        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+                        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">
+                            Search
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
                     </form>
                 </div>
             </nav>

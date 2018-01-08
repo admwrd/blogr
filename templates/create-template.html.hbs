@@ -75,7 +75,10 @@
                         
                         <!-- Tags -->
                         <div class="col-md-8 mx-auto">
-                            <label for="insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
+                            <label for="insert-tags" class="v-center-label v-form-label">
+                                <i class="v-icon-tags fa fa-tags" aria-hidden="true"></i>
+                                Tags -Comma Separated
+                            </label>
                             <input name="tags" type="text" value="" maxlength="250" class="v-centered-input v-form-control form-control" id="insert-tags" placeholder="Tags">
                             <div class="v-form-message" id="tag-msg">
                                 Did you mean to <b>Comma Separate</b> the tags?
@@ -86,7 +89,10 @@
                         <div class="v-select-image col-md-6 mx-auto">
                             <!-- <p class="v-centered-text v-image-note">Image can be left blank</p> -->
                             {{#if imgs}}
-                            <label for="article-image-select" class="v-center-label v-form-label">Article Image</label>
+                            <label for="article-image-select" class="v-center-label v-form-label">
+                                <i class="v-icon-image fa fa-picture-o" aria-hidden="true"></i>
+                                Article Image
+                            </label>
                             <select name="image" id="article-image-select" class="custom-select">
                                 {{#each imgs}}
                                     <option value="{{this}}">{{this}}</option>
@@ -155,10 +161,7 @@
                         <div class="v-article-header-sub">
                             <!-- Title -->
                             <!-- <h2 class="v-article-title"><a id="prev-title" href="{{info.base_url}}">Title</a></h2> -->
-                            <h2 class="v-article-title"><a id="prev-title">
-                                
-                                Title
-                            </a></h2>
+                            <h2 class="v-article-title"><a id="prev-title">Title</a></h2>
                             <div class="v-create-note">
                                 Date and author information will appear here.
                             </div>

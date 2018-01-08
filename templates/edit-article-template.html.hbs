@@ -31,7 +31,10 @@
                             </date>
                             <div class="v-byline"> 
                                  by 
-                                <a href="{{info.base_url}}author/{{body.userid}}/{{body.username}}" class="v-author-link">{{body.username}}</a>
+                                <a href="{{info.base_url}}author/{{body.userid}}/{{body.username}}" class="v-author-link">
+                                    <i class="fa fa-user-circle" aria-hidden="true"></i>
+                                    {{body.username}}
+                                </a>
                             </div>
                             <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
                         </div>
@@ -39,33 +42,51 @@
                         <!-- Buttons - Save Reset Preview -->
                         <div class="row">
                             <div class="col-auto">
-                                <button onclick="return confirm_action('This will reset the article to the original state, all changes that have been made since saving will be lost.  Are you sure you want to continue?');" type="reset" class="btn btn-danger" value="Reset">Reset</button>
+                                <button onclick="return confirm_action('This will reset the article to the original state, all changes that have been made since saving will be lost.  Are you sure you want to continue?');" type="reset" class="btn btn-danger" value="Reset">
+                                    <i class="v-icon-reset fa fa-eraser" aria-hidden="true"></i>
+                                    Reset
+                                </button>
                             </div>
                             <div class="col v-centered-text">
-                                    <button id="preview-edit-start" type="button" class="btn btn-success">Preview</button>
+                                    <button id="preview-edit-start" type="button" class="btn btn-success">
+                                        <i class="v-icon-preview fa fa-search" aria-hidden="true"></i>
+                                        Preview
+                                    </button>
                                     <noscript>Preview functionality requires javascript.  Please enable javascript or download a browser that supports javascript.</noscript>
                             </div>
                             <div class="col-auto">
-                                <button type="submit" id="save-article" class="btn btn-primary">Save Article</button>
+                                <button type="submit" id="save-article" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                                    Save Article
+                                </button>
                             </div>
                         </div>
                         
                         <!-- Description -->
                         <div class="form-group">
-                            <label for="input_desc" class="v-form-label">Description</label>
+                            <label for="input_desc" class="v-form-label">
+                                
+                                Description
+                            </label>
                             <textarea class="form-control" name="description" id="insert_desc" maxlength="400" rows="2">{{{body.description}}}</textarea>
                             <!-- <input name="description" type="text" class="v-form-control form-control" maxlength="250" id="insert-desc" placeholder="Description"> -->
                         </div>
                         
                         <!-- Body -->
                         <div class="form-group">
-                            <label for="input_body" class="v-form-label">Contents</label>
+                            <label for="input_body" class="v-form-label">
+                                
+                                Contents
+                            </label>
                             <textarea class="form-control" name="markdown" id="insert_body" rows="3">{{{body.markdown}}}</textarea>
                         </div>
                         
                         <!-- Tags -->
                         <div class="col-md-8 mx-auto">
-                            <label for="insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
+                            <label for="insert-tags" class="v-center-label v-form-label">
+                                <i class="v-icon-tags fa fa-tags" aria-hidden="true"></i>
+                                Tags -Comma Separated
+                            </label>
                             <input name="tags" type="text" value="{{#each body.tags}}{{this}},{{/each}}" maxlength="250" class="v-centered-input v-form-control form-control" id="insert-tags" placeholder="Tags">
                             <div class="v-form-message" id="tag-msg">
                                 Did you mean to <b>Comma Separate</b> the tags?
@@ -105,14 +126,23 @@
                         <!-- Buttons - Save Reset Preview -->
                         <div class="row">
                             <div class="col-auto">
-                                <button onclick="return confirm_action('This will reset the article to the original state, all changes that have been made since saving will be lost.  Are you sure you want to continue?');" type="reset" class="btn btn-danger" value="Reset">Reset</button>
+                                <button onclick="return confirm_action('This will reset the article to the original state, all changes that have been made since saving will be lost.  Are you sure you want to continue?');" type="reset" class="btn btn-danger" value="Reset">
+                                    <i class="v-icon-reset fa fa-eraser" aria-hidden="true"></i>
+                                    Reset
+                                </button>
                             </div>
                             <div class="col v-centered-text">
-                                    <button id="preview-edit-start2" type="button" class="btn btn-success">Preview</button>
+                                    <button id="preview-edit-start2" type="button" class="btn btn-success">
+                                        <i class="v-icon-preview fa fa-search" aria-hidden="true"></i>
+                                        Preview
+                                    </button>
                                     <noscript>Preview functionality requires javascript.  Please enable javascript or download a browser that supports javascript.</noscript>
                             </div>
                             <div class="col-auto">
-                                <button type="submit" id="save-article2" class="btn btn-primary">Save Article</button>
+                                <button type="submit" id="save-article2" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                                    Save Article
+                                </button>
                             </div>
                         </div>
                         <!-- <div class="v-submit"></div> -->
@@ -161,14 +191,23 @@
                         
                         <div class="row">
                             <div class="col-auto">
-                                <button onclick="return confirm_action('This will reset the article to the original state, all changes that have been made since saving will be lost.  Are you sure you want to continue?');" type="reset" class="v-invisible btn btn-danger" value="Reset">Reset</button>
+                                <button onclick="return confirm_action('This will reset the article to the original state, all changes that have been made since saving will be lost.  Are you sure you want to continue?');" type="reset" class="v-invisible btn btn-danger" value="Reset">
+                                    <i class="v-icon-reset fa fa-eraser" aria-hidden="true"></i>
+                                    Reset
+                                </button>
                             </div>
                             <div class="col v-centered-text">
-                                <button id="preview-edit-end" type="button" class="btn btn-success">End Preview</button>
+                                <button id="preview-edit-end" type="button" class="btn btn-success">
+                                    <i class="v-icon-preview-end fa fa-search-minus" aria-hidden="true"></i>
+                                    End Preview
+                                </button>
                                 <noscript>Preview functionality requires javascript.  Please enable javascript or download a browser that supports javascript.</noscript>
                             </div>
                             <div class="col-auto">
-                                <button id="preview-save" type="submit" class="btn btn-primary">Save Article</button>
+                                <button id="preview-save" type="submit" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                                    Save Article
+                                </button>
                             </div>
                         </div>
                         
@@ -197,14 +236,23 @@
                         
                         <div class="row">
                             <div class="col-auto">
-                                <button onclick="return confirm_action('This will reset the article to the original state, all changes that have been made since saving will be lost.  Are you sure you want to continue?');" type="reset" class="v-invisible btn btn-danger" value="Reset">Reset</button>
+                                <button onclick="return confirm_action('This will reset the article to the original state, all changes that have been made since saving will be lost.  Are you sure you want to continue?');" type="reset" class="v-invisible btn btn-danger" value="Reset">
+                                    <i class="v-icon-reset fa fa-eraser" aria-hidden="true"></i>
+                                    Reset
+                                </button>
                             </div>
                             <div class="col v-centered-text">
-                                <button id="preview-edit-end2" type="button" class="btn btn-success">End Preview</button>
+                                <button id="preview-edit-end2" type="button" class="btn btn-success">
+                                    <i class="v-icon-preview-end fa fa-search-minus" aria-hidden="true"></i>
+                                    End Preview
+                                </button>
                                 <noscript>Preview functionality requires javascript.  Please enable javascript or download a browser that supports javascript.</noscript>
                             </div>
                             <div class="col-auto">
-                                <button id="preview-save2" type="submit" class="btn btn-primary">Save Article</button>
+                                <button id="preview-save2" type="submit" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                                    Save Article
+                                </button>
                             </div>
                         </div>
                            

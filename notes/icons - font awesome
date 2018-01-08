@@ -13,7 +13,7 @@
         trash
         user-o
         users
-        user-circle
+        user-circle                <i class="fa fa-user-circle" aria-hidden="true"></i>
         remove
         random
         sitemap
@@ -44,8 +44,8 @@
         bar chart    page views    <i class="fa fa-bar-chart" aria-hidden="true"></i>
         search                <i class="fa fa-search" aria-hidden="true"></i>
         sign-in
-        tag & tags            <i class="fa fa-tag" aria-hidden="true"></i>
-                        <i class="fa fa-tags" aria-hidden="true"></i>
+        tag & tags            <i class="v-icon-tags fa fa-tag" aria-hidden="true"></i>
+                        <i class="v-icon-tags fa fa-tags" aria-hidden="true"></i>
 
 
         calendar            <i class="v-icon-date fa fa-calendar" aria-hidden="true"></i>
@@ -58,9 +58,10 @@
         floppy-o    save        <i class="fa fa-floppy-o" aria-hidden="true"></i>
         undo        reset        <i class="fa fa-undo" aria-hidden="true"></i>
         eraser        reset        <i class="v-icon-reset fa fa-eraser" aria-hidden="true"></i>
-        newspaper            <i class="fa fa-newspaper-o" aria-hidden="true"></i>
-        floppy/save    save        <i class="fa fa-floppy-o" aria-hidden="true"></i>
+        newspaper            <i class="v-icon-description fa fa-newspaper-o" aria-hidden="true"></i>
+        floppy/save    save        <i class="v-icon-save fa fa-floppy-o" aria-hidden="true"></i>
         
+        <i class="v-icon-image fa fa-picture-o" aria-hidden="true"></i>
         
         <i class="v-icon-preview fa fa-search" aria-hidden="true"></i>
         <i class="v-icon-preview-end fa fa-search-minus" aria-hidden="true"></i>
