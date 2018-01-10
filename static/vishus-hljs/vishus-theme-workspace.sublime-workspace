@@ -141,7 +141,7 @@
 			}
 		},
 		{
-			"file": "/C/code/lang/Rust/proj/blogr/static/vishus-hljs/vishus-theme.scss",
+			"file": "vishus-theme.scss",
 			"settings":
 			{
 				"buffer_size": 918,
@@ -150,7 +150,7 @@
 			}
 		},
 		{
-			"file": "partials/_colors.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_colors.scss",
 			"settings":
 			{
 				"buffer_size": 574,
@@ -159,7 +159,7 @@
 			}
 		},
 		{
-			"file": "blogr.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/blogr.scss",
 			"settings":
 			{
 				"buffer_size": 733,
@@ -168,7 +168,7 @@
 			}
 		},
 		{
-			"file": "partials/_elements.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_elements.scss",
 			"settings":
 			{
 				"buffer_size": 404,
@@ -177,7 +177,7 @@
 			}
 		},
 		{
-			"file": "partials/_fonts.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_fonts.scss",
 			"settings":
 			{
 				"buffer_size": 40,
@@ -186,7 +186,7 @@
 			}
 		},
 		{
-			"file": "partials/_article.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_article.scss",
 			"settings":
 			{
 				"buffer_size": 40,
@@ -195,7 +195,7 @@
 			}
 		},
 		{
-			"file": "partials/_forms.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_forms.scss",
 			"settings":
 			{
 				"buffer_size": 40,
@@ -204,7 +204,7 @@
 			}
 		},
 		{
-			"file": "partials/_pagination.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_pagination.scss",
 			"settings":
 			{
 				"buffer_size": 1390,
@@ -213,7 +213,7 @@
 			}
 		},
 		{
-			"file": "partials/_tags.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_tags.scss",
 			"settings":
 			{
 				"buffer_size": 40,
@@ -222,7 +222,7 @@
 			}
 		},
 		{
-			"file": "partials/_content.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_content.scss",
 			"settings":
 			{
 				"buffer_size": 40,
@@ -231,7 +231,7 @@
 			}
 		},
 		{
-			"file": "partials/_footer.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_footer.scss",
 			"settings":
 			{
 				"buffer_size": 40,
@@ -240,7 +240,7 @@
 			}
 		},
 		{
-			"file": "partials/_header.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_header.scss",
 			"settings":
 			{
 				"buffer_size": 40,
@@ -249,7 +249,7 @@
 			}
 		},
 		{
-			"file": "partials/_layout.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_layout.scss",
 			"settings":
 			{
 				"buffer_size": 157,
@@ -258,7 +258,7 @@
 			}
 		},
 		{
-			"file": "partials/_navigation.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_navigation.scss",
 			"settings":
 			{
 				"buffer_size": 162,
@@ -267,7 +267,7 @@
 			}
 		},
 		{
-			"file": "partials/_media.scss",
+			"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_media.scss",
 			"settings":
 			{
 				"buffer_size": 711,
@@ -1591,7 +1591,7 @@
 				},
 				{
 					"buffer": 2,
-					"file": "/C/code/lang/Rust/proj/blogr/static/vishus-hljs/vishus-theme.scss",
+					"file": "vishus-theme.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1676,7 +1676,7 @@
 			[
 				{
 					"buffer": 3,
-					"file": "partials/_colors.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_colors.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1967,7 +1967,7 @@
 				},
 				{
 					"buffer": 4,
-					"file": "blogr.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/blogr.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2046,7 +2046,7 @@
 			[
 				{
 					"buffer": 5,
-					"file": "partials/_elements.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_elements.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2127,7 +2127,7 @@
 				},
 				{
 					"buffer": 6,
-					"file": "partials/_fonts.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_fonts.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2198,7 +2198,7 @@
 				},
 				{
 					"buffer": 7,
-					"file": "partials/_article.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_article.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2269,7 +2269,7 @@
 				},
 				{
 					"buffer": 8,
-					"file": "partials/_forms.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_forms.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2340,7 +2340,7 @@
 				},
 				{
 					"buffer": 9,
-					"file": "partials/_pagination.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_pagination.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2413,7 +2413,7 @@
 				},
 				{
 					"buffer": 10,
-					"file": "partials/_tags.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_tags.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2484,7 +2484,7 @@
 				},
 				{
 					"buffer": 11,
-					"file": "partials/_content.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_content.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2555,7 +2555,7 @@
 				},
 				{
 					"buffer": 12,
-					"file": "partials/_footer.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_footer.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2626,7 +2626,7 @@
 				},
 				{
 					"buffer": 13,
-					"file": "partials/_header.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_header.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2697,7 +2697,7 @@
 				},
 				{
 					"buffer": 14,
-					"file": "partials/_layout.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_layout.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2770,7 +2770,7 @@
 				},
 				{
 					"buffer": 15,
-					"file": "partials/_navigation.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_navigation.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2843,7 +2843,7 @@
 				},
 				{
 					"buffer": 16,
-					"file": "partials/_media.scss",
+					"file": "/C/code/lang/Rust/proj/blogr/static/stylesheets/partials/_media.scss",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3025,7 +3025,7 @@
 		"height": 28.0
 	},
 	"pinned_build_system": "",
-	"project": "stylesheets-3cells-proj.sublime-project",
+	"project": "vishus-theme-proj.sublime-project",
 	"replace":
 	{
 		"height": 106.0

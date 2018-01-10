@@ -92,6 +92,15 @@ VPS
 
 
 Blogr
+	make a datastructure that holds all values from a form
+		with methods to convert to Article ArticleForm and ArticleWrapper
+		put checks to make sure certain fields are filled in otherwise
+			show a create/edit field with the submitted data filled in
+		modify the create template to allow data to be filled in the input fields
+
+	Fix bug that causes program to crash when creating an article without all the fields
+		or actually it may just return 422 unprocessable entry or something
+
 	Make a login redirect page
 		/login-user  and  /login-admin
 		could use either query string or embed it in the route using /login-user/page/here
@@ -139,12 +148,15 @@ Blogr
 	Cleanup source code and remove old comments
 	Remove pagination test, hit counter tests, and other page tests
 
-	For pages that display flash messages, use different alert_* functions for different flash msg names
-		for error flash messages use alert_danger()
-		for warning flash messages use alert_warning()
-		for success flash messages use alert_success()
-		for all others use alert_info()
-			see the /manage route for an example
+	Convert all pages that look for flash messages to use process_flash
+		let flash = process_flash(flash_opt);
+
+		For pages that display flash messages, use different alert_* functions for different flash msg names
+			for error flash messages use alert_danger()
+			for warning flash messages use alert_warning()
+			for success flash messages use alert_success()
+			for all others use alert_info()
+				see the /manage route for an example
 	
 	Add content to the about me page.
 	

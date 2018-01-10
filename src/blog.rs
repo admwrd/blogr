@@ -80,7 +80,8 @@ pub struct Article {
 // }
 
 
-#[derive(Debug, Clone, FromForm)]
+// #[derive(Debug, Clone, FromForm)]
+#[derive(Debug, Clone)]
 pub struct ArticleWrapper {
     pub aid: u32,
     pub title: String,
@@ -231,6 +232,10 @@ pub struct QueryUser {
 }
 
 
+pub fn now() -> NaiveDateTime {
+    Local::now().naive_local()
+}
+
 pub fn opt_col<T>(rst: Option<Result<T, T>>) -> T where T: Display + Default {
     match rst {
         Some(Ok(d)) => d,
@@ -336,6 +341,12 @@ impl ArticleWrapper {
             markdown: self.markdown,
             image: self.image,
         }
+    }
+    pub fn is_valid(&self) -> bool {
+        self.aid != 0
+        && &self.title != ""
+        && self.userid != 0
+        // && ( &self.body != "" || &self.markdown != "" )
     }
 }
 
@@ -840,6 +851,10 @@ impl ArticleForm {
             image,
         }
     }
+    pub fn is_valid(&self) -> bool {
+        &self.title != ""
+        && ( &self.markdown != "" || &self.body != "" )
+    }
     // pub fn to_source(&self, userid: u32, username: &str) -> ArticleSource {
     //     // get next aid
     //     let next_aid = 0;
@@ -1061,11 +1076,65 @@ impl<'f> FromForm<'f> for ArticleForm {
         if description.len()+1 > MAX_CREATE_DESCRIPTION {
             description = description[..MAX_CREATE_DESCRIPTION].to_string();
         }
-        if title == "" || body == "" {
-            Err("Missing a required field.")
-        } else {
+        // if title == "" || body == "" {
+            // Err("Missing a required field.")
+        // } else {
             Ok( ArticleForm::new(title, body, tags, description, markdown, image) )
+        // }
+    }
+}
+
+
+impl<'f> FromForm<'f> for ArticleWrapper {
+    type Error = &'static str;
+    
+    fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
+        
+        // Author should be blank string here, when saving the author can be identified from cookies
+        // this prevents user from altering the userid in submitted form data when using a hidden field to save the userid
+        
+        let mut aid: u32 = 0;
+        let mut posted: NaiveDateTimeWrapper = NaiveDateTimeWrapper(now());
+        let mut userid: u32 = 0;
+        let mut username: String = String::new();
+        let mut title: String = String::new();
+        let mut body: String = String::new();
+        let mut tags: String = String::new();
+        let mut description: String = String::new();
+        let mut markdown: String = String::new();
+        let mut image: String = String::new();
+        
+        for (field, value) in form_items {
+            match field.as_str() {
+                "aid" => { aid = value.parse::<u32>().unwrap_or(0u32) },
+                "posted" => { posted = NaiveDateTimeWrapper::from_form_value(value).unwrap_or( NaiveDateTimeWrapper(now()) ) },
+                "userid" => { userid = value.parse::<u32>().unwrap_or(0u32) },
+                "username" => { username = escape_sql_pg(value.url_decode().unwrap_or( String::new() )) },
+                "title" => { title = escape_sql_pg(sanitize_title(value.url_decode().unwrap_or( String::new() ))) },
+                "body" => { body = escape_sql_pg(value.url_decode().unwrap_or( String::new() )) },
+                "markdown" => { markdown = escape_sql_pg(value.url_decode().unwrap_or( String::new() )) },
+                "tags" => { tags = escape_sql_pg(sanitize_tags(value.url_decode().unwrap_or( String::new() ))) },
+                "description" => { description = escape_sql_pg(value.url_decode().unwrap_or( String::new() )) },
+                "image" => { image = escape_sql_pg(value.url_decode().unwrap_or( String::new() )) },
+                _ => {},
+            }
         }
+        // if title == "" || body == "" {
+            // Err("Missing a required field.")
+        // } else {
+            Ok( ArticleWrapper {
+                aid,
+                title,
+                posted,
+                userid,
+                username,
+                body,
+                tags,
+                description,
+                markdown,
+                image,
+            } )
+        // }
     }
 }
 

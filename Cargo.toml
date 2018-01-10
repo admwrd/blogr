@@ -4,6 +4,29 @@ version = "0.4.3"
 authors = ["Andrew Prindle <prindle.andrew@gmail.com>"]
 
 
+description = "A web blog written in Rust using the Rocket web framework.  Uses Postgresql to store users and blog articles.  Designed to be feature rich and easy to modify."
+
+# documentation = "..."
+# homepage = "https://github.com/vishusandy/blogr"
+
+# relative to root
+# readme = "readme.md"
+
+# up to 5 keywords
+keywords = ["rocket", "blog", "cms", "content", "management"]
+
+# This is a list of up to five categories that must match exactly
+# List of categories available at crates.io/category_slugs
+categories = ["authentication", "web-programming", "database", "text-processing"]
+
+# This is a string description of the license for this package.  Multiple licenses can be separated with a `/`.
+license = "Apache-2.0"
+
+# exclude = ["build/**/*.o", "doc/**/*.html"]
+exclude = ["database", "examples/**"]
+
+
+
 [dependencies]
 backtrace-sys = {version = "0.1.15" }
 brotli = "1.0.9"
@@ -67,4 +90,9 @@ version = "0.3.3"
 default-features = false
 features = ["handlebars_templates"]
 # path = "contrib"
+
+
+
+
+
 
