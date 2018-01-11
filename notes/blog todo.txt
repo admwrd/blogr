@@ -92,6 +92,11 @@ VPS
 
 
 Blogr
+	Add bg img to body
+		background: url("http://localhost:8000/assets/imgs/bg-dot-grid.png");
+
+	IMPORTANT - Filter out non-image formats from the image drop-down box
+
 	make a datastructure that holds all values from a form
 		with methods to convert to Article ArticleForm and ArticleWrapper
 		put checks to make sure certain fields are filled in otherwise
