@@ -345,6 +345,8 @@ var base_url_obj = document.getElementById('base_url');
 var editimg = document.getElementById('article-image-select');
 var editheader = document.getElementById('header-article-modify');
 if (base_url_obj && editimg && editheader) {
+    editheader.style.background = "url('" + base_url_obj.value + 'imgs/' + editimg.value + "') no-repeat center center";
+    
     editimg.addEventListener('change', function() {
         var imgpath = base_url_obj.value + 'imgs/' + editimg.value;
         editheader.style.background = "url('" + imgpath + "') no-repeat center center";

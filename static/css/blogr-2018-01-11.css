@@ -652,6 +652,7 @@ OLD - OUTDATED PAGINATION STYLES
     background-color: #333333c9;
     margin: 1em 0px;
     padding: 1em 0px;
+    text-align: center;
 }
 
 .v-article-single .v-article-header {
@@ -897,6 +898,8 @@ pre, code {
     color: #bbb;
     padding: .75em;
     text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .v-editlink {
