@@ -235,6 +235,8 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
     if admin_opt.is_some() {
         admin_pages.push( TemplateMenu::new(String::from("Admin Dashboard"), String::from("/admin"), page) );
         admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create"), page) );
+        admin_pages.push( TemplateMenu::new(String::from("Page Statistics"), String::from("/pageviews"), page) );
+        admin_pages.push( TemplateMenu::with_class(String::from("Database Backup"), String::from("/backup"), String::from("\" target=\"_blank"), page) );
         // admin_pages.push( TemplateMenu::separator() );
         admin_pages.push( TemplateMenu::new(String::from("Logout Administrator"), String::from("/admin_logout"), page) );
     } else {
@@ -263,6 +265,28 @@ impl TemplateMenu {
         } else {
             String::new()
         };
+        TemplateMenu {
+            separator: false,
+            classes,
+            name,
+            url: {
+                if url.starts_with("http") || url.starts_with("www") {
+                    url
+                } else {
+                    let mut u = String::with_capacity(BASE.len() + url.len() + 10);
+                    u.push_str(&BASE);
+                    u.push_str(&url);
+                    u
+                }
+            },
+        }
+    }
+    pub fn with_class(name: String, url: String, class: String, current_page: &str) -> TemplateMenu {
+        let mut classes = String::with_capacity(class.len() + 50);
+        if &url == current_page {
+            classes.push_str("active");
+        }
+        classes.push_str(&class);
         TemplateMenu {
             separator: false,
             classes,

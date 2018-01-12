@@ -92,6 +92,8 @@ VPS
 
 
 Blogr
+	Add pageviews template
+
 	Add bg img to body
 		background: url("http://localhost:8000/assets/imgs/bg-dot-grid.png");
 

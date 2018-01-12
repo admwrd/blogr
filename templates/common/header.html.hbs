@@ -70,12 +70,12 @@
                             {{#each info.admin_pages}}
                               {{#if this.separator}}
                                   {{#if this.name}}
-                                  <h6 class="dropdown-header {{this.classes}}">{{{this.name}}}</h6>
+                                  <h6 class="dropdown-header {{{this.classes}}}">{{{this.name}}}</h6>
                                   {{else}}
-                                  <div class="dropdown-divider {{this.classes}}"></div>
+                                  <div class="dropdown-divider {{{this.classes}}}"></div>
                                   {{/if}}
                               {{else}}
-                                  <a class="dropdown-item {{this.classes}}" href="{{this.url}}">{{{this.name}}}</a>
+                                  <a class="dropdown-item {{{this.classes}}}" href="{{this.url}}">{{{this.name}}}</a>
                               {{/if}}
                             {{/each}}
                                 <!-- <a class="dropdown-item" href="#">Something else here</a> -->
