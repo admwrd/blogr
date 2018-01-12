@@ -42,7 +42,6 @@ h1, h2, h3, h4, h5, h6 {
 body {
     background-color: #15191b;
     letter-spacing: .3px;
-    background: url("http://localhost:8000/assets/imgs/bg-dot-grid3.png");
     background-attachment: fixed;
 }
 
