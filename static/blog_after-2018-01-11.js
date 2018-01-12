@@ -345,17 +345,11 @@ var base_url_obj = document.getElementById('base_url');
 var editimg = document.getElementById('article-image-select');
 var editheader = document.getElementById('header-article-modify');
 if (base_url_obj && editimg && editheader) {
-    console.log('editing....');
     editimg.addEventListener('change', function() {
-        console.log('changing image...');
         var imgpath = base_url_obj.value + 'imgs/' + editimg.value;
-        // alert('Image: ' + imgpath);
         editheader.style.background = "url('" + imgpath + "') no-repeat center center";
     });
-} else {
-    console.log('not editing...');
 }
-
 
 
 

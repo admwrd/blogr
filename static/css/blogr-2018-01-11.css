@@ -842,8 +842,13 @@ OLD - OUTDATED PAGINATION STYLES
 
 .v-select-image {
     margin-top: 1em;
-    margin-bottom: 2em;
+    /*margin-bottom: 2em;*/
     text-align: center;
+}
+
+.v-edit-buttons {
+    margin-bottom: 1em;
+    margin-top: 1em;
 }
 
 #article-image-select {
