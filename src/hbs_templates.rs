@@ -447,7 +447,8 @@ impl TemplateCreate {
             for dir_entry in entries {
                 if let Ok(entry) = dir_entry {
                     let path = entry.path();
-                    if !path.is_dir() {
+                    
+                    if !path.is_dir() && path.to_string_lossy().into_owned().ends_with(".jpg") {
                         if let Some(name) = path.file_name() {
                             let image = name.to_string_lossy().into_owned();
                             imgs.push(image);
@@ -477,7 +478,7 @@ impl TemplateEdit {
             for dir_entry in entries {
                 if let Ok(entry) = dir_entry {
                     let path = entry.path();
-                    if !path.is_dir() {
+                    if !path.is_dir() && path.to_string_lossy().into_owned().ends_with(".jpg") {
                         if let Some(name) = path.file_name() {
                             let image = name.to_string_lossy().into_owned();
                             let img = TemplateImg {
