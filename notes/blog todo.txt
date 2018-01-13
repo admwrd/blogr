@@ -38,6 +38,9 @@ Compile for production:
 
 
 Blog Theme
+	Add meta tag generator
+		<meta name="generator" content="MediaWiki 1.31.0-wmf.15"/>
+
 	Font awesome icons to use:
 		linode
 		rocket
@@ -92,6 +95,10 @@ VPS
 
 
 Blogr
+	Add line numbers to code
+
+	Add javascript copy button to all code snippets (<pre><code>)
+
 	Add image header and title stuff to create/edit pages
 
 	Add pageviews template?

@@ -1,0 +1,8 @@
+
+
+Enable Http Strict Transport Security
+- Only allows HTTPS
+- Redirects from HTTP to HTTPS
+- Does not allow user to override invalid certificate warning
+
+add_header Strict-Transport-Security "max-age=10886400; includeSubdomains; preload"

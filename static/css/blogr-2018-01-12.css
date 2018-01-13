@@ -43,7 +43,7 @@ body {
     background-color: #15191b;
     letter-spacing: .3px;
     background: url("http://localhost:8000/assets/imgs/bg-dot-grid3.png");
-    background-attachment: fixed !important;
+    background-attachment: fixed;
 }
 
 .dropdown-menu a {
@@ -413,7 +413,6 @@ hr.v-am-item-tag-divider:after {
 }
 
 
-
 /* Stats page AKA pageviews */
 
 .v-stats-container {
@@ -489,15 +488,50 @@ hr.v-am-item-tag-divider:after {
 
 /* Code Formatting Styles */
 
-pre {
+/*pre {*/
+.v-code {
     background: #222222aa;
     padding: 1em;
     overflow-x: auto;
     border-radius: 1em;
 }
 
+.v-code button {
+    margin-left: auto;
+}
 
+.v-copy-container {
+    text-align: right;
+    color: #f00;
+}
 
+.hljs-ln-numbers {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    text-align: center;
+    color: #cccccca0;
+    border-right: 1px solid #CCCCCC30;
+    vertical-align: top;
+    padding-right: .4em !important;
+    /* your custom style here */
+}
+
+.hljs-ln-code {
+    padding-left: 1.2em !important;
+}
+
+.hljs-ln {
+    width: 100%;
+}
+
+.hljs-ln tr:hover {
+    background-color: #44444490;
+}
 
 /*.v-am-item-desription .tooltip-inner {
     color: #f00 !important;
@@ -655,9 +689,14 @@ OLD - OUTDATED PAGINATION STYLES
     text-align: center;
 }
 
-.v-article-single .v-article-header, #v-edit .v-article-header {
+.v-article-single .v-article-header {
     /*background: url(http://localhost:8000/imgs/vishus-1.jpg) center center no-repeat;*/
     padding: 150px 0px 0px;
+}
+
+#v-edit .v-article-header {
+    padding: 150px 0px 0px;
+    margin-bottom: 1em;
 }
 
 .v-article-header {
@@ -838,8 +877,13 @@ OLD - OUTDATED PAGINATION STYLES
 
 .v-select-image {
     margin-top: 1em;
-    margin-bottom: 2em;
+    /*margin-bottom: 2em;*/
     text-align: center;
+}
+
+.v-edit-buttons {
+    margin-bottom: 1em;
+    margin-top: 1em;
 }
 
 #article-image-select {
@@ -888,6 +932,8 @@ pre, code {
     color: #bbb;
     padding: .75em;
     text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .v-editlink {
@@ -905,6 +951,15 @@ pre, code {
     margin: 0px auto;
     /*width: 380px;*/
     width: 260px;
+}
+
+input#inputTitle.v-form-control {
+    border: 1px solid #aa0000 !important;
+    background-color: inherit !important;
+    color: #ffffff !important;
+}
+input#inputTitle.v-form-control:focus {
+    border: 1px solid #ff0000 !important;
 }
 
 .v-input-separator {

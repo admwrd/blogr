@@ -356,20 +356,26 @@ if (base_url_obj && editimg && editheader) {
 // $("pre code").append( "<div class='v-code-copy'></div>" );
 // var clipboard = new Clipboard('.v-code-copy');
 $( "pre" ).wrap( "<div class='v-code'></div>" );
+// $( ".v-code pre" ).wrap( "<div class='v-code-inner'></div>" );
+
 $( ".v-code" ).prepend( "<div class=\"v-copy-container\"><button class=\"btn v-copy btn-light\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i>Copy</button></div>" );
+$( ".v-code" ).append( "<div class=\"v-copy-container\"><button class=\"btn v-copy btn-light\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i>Copy</button></div>" );
 
 var codeclip = new Clipboard('.v-copy', {
     target: function(trigger) {
-        return trigger.parentNode.nextElementSibling.firstElementChild;
+        // return trigger.parentNode.nextElementSibling.firstElementChild;
+        return trigger.parentNode.parentNode.firstElementChild.nextElementSibling;
     }
 });
 codeclip.on('error', function(e) { console.log(e);});
 
 
+
 // Add Line Numerbing to Code using the HighlightJS Line Numbering Plugin
 // https://github.com/wcoder/highlightjs-line-numbers.js/
 $(document).ready(function() {
-    $('code.hljs').each(function(i, block) {
+    // $('code.hljs').each(function(i, block) {
+    $('code').each(function(i, block) {
         hljs.lineNumbersBlock(block);
     });
 });
