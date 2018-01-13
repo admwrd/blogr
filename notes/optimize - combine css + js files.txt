@@ -4,6 +4,28 @@ https://scotch.io/tutorials/using-npm-as-a-build-tool
 https://medium.com/javascript-training/introduction-to-using-npm-as-a-build-tool-b41076f488b0
 https://css-tricks.com/using-npm-build-tool/
 
+Stylesheets
+font awesome 4.7.0
+bootstrap 4.0.0beta
+blogr
+vishus-theme
+
+Scripts
+highlightjs pack
+highlightjs line numbers plugin
+remarkable
+clipboard
+blog
+---
+jquery 3.2.1 slim
+popper js
+bootstrap
+blog_after
+
+
+
+
+
 
 
 JS

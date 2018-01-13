@@ -95,6 +95,8 @@ VPS
 
 
 Blogr
+	Can the line numbers be made to not scroll when lines of code are too long?
+
 	Add line numbers to code
 
 	Add javascript copy button to all code snippets (<pre><code>)

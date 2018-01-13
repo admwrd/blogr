@@ -711,13 +711,13 @@ impl Article {
                 WHERE aid = {aid}
             ", 
                     // posted = '{posted}',
-            title=slash_quotes(&self.title), 
+            title=&self.title, 
             // posted=slash_quotes(self.posted), 
-            body=slash_quotes(&self.body),
+            body=&self.body,
             tag=tagstr,
-            desc=slash_quotes(&self.description),
-            src=slash_quotes(&self.markdown),
-            img=slash_quotes(&self.image),
+            desc=&self.description,
+            src=&self.markdown,
+            img=&self.image,
             aid=self.aid
         );
         
