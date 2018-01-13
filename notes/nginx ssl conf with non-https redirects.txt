@@ -1,0 +1,47 @@
+server {
+    listen 80;
+    server_name vishus.net;
+    include /etc/nginx/snippets/letsencrypt.conf;
+
+    location / {
+        return 301 https://vishus.net$request_uri;
+    }
+}
+
+
+server {
+    server_name vishus.net;
+    listen 443 ssl http2 default_server;
+    listen [::]:443 ssl http2 default_server ipv6only=on;
+
+    ssl_certificate /etc/letsencrypt/live/vishus.net/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/vishus.net/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/vishus.net/fullchain.pem;
+    include /etc/nginx/snippets/ssl.conf;
+
+    location ~* \.(css|js|ttf|otf)$ {
+        root /var/www/html;
+        expires 60d;
+        gzip on;
+        gzip_types
+                text/plain
+                application/xml
+                application/javascript
+                text/javascript
+                application/atom+xml
+                application/rss+xml
+                font/opentype
+                application/x-font-ttf
+                text/xml
+                text/css;
+        gzip_min_length 1000;
+    }
+    location ~* \.(png|gif|jpg|jpeg|zip|tar|bz2|gzip|bin|exe|dll|7zip|7z|rar|mp3|mp4|mkv|bat||ppt|pptx|doc|docx|xls|slxs|djvu||az3|chm|epub|mobi|tgz|gz|scss|less|sass|rs|toml|yaml|ps|pdf)$ {
+        root /var/www/html;
+        expires 60d;
+        gzip off;
+    }
+    location / {
+       proxy_pass https://localhost:8000;
+    }
+}

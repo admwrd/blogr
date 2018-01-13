@@ -95,6 +95,10 @@ VPS
 
 
 Blogr
+	Remove map files from css/js assets
+	
+	CLEANUP FILES!
+	
 	Can the line numbers be made to not scroll when lines of code are too long?
 
 	Add line numbers to code
