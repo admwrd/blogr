@@ -1,0 +1,8 @@
+
+Create a new Putty tab
+putty -new_console
+
+
+
+
+

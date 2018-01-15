@@ -43,10 +43,15 @@ use libflate::deflate;
 
 use accept::*;
 
+use super::DEFAULT_TTL;
 // use vcache::*;
 // use rocket::State;
 
-const DEFAULT_TTL: isize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
+
+// Moved to settings file, keep this here for reference
+//   to make into a separate module
+//   Check if a DEFAULT_TTL const is set and if not set a default one
+// const DEFAULT_TTL: isize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
 
 
 // Do not add content type to ExData, allow user to set explicitly
@@ -411,7 +416,8 @@ impl<'a> Responder<'a> for Express {
             response.raw_header("Cache-Control", "no-store");
             response.raw_header_adjoin("Cache-Control", "no-cache, no-store, must-revalidate");
         } else {
-            response.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
+            // response.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
+            response.raw_header("Cache-Control", format!("max-age={}", self.ttl));
         }
         
         

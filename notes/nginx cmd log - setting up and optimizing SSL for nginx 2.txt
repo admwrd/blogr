@@ -1,0 +1,295 @@
+﻿
+C:\Users\Andrew
+λ vps-ssh
+
+ssh vishus@104.200.24.182
+vishus@104.200.24.182's password:
+Welcome to Ubuntu 17.10 (GNU/Linux 4.13.0-21-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+ * Ubuntu Updates for the Meltdown / Spectre Vulnerabilities
+   - https://ubu.one/uMelt
+Last login: Fri Jan 12 07:59:07 2018 from 173.239.240.20
+vishus@localhost:~$ cd ~/blogr-tls
+vishus@localhost:~/blogr-tls$ bash run.sh
+Production mode
+Error: I/O error while setting tls.certs:
+    => Permission denied (os error 13)
+vishus@localhost:~/blogr-tls$ sudo vi Rocket.toml
+[sudo] password for vishus:
+Sorry, try again.
+[sudo] password for vishus:
+vishus@localhost:~/blogr-tls$ bash run.sh
+Production mode
+Error: I/O error while setting tls.certs:
+    => Permission denied (os error 13)
+vishus@localhost:~/blogr-tls$ mkdir private
+vishus@localhost:~/blogr-tls$ chmod 777 private
+vishus@localhost:~/blogr-tls$ cp /etc/letsencrypt/live/vishus.net/fullchain.pem ~/blogr-tls/private
+cp: cannot stat '/etc/letsencrypt/live/vishus.net/fullchain.pem': Permission denied
+vishus@localhost:~/blogr-tls$ sudo cp /etc/letsencrypt/live/vishus.net/fullchain.pem ~/blogr-tls/private
+vishus@localhost:~/blogr-tls$ sudo cp /etc/letsencrypt/live/vishus.net/privkey.pem ~/blogr-tls/private
+vishus@localhost:~/blogr-tls$ sudo cp /etc/letsencrypt/live/vishus.net/* ~/blogr-tls/private
+cp: cannot stat '/etc/letsencrypt/live/vishus.net/*': No such file or directory
+vishus@localhost:~/blogr-tls$ sudo cp /etc/letsencrypt/live/vishus.net ~/blogr-tls/private
+cp: -r not specified; omitting directory '/etc/letsencrypt/live/vishus.net'
+vishus@localhost:~/blogr-tls$ sudo cp -R /etc/letsencrypt/live/vishus.net ~/blogr-tls/private
+vishus@localhost:~/blogr-tls$ sudo vi Rocket.toml
+vishus@localhost:~/blogr-tls$ bash run.sh
+Production mode
+Configured for development.
+    => address: localhost
+    => port: 8000
+    => log: normal
+    => workers: 8
+    => secret key: provided
+    => limits: forms = 32KiB
+    => tls: enabled
+Mounting '/':
+    => GET /all_tags
+    => GET /tag?<tag>
+    => GET /tag/<tag>
+    => GET /article/<aid>/<title>
+    => GET /article/<aid>
+    => GET /article?<aid>
+    => GET /article
+    => POST /create
+    => POST /create [2]
+    => GET /create
+    => GET /edit/<aid>
+    => POST /edit
+    => GET /delete/<aid>
+    => POST /process_delete/<aid>
+    => GET /search?<search>
+    => GET /search/<searchstr>
+    => GET /author/<authorid>/<authorname>
+    => GET /author/<authorid>
+    => GET /about
+    => GET /rss.xml
+    => GET /
+    => GET /manage
+    => GET /manage/<sortstr>/<orderstr>
+    => GET /admin
+    => GET /admin [2]
+    => GET /admin?<userqry>
+    => POST /admin
+    => GET /admin_logout
+    => GET /backup
+    => GET /pageviews
+    => GET /user
+    => GET /user?<user>
+    => GET /user [2]
+    => POST /user
+    => GET /user_logout
+    => GET /<file..> [10]
+👾  Catchers:
+    => 500
+    => 404
+Rocket has launched from https://localhost:8000
+GET / text/html:
+    => Matched: GET /
+Prepared paginated query:
+SELECT a.aid, a.title, a.posted, description(300, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) ORDER BY posted DESC LIMIT 10 OFFSET 0
+1 Capacity has changed from 390 to: 1560
+Served in 0.034514828 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET /fonts/fontawesome-webfont.woff2?v=4.7.0 application/font-woff2; q=1.0:
+    => Matched: GET /<file..> [10]
+    => Outcome: Success
+    => Response succeeded.
+GET /article/15/Look%20At%20Me! text/html:
+    => Matched: GET /article/<aid>/<title>
+Running query:
+SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = 15
+Querying articles: found 1 rows
+Served in 0.003070640 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET /author/1/AndrewPrindle text/html:
+    => Matched: GET /author/<authorid>/<authorname>
+Prepared paginated query:
+SELECT a.aid, a.title, a.posted, description(300, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.author = 1 ORDER BY posted DESC LIMIT 10 OFFSET 0
+1 Capacity has changed from 390 to: 1560
+Served in 0.005467678 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET /user text/html:
+    => Matched: GET /user
+    => Outcome: Forward
+    => Matched: GET /user [2]
+Served in 0.000181329 seconds
+    => Outcome: Success
+    => Response succeeded.
+POST /user application/x-www-form-urlencoded:
+    => Matched: POST /user
+Running:
+            SELECT u.userid, u.username, u.display FROM users u WHERE u.username = 'andrew' AND
+                u.hash_salt = crypt('password', u.hash_salt) AND lockout IS NULL
+Processed in 0.050280278 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET /user text/html:
+    => Matched: GET /user
+Served in 0.001321865 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET /user_logout text/html:
+    => Matched: GET /user_logout
+    => Outcome: Success
+    => Response succeeded.
+GET / text/html:
+    => Matched: GET /
+Prepared paginated query:
+SELECT a.aid, a.title, a.posted, description(300, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) ORDER BY posted DESC LIMIT 10 OFFSET 0
+1 Capacity has changed from 390 to: 1560
+Served in 0.005093294 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET /user text/html:
+    => Matched: GET /user
+    => Outcome: Forward
+    => Matched: GET /user [2]
+Served in 0.000134993 seconds
+    => Outcome: Success
+    => Response succeeded.
+POST /user application/x-www-form-urlencoded:
+    => Matched: POST /user
+Running:
+            SELECT u.userid, u.username, u.display FROM users u WHERE u.username = 'andrew' AND
+                u.hash_salt = crypt('password', u.hash_salt) AND lockout IS NULL
+Processed in 0.022628466 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET /user text/html:
+    => Matched: GET /user
+Served in 0.000439918 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET /about text/html:
+    => Matched: GET /about
+    => Outcome: Success
+    => Response succeeded.
+GET /user text/html:
+    => Matched: GET /user
+Served in 0.001175412 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET /admin text/html:
+    => Matched: GET /admin
+    => Outcome: Forward
+    => Matched: GET /admin [2]
+Served in 0.000219749 seconds
+    => Outcome: Success
+    => Response succeeded.
+POST /admin application/x-www-form-urlencoded:
+    => Matched: POST /admin
+Running:
+            SELECT u.userid, u.username, u.display FROM users u WHERE u.username = 'andrew' AND is_admin = true AND
+                u.hash_salt = crypt('password', u.hash_salt) AND lockout IS NULL
+Processed in 0.023376931 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET /admin text/html:
+    => Matched: GET /admin
+Manage paginated query: SELECT a.aid, a.title, a.posted, '' as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) ORDER BY posted DESC LIMIT 10 OFFSET 0
+1 Capacity has changed from 390 to: 1560
+    => Outcome: Success
+    => Response succeeded.
+GET /admin text/html:
+    => Matched: GET /admin
+Manage paginated query: SELECT a.aid, a.title, a.posted, '' as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) ORDER BY posted DESC LIMIT 10 OFFSET 0
+1 Capacity has changed from 390 to: 1560
+    => Outcome: Success
+    => Response succeeded.
+GET /admin?page=2 text/html:
+    => Matched: GET /admin?<userqry>
+    => page=2 has no matching field in struct.
+    => Outcome: Forward
+    => Matched: GET /admin
+Manage paginated query: SELECT a.aid, a.title, a.posted, '' as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) ORDER BY posted DESC LIMIT 10 OFFSET 10
+0 Capacity has changed from 390 to: 780
+1 Capacity has changed from 390 to: 1560
+    => Outcome: Success
+    => Response succeeded.
+GET /user text/html:
+    => Matched: GET /user
+Served in 0.000402327 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET / text/html:
+    => Matched: GET /
+Prepared paginated query:
+SELECT a.aid, a.title, a.posted, description(300, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) ORDER BY posted DESC LIMIT 10 OFFSET 0
+1 Capacity has changed from 390 to: 1560
+Served in 0.004553781 seconds
+    => Outcome: Success
+    => Response succeeded.
+GET / text/html:
+    => Matched: GET /
+Prepared paginated query:
+SELECT a.aid, a.title, a.posted, description(300, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) ORDER BY posted DESC LIMIT 10 OFFSET 0
+1 Capacity has changed from 390 to: 1560
+Served in 0.004719143 seconds
+    => Outcome: Success
+    => Response succeeded.
+♥
+vishus@localhost:~/blogr-tls$ sudo chmod -R 777 /var/www/html
+[sudo] password for vishus:
+vishus@localhost:~/blogr-tls$ sudo chown -R root:root /var/www/html
+vishus@localhost:~/blogr-tls$ sudo systemctl stop blogr-tls
+vishus@localhost:~/blogr-tls$ sudo systemctl start blogr-tls
+vishus@localhost:~/blogr-tls$ sudo systemctl stop blogr-tls
+[sudo] password for vishus:
+vishus@localhost:~/blogr-tls$ bash build.sh
+   Compiling blogr v0.4.3 (file:///home/vishus/blogr-tls)
+    Finished release [optimized] target(s) in 57.85 secs
+vishus@localhost:~/blogr-tls$ sudo systemctl start blogr-tls
+vishus@localhost:~/blogr-tls$ cd backups
+-bash: cd: backups: No such file or directory
+vishus@localhost:~/blogr-tls$ cd ../backups
+vishus@localhost:~/backups$ ls
+blogr                                       db               logs                  server
+blogr-service-backup-old-blogr-exe.service  default-enabled  nginx                 systemd-blogr-attempt1
+blogr-service-backup.service                executables      nginx-ssl-conf.bak
+blogr-systemd-backup-post-restart.service   letsenc          nginx-ssl-config.bak
+vishus@localhost:~/backups$ sudo ls /etc/nginx/sites-available
+[sudo] password for vishus:
+blog  default
+vishus@localhost:~/backups$ sudo cp /etc/nginx/sites-available/blog ~/backups/nginx-ssl-conf-before-301.bak
+vishus@localhost:~/backups$ sudo vi /etc/nginx/sites-available/blog
+vishus@localhost:~/backups$ sudo cp /etc/nginx/sites-available/blog ~/backups/nginx-ssl-conf-mid-301-before-www.bak
+vishus@localhost:~/backups$ sudo vi /etc/nginx/sites-available/blog
+vishus@localhost:~/backups$ sudo cp /etc/hosts ~/backups/hosts-before-first-changes.bak
+vishus@localhost:~/backups$ sudo vi /etc/hosts
+vishus@localhost:~/backups$ ls
+blogr                                       default-enabled                 nginx                                  server
+blogr-service-backup-old-blogr-exe.service  executables                     nginx-ssl-conf.bak                     systemd-blogr-attempt1
+blogr-service-backup.service                hosts-before-first-changes.bak  nginx-ssl-conf-before-301.bak
+blogr-systemd-backup-post-restart.service   letsenc                         nginx-ssl-config.bak
+db                                          logs                            nginx-ssl-conf-mid-301-before-www.bak
+vishus@localhost:~/backups$ sudo vi /etc/nginx/sites-available/blog
+vishus@localhost:~/backups$ sudo cp /etc/nginx/sites-available/blog ~/backups/nginx-ssl-conf-before-removing-imgs-gzip.bak
+vishus@localhost:~/backups$ sudo vi /etc/nginx/sites-available/blog                    -
+vishus@localhost:~/backups$ sudo vi /etc/nginx/sites-available/blog
+vishus@localhost:~/backups$ sudo vi /etc/nginx/sites-available/blog
+vishus@localhost:~/backups$ sudo nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+vishus@localhost:~/backups$ sudo vi /etc/nginx/sites-available/blog
+vishus@localhost:~/backups$ sudo ls /etc/nginx/
+conf.d        fastcgi_params  koi-win     modules-available  nginx.conf    scgi_params      sites-enabled  uwsgi_params
+fastcgi.conf  koi-utf         mime.types  modules-enabled    proxy_params  sites-available  snippets       win-utf
+vishus@localhost:~/backups$ sudo ls /etc/nginx/snippets
+fastcgi-php.conf  letsencrypt.conf  snakeoil.conf  ssl.conf
+vishus@localhost:~/backups$ sudo vi /etc/nginx/snippets/snakeoil.conf
+vishus@localhost:~/backups$ sudo vi /etc/nginx/snippets/ssl.conf
+vishus@localhost:~/backups$ sudo vi /etc/nginx/sites-available/blog
+vishus@localhost:~/backups$ sudo nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+vishus@localhost:~/backups$ sudo systemctl restart nginx
+vishus@localhost:~/backups$

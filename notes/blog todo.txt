@@ -95,12 +95,22 @@ VPS
 
 
 Blogr
+	Make Edit link a button
+
+	Add a loading spinner to loading images
+		Can use font awesome maybe
+		Article header images:
+			Lower margin-top of title bar and place text above title box
+
 	Remove map files from css/js assets
 	
 	CLEANUP FILES!
 	
 	Can the line numbers be made to not scroll when lines of code are too long?
-
+		Could use either
+			http://www.fixedheadertable.com/
+			or creating a new table with just the line number column over the table
+				maybe use something like position: absolute
 	Add line numbers to code
 
 	Add javascript copy button to all code snippets (<pre><code>)
