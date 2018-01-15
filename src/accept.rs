@@ -6,6 +6,7 @@
 use rocket::request::{FromRequest, Request};
 use rocket::http::Status;
 use rocket::Outcome;
+use std::collections::HashMap;
 
 const GZIP:    u8 = 1;
 const DEFLATE: u8 = 2;
@@ -85,11 +86,37 @@ impl<'a, 'r> FromRequest<'a, 'r> for AcceptCompression {
     type Error = ();
     fn from_request(request: &'a Request<'r>) -> Outcome<AcceptCompression, (Status, ()), ()> {
         let mut supported = 0u8;
-        if let Some(encoding) = request.headers().get("Accept-Encoding").next() {
+        let headers = request.headers();
+        
+        // Could also use request.accept() instead of request.headers().get("...").next()
+        // Actually doesn't work as expected so no not using this
+        // println!("Headers: {:?}, Accept: {:?}", 
+        //     request.headers().get("Accept-Encoding").next() , 
+        //     request.accept() 
+        // );
+        
+        // Referrer Code
+        // let referer = headers.get("Referer").next();
+        // if let Some(refer) = referer {
+        //     println!("Referer: {}", refer);
+        // }
+        
+        // let all_headers: HashMap<String, String> = request.headers()
+        
+        // let all_headers: HashMap<String, String> = headers
+        //                                             .iter()
+        //                                             .map(|h| ( h.name().to_string(), h.value().to_string() ) )
+        //                                             .collect();
+        // println!("All headers: {:#?}", all_headers);
+        
+        // if let Some(encoding) = request.headers().get("Accept-Encoding").next() {
+        // if let Some(encoding) = headers.get("Accept-Encoding").next() {
+        if let Some(encoding) = headers.get("Accept-Encoding").next() {
             if encoding.contains("gzip") { supported |= GZIP; }
             if encoding.contains("deflate") { supported |= DEFLATE; }
             if encoding.contains("br") { supported |= BROTLI; }
         }
+        // println!("GZIP: {}  BR: {}  DEFLATE: {}", supported & GZIP, supported & BROTLI, supported & DEFLATE);
         Outcome::Success(AcceptCompression { supported })
     }
 }

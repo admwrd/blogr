@@ -81,18 +81,6 @@ SCSS
 	Find timestamp of the consumer css file and find the created date
 		look in git repo for all changes made after the created date
 
-VPS
-	Make a directory to run the executable
-		copy the folders:
-			logs
-			scripts
-			templates?
-		and the fiels:
-			Rocket.toml
-
-	turn on the firewall
-		uwf ???
-
 
 Blogr
 	Make Edit link a button
@@ -102,36 +90,7 @@ Blogr
 		Article header images:
 			Lower margin-top of title bar and place text above title box
 
-	Remove map files from css/js assets
-	
 	CLEANUP FILES!
-	
-	Can the line numbers be made to not scroll when lines of code are too long?
-		Could use either
-			http://www.fixedheadertable.com/
-			or creating a new table with just the line number column over the table
-				maybe use something like position: absolute
-	Add line numbers to code
-
-	Add javascript copy button to all code snippets (<pre><code>)
-
-	Add image header and title stuff to create/edit pages
-
-	Add pageviews template?
-
-	Add bg img to body
-		background: url("http://localhost:8000/assets/imgs/bg-dot-grid.png");
-
-	IMPORTANT - Filter out non-image formats from the image drop-down box
-
-	make a datastructure that holds all values from a form
-		with methods to convert to Article ArticleForm and ArticleWrapper
-		put checks to make sure certain fields are filled in otherwise
-			show a create/edit field with the submitted data filled in
-		modify the create template to allow data to be filled in the input fields
-
-	Fix bug that causes program to crash when creating an article without all the fields
-		or actually it may just return 422 unprocessable entry or something
 
 	Make a login redirect page
 		/login-user  and  /login-admin
@@ -141,6 +100,9 @@ Blogr
 		if contents have changed ask user if they want to continue
 
 	Add more address bar color changes for other browsers like apple and ms
+
+	Suppress console messages unless they are errors (remove SQL messages for production)
+		check if PRODUCTION is set, if it is do not print the message
 
 	Find out how to prevent a specified file from being included in the git repo
 		like src/settings.rs
@@ -233,7 +195,13 @@ Security
 				the text would be quoted instead! Oh no's!
 
 Future Todo:	
+	Add pageviews template?
 
+	Can the line numbers be made to not scroll when lines of code are too long?
+		Could use either
+			http://www.fixedheadertable.com/
+			or creating a new table with just the line number column over the table
+				maybe use something like position: absolute
 
 	See if rocket can tell whether its https or http and subdomain stuff?
 		Find a way to have a single rust rocket app deliver both https and http content
@@ -414,6 +382,40 @@ Rocket-auth-login:
 
 
 DONE
+	Remove map files from css/js assets
+
+	Add line numbers to code
+
+	Add javascript copy button to all code snippets (<pre><code>)
+
+	Add image header and title stuff to create/edit pages
+
+	Add bg img to body
+		background: url("http://localhost:8000/assets/imgs/bg-dot-grid.png");
+
+	IMPORTANT - Filter out non-image formats from the image drop-down box
+
+	NO - make a datastructure that holds all values from a form
+		with methods to convert to Article ArticleForm and ArticleWrapper
+		put checks to make sure certain fields are filled in otherwise
+			show a create/edit field with the submitted data filled in
+		modify the create template to allow data to be filled in the input fields
+
+	FIXED - Fix bug that causes program to crash when creating an article without all the fields
+		or actually it may just return 422 unprocessable entry or something
+
+	VPS
+	Make a directory to run the executable
+		copy the folders:
+			logs
+			scripts
+			templates?
+		and the fiels:
+			Rocket.toml
+
+	turn on the firewall
+		uwf ???
+
 	Update copyright to 2018
 
 	Add link to pageviews page in admin page

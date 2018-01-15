@@ -358,8 +358,8 @@ if (base_url_obj && editimg && editheader) {
 $( "pre" ).wrap( "<div class='v-code'></div>" );
 // $( ".v-code pre" ).wrap( "<div class='v-code-inner'></div>" );
 
-$( ".v-code" ).prepend( "<div class=\"v-copy-container\"><button class=\"btn v-copy btn-light\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i>Copy</button></div>" );
-$( ".v-code" ).append( "<div class=\"v-copy-container\"><button class=\"btn v-copy btn-light\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i>Copy</button></div>" );
+$( ".v-code" ).prepend( "<div class=\"v-copy-container\"><button class=\"btn v-copy btn-info\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i>Copy</button></div>" );
+$( ".v-code" ).append( "<div class=\"v-copy-container\"><button class=\"btn v-copy btn-info\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i>Copy</button></div>" );
 
 var codeclip = new Clipboard('.v-copy', {
     target: function(trigger) {

@@ -7,6 +7,9 @@ use std::str::{from_utf8};
 use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 
+use rocket::response::{Redirect, Flash};
+use rocket::request::FlashMessage;
+use rocket::http::{Cookie, Cookies, RawStr};
 
 use super::{PGCONN, MAX_ATTEMPTS, LOCKOUT_DURATION, ADMIN_LOCK};
 // use password::*;
@@ -281,6 +284,30 @@ impl AuthorizeForm for AdministratorForm {
         }
         Err(AuthFail::new(self.username.clone(), "Unknown error..".to_string()))
     }
+    
+    fn flash_redirect(&self, ok_redir: &str, err_redir: &str, cookies: &mut Cookies) -> Result<Redirect, Flash<Redirect>> {
+        match self.authenticate() {
+            Ok(cooky) => {
+                let cid = Self::cookie_id();
+                let contents = cooky.store_cookie();
+                cookies.add_private(
+                    Cookie::build(cid, contents)
+                        .secure(true)
+                        .finish()
+                );
+                Ok(Redirect::to(ok_redir))
+            },
+            Err(fail) => {
+                let mut furl = String::from(err_redir);
+                if &fail.user != "" {
+                    let furl_qrystr = Self::fail_url(&fail.user);
+                    furl.push_str(&furl_qrystr);
+                }
+                Err( Flash::error(Redirect::to(&furl), &fail.msg) )
+            },
+        }
+    }
+    
     
     fn new_form(user: &str, pass: &str, _extras: Option<HashMap<String, String>>) -> Self {
         AdministratorForm {
