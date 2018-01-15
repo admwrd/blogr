@@ -545,11 +545,16 @@ impl TemplateManage {
 
 
 
-pub fn hbs_template(content: TemplateBody, title: Option<String>, page: String, admin_opt: Option<AdministratorCookie>, user_opt: Option<UserCookie>, javascript: Option<String>, gen: Option<Instant>) -> Template {
-    // let mut context: HashMap<&str> = HashMap::new();
-    // context.insert();
+pub fn hbs_template(
+                    content: TemplateBody, 
+                    title: Option<String>, 
+                    page: String, 
+                    admin_opt: Option<AdministratorCookie>, 
+                    user_opt: Option<UserCookie>, 
+                    javascript: Option<String>, 
+                    gen: Option<Instant>
+                   ) -> Template {
     let js = if let Some(j) = javascript { j } else { "".to_string() }; 
-    // let info = TemplateInfo::new(title, admin_opt, user_opt, js, gen);
     
     let (pages, admin_pages) = create_menu(&page, &admin_opt, &user_opt);
     

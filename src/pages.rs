@@ -41,6 +41,7 @@ use chrono::{NaiveDate, NaiveDateTime};
 use super::*;
 // use counter::*;
 use counter::*;
+use referrer::*;
 use collate::*;
 use layout::*;
 use blog::*;
@@ -261,6 +262,15 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 // let express: Express = output.into();
 //   express.compress(encoding)
 
+#[get("/login-user")]
+fn hbs_login_form_admin(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+    
+    if let Referrer(Some(refer)) = referrer {
+        println!("Referrer: {}", &refer);
+    }
+    
+    
+}
 
 
 #[get("/admin", rank = 1)]
@@ -1638,6 +1648,8 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
     } else {
         fmsg = None;
     }
+    
+    
     
     let total_query = "SELECT COUNT(*) AS count FROM articles";
     let output: Template;

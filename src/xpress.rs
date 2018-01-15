@@ -452,19 +452,4 @@ impl<'a> Responder<'a> for Express {
 }
 
 
-pub struct Referrer<'q>(Option<&'q str>);
-
-impl<'a, 'r, 'q> FromRequest<'a, 'r> for Referrer<'q> {
-    type Error = ();
-    
-    fn from_request(req: &'a Request<'r>) -> ::rocket::request::Outcome<Referrer<'q>,Self::Error> {
-        let referrer: Option<&str> = req.headers().get("Referer").next();
-        if let Some(refer) = referrer {
-            println!("Referer: {}", refer);
-            Outcome::Success(Referrer(referrer))
-        } else {
-            Outcome::Forward(())
-        }
-    }
-}
 

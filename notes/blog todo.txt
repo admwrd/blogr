@@ -83,7 +83,16 @@ SCSS
 
 
 Blogr
-	Make Edit link a button
+	Make a login redirect page
+		/login-user  and  /login-admin
+		could use either query string or embed it in the route using /login-user/page/here
+		prolly query string since no need for pagination
+		Use the http referrer, and create a new template with a hidden input field to store the referrer
+			Do not create new template, create new enum field for LoginData that uses the login template
+				but adds a HashMap to the context which will be stored as hidden fields (name/value)
+
+	Add link to go back to manage after saving or even before saving
+		if contents have changed ask user if they want to continue
 
 	Add a loading spinner to loading images
 		Can use font awesome maybe
@@ -91,13 +100,6 @@ Blogr
 			Lower margin-top of title bar and place text above title box
 
 	CLEANUP FILES!
-
-	Make a login redirect page
-		/login-user  and  /login-admin
-		could use either query string or embed it in the route using /login-user/page/here
-		prolly query string since no need for pagination
-	Add link to go back to manage after saving or even before saving
-		if contents have changed ask user if they want to continue
 
 	Add more address bar color changes for other browsers like apple and ms
 
@@ -382,6 +384,8 @@ Rocket-auth-login:
 
 
 DONE
+	Make Edit link a button
+
 	Remove map files from css/js assets
 
 	Add line numbers to code
