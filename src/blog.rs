@@ -260,6 +260,7 @@ impl<'f> FromForm<'f> for QueryUser {
                 user,
             } )
         } else {
+            println!("QueryRedir is not valid.  user: {}", user);
             Err( "There was a missing field in QueryUser" )
         }
     }
@@ -273,8 +274,8 @@ impl<'f> FromForm<'f> for QueryUserRedir {
         
         for (field, value) in form_items {
             match field.as_str() {
-                "user" => { value.url_decode().unwrap_or( String::new() ); },
-                "referrer" => { referrer = value.url_decode().unwrap_or( String::new() ); },
+                "user" => { user = value.url_decode().unwrap_or( String::new() ); },
+                "referrer" | "redir" | "redirect" => { referrer = value.url_decode().unwrap_or( String::new() ); },
                 _ => {},
             }
         }
@@ -284,6 +285,7 @@ impl<'f> FromForm<'f> for QueryUserRedir {
                 referrer,
             } )
         } else {
+            println!("QueryRedir is not valid.  user: {}, referrer: {}", user, referrer);
             Err( "There was a missing field in QueryUserRedir" )
         }
     }
@@ -296,7 +298,7 @@ impl<'f> FromForm<'f> for QueryRedir {
         
         for (field, value) in form_items {
             match field.as_str() {
-                "referrer" => { referrer = value.url_decode().unwrap_or( String::new() ); },
+                "referrer" | "redir" | "redirect" => { referrer = value.url_decode().unwrap_or( String::new() ); },
                 _ => {},
             }
         }
@@ -306,6 +308,7 @@ impl<'f> FromForm<'f> for QueryRedir {
                 referrer,
             } )
         } else {
+            println!("QueryRedir is not valid.  referrer: {}", referrer);
             Err( "There was a missing field in QueryRedir" )
         }
     }

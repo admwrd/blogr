@@ -229,11 +229,13 @@ pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<Use
 
 // #[get("/admin?<userqry>", rank=3)]
 #[get("/admin?<userqry>", rank=4)]
-pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut userqry: QueryUser, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut userqry: QueryUser, flash_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     // let userqry: QueryUser = userqry_form.get();
     
-    let mut fields: HashMap<String, String> = HashMap::new();
+    let flash = process_flash(flash_opt);
+    
+    // let mut fields: HashMap<String, String> = HashMap::new();
     
     // if let Referrer(Some(refer)) = referrer {
     //     println!("Referrer: {}", &refer);
@@ -242,8 +244,9 @@ pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Optio
     // // user = login::sanitization::sanitize(&user);
     
     let username = if &userqry.user != "" { Some(userqry.user.clone() ) } else { None };
-    let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
-    let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+    // let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
+    // let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+    let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), username), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
@@ -253,14 +256,19 @@ pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Optio
 
 // #[get("/admin?<rediruser>")]
 #[get("/admin?<rediruser>", rank = 2)]
-pub fn hbs_dashboard_admin_retry_redir(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut rediruser: QueryUserRedir, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_admin_retry_redir(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut rediruser: QueryUserRedir, flash_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     // let userqry: QueryUser = userqry_form.get();
     
+    let flash = process_flash(flash_opt);
+    
     let mut fields: HashMap<String, String> = HashMap::new();
     
-    if &rediruser.referrer != "" {
+    if &rediruser.referrer != "" && &rediruser.referrer != "noredirect" {
+        println!("Adding referrer {}", &rediruser.referrer);
         fields.insert("referrer".to_string(), rediruser.referrer.clone());
+    } else {
+        println!("No referring page\n{:?}", rediruser);
     }
     // if let Referrer(Some(refer)) = referrer {
     //     println!("Referrer: {}", &refer);
@@ -269,7 +277,7 @@ pub fn hbs_dashboard_admin_retry_redir(start: GenTimer, conn: DbConn, user: Opti
     // // user = login::sanitization::sanitize(&user);
     
     let username = if &rediruser.user != "" { Some(rediruser.user.clone() ) } else { None };
-    let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
+    // let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
     let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
@@ -280,14 +288,19 @@ pub fn hbs_dashboard_admin_retry_redir(start: GenTimer, conn: DbConn, user: Opti
 
 // #[get("/admin?<rediruser>")]
 #[get("/admin?<rediruser>", rank = 3)]
-pub fn hbs_dashboard_admin_retry_redir_only(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut rediruser: QueryRedir, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_admin_retry_redir_only(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut rediruser: QueryRedir, flash_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     // let userqry: QueryUser = userqry_form.get();
     
+    let flash = process_flash(flash_opt);
+    
     let mut fields: HashMap<String, String> = HashMap::new();
     
-    if &rediruser.referrer != "" {
+    if &rediruser.referrer != "" && &rediruser.referrer != "noredirect" {
+        println!("Adding referrer {}", &rediruser.referrer);
         fields.insert("referrer".to_string(), rediruser.referrer.clone());
+    } else {
+        println!("No referring page\n{:?}", rediruser);
     }
     // if let Referrer(Some(refer)) = referrer {
     //     println!("Referrer: {}", &refer);
@@ -297,7 +310,7 @@ pub fn hbs_dashboard_admin_retry_redir_only(start: GenTimer, conn: DbConn, user:
     
     // let username = if &rediruser.user != "" { Some(rediruser.user.clone() ) } else { None };
     let username = None;
-    let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
+    // let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
     let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
@@ -319,12 +332,18 @@ pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<Administrat
     let mut err_temp: String;
     let ok_addy: &str;
     let err_addy: &str;
-    if &login.referrer != "" {
-        ok_addy = &login.referrer;
+    if &login.referrer != "" && &login.referrer != "noredierct" {
+        println!("Processing referrer: {}", &login.referrer);
+        let referring = if login.referrer.starts_with(BLOG_URL) {
+            &login.referrer[BLOG_URL.len()-1..]
+        } else {
+            &login.referrer
+        };
+        ok_addy = &referring;
         err_addy = {
-            err_temp = String::with_capacity(login.referrer.len() + 20);
+            err_temp = String::with_capacity(referring.len() + 20);
             err_temp.push_str("/admin?redir=");
-            err_temp.push_str(&login.referrer);
+            err_temp.push_str(referring);
             &err_temp
         };
     } else {

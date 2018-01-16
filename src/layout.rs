@@ -20,6 +20,24 @@ const GENERIC_PAGE_END: &'static str = "\n\t\t\t\t\t</div>";
 const TABS: &'static str = "\t\t\t\t\t\t\t";
 
 
+pub fn process_flash(flash_opt: Option<FlashMessage>) -> Option<String> {
+    let fmsg: Option<String>;
+    if let Some(flash) = flash_opt {
+        if flash.name() == "error" {
+            fmsg = Some(alert_danger( flash.msg() ));
+        } else if flash.name() == "warning" {
+            fmsg = Some(alert_warning( flash.msg() ));
+        } else if flash.name() == "success" {
+            fmsg = Some(alert_success( flash.msg() ));
+        } else {
+            fmsg = Some(alert_info( flash.msg() ));
+        }
+    }  else {
+        fmsg = None;
+    }
+    fmsg
+}
+
 pub fn admin_nav_username(username: &str) -> String {
     format!(r##"
                         <li class="v-nav-item nav-item dropdown">
@@ -58,24 +76,6 @@ pub fn admin_nav_login() -> &'static str {
 
 
 
-
-pub fn process_flash(flash_opt: Option<FlashMessage>) -> Option<String> {
-    let fmsg: Option<String>;
-    if let Some(flash) = flash_opt {
-        if flash.name() == "error" {
-            fmsg = Some(alert_danger( flash.msg() ));
-        } else if flash.name() == "warning" {
-            fmsg = Some(alert_warning( flash.msg() ));
-        } else if flash.name() == "success" {
-            fmsg = Some(alert_success( flash.msg() ));
-        } else {
-            fmsg = Some(alert_info( flash.msg() ));
-        }
-    }  else {
-        fmsg = None;
-    }
-    fmsg
-}
 
 
 

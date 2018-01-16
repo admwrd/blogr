@@ -305,7 +305,7 @@ impl AuthorizeForm for AdministratorForm {
                 if &fail.user != "" {
                     let furl_qrystr = if err_redir.contains("?") {
                         let mut fail_temp = String::with_capacity(fail.user.len() + 20);
-                        fail_temp.push_str("&");
+                        fail_temp.push_str("&user=");
                         fail_temp.push_str(&fail.user);
                         fail_temp
                     } else {
