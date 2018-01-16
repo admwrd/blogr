@@ -263,14 +263,18 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 //   express.compress(encoding)
 
 #[get("/login-user")]
-fn hbs_login_form_admin(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+fn hbs_login_form_admin(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression, referrer: Referrer) -> Express {
     
     if let Referrer(Some(refer)) = referrer {
         println!("Referrer: {}", &refer);
     }
     
     
+    let express: Express = String::new().into();
+    express.compress(encoding)
 }
+
+
 
 
 #[get("/admin", rank = 1)]

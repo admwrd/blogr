@@ -82,6 +82,7 @@ mod layout;
 mod blog;
 mod data;
 mod hbs_templates;
+mod templates;
 mod pages;
 mod sanitize;
 mod ral_administrator;

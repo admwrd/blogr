@@ -83,6 +83,9 @@ SCSS
 
 
 Blogr
+	Move flash message option in templates method to the info part instead of the TemplateBody part
+		Change all templates' {{~#if msg~}}{{msg}}{{~/msg~}} to use info.msg
+
 	Make a login redirect page
 		/login-user  and  /login-admin
 		could use either query string or embed it in the route using /login-user/page/here
