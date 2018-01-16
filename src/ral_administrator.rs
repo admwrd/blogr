@@ -293,7 +293,7 @@ impl AuthorizeForm for AdministratorForm {
                 let contents = cooky.store_cookie();
                 cookies.add_private(
                     Cookie::build(cid, contents)
-                        .secure(true)
+                        // .secure(true)
                         .finish()
                 );
                 Ok(Redirect::to(ok_redir))
