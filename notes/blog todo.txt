@@ -81,16 +81,10 @@ SCSS
 	Find timestamp of the consumer css file and find the created date
 		look in git repo for all changes made after the created date
 
+	Maybe benchmark string != "" vs string.len() == 0  for empty string checks
 
 Blogr
-	Move flash message option in templates method to the info part instead of the TemplateBody part
-		Change all templates' {{~#if msg~}}{{msg}}{{~/msg~}} to use info.msg
-		Change all handlebars {{#if msg}} to display {{{msg}}} (to show html)
-
-	Could change templates module to take the TemplateBody enum and separate the variants into their own data structures
-
-	Maybe remove all html tags and stuff from flash message contents before sending it to the template
-		Prevents malicious code
+	Change all admin pages to redirect to admin route if they are not logged in as an admin
 
 	Make a login redirect page
 		/login-user  and  /login-admin
@@ -99,6 +93,14 @@ Blogr
 		Use the http referrer, and create a new template with a hidden input field to store the referrer
 			Do not create new template, create new enum field for LoginData that uses the login template
 				but adds a HashMap to the context which will be stored as hidden fields (name/value)
+		Modify the flash_redirect methods for ral_administrator and ral_user to 
+		Change hbs_dashboard_admin_retry_user() to take a redirect parameter to redirect the user upon successful authentication
+
+
+	Maybe remove all html tags and stuff from flash message contents before sending it to the template
+		Prevents malicious code
+		Could also change alert_danger (and other alert_*()'s) to sanitize any html input
+
 
 	Add link to go back to manage after saving or even before saving
 		if contents have changed ask user if they want to continue
@@ -206,6 +208,8 @@ Security
 				the text would be quoted instead! Oh no's!
 
 Future Todo:	
+	Could change templates module to take the TemplateBody enum and separate the variants into their own data structures
+
 	Add pageviews template?
 
 	Can the line numbers be made to not scroll when lines of code are too long?
@@ -393,6 +397,10 @@ Rocket-auth-login:
 
 
 DONE
+	Move flash message option in templates method to the info part instead of the TemplateBody part
+		Change all templates' {{~#if msg~}}{{msg}}{{~/msg~}} to use info.msg
+		Change all handlebars {{#if msg}} to display {{{msg}}} (to show html)
+
 	Make Edit link a button
 
 	Remove map files from css/js assets

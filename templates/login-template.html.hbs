@@ -1,7 +1,7 @@
 {{> common/header }}
 <div class="v-content">
-    {{~#if msg~}}
-        {{{msg}}}
+    {{~#if info.msg~}}
+        {{{info.msg}}}
     {{~/if~}}
     <form id="needs-validation" action="{{action_url}}" name="login_form" method="post" novalidate>
         <div class="form-group" id="userGroup">
@@ -24,6 +24,11 @@
                 <input type="password" id="passwordHidden" class="hidden-pass form-control">
             </div>
         </div>
+        {{~#if body.fields~}}
+        {{~#each body.fields~}}
+            <input type="hidden" name="{{@key}}" value="{{this}}">
+        {{~/each~}}
+        {{~/if~}}
         <div class="v-submit">
             <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
         </div>

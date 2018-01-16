@@ -31,6 +31,7 @@ pub struct AdministratorCookie {
 pub struct AdministratorForm {
     pub username: String,
     pub password: String,
+    pub referrer: String,
 }
 
 impl CookieId for AdministratorCookie {
@@ -298,9 +299,18 @@ impl AuthorizeForm for AdministratorForm {
                 Ok(Redirect::to(ok_redir))
             },
             Err(fail) => {
-                let mut furl = String::from(err_redir);
+                // let mut furl = String::from(err_redir);
+                let mut furl = String::with_capacity(err_redir.len() + fail.user.len() + 20);
+                furl.push_str(err_redir);
                 if &fail.user != "" {
-                    let furl_qrystr = Self::fail_url(&fail.user);
+                    let furl_qrystr = if err_redir.contains("?") {
+                        let mut fail_temp = String::with_capacity(fail.user.len() + 20);
+                        fail_temp.push_str("&");
+                        fail_temp.push_str(&fail.user);
+                        fail_temp
+                    } else {
+                        Self::fail_url(&fail.user)
+                    };
                     furl.push_str(&furl_qrystr);
                 }
                 Err( Flash::error(Redirect::to(&furl), &fail.msg) )
@@ -313,6 +323,15 @@ impl AuthorizeForm for AdministratorForm {
         AdministratorForm {
             username: user.to_string(),
             password: pass.to_string(),
+            referrer: if let Some(xtra) = _extras {
+                if let Some(refer) = xtra.get("referrer") { 
+                    refer.to_string()
+                } else { 
+                    String::new() 
+                }
+            } else {
+                String::new()
+            },
         }
     }
     

@@ -54,12 +54,11 @@ pub enum TemplateBody {
         String, // Form Action URL
         Option<String>, // username that was entered
     ),
-    // Logindata (
-    //     String,
-    //     Option<String>,
-    //     HashMap<String, String>,
-    //     Option<String>,
-    // ),
+    LoginData (
+        String,
+        Option<String>,
+        HashMap<String, String>,
+    ),
     Create(String), // form action url and optional message
     Edit(String, Article), // form action url and optional message
     // Paginated list of articles, 
@@ -114,6 +113,14 @@ pub struct TemplateInfo {
 pub struct TemplateLogin {
     pub action_url: String,
     pub tried_user: String,
+    pub info: TemplateInfo,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct TemplateLoginData {
+    pub action_url: String,
+    pub tried_user: String,
+    pub fields: HashMap<String, String>,
     pub info: TemplateInfo,
 }
 
@@ -413,6 +420,16 @@ impl TemplateLogin {
         }
     }
 }
+impl TemplateLoginData {
+        pub fn new(action_url: String, tried: Option<String>, fields: HashMap<String, String>, info: TemplateInfo) -> TemplateLoginData {
+        TemplateLoginData {
+            action_url,
+            tried_user: if let Some(tuser) = tried { tuser } else { String::new() },
+            fields,
+            info,
+        }
+    }
+}
 impl TemplateCreate {
         pub fn new(action_url: String, info: TemplateInfo) -> TemplateCreate {
         use std::io;
@@ -547,6 +564,10 @@ pub fn hbs_template(
         },
         TemplateBody::Login(action, tried) => {
             let context = TemplateLogin::new(action, tried, info);
+            Template::render("login-template", &context)
+        },
+        TemplateBody::LoginData(action, tried, fields) => {
+            let context = TemplateLoginData::new(action, tried, fields, info);
             Template::render("login-template", &context)
         },
         TemplateBody::Create(action) => {

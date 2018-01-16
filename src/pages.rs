@@ -262,19 +262,24 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 // let express: Express = output.into();
 //   express.compress(encoding)
 
-#[get("/login-user")]
-fn hbs_login_form_admin(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression, referrer: Referrer) -> Express {
+// #[get("/login-user")]
+// fn hbs_login_form_admin(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression, referrer: Referrer) -> Express {
     
-    if let Referrer(Some(refer)) = referrer {
-        println!("Referrer: {}", &refer);
-    }
+    // let mut fields: HashMap<String, String> = HashMap::new();
+    
+    // if let Referrer(Some(refer)) = referrer {
+    //     println!("Referrer: {}", &refer);
+    //     fields.insert("");
+    // }
     
     
-    let express: Express = String::new().into();
-    express.compress(encoding)
-}
-
-
+//     let express: Express = String::new().into();
+//     express.compress(encoding)
+// }
+// #[post("/login-user", data = "<form>")]
+// fn hbs_login_process_admin() -> Redirect {
+    
+// }
 
 
 #[get("/admin", rank = 1)]
@@ -299,15 +304,22 @@ pub fn hbs_dashboard_admin_authorized(start: GenTimer, pagination: Page<Paginati
 
 // No longer needed - hbs_dashboard_admin_authorized takes care of flash messages
 #[get("/admin", rank = 2)]
-pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression, referrer: Referrer) -> Express {
     // let start = Instant::now();
     let output: Template;
     
+    let mut fields: HashMap<String, String> = HashMap::new();
+    
+    if let Referrer(Some(refer)) = referrer {
+        println!("Referrer: {}", &refer);
+        fields.insert("referrer".to_string(), refer);
+    }
+    
     if let Some(flash_msg) = flash_msg_opt {
         let flash = Some( alert_danger(flash_msg.msg()) );
-        output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+        output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), None, fields), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     } else {
-        output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None), None, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+        output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), None, fields), None, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     }
     
     let end = start.0.elapsed();
@@ -330,10 +342,17 @@ pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Optio
     // let start = Instant::now();
     // let userqry: QueryUser = userqry_form.get();
     
-    // user = login::sanitization::sanitize(&user);
+    let mut fields: HashMap<String, String> = HashMap::new();
+    
+    // if let Referrer(Some(refer)) = referrer {
+    //     println!("Referrer: {}", &refer);
+    //     fields.insert("referrer".to_string(), refer);
+    // }
+    // // user = login::sanitization::sanitize(&user);
+    
     let username = if &userqry.user != "" { Some(userqry.user.clone() ) } else { None };
     let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
-    let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), username), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+    let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
@@ -349,7 +368,15 @@ pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<Administrat
     
     let login: AdministratorForm = form.get().form();
     // let login: AdministratorForm = form.into_inner().form;
-    let mut output = login.flash_redirect("/admin", "/admin", &mut cookies);
+    
+    let ok_addy: &str = if &login.referrer != "" {
+        &login.referrer
+    } else {
+        "/"
+    };
+    
+    // let mut output = login.flash_redirect("/admin", "/admin", &mut cookies);
+    let mut output = login.flash_redirect(ok_addy, "/admin", &mut cookies);
     
     if output.is_ok() {
         if let Some(user_cookie) = user {

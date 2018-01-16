@@ -1,6 +1,6 @@
 {{> common/header }}
-{{~#if msg~}}
-    {{{msg}}}
+{{~#if info.msg~}}
+    {{{info.msg}}}
 {{~/if~}}
 <article class="v-article v-article-single">
     <header class="v-article-header"{{#if body.image}} style="background: url('{{info.base_url}}imgs/{{body.image}}') center center no-repeat;"{{else}} style="background: url('{{info.base_url}}imgs/vishus-1.jpg') center center no-repeat;"{{/if}}>

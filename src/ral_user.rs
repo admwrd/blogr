@@ -7,6 +7,10 @@ use std::str::{from_utf8};
 use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 
+use rocket::response::{Redirect, Flash};
+use rocket::request::FlashMessage;
+use rocket::http::{Cookie, Cookies, RawStr};
+
 use super::{PGCONN, MAX_ATTEMPTS, LOCKOUT_DURATION, USER_LOCK};
 // use password::*;
 use rocket_auth_login::authorization::*;
@@ -29,6 +33,7 @@ pub struct UserCookie {
 pub struct UserForm {
     pub username: String,
     pub password: String,
+    pub referrer: String,
 }
 
 impl CookieId for UserCookie {
@@ -301,10 +306,51 @@ impl AuthorizeForm for UserForm {
         
     }
     
+    fn flash_redirect(&self, ok_redir: &str, err_redir: &str, cookies: &mut Cookies) -> Result<Redirect, Flash<Redirect>> {
+        match self.authenticate() {
+            Ok(cooky) => {
+                let cid = Self::cookie_id();
+                let contents = cooky.store_cookie();
+                cookies.add_private(
+                    Cookie::build(cid, contents)
+                        .secure(true)
+                        .finish()
+                );
+                Ok(Redirect::to(ok_redir))
+            },
+            Err(fail) => {
+                // let mut furl = String::from(err_redir);
+                let mut furl = String::with_capacity(err_redir.len() + fail.user.len() + 20);
+                furl.push_str(err_redir);
+                if &fail.user != "" {
+                    let furl_qrystr = if err_redir.contains("?") {
+                        let mut fail_temp = String::with_capacity(fail.user.len() + 20);
+                        fail_temp.push_str("&");
+                        fail_temp.push_str(&fail.user);
+                        fail_temp
+                    } else {
+                        Self::fail_url(&fail.user)
+                    };
+                    furl.push_str(&furl_qrystr);
+                }
+                Err( Flash::error(Redirect::to(&furl), &fail.msg) )
+            },
+        }
+    }
+    
     fn new_form(user: &str, pass: &str, _extras: Option<HashMap<String, String>>) -> Self {
         UserForm {
             username: user.to_string(),
             password: pass.to_string(),
+            referrer: if let Some(xtra) = _extras {
+                if let Some(refer) = xtra.get("referrer") { 
+                    refer.to_string() 
+                } else { 
+                    String::new() 
+                }
+            } else {
+                String::new()
+            },
         }
     }
     
