@@ -81,7 +81,7 @@ mod xpress;
 mod layout;
 mod blog;
 mod data;
-mod hbs_templates;
+// mod hbs_templates;
 mod templates;
 mod pages;
 mod sanitize;
@@ -110,7 +110,7 @@ use pages::*;
 use rocket_auth_login::authorization::*;
 use rocket_auth_login::*;
 use rocket_auth_login::sanitization::*;
-use hbs_templates::*;
+use templates::*;
 
 // use handlebars::Handlebars;
 use titlecase::titlecase;
@@ -269,7 +269,7 @@ pub fn error_not_found(req: &Request) -> Express {
     ErrorHits::error404(req);
     
     let content = format!( "The request page `{}` could not be found.", sanitize_text(req.uri().as_str()) );
-    let output = hbs_template(TemplateBody::General(content, None), Some("404 Not Found.".to_string()), String::from("/404"), None, None, None, None);
+    let output = hbs_template(TemplateBody::General(content), None, Some("404 Not Found.".to_string()), String::from("/404"), None, None, None, None);
     let express: Express = output.into();
     express
 }
@@ -280,7 +280,7 @@ pub fn error_internal_error(req: &Request) -> Express {
     
     
     let content = format!( "An internal server error occurred procesing the page `{}`.", sanitize_text(req.uri().as_str()) );
-    let output = hbs_template(TemplateBody::General(content, None), Some("500 Internal Error.".to_string()), String::from("/500"), None, None, None, None);
+    let output = hbs_template(TemplateBody::General(content), None, Some("500 Internal Error.".to_string()), String::from("/500"), None, None, None, None);
     let express: Express = output.into();
     express
 }

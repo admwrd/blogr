@@ -51,7 +51,7 @@ use rocket_auth_login::authorization::*;
 use rocket_auth_login::sanitization::*;
 use ral_administrator::*;
 use ral_user::*;
-use templates::*;
+use hbs_templates::*;
 use xpress::*;
 use accept::*;
 // use ::templates::*;
@@ -122,7 +122,7 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
     
     // enum TemplateBody :: PaginateArticles( Vec<Article>, T: Collate )
     // let output = hbs_template(TemplateBody::PaginateArticles(articles, ), None, String::from("/"), admin, user, None, Some(start.0));
-    let output: Template = hbs_template(TemplateBody::General(contents), None, Some("Pagination Test".to_string()), String::from("/pagination"), admin, user, None, Some(start.0));
+    let output: Template = hbs_template(TemplateBody::General(contents, None), Some("Pagination Test".to_string()), String::from("/pagination"), admin, user, None, Some(start.0));
     
     let express: Express = output.into();
     express.compress( encoding )
@@ -305,9 +305,9 @@ pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<Use
     
     if let Some(flash_msg) = flash_msg_opt {
         let flash = Some( alert_danger(flash_msg.msg()) );
-        output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+        output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, flash), Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     } else {
-        output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None), None, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+        output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     }
     
     let end = start.0.elapsed();
@@ -333,7 +333,7 @@ pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Optio
     // user = login::sanitization::sanitize(&user);
     let username = if &userqry.user != "" { Some(userqry.user.clone() ) } else { None };
     let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
-    let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), username), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+    let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), username, flash), Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
@@ -407,7 +407,7 @@ pub fn hbs_dashboard_user_authorized(start: GenTimer, conn: DbConn, admin: Optio
         None
     };
     
-    let output: Template = hbs_template(TemplateBody::General(format!("Welcome User {user}.  You are viewing the User dashboard page.", user=user.username)), flash, Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start.0));
+    let output: Template = hbs_template(TemplateBody::General(format!("Welcome User {user}.  You are viewing the User dashboard page.", user=user.username), flash), Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start.0));
     
     let end = start.0.elapsed();
     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
@@ -423,9 +423,9 @@ pub fn hbs_dashboard_user_flash(start: GenTimer, conn: DbConn, admin: Option<Adm
     
     if let Some(flash_msg) = flash_msg_opt {
         let flash = Some( alert_danger(flash_msg.msg()) );
-        output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None), flash, Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
+        output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None, flash), Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
     } else {
-        output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None), None, Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
+        output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
     }
     
     let end = start.0.elapsed();
@@ -446,7 +446,7 @@ pub fn hbs_dashboard_user_retry_user(start: GenTimer, conn: DbConn, admin: Optio
     // user = login::sanitization::sanitize(&user);
     let username = if &user.user != "" { Some(user.user.clone() ) } else { None };
     let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
-    let output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), username), flash, Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
+    let output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), username, flash), Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
@@ -589,7 +589,7 @@ pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCo
         
     }
     
-    let output: Template = hbs_template(TemplateBody::Tags(tags), None, Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start.0));
+    let output: Template = hbs_template(TemplateBody::Tags(tags, None), Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start.0));
     
     let end = start.0.elapsed();
     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
@@ -650,7 +650,7 @@ pub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Paginatio
     // vtags - Vector of Tags - Vector<Tags>
     let vtags = split_tags(tag.clone());
     if vtags.len() == 0 {
-            output = hbs_template(TemplateBody::General(alert_danger("No tag specified.")), None, Some("No Tag Specified".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
+            output = hbs_template(TemplateBody::General(alert_danger("No tag specified."), None), Some("No Tag Specified".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
     } else {
         let sql: String = if vtags.len() == 1 {
             format!(" WHERE '{}' = ANY(a.tag)", sanitize_tag(&vtags[0]))
@@ -692,18 +692,18 @@ pub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Paginatio
                 if let Some(results) = conn.articles(&pagesql) {
                     if results.len() != 0 {
                         let page_information = pagination.page_info(total_items);
-                        output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information)), None, Some(format!("Viewing Tag {} - Page {} of {}", tag, cur, num_pages)), String::from("/tag"), admin, user, None, Some(start.0));
+                        output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some(format!("Viewing Tag {} - Page {} of {}", tag, cur, num_pages)), String::from("/tag"), admin, user, None, Some(start.0));
                     } else {
-                        output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag.")), None, Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
+                        output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag."), None), Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
                     }
                 } else {
-                        output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag.")), None, Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
+                        output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag."), None), Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
                 }
             } else {
-                output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag.")), None, Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
+                output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag."), None), Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
             }
         } else {
-                output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag.")), None, Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
+                output = hbs_template(TemplateBody::General(alert_danger("No articles found with the specified tag."), None), Some("Tag".to_string()), String::from("/tag"), admin, user, None, Some(start.0));
         }
     }
     let express: Express = output.into();
@@ -780,9 +780,9 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
     let mut output: Template; 
     if let Some(article) = rst {
         let title = article.title.clone();
-        output = hbs_template(TemplateBody::Article(article), None, Some(title), String::from("/article"), admin, user, None, Some(start.0));
+        output = hbs_template(TemplateBody::Article(article, None), Some(title), String::from("/article"), admin, user, None, Some(start.0));
     } else {
-        output = hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid.aid))), None, Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
+        output = hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid.aid)), None), Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
     }
     let end = start.0.elapsed();
     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
@@ -793,7 +793,7 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
 #[get("/article")]
 pub fn hbs_article_not_found(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     // let start = Instant::now();
-    let output: Template = hbs_template(TemplateBody::General(alert_danger("Article not found")), None, Some("Article not found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
+    let output: Template = hbs_template(TemplateBody::General(alert_danger("Article not found"), None), Some("Article not found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
     let end = start.0.elapsed();
     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
@@ -823,10 +823,10 @@ pub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbCon
         Ok(article) => {
             // let article = articlesrc.to_article();
             let title = article.title.clone();
-            output = hbs_template(TemplateBody::Article(article), None, Some(title), String::from("/create"), Some(admin), user, None, Some(start.0));
+            output = hbs_template(TemplateBody::Article(article, None), Some(title), String::from("/create"), Some(admin), user, None, Some(start.0));
         },
         Err(why) => {
-            output = hbs_template(TemplateBody::General(alert_danger(&format!("Could not post the submitted article.  Reason: {}", why))), None, Some("Could not post article".to_string()), String::from("/create"), Some(admin), user, None, Some(start.0));
+            output = hbs_template(TemplateBody::General(alert_danger(&format!("Could not post the submitted article.  Reason: {}", why)), None), Some("Could not post article".to_string()), String::from("/create"), Some(admin), user, None, Some(start.0));
         },
     }
     
@@ -839,7 +839,7 @@ pub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbCon
 pub fn hbs_create_unauthorized(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     
-    let output: Template = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE)), None, Some("Not Authorized".to_string()), String::from("/create"), admin, user, None, Some(start.0));
+    let output: Template = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE), None), Some("Not Authorized".to_string()), String::from("/create"), admin, user, None, Some(start.0));
     
     let end = start.0.elapsed();
     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
@@ -853,9 +853,9 @@ pub fn hbs_create_form(start: GenTimer, conn: DbConn, admin: Option<Administrato
     
     let output: Template;
     if admin.is_some() {
-        output = hbs_template(TemplateBody::Create(CREATE_FORM_URL.to_string()), None, Some("Create New Article".to_string()), String::from("/create"), admin, user, None, Some(start.0));
+        output = hbs_template(TemplateBody::Create(CREATE_FORM_URL.to_string(), None), Some("Create New Article".to_string()), String::from("/create"), admin, user, None, Some(start.0));
     } else {
-        output = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE)), None, Some("Not Authorized".to_string()), String::from("/create"), admin, user, None, Some(start.0));
+        output = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE), None), Some("Not Authorized".to_string()), String::from("/create"), admin, user, None, Some(start.0));
     }
     
     let end = start.0.elapsed();
@@ -1073,7 +1073,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
                     page_information.push_str(welcome);
                     page_information.push_str(&pinfo);
                     
-                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information)), None, Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
+                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
                     let express: Express = output.into();
                     
                     let end = start.0.elapsed();
@@ -1085,7 +1085,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
         }
     }
     
-    output = hbs_template(TemplateBody::General(alert_danger("No articles to show.")), None, Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
+    output = hbs_template(TemplateBody::General(alert_danger("No articles to show."), None), Some("Search Results".to_string()), String::from("/search"), admin, user, None, Some(start.0));
     let express: Express = output.into();
     
     let end = start.0.elapsed();
@@ -1268,18 +1268,18 @@ pub fn hbs_author(start: GenTimer, authorid: u32, pagination: Page<Pagination>, 
                 if results.len() != 0 {
                     let page_information = pagination.page_info(total_items);
                     
-                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information)), None, Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
                 } else {
-                    output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string()), None, Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+                    output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string(), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
                 }
             } else {
-                    output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string()), None, Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+                    output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string(), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
             }
         } else {
-            output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string()), None, Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+            output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string(), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
         }
     } else {
-        output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string()), None, Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
+        output = hbs_template(TemplateBody::General("There are no articles by the specified user.".to_string(), None), Some("Articles by Author".to_string()), String::from("/author"), admin, user, None, Some(start.0));
     }
     
     let end = start.0.elapsed();
@@ -1291,7 +1291,7 @@ pub fn hbs_author(start: GenTimer, authorid: u32, pagination: Page<Pagination>, 
 #[get("/about")]
 pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
     // don't forget to put the start Instant in the hbs_template() function
-    let output = hbs_template(TemplateBody::General("This page is not implemented yet.  Soon it will tell a little about me.".to_string()), None, Some("About Me".to_string()), String::from("/about"), admin, user, None, Some(start.0));
+    let output = hbs_template(TemplateBody::General("This page is not implemented yet.  Soon it will tell a little about me.".to_string(), None), Some("About Me".to_string()), String::from("/about"), admin, user, None, Some(start.0));
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -1337,7 +1337,7 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
             article.body = html;
         }
         
-        output = hbs_template(TemplateBody::Edit(EDIT_FORM_URL.to_string(), article), flash, Some(format!("Editing '{}'", title)), String::from("/edit"), Some(admin), user, None, Some(start.0));
+        output = hbs_template(TemplateBody::Edit(EDIT_FORM_URL.to_string(), article, flash), Some(format!("Editing '{}'", title)), String::from("/edit"), Some(admin), user, None, Some(start.0));
         let express: Express = output.into();
         return express.compress(encoding);
     }
@@ -1351,7 +1351,7 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
     //         return express.compress(encoding);
     //     }
     // }
-    output = hbs_template(TemplateBody::General("The reuqested article could not be found.".to_string()), flash, Some("Edit".to_string()), String::from("/edit"), Some(admin), user, None, Some(start.0));
+    output = hbs_template(TemplateBody::General("The reuqested article could not be found.".to_string(), flash), Some("Edit".to_string()), String::from("/edit"), Some(admin), user, None, Some(start.0));
     
     let express: Express = output.into();
     express.compress(encoding)
@@ -1453,7 +1453,7 @@ pub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagin
                 if results.len() != 0 {
                     // let page_info = pagination.page_info(total_items);
                     
-                    output = hbs_template(TemplateBody::Manage(results, pagination, total_items, sort_options), fmsg, Some(format!("Manage Articles - Page {} of {}", cur, num_pages)), String::from("/manage"), Some(admin), user, None, Some(start.0));
+                    output = hbs_template(TemplateBody::Manage(results, pagination, total_items, sort_options, fmsg), Some(format!("Manage Articles - Page {} of {}", cur, num_pages)), String::from("/manage"), Some(admin), user, None, Some(start.0));
                     
                     let express: Express = output.into();
                     return express.compress(encoding);
@@ -1465,7 +1465,7 @@ pub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagin
         }
     }
     
-    output = hbs_template(TemplateBody::General(alert_danger("No articles found.")), fmsg, Some("Manage Articles".to_string()), String::from("/manage"), Some(admin), user, None, Some(start.0));
+    output = hbs_template(TemplateBody::General(alert_danger("No articles found."), fmsg), Some("Manage Articles".to_string()), String::from("/manage"), Some(admin), user, None, Some(start.0));
     
     let express: Express = output.into();
     express.compress(encoding)
@@ -1517,7 +1517,7 @@ pub fn hbs_delete_confirm(start: GenTimer, aid: u32, conn: DbConn, admin: Admini
         </form>
         "#, BLOG_URL, aid, MANAGE_URL));
     
-    let output = hbs_template(TemplateBody::General(confirm), None, Some("Delete Article".to_string()), String::from("/delete"), Some(admin), user, None, Some(start.0));
+    let output = hbs_template(TemplateBody::General(confirm, None), Some("Delete Article".to_string()), String::from("/delete"), Some(admin), user, None, Some(start.0));
     
     let express: Express = output.into();
     express.compress( encoding )
@@ -1598,7 +1598,7 @@ pub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCook
         express.set_content_type(ContentType::Binary)
                 .add_header(disposition)
     } else {
-        let output = hbs_template(TemplateBody::General(alert_danger("Backup failed.")), None, Some("Backup Failed".to_string()), String::from("/backup"), Some(admin), user, None, Some(start.0));
+        let output = hbs_template(TemplateBody::General(alert_danger("Backup failed."), None), Some("Backup Failed".to_string()), String::from("/backup"), Some(admin), user, None, Some(start.0));
         
         let express: Express = output.into();
         express.compress(encoding)
@@ -1631,9 +1631,9 @@ pub fn hbs_pageviews(start: GenTimer, admin: AdministratorCookie, user: Option<U
         page.push_str(&pages);
         page.push_str(r#"</div>"#);
         
-        output = hbs_template(TemplateBody::General(page), None, Some("Page Views".to_string()), String::from("/pageviews"), Some(admin), user, None, Some(start.0));
+        output = hbs_template(TemplateBody::General(page, None), Some("Page Views".to_string()), String::from("/pageviews"), Some(admin), user, None, Some(start.0));
     } else {
-        output = hbs_template(TemplateBody::General(alert_danger("Could not retrieve page statistics.<br>Failed to acquire mutex lock.")), None, Some("Page Views".to_string()), String::from("/pageviews"), Some(admin), user, None, Some(start.0));
+        output = hbs_template(TemplateBody::General(alert_danger("Could not retrieve page statistics.<br>Failed to acquire mutex lock."), None), Some("Page Views".to_string()), String::from("/pageviews"), Some(admin), user, None, Some(start.0));
     }
     
     let express: Express = output.into();
@@ -1692,7 +1692,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
                         page_information.push_str( &pinfo );
                     }
                     
-                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information)), fmsg, None, String::from("/"), admin, user, None, Some(start.0));
+                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), fmsg), None, String::from("/"), admin, user, None, Some(start.0));
                     let express: Express = output.into();
                     
                     let end = start.0.elapsed();
@@ -1704,7 +1704,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
         }
     }
     
-    output = hbs_template(TemplateBody::General(alert_danger("No articles to show.")), fmsg, None, String::from("/"), admin, user, None, Some(start.0));
+    output = hbs_template(TemplateBody::General(alert_danger("No articles to show."), fmsg), None, String::from("/"), admin, user, None, Some(start.0));
     let express: Express = output.into();
     
     let end = start.0.elapsed();

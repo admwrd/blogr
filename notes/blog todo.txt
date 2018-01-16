@@ -85,6 +85,12 @@ SCSS
 Blogr
 	Move flash message option in templates method to the info part instead of the TemplateBody part
 		Change all templates' {{~#if msg~}}{{msg}}{{~/msg~}} to use info.msg
+		Change all handlebars {{#if msg}} to display {{{msg}}} (to show html)
+
+	Could change templates module to take the TemplateBody enum and separate the variants into their own data structures
+
+	Maybe remove all html tags and stuff from flash message contents before sending it to the template
+		Prevents malicious code
 
 	Make a login redirect page
 		/login-user  and  /login-admin
