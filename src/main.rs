@@ -75,6 +75,7 @@ extern crate rocket_auth_login;
 // mod counthits;
 mod counter;
 mod referrer;
+mod location;
 mod collate;
 mod accept;
 mod xpress;
