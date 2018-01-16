@@ -139,19 +139,30 @@ pub fn admin_login(route: Location) -> Redirect {
 
 
 #[get("/admin-test")]
-pub fn hbs_admin_test(start: GenTimer, user: Option<UserCookie>, admin: AdministratorCookie, encoding: AcceptCompression) -> Express {
+pub fn hbs_admin_test(start: GenTimer, user: Option<UserCookie>, admin: Option<AdministratorCookie>, encoding: AcceptCompression) -> Express {
     
-    let output = hbs_template(TemplateBody::General(alert_success("You are logged in.")), None, Some("Admin Test".to_string()), String::from("/admin-test"), Some(admin), user, None, Some(start.0));
+    let output: Template;
+    if let Some(a) = admin {
+        output = hbs_template(TemplateBody::General(alert_success("You are logged in.")), None, Some("Admin Test".to_string()), String::from("/admin-test"), Some(a), user, None, Some(start.0));
+    } else {
+        let mut loginmsg = String::with_capacity(300);
+        loginmsg.push_str("You are not logged in, please <a href=\"");
+        loginmsg.push_str(BLOG_URL);
+        loginmsg.push_str("admin");
+        loginmsg.push_str("\">Login</a>");
+        
+        output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some("Admin Test".to_string()), String::from("/admin-test"), admin, user, None, Some(start.0));
+    }
     
     let express: Express = output.into();
     express.compress( encoding )
     
 }
-#[get("/admin-test", rank = 2)]
-pub fn hbs_admin_test_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression, location: Location) -> Redirect {
-    // Redirect::to("/admin?referrer=")
-    admin_login(location)
-}
+// #[get("/admin-test", rank = 2)]
+// pub fn hbs_admin_test_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression, location: Location) -> Redirect {
+//     // Redirect::to("/admin?referrer=")
+//     admin_login(location)
+// }
 
 
 
