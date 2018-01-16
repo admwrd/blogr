@@ -59,19 +59,19 @@ use accept::*;
 
 use comrak::{markdown_to_html, ComrakOptions};
 
-const comrak_options: ComrakOptions = ComrakOptions {
-    hardbreaks: true,            // \n => <br>\n
-    width: 120usize,             
-    github_pre_lang: false,      
-    ext_strikethrough: true,     // hello ~world~ person.
-    ext_tagfilter: true,         // filters out certain html tags
-    ext_table: true,             // | a | b |\n|---|---|\n| c | d |
-    ext_autolink: true,          
-    ext_tasklist: true,          // * [x] Done\n* [ ] Not Done
-    ext_superscript: true,       // e = mc^2^
-    ext_header_ids: None,        // None / Some("some-id-prefix-".to_string())
-    ext_footnotes: true,         // Hi[^x]\n\n[^x]: A footnote here\n
-};
+// pub const COMRAK_OPTIONS: ComrakOptions = ComrakOptions {
+//     hardbreaks: true,            // \n => <br>\n
+//     width: 120usize,             
+//     github_pre_lang: false,      
+//     ext_strikethrough: true,     // hello ~world~ person.
+//     ext_tagfilter: true,         // filters out certain html tags
+//     ext_table: true,             // | a | b |\n|---|---|\n| c | d |
+//     ext_autolink: true,          
+//     ext_tasklist: true,          // * [x] Done\n* [ ] Not Done
+//     ext_superscript: true,       // e = mc^2^
+//     ext_header_ids: None,        // None / Some("some-id-prefix-".to_string())
+//     ext_footnotes: true,         // Hi[^x]\n\n[^x]: A footnote here\n
+// };
 
 
 // TODO: Collate: make a route that takes a number in the route (not query string)
@@ -81,177 +81,6 @@ const comrak_options: ComrakOptions = ComrakOptions {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* the pages variable is populated with:
-    Current page - pulled from query string/uri (call the parse_query method of the settings)
-    Current route (pulled from request.uri())
-    Settings (specified by Paginate<Settings>)
-        Items per page
-*/
-#[get("/pagination/<num_items_opt>")]
-fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-    // let pages = PaginateDefaults::new()
-    // let qrystr = ::gen_query("SELECT * FROM articles", Some("posted"));
-    // let articles = conn.articles(qrystr);
-    
-    let contents: String;
-    if let Some(num_items) = num_items_opt {
-        contents = format!("There were {} items found.<br>\nYou are viewing page {} out of {} pages.<br>\nNavigation:<br>\n{}", num_items, pages.cur_page, pages.num_pages(num_items), pages.navigation(num_items));
-    } else {
-        let num_items = 10;
-        contents = format!("There were {} items found.<br>\nYou are viewing page {} out of {} pages.<br>\nNavigation:<br>\n{}", num_items, pages.cur_page, pages.num_pages(num_items), pages.navigation(num_items));
-        // contents = format!("You are viewing page {} out of {} pages.\n<br>Navigation:<br>{}", pages.cur_page, num_pages, pages.navigation(num_pages));
-    }
-    
-    // enum TemplateBody :: PaginateArticles( Vec<Article>, T: Collate )
-    // let output = hbs_template(TemplateBody::PaginateArticles(articles, ), None, String::from("/"), admin, user, None, Some(start.0));
-    let output: Template = hbs_template(TemplateBody::General(contents), None, Some("Pagination Test".to_string()), String::from("/pagination"), admin, user, None, Some(start.0));
-    
-    let express: Express = output.into();
-    express.compress( encoding )
-    
-    // if let Ok(qry) = conn.query(qrystr, &[]) {
-    //     if !qry.is_empty() && qry.len() != 0 {
-            
-    //     }
-    // }
-    
-    
-}
-
-
-// #[get("/admin")]
-// pub fn hbs_admin_page(conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-//     let start = Instant::now();
-//     let username = admin.username.clone();
-//     let output: Template = hbs_template(TemplateBody::General(format!("Welcome Administrator {user}.  You are viewing the administrator dashboard page.", user=username), None), Some("Administrator Dashboard".to_string()), String::from("/admin"), Some(admin), user, None, Some(start.0));
-        
-//     let end = start.0.elapsed();
-//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/admin", rank = 2)]
-// pub fn hbs_admin_login(conn: DbConn, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
-//     let start = Instant::now();
-    
-//     let output: Template = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), None, None), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start.0));
-        
-//     let end = start.0.elapsed();
-//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/admin?<fail>")]
-// pub fn hbs_admin_retry(conn: DbConn, user: Option<UserCookie>, fail: AuthFailure, encoding: AcceptCompression) -> Express {
-//     let start = Instant::now();
-    
-//     let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
-//     let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
-//     let output: Template = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), clean_user, clean_msg), Some("Administrator Login".to_string()), String::from("/admin"), None, user, None, Some(start.0));
-        
-//     let end = start.0.elapsed();
-//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[post("/admin", data = "<form>")]
-// pub fn hbs_process_admin(form: Form<LoginFormStatus<AdminAuth>>, cookies: Cookies) -> LoginFormRedirect {
-//     let start = Instant::now();
-    
-//     let inside = form.into_inner();
-//     let failuser = inside.user_str();
-//     let failmsg = inside.fail_str();
-//     let mut failurl = ADMIN_LOGIN_URL.to_string();
-//     if failmsg != "" && failmsg != " " {
-//         failurl.push_str("?user=");
-//         failurl.push_str(&failuser);
-//         failurl.push_str("&msg=");
-//         failurl.push_str(&failmsg);
-//     }
-    
-//     let end = start.0.elapsed();
-//     println!("Processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
-    
-//     inside.redirect("/admin", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
-// }
-
-
-
-
-// #[get("/user")]
-// pub fn hbs_user_page(conn: DbConn, admin: Option<AdministratorCookie>, user: UserCookie, encoding: AcceptCompression) -> Express {
-//     let start = Instant::now();
-    
-//     let username = user.username.clone();
-//     let output: Template = hbs_template(TemplateBody::General(format!("Welcome {user}.  You are viewing your dashboard page.", user=username), None), Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start.0));
-        
-//     let end = start.0.elapsed();
-//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/user", rank = 2)]
-// pub fn hbs_user_login(conn: DbConn, admin: Option<AdministratorCookie>, encoding: AcceptCompression) -> Express {
-//     let start = Instant::now();
-    
-//     let output: Template = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None, None), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start.0));
-        
-//     let end = start.0.elapsed();
-//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[get("/user?<fail>")]
-// pub fn hbs_user_retry(conn: DbConn, admin: Option<AdministratorCookie>, fail: AuthFailure, encoding: AcceptCompression) -> Express {
-//     let start = Instant::now();
-    
-//     let clean_user = if fail.user != "" { Some(strict_sanitize(fail.user)) } else { None };
-//     let clean_msg = if fail.msg != "" { Some(alert_danger(&input_sanitize(fail.msg))) } else { None };
-//     let output: Template = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), clean_user, clean_msg), Some("User Login".to_string()), String::from("/user"), admin, None, None, Some(start.0));
-        
-//     let end = start.0.elapsed();
-//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
-//     output
-// }
-
-// #[post("/user", data = "<form>")]
-// pub fn hbs_user_process(form: Form<LoginFormStatus<UserAuth>>, cookies: Cookies) -> LoginFormRedirect {
-//     let start = Instant::now();
-    
-//     let inside = form.into_inner();
-//     let failuser = inside.user_str();
-//     let failmsg = inside.fail_str();
-//     let mut failurl = USER_LOGIN_URL.to_string();
-//     if failmsg != "" && failmsg != " " {
-//         failurl.push_str("?user=");
-//         failurl.push_str(&failuser);
-//         failurl.push_str("&msg=");
-//         failurl.push_str(&failmsg);
-//     }
-    
-//     let end = start.0.elapsed();
-//     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
-    
-//     inside.redirect("/user", cookies).unwrap_or( LoginFormRedirect::new(Redirect::to(&failurl)) )
-// }
 
 
 
@@ -282,6 +111,20 @@ fn pagination_test(start: GenTimer, num_items_opt: Option<u32>, pages: Page<Pagi
 // }
 
 
+#[get("/admin-test")]
+pub fn hbs_admin_test(start: GenTimer, user: Option<UserCookie>, admin: AdministratorCookie, encoding: AcceptCompression) -> Express {
+    
+}
+#[get("/admin-test", rank = 2)]
+pub fn hbs_admin_test(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Redirect {
+    Redirect::to("/admin")
+}
+
+
+
+
+
+
 #[get("/admin", rank = 1)]
 pub fn hbs_dashboard_admin_authorized(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {
     // let start = Instant::now();
@@ -303,6 +146,7 @@ pub fn hbs_dashboard_admin_authorized(start: GenTimer, pagination: Page<Paginati
 }
 
 // No longer needed - hbs_dashboard_admin_authorized takes care of flash messages
+// #[get("/admin", rank = 2)]
 #[get("/admin", rank = 2)]
 pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression, referrer: Referrer) -> Express {
     // let start = Instant::now();
@@ -337,7 +181,8 @@ pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<Use
 // }
 
 
-#[get("/admin?<userqry>")]
+// #[get("/admin?<userqry>", rank=3)]
+#[get("/admin?<userqry>", rank=3)]
 pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut userqry: QueryUser, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
     // let userqry: QueryUser = userqry_form.get();
@@ -360,7 +205,32 @@ pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Optio
     express.compress(encoding)
 }
 
+// #[get("/admin?<rediruser>")]
+#[get("/admin?<rediruser>")]
+pub fn hbs_dashboard_admin_retry_redir(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut rediruser: QueryUserRedir, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {
+    // let start = Instant::now();
+    // let userqry: QueryUser = userqry_form.get();
+    
+    let mut fields: HashMap<String, String> = HashMap::new();
+    
+    // if let Referrer(Some(refer)) = referrer {
+    //     println!("Referrer: {}", &refer);
+    //     fields.insert("referrer".to_string(), refer);
+    // }
+    // // user = login::sanitization::sanitize(&user);
+    
+    let username = if &userqry.user != "" { Some(userqry.user.clone() ) } else { None };
+    let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };
+    let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
+    
+    let end = start.0.elapsed();
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    let express: Express = output.into();
+    express.compress(encoding)
+}
+
 #[allow(unused_mut)]
+// #[post("/admin", data = "<form>")]
 #[post("/admin", data = "<form>")]
 // pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<AdministratorForm>>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
 pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<AdministratorForm>>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {
@@ -404,6 +274,7 @@ pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<Administrat
     output
 }
 
+// #[get("/admin_logout")]
 #[get("/admin_logout")]
 pub fn hbs_logout_admin(admin: Option<AdministratorCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {
     if let Some(_) = admin {
@@ -835,7 +706,7 @@ pub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbCon
     
     let username = if let Some(ref display) = admin.display { display.clone() } else { titlecase(&admin.username) };
     
-    let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. comrak_options };
+    let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. COMRAK_OPTIONS };
     
     let mut article: ArticleForm = form.into_inner();
     
@@ -1342,12 +1213,12 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
     // };
     
     // let html: String = markdown_to_html(text, &ComrakOptions::default());
-    // let html: String = markdown_to_html(text, &comrak_options);
+    // let html: String = markdown_to_html(text, &COMRAK_OPTIONS);
     // html
     
     let flash = process_flash(flash_opt);
     
-    let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. comrak_options };
+    let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. COMRAK_OPTIONS };
     
     let output: Template;
     let id = ArticleId::new(aid);
@@ -1389,7 +1260,7 @@ pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCoo
 // pub fn hbs_edit_process(start: GenTimer, form: Form<Article>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {
 pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleWrapper>, conn: DbConn, admin: AdministratorCookie, encoding: AcceptCompression) -> Flash<Redirect> {
     
-    let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. comrak_options };
+    let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. COMRAK_OPTIONS };
     
     let wrapper: ArticleWrapper = form.into_inner();
     let mut article: Article = wrapper.to_article();

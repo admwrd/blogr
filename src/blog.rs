@@ -20,7 +20,7 @@ use htmlescape::*;
 
 use postgres::{Connection};
 
-use super::{MAX_CREATE_TITLE, MAX_CREATE_DESCRIPTION, MAX_CREATE_TAGS};
+use super::{MAX_CREATE_TITLE, MAX_CREATE_DESCRIPTION, MAX_CREATE_TAGS, DESC_LIMIT};
 
 use rocket_auth_login::sanitization;
 // not used anymore
@@ -31,7 +31,7 @@ use sanitize::*;
 
 
 
-pub const DESC_LIMIT: usize = 300;
+// pub const DESC_LIMIT: usize = 300;
 
 
 

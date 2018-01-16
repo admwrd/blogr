@@ -113,10 +113,11 @@ use rocket_auth_login::sanitization::*;
 use templates::*;
 
 // use handlebars::Handlebars;
-use titlecase::titlecase;
 use regex::Regex;
-use std::time::{Instant, Duration, SystemTime};
+use titlecase::titlecase;
+use comrak::{markdown_to_html, ComrakOptions};
 
+use std::time::{Instant, Duration, SystemTime};
 use std::ffi::OsStr;
 use std::{env, str, io};
 use std::io::{Cursor, Read};
@@ -131,8 +132,8 @@ use std::collections::HashMap;
 // use std::sync::Mutex;
 // use std::path::{Path, PathBuf};
 // use rocket::State;
-
 // use concurrent_hashmap::*;
+
 
 use rocket_contrib::Template;
 use rocket::{Request, Data, Outcome, Response};
@@ -366,7 +367,6 @@ fn main() {
             
             pages::backup,
             pages::hbs_pageviews,
-            // pages::wait,
             
             pages::hbs_dashboard_user_authorized,
             pages::hbs_dashboard_user_retry_user,
