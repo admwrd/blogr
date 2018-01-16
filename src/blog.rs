@@ -226,10 +226,91 @@ pub struct SortDisplay {
 }
 
 
-#[derive(Debug, Clone, FromForm)]
+#[derive(Debug, Clone, )]
 pub struct QueryUser {
     pub user: String,
 }
+
+#[derive(Debug, Clone, )]
+pub struct QueryUserRedir {
+    pub user: String,
+    pub referrer: String,
+}
+
+#[derive(Debug, Clone, )]
+pub struct QueryRedir {
+    // pub user: String,
+    pub referrer: String,
+}
+
+impl<'f> FromForm<'f> for QueryUser {
+    type Error = &'static str;
+    fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
+        let mut user: String = String::new();
+        
+        for (field, value) in form_items {
+            match field.as_str() {
+                "user" => { user = value.url_decode().unwrap_or( String::new() ); },
+                _ => {},
+            }
+        }
+        
+        if &user != "" {
+            Ok( QueryUser {
+                user,
+            } )
+        } else {
+            Err( "There was a missing field in QueryUser" )
+        }
+    }
+}
+
+impl<'f> FromForm<'f> for QueryUserRedir {
+    type Error = &'static str;
+    fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
+        let mut user: String = String::new();
+        let mut referrer: String = String::new();
+        
+        for (field, value) in form_items {
+            match field.as_str() {
+                "user" => { value.url_decode().unwrap_or( String::new() ); },
+                "referrer" => { referrer = value.url_decode().unwrap_or( String::new() ); },
+                _ => {},
+            }
+        }
+        if &user != "" && &referrer != "" {
+            Ok( QueryUserRedir {
+                user,
+                referrer,
+            } )
+        } else {
+            Err( "There was a missing field in QueryUserRedir" )
+        }
+    }
+}
+
+impl<'f> FromForm<'f> for QueryRedir {
+    type Error = &'static str;
+    fn from_form(form_items: &mut FormItems<'f>, _strict: bool) -> Result<Self, Self::Error> {
+        let mut referrer: String = String::new();
+        
+        for (field, value) in form_items {
+            match field.as_str() {
+                "referrer" => { referrer = value.url_decode().unwrap_or( String::new() ); },
+                _ => {},
+            }
+        }
+        
+        if &referrer != "" {
+            Ok( QueryRedir {
+                referrer,
+            } )
+        } else {
+            Err( "There was a missing field in QueryRedir" )
+        }
+    }
+}
+
 
 
 pub fn now() -> NaiveDateTime {

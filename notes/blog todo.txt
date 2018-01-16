@@ -103,7 +103,7 @@ Blogr
 		Change the err_redir argument to flash_redirect() in the pages module to redirect to /admin?redir=/path/here&user=username
 		Finish working on hbs_dashboard_admin_retry_redir
 			Add a QueryUserRedir struct that is similar to QueryUser but with a String redirect field
-		Allow llinks to not redirect back to original page (like menu links may do this)0
+		Allow llinks to not redirect back to original page (like menu links may do this)
 			Maybe make a separate route or check if redirect == "authonly" or something like that
 
 

@@ -365,6 +365,11 @@ fn main() {
             pages::hbs_process_admin_login,
             pages::hbs_logout_admin,
             
+            pages::hbs_admin_test,
+            pages::hbs_admin_test_unauthorized,
+            pages::hbs_dashboard_admin_retry_redir,
+            pages::hbs_dashboard_admin_retry_redir_only,
+            
             pages::backup,
             pages::hbs_pageviews,
             

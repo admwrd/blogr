@@ -101,7 +101,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for AcceptCompression {
         //     println!("Referer: {}", refer);
         // }
         
-        // let all_headers: HashMap<String, String> = request.headers()
+        // let all_headers: HashMap<String, String> = request.headers();
         
         // let all_headers: HashMap<String, String> = headers
         //                                             .iter()

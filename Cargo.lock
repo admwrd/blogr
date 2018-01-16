@@ -121,7 +121,7 @@ dependencies = [
  "regex 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "rmp-serde 0.13.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "rocket-auth-login 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rocket-auth-login 0.2.1",
  "rocket_codegen 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket_contrib 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "rss 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -982,7 +982,6 @@ dependencies = [
 [[package]]
 name = "rocket-auth-login"
 version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "htmlescape 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1612,7 +1611,6 @@ dependencies = [
 "checksum rmp 0.8.7 (registry+https://github.com/rust-lang/crates.io-index)" = "a3d45d7afc9b132b34a2479648863aa95c5c88e98b32285326a6ebadc80ec5c9"
 "checksum rmp-serde 0.13.7 (registry+https://github.com/rust-lang/crates.io-index)" = "011e1d58446e9fa3af7cdc1fb91295b10621d3ac4cb3a85cc86385ee9ca50cd3"
 "checksum rocket 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "3ad92f830d1ae2e9400ff212c949f6101b794cb3f50df975a8278b30280de51e"
-"checksum rocket-auth-login 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "cc3f06707ab68fd68f12b0ef0d409fa11c26453cf2601bb70f6e58fa0c33daf2"
 "checksum rocket_codegen 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "a945a800964fd73054d726fcfb52dbb5ed2c77f9c97f94de81f94970779f12ad"
 "checksum rocket_contrib 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "b7c3aa9888842d219dc3561f7a91f166c48c34746429f8e436d4a8b6edbfdb39"
 "checksum rss 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "3fbc1a0587ebbc7404b3295c8e1f717d00dad48e3c205adadf916f15ff67d05b"

@@ -24,11 +24,9 @@
                 <input type="password" id="passwordHidden" class="hidden-pass form-control">
             </div>
         </div>
-        {{~#if body.fields~}}
-        {{~#each body.fields~}}
+        {{~#each fields~}}
             <input type="hidden" name="{{@key}}" value="{{this}}">
         {{~/each~}}
-        {{~/if~}}
         <div class="v-submit">
             <button type="submit" class="btn btn-primary" id="submit-button-id">Login</button>
         </div>

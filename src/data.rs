@@ -32,7 +32,7 @@ use std::ops::Deref;
 use std;
 use std::env;
 // use dotenv::dotenv;
-use super::DATABASE_URL;
+use super::{DATABASE_URL, DESC_LIMIT};
 // use diesel;
 // use diesel::prelude::*;
 // use diesel::pg::PgConnection;
