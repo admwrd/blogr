@@ -829,8 +829,15 @@ pub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbCon
 #[post("/create", rank=2)]
 pub fn hbs_create_unauthorized(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     // let start = Instant::now();
+    // let output: Template = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE)), None, Some("Not Authorized".to_string()), String::from("/create"), admin, user, None, Some(start.0));
     
-    let output: Template = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE)), None, Some("Not Authorized".to_string()), String::from("/create"), admin, user, None, Some(start.0));
+    let mut loginmsg = String::with_capacity(300);
+        loginmsg.push_str("You are not logged in, please <a href=\"");
+        loginmsg.push_str(BLOG_URL);
+        loginmsg.push_str("admin");
+        loginmsg.push_str("\">Login</a>");
+    
+    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some("Create".to_string()), String::from("/create"), None, user, None, Some(start.0));
     
     let end = start.0.elapsed();
     println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
@@ -1288,6 +1295,19 @@ pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCooki
 }
 
 
+#[get("/edit", rank=2)]
+pub fn hbs_edit_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    let mut loginmsg = String::with_capacity(300);
+        loginmsg.push_str("You are not logged in, please <a href=\"");
+        loginmsg.push_str(BLOG_URL);
+        loginmsg.push_str("admin");
+        loginmsg.push_str("\">Login</a>");
+    
+    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some("Unauthorized".to_string()), String::from("/edit"), None, user, None, Some(start.0));
+    let express: Express = output.into();
+    express.compress( encoding )
+}
+
 #[get("/edit/<aid>")]
 pub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash_opt: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {
 
@@ -1380,6 +1400,20 @@ pub fn hbs_edit_process(start: GenTimer, form: Form<ArticleWrapper>, conn: DbCon
     }
     
 }
+
+#[get("/manage", rank=2)]
+pub fn hbs_manage_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    let mut loginmsg = String::with_capacity(300);
+        loginmsg.push_str("You are not logged in, please <a href=\"");
+        loginmsg.push_str(BLOG_URL);
+        loginmsg.push_str("admin");
+        loginmsg.push_str("\">Login</a>");
+    
+    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some("Unauthorized".to_string()), String::from("/manage"), None, user, None, Some(start.0));
+    let express: Express = output.into();
+    express.compress( encoding )
+}
+
 
 #[get("/manage")]
 pub fn hbs_manage_basic(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {
@@ -1492,6 +1526,20 @@ pub fn hit_count3(hits: Hits) -> String {
     format!("The page `{}` has {} page views.\nTotal views: {}", page, count, views)
 }
 
+
+#[get("/delete", rank=2)]
+pub fn hbs_delete_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    let mut loginmsg = String::with_capacity(300);
+        loginmsg.push_str("You are not logged in, please <a href=\"");
+        loginmsg.push_str(BLOG_URL);
+        loginmsg.push_str("admin");
+        loginmsg.push_str("\">Login</a>");
+    
+    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some("Unauthorized".to_string()), String::from("/delete"), None, user, None, Some(start.0));
+    let express: Express = output.into();
+    express.compress( encoding )
+}
+
 #[get("/delete/<aid>")]
 pub fn hbs_delete_confirm(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
     
@@ -1535,6 +1583,19 @@ pub fn hbs_process_delete(aid: u32, conn: DbConn, admin: AdministratorCookie, us
         println!("Delete failed.");
         Err( Redirect::to("/manage") )
     }
+}
+
+#[get("/backup", rank=2)]
+pub fn hbs_backup_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    let mut loginmsg = String::with_capacity(300);
+        loginmsg.push_str("You are not logged in, please <a href=\"");
+        loginmsg.push_str(BLOG_URL);
+        loginmsg.push_str("admin");
+        loginmsg.push_str("\">Login</a>");
+    
+    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some("Unauthorized".to_string()), String::from("/backup"), None, user, None, Some(start.0));
+    let express: Express = output.into();
+    express.compress( encoding )
 }
 
 #[get("/backup")]
@@ -1596,6 +1657,18 @@ pub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCook
     }
 }
 
+#[get("/pageviews", rank=2)]
+pub fn hbs_pageviews_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    let mut loginmsg = String::with_capacity(300);
+        loginmsg.push_str("You are not logged in, please <a href=\"");
+        loginmsg.push_str(BLOG_URL);
+        loginmsg.push_str("admin");
+        loginmsg.push_str("\">Login</a>");
+    
+    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some("Unauthorized".to_string()), String::from("/pageviews"), None, user, None, Some(start.0));
+    let express: Express = output.into();
+    express.compress( encoding )
+}
 
 #[get("/pageviews")]
 pub fn hbs_pageviews(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits, stats: State<Counter>) -> Express {

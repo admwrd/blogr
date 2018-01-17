@@ -380,6 +380,13 @@ fn main() {
             pages::hbs_process_user_login,
             pages::hbs_logout_user,
             
+            pages::hbs_edit_unauthorized,
+            pages::hbs_manage_unauthorized,
+            pages::hbs_delete_unauthorized,
+            pages::hbs_pageviews_unauthorized,
+            pages::hbs_backup_unauthorized,
+            
+            
             // pages_administrator::resp_test,
             // pages_administrator::uncompressed,
             // pages_administrator::compress_test,
