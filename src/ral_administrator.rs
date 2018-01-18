@@ -11,7 +11,7 @@ use rocket::response::{Redirect, Flash};
 use rocket::request::FlashMessage;
 use rocket::http::{Cookie, Cookies, RawStr};
 
-use super::{PGCONN, MAX_ATTEMPTS, LOCKOUT_DURATION, ADMIN_LOCK};
+use super::{PGCONN, MAX_ATTEMPTS, LOCKOUT_DURATION, ADMIN_LOCK, PRODUCTION};
 // use password::*;
 use rocket_auth_login::authorization::*;
 use rocket_auth_login::sanitization::*;
@@ -291,10 +291,19 @@ impl AuthorizeForm for AdministratorForm {
             Ok(cooky) => {
                 let cid = Self::cookie_id();
                 let contents = cooky.store_cookie();
-                cookies.add_private(
+                
+                // Secure cookie while in production mode
+                let new_cookie = if PRODUCTION == true {
+                    Cookie::build(cid, contents)
+                        .secure(true)
+                        .finish()
+                } else {
                     Cookie::build(cid, contents)
                         // .secure(true)
                         .finish()
+                };
+                cookies.add_private(
+                    new_cookie
                 );
                 Ok(Redirect::to(ok_redir))
             },

@@ -1,0 +1,33 @@
+
+https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow
+
+Also has <link> tags with hreflang="fr" for links to the page with other languages
+
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <link rel="home" href="/en-US/">
+    <link rel="license" href="#license">
+  
+ <meta name="robots" content="index, follow">
+
+Open Search Description
+<link rel="search" type="application/opensearchdescription+xml" href="https://developer.mozilla.org/en-US/search/xml" title="Mozilla Developer Network">
+
+
+https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow
+  <!-- third-generation iPad with high-resolution Retina display: -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://cdn.mdn.mozilla.net/static/img/favicon144.e7e21ca263ca.png">
+  <!-- iPhone with high-resolution Retina display: -->
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="https://cdn.mdn.mozilla.net/static/img/favicon114.d526f38b09c5.png">
+  <!-- first- and second-generation iPad: -->
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://cdn.mdn.mozilla.net/static/img/favicon72.cc65d1d762a0.png">
+  <!-- non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
+  <!-- 57x57 -->
+    <link rel="apple-touch-icon-precomposed" href="https://cdn.mdn.mozilla.net/static/img/favicon57.de33179910ae.png">
+  <!-- basic favicon -->
+  <!-- 32x32 -->
+    <link rel="shortcut icon" href="https://cdn.mdn.mozilla.net/static/img/favicon32.7f3da72dcea1.png">
+
+
+
+
+

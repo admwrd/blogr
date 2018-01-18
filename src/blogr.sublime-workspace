@@ -128,7 +128,7 @@
 	"buffers":
 	[
 		{
-			"file": "src/main.rs",
+			"file": "main.rs",
 			"settings":
 			{
 				"buffer_size": 13089,
@@ -137,7 +137,7 @@
 			}
 		},
 		{
-			"file": "src/settings.rs",
+			"file": "settings.rs",
 			"settings":
 			{
 				"buffer_size": 8403,
@@ -146,7 +146,7 @@
 			}
 		},
 		{
-			"file": "src/settings-https-prod.rs",
+			"file": "settings-https-prod.rs",
 			"settings":
 			{
 				"buffer_size": 5503,
@@ -155,7 +155,7 @@
 			}
 		},
 		{
-			"file": "src/pages.rs",
+			"file": "pages.rs",
 			"settings":
 			{
 				"buffer_size": 84616,
@@ -164,7 +164,7 @@
 			}
 		},
 		{
-			"file": "src/blog.rs",
+			"file": "blog.rs",
 			"settings":
 			{
 				"buffer_size": 53005,
@@ -173,7 +173,7 @@
 			}
 		},
 		{
-			"file": "notes/Old Code/pagination-test.rs",
+			"file": "/C/code/lang/Rust/proj/blogr/notes/Old Code/pagination-test.rs",
 			"settings":
 			{
 				"buffer_size": 1982,
@@ -190,7 +190,7 @@
 			}
 		},
 		{
-			"file": "static/clipboard.min.js",
+			"file": "/C/code/lang/Rust/proj/blogr/static/clipboard.min.js",
 			"settings":
 			{
 				"buffer_size": 10598,
@@ -216,7 +216,7 @@
 			}
 		},
 		{
-			"file": "notes/icons - font awesome",
+			"file": "/C/code/lang/Rust/proj/blogr/notes/icons - font awesome",
 			"settings":
 			{
 				"buffer_size": 2897,
@@ -226,7 +226,7 @@
 			}
 		},
 		{
-			"file": "src/counter.rs",
+			"file": "counter.rs",
 			"settings":
 			{
 				"buffer_size": 10040,
@@ -235,7 +235,7 @@
 			}
 		},
 		{
-			"file": "src/data.rs",
+			"file": "data.rs",
 			"settings":
 			{
 				"buffer_size": 7292,
@@ -244,7 +244,7 @@
 			}
 		},
 		{
-			"file": "src/templates.rs",
+			"file": "templates.rs",
 			"settings":
 			{
 				"buffer_size": 20033,
@@ -253,7 +253,7 @@
 			}
 		},
 		{
-			"file": "src/ral_administrator.rs",
+			"file": "ral_administrator.rs",
 			"settings":
 			{
 				"buffer_size": 21029,
@@ -262,7 +262,7 @@
 			}
 		},
 		{
-			"file": "src/ral_user.rs",
+			"file": "ral_user.rs",
 			"settings":
 			{
 				"buffer_size": 17072,
@@ -271,7 +271,7 @@
 			}
 		},
 		{
-			"file": "src/xpress.rs",
+			"file": "xpress.rs",
 			"settings":
 			{
 				"buffer_size": 14117,
@@ -280,7 +280,7 @@
 			}
 		},
 		{
-			"file": "src/referrer.rs",
+			"file": "referrer.rs",
 			"settings":
 			{
 				"buffer_size": 651,
@@ -289,7 +289,7 @@
 			}
 		},
 		{
-			"file": "src/location.rs",
+			"file": "location.rs",
 			"settings":
 			{
 				"buffer_size": 777,
@@ -298,7 +298,7 @@
 			}
 		},
 		{
-			"file": "src/accept.rs",
+			"file": "accept.rs",
 			"settings":
 			{
 				"buffer_size": 4703,
@@ -307,7 +307,7 @@
 			}
 		},
 		{
-			"file": "static/jquery-fixedtable.js",
+			"file": "/C/code/lang/Rust/proj/blogr/static/jquery-fixedtable.js",
 			"settings":
 			{
 				"buffer_size": 10635,
@@ -317,7 +317,7 @@
 			}
 		},
 		{
-			"file": "src/layout.rs",
+			"file": "layout.rs",
 			"settings":
 			{
 				"buffer_size": 15365,
@@ -326,7 +326,7 @@
 			}
 		},
 		{
-			"file": "Rocket.toml",
+			"file": "/C/code/lang/Rust/proj/blogr/Rocket.toml",
 			"settings":
 			{
 				"buffer_size": 635,
@@ -334,7 +334,7 @@
 			}
 		},
 		{
-			"file": "Cargo.toml",
+			"file": "/C/code/lang/Rust/proj/blogr/Cargo.toml",
 			"settings":
 			{
 				"buffer_size": 2606,
@@ -352,7 +352,7 @@
 			}
 		},
 		{
-			"file": "templates/create-template.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/create-template.html.hbs",
 			"settings":
 			{
 				"buffer_size": 12502,
@@ -370,7 +370,7 @@
 			}
 		},
 		{
-			"file": "static/hljs/styles/monokai-sublime.css",
+			"file": "/C/code/lang/Rust/proj/blogr/static/hljs/styles/monokai-sublime.css",
 			"settings":
 			{
 				"buffer_size": 1026,
@@ -378,7 +378,7 @@
 			}
 		},
 		{
-			"file": "src/sanitize.rs",
+			"file": "sanitize.rs",
 			"settings":
 			{
 				"buffer_size": 3332,
@@ -405,7 +405,7 @@
 			}
 		},
 		{
-			"file": "static/css/blogr.css",
+			"file": "/C/code/lang/Rust/proj/blogr/static/css/blogr.css",
 			"settings":
 			{
 				"buffer_size": 27532,
@@ -414,7 +414,7 @@
 			}
 		},
 		{
-			"file": "static/css/blogr-2018-01-12.css",
+			"file": "/C/code/lang/Rust/proj/blogr/static/css/blogr-2018-01-12.css",
 			"settings":
 			{
 				"buffer_size": 166004,
@@ -423,7 +423,7 @@
 			}
 		},
 		{
-			"file": "static/blog.js",
+			"file": "/C/code/lang/Rust/proj/blogr/static/blog.js",
 			"settings":
 			{
 				"buffer_size": 11750,
@@ -432,7 +432,7 @@
 			}
 		},
 		{
-			"file": "static/blog-2018-01-07.js",
+			"file": "/C/code/lang/Rust/proj/blogr/static/blog-2018-01-07.js",
 			"settings":
 			{
 				"buffer_size": 11820,
@@ -440,7 +440,7 @@
 			}
 		},
 		{
-			"file": "static/blog_after.js",
+			"file": "/C/code/lang/Rust/proj/blogr/static/blog_after.js",
 			"settings":
 			{
 				"buffer_size": 11695,
@@ -449,7 +449,7 @@
 			}
 		},
 		{
-			"file": "static/blog_after-2018-01-12.js",
+			"file": "/C/code/lang/Rust/proj/blogr/static/blog_after-2018-01-12.js",
 			"settings":
 			{
 				"buffer_size": 12063,
@@ -458,7 +458,7 @@
 			}
 		},
 		{
-			"file": "templates/articles-pagination-template.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/articles-pagination-template.html.hbs",
 			"settings":
 			{
 				"buffer_size": 1275,
@@ -467,7 +467,7 @@
 			}
 		},
 		{
-			"file": "templates/article-template.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/article-template.html.hbs",
 			"settings":
 			{
 				"buffer_size": 2006,
@@ -476,7 +476,7 @@
 			}
 		},
 		{
-			"file": "templates/edit-article-template.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/edit-article-template.html.hbs",
 			"settings":
 			{
 				"buffer_size": 13332,
@@ -485,7 +485,7 @@
 			}
 		},
 		{
-			"file": "templates/general-template.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/general-template.html.hbs",
 			"settings":
 			{
 				"buffer_size": 147,
@@ -494,7 +494,7 @@
 			}
 		},
 		{
-			"file": "templates/login-template.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/login-template.html.hbs",
 			"settings":
 			{
 				"buffer_size": 1637,
@@ -503,7 +503,7 @@
 			}
 		},
 		{
-			"file": "templates/manage-pagination-template.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/manage-pagination-template.html.hbs",
 			"settings":
 			{
 				"buffer_size": 5572,
@@ -512,7 +512,7 @@
 			}
 		},
 		{
-			"file": "templates/pageviews-template.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/pageviews-template.html.hbs",
 			"settings":
 			{
 				"buffer_size": 741,
@@ -521,7 +521,7 @@
 			}
 		},
 		{
-			"file": "templates/search-template.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/search-template.html.hbs",
 			"settings":
 			{
 				"buffer_size": 1093,
@@ -530,7 +530,7 @@
 			}
 		},
 		{
-			"file": "templates/tags-template.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/tags-template.html.hbs",
 			"settings":
 			{
 				"buffer_size": 388,
@@ -539,7 +539,7 @@
 			}
 		},
 		{
-			"file": "templates/common/header.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/common/header.html.hbs",
 			"settings":
 			{
 				"buffer_size": 8097,
@@ -548,7 +548,7 @@
 			}
 		},
 		{
-			"file": "templates/common/footer.html.hbs",
+			"file": "/C/code/lang/Rust/proj/blogr/templates/common/footer.html.hbs",
 			"settings":
 			{
 				"buffer_size": 718,
@@ -976,7 +976,7 @@
 			[
 				{
 					"buffer": 0,
-					"file": "src/main.rs",
+					"file": "main.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1022,7 +1022,7 @@
 				},
 				{
 					"buffer": 1,
-					"file": "src/settings.rs",
+					"file": "settings.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1066,7 +1066,7 @@
 				},
 				{
 					"buffer": 2,
-					"file": "src/settings-https-prod.rs",
+					"file": "settings-https-prod.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1110,7 +1110,7 @@
 				},
 				{
 					"buffer": 3,
-					"file": "src/pages.rs",
+					"file": "pages.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1156,7 +1156,7 @@
 				},
 				{
 					"buffer": 4,
-					"file": "src/blog.rs",
+					"file": "blog.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1202,7 +1202,7 @@
 				},
 				{
 					"buffer": 5,
-					"file": "notes/Old Code/pagination-test.rs",
+					"file": "/C/code/lang/Rust/proj/blogr/notes/Old Code/pagination-test.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1312,7 +1312,7 @@
 				},
 				{
 					"buffer": 7,
-					"file": "static/clipboard.min.js",
+					"file": "/C/code/lang/Rust/proj/blogr/static/clipboard.min.js",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1492,7 +1492,7 @@
 				},
 				{
 					"buffer": 10,
-					"file": "notes/icons - font awesome",
+					"file": "/C/code/lang/Rust/proj/blogr/notes/icons - font awesome",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1536,7 +1536,7 @@
 				},
 				{
 					"buffer": 11,
-					"file": "src/counter.rs",
+					"file": "counter.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1582,7 +1582,7 @@
 				},
 				{
 					"buffer": 12,
-					"file": "src/data.rs",
+					"file": "data.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1628,7 +1628,7 @@
 				},
 				{
 					"buffer": 13,
-					"file": "src/templates.rs",
+					"file": "templates.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1674,7 +1674,7 @@
 				},
 				{
 					"buffer": 14,
-					"file": "src/ral_administrator.rs",
+					"file": "ral_administrator.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1720,7 +1720,7 @@
 				},
 				{
 					"buffer": 15,
-					"file": "src/ral_user.rs",
+					"file": "ral_user.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1766,7 +1766,7 @@
 				},
 				{
 					"buffer": 16,
-					"file": "src/xpress.rs",
+					"file": "xpress.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1812,7 +1812,7 @@
 				},
 				{
 					"buffer": 17,
-					"file": "src/referrer.rs",
+					"file": "referrer.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1858,7 +1858,7 @@
 				},
 				{
 					"buffer": 18,
-					"file": "src/location.rs",
+					"file": "location.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1904,7 +1904,7 @@
 				},
 				{
 					"buffer": 19,
-					"file": "src/accept.rs",
+					"file": "accept.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1950,7 +1950,7 @@
 				},
 				{
 					"buffer": 20,
-					"file": "static/jquery-fixedtable.js",
+					"file": "/C/code/lang/Rust/proj/blogr/static/jquery-fixedtable.js",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1995,7 +1995,7 @@
 				},
 				{
 					"buffer": 21,
-					"file": "src/layout.rs",
+					"file": "layout.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2041,7 +2041,7 @@
 				},
 				{
 					"buffer": 22,
-					"file": "Rocket.toml",
+					"file": "/C/code/lang/Rust/proj/blogr/Rocket.toml",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2082,7 +2082,7 @@
 				},
 				{
 					"buffer": 23,
-					"file": "Cargo.toml",
+					"file": "/C/code/lang/Rust/proj/blogr/Cargo.toml",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2169,7 +2169,7 @@
 				},
 				{
 					"buffer": 25,
-					"file": "templates/create-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/create-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2355,7 +2355,7 @@
 				},
 				{
 					"buffer": 15,
-					"file": "src/ral_user.rs",
+					"file": "ral_user.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2401,7 +2401,7 @@
 				},
 				{
 					"buffer": 3,
-					"file": "src/pages.rs",
+					"file": "pages.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2447,7 +2447,7 @@
 				},
 				{
 					"buffer": 4,
-					"file": "src/blog.rs",
+					"file": "blog.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2490,7 +2490,7 @@
 				},
 				{
 					"buffer": 27,
-					"file": "static/hljs/styles/monokai-sublime.css",
+					"file": "/C/code/lang/Rust/proj/blogr/static/hljs/styles/monokai-sublime.css",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2565,7 +2565,7 @@
 				},
 				{
 					"buffer": 28,
-					"file": "src/sanitize.rs",
+					"file": "sanitize.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2701,7 +2701,7 @@
 				},
 				{
 					"buffer": 11,
-					"file": "src/counter.rs",
+					"file": "counter.rs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2744,7 +2744,7 @@
 				},
 				{
 					"buffer": 31,
-					"file": "static/css/blogr.css",
+					"file": "/C/code/lang/Rust/proj/blogr/static/css/blogr.css",
 					"semi_transient": false,
 					"settings":
 					{
@@ -2931,7 +2931,7 @@
 				},
 				{
 					"buffer": 32,
-					"file": "static/css/blogr-2018-01-12.css",
+					"file": "/C/code/lang/Rust/proj/blogr/static/css/blogr-2018-01-12.css",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3116,7 +3116,7 @@
 				},
 				{
 					"buffer": 33,
-					"file": "static/blog.js",
+					"file": "/C/code/lang/Rust/proj/blogr/static/blog.js",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3160,7 +3160,7 @@
 				},
 				{
 					"buffer": 34,
-					"file": "static/blog-2018-01-07.js",
+					"file": "/C/code/lang/Rust/proj/blogr/static/blog-2018-01-07.js",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3203,7 +3203,7 @@
 				},
 				{
 					"buffer": 35,
-					"file": "static/blog_after.js",
+					"file": "/C/code/lang/Rust/proj/blogr/static/blog_after.js",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3250,7 +3250,7 @@
 				},
 				{
 					"buffer": 36,
-					"file": "static/blog_after-2018-01-12.js",
+					"file": "/C/code/lang/Rust/proj/blogr/static/blog_after-2018-01-12.js",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3301,7 +3301,7 @@
 				},
 				{
 					"buffer": 37,
-					"file": "templates/articles-pagination-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/articles-pagination-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3371,7 +3371,7 @@
 				},
 				{
 					"buffer": 38,
-					"file": "templates/article-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/article-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3441,7 +3441,7 @@
 				},
 				{
 					"buffer": 25,
-					"file": "templates/create-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/create-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3512,7 +3512,7 @@
 				},
 				{
 					"buffer": 39,
-					"file": "templates/edit-article-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/edit-article-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3582,7 +3582,7 @@
 				},
 				{
 					"buffer": 40,
-					"file": "templates/general-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/general-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3650,7 +3650,7 @@
 				},
 				{
 					"buffer": 41,
-					"file": "templates/login-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/login-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3720,7 +3720,7 @@
 				},
 				{
 					"buffer": 42,
-					"file": "templates/manage-pagination-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/manage-pagination-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3810,7 +3810,7 @@
 				},
 				{
 					"buffer": 43,
-					"file": "templates/pageviews-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/pageviews-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3878,7 +3878,7 @@
 				},
 				{
 					"buffer": 44,
-					"file": "templates/search-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/search-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -3948,7 +3948,7 @@
 				},
 				{
 					"buffer": 45,
-					"file": "templates/tags-template.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/tags-template.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -4018,7 +4018,7 @@
 				},
 				{
 					"buffer": 46,
-					"file": "templates/common/header.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/common/header.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -4109,7 +4109,7 @@
 				},
 				{
 					"buffer": 47,
-					"file": "templates/common/footer.html.hbs",
+					"file": "/C/code/lang/Rust/proj/blogr/templates/common/footer.html.hbs",
 					"semi_transient": false,
 					"settings":
 					{
@@ -4235,7 +4235,7 @@
 		"height": 28.0
 	},
 	"pinned_build_system": "",
-	"project": "sublime-project-2.sublime-project",
+	"project": "blogr.sublime-project",
 	"replace":
 	{
 		"height": 74.0

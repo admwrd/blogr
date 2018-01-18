@@ -83,7 +83,64 @@ SCSS
 
 	Maybe benchmark string != "" vs string.len() == 0  for empty string checks
 
+Non-Blog
+	What is high logic font manager thing program
+
+	Maybe add a semi-transparent diagnal 'tv-lines' type stripe going over the sphere
+
+	Put a nearly invisible watermark on the 3d sphere and make a page for it
+
+	Modify the 3d sphere to have like a red outline or something different
+
+
+
 Blogr
+	On blog app startup load files from a directory and generate Template instances with the file contents
+		Could use either serialization or Rust source files
+		Generate a Template or Express structure which is stored for quick responses
+		Store the cached Templates/Express items in a HashMap or BTreeMap
+
+	Create a minimal template with stripped down css that is used for code examples and other single-document items
+		no checks for user login cookies
+		no nav bars
+		has logo still, maybe upper left corner of bubble box
+		Tempplate context:
+			page head title
+			title
+			url - used for title link
+			gen time
+			body
+			last modified ???  Maybe if loading from files
+			
+	Remove console logs!
+
+	Load articles from files into the Article template somehow
+		could make the articles rust files, either using modules or include!()
+
+	Make favorite icons (32x32, 48x48, 128x128, 192x192)
+	
+	
+	Learn how to use branches in git so development can be done in one branch 
+		and when it compiles and is stable/ready be merged to the stable master
+
+	Maybe load articles from a folder
+		Could use jekyll (layout, title, permalink, description, date, tags)
+
+	Maybe make create page redirect user to new article page
+
+	Remove async from head javascript (before)
+
+	Add the Accept and Express modules as pages
+		use the /code/accept.html and /code/express.html (or .rs instead of .html) routes
+
+	Maybe add a database field like `visible` or `hidden` that specifies which articles are shown in
+		- hide in the article listing on the main page
+		- hide in articles by author
+		- allow in articles by tags
+		- allow in tag cloud
+			- NO - Tag Cloud (do not count/add tags from hidden articles)
+		Change the SQL code to something like `SELECT ... FROM articles WHERE ... AND visible = true
+
 	TESTED: works - Test if Referrer contains query strings or not - IT DOES
 
 	Convert user login to use login redirect

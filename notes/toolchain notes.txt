@@ -1,4 +1,8 @@
 
+should be using
+nightly-2017-11-22-pc-windows-msvc
+
+
 Installed Toolchains
 stable-x86_64-pc-windows-msvc
 nightly-2016-08-01-x86_64-pc-windows-msvc
