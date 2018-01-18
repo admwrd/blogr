@@ -95,10 +95,31 @@ Non-Blog
 
 
 Blogr
+	Give all <h1> elements id's with their value (replace all spaces with hyphens of course)
+	
+	Generate a menu with the table of contents of the article
+		Find all <h1> elements and make a table of contents using the headers
+		Could be generated upon creation and edit
+			Either make a separate database column for storing the html for the table of contents
+			Or make a section at the beginning or end (beginning may be bad because descriptions default to first 200 chars)
+				that is separated by an HTML comment or something
+
 	On blog app startup load files from a directory and generate Template instances with the file contents
 		Could use either serialization or Rust source files
 		Generate a Template or Express structure which is stored for quick responses
 		Store the cached Templates/Express items in a HashMap or BTreeMap
+		Allow access to the articles by something like /content/<url-title>
+		Maybe store serialized menu and modify the basic template to create a menu
+		Maybe make a parent field and if the parent field is not empty make a link to it
+			parent-title
+			parent-url
+	Store:
+		url-title
+		article title
+		body
+		extra js
+		description
+	
 
 	Create a minimal template with stripped down css that is used for code examples and other single-document items
 		no checks for user login cookies
