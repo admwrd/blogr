@@ -18,6 +18,9 @@ use std::io::prelude::*;
 
 use super::BLOG_URL;
 
+// pub struct Hi;
+
+
 /* SQL
     
     Pg Specific:

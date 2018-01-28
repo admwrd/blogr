@@ -1,0 +1,78 @@
+
+
+NEED CACHING SYSTEM FOR THIS TO BE EFFICIENT
+    or do not have parent/child comments.
+
+
+Comment system:
+
+could be added to the Article template
+maybe replace the argument for the hbs_template() in the article route with
+    Hits.route (Hits tracks the route for article)
+
+
+/comment
+posting a new comment:
+Takes the following data which is made into a NewComment struct:
+    [user]name (if is logged in as admin or user use that name)
+    cid
+    parent
+    
+
+Viewing comments:
+CommentRaw {
+    cid
+    username
+    body
+    date
+    parent
+}
+Process into:
+Comment {
+    cid
+    username
+    body
+    date
+    subcomments: Vec<Comment>
+}
+
+let mut comments: Vec<Comments> = Vec::new();
+let mut comments_map: HashMap<u32> = HashMap::new();
+
+
+
+    
+SELECT 
+    c.cid, c.name, c.body, c.date, 
+    d.cid, d.name, d.body, d.date, d.parent
+FROM 
+    comments c LEFT JOIN comments d 
+        ON (c.cid = d.parent)
+WHERE c.parent IS NULL
+[ ORDER BY cid ]
+
+
+In the Article Template:
+add a <form> that will be processed at:
+    /comment
+Add a username field?  will supress comment name field
+Add a comments field to the TemplateBody::Article variant
+    it will be a Vec<Comment>
+
+For each comment add a <li>
+{{#if comments}}
+{{#each comments}}
+<li class="v-comment-post">
+
+
+{{/each}}
+
+{{/if}}
+
+
+
+
+
+
+
+

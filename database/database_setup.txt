@@ -1,0 +1,10 @@
+
+cd <directory of create_login.sql>
+
+psql postgresql://postgres@localhost
+
+Then enter your password
+
+type:
+\i create_login.sql
+

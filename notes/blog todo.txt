@@ -38,6 +38,11 @@ Compile for production:
 
 
 Blog Theme
+	Add css styling and layout support for the following bootstrap items: 
+		figures & asides, cards, carousels, jumotrons, listgroups?, popovers, scrollspy, tooltips
+
+		for scrollspy: collect all <h1> tags, add id's to them, and make a table of contents
+
 	Add meta tag generator
 		<meta name="generator" content="MediaWiki 1.31.0-wmf.15"/>
 
@@ -95,6 +100,27 @@ Non-Blog
 
 
 Blogr
+	Maybe make static pages module a type
+		in the route the function will define an Option<StaticPage> type as a parameter
+		the StaticPage will use Request to cache Templates as bytes
+			along with req.route() to figure out which page was requested
+		if there was no page found for that route it returns a 404 or something
+		
+		I Think It's Time To Merge Yamltest Into Blogr
+
+		But how to deal with mutex locking?
+			could use Request to get State then lock it
+
+	Add BASE (BLOG_URL minus the ending `/`) to all TemplateMenu's that are deserialized from JSON
+	Add json serialized menu and dropdown_menu fields to PageContext
+	Add admin and user fields to PageContext to specify that a page requires admin or user privileges
+
+	Make yamltest look for different line endings based on operating system
+		instead of a literal newline use \n and \r\n
+
+	Test if byte vectors passed into a Template as context (a field like body being a Vec<u8> instead of String) produces string output
+		or if the output of the byte vector is just numbers
+
 	Give all <h1> elements id's with their value (replace all spaces with hyphens of course)
 	
 	Generate a menu with the table of contents of the article
@@ -105,6 +131,7 @@ Blogr
 				that is separated by an HTML comment or something
 
 	On blog app startup load files from a directory and generate Template instances with the file contents
+		Could also load on demand if the files get to be too big
 		Could use either serialization or Rust source files
 		Generate a Template or Express structure which is stored for quick responses
 		Store the cached Templates/Express items in a HashMap or BTreeMap
@@ -113,7 +140,11 @@ Blogr
 		Maybe make a parent field and if the parent field is not empty make a link to it
 			parent-title
 			parent-url
+		Could use https://github.com/tilpner/includedir to include files at compile time
+		Use Twoway
+
 	Store:
+		hbs template
 		url-title
 		article title
 		body

@@ -6,7 +6,6 @@ use rocket::request::{FromRequest, Request};
 use rocket::Outcome;
 
 
-
 pub struct Referrer(pub Option<String>);
 
 impl<'a, 'r> FromRequest<'a, 'r> for Referrer {

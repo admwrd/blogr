@@ -29,6 +29,7 @@ extern crate rocket_contrib;
 extern crate serde;
 #[macro_use] extern crate serde_json;
 #[macro_use] extern crate serde_derive;
+extern crate serde_yaml;
 extern crate rmp_serde as rmps;
 
 extern crate chrono;
@@ -49,6 +50,7 @@ extern crate r2d2_postgres;
 // - pulldown-cmark is faster - allows inline html - can allow tables and footnotes
 // - markdown - DO NOT USE THE MARKDOWN CRATE - it is extremely slow and doesn't support many features
 extern crate comrak;
+extern crate twoway;
 // extern crate pulldown_cmark;
 
 extern crate libflate;
@@ -74,6 +76,7 @@ extern crate rocket_auth_login;
 // mod vcache;
 // mod counthits;
 mod counter;
+mod static_pages;
 mod referrer;
 mod location;
 mod collate;
