@@ -147,6 +147,13 @@ pub fn static_pages(start: GenTimer,
     let page = uri.to_string_lossy().into_inner();
     
     if let Some(ref ctx) = context.pages.get(&page) {
+        // Permissions check
+        if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
+            let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+            let express: Express = template.into();
+            return Err(express);
+        }
+        
         // context request
         let conreq = ContextRequest {
             encoding,
@@ -154,9 +161,13 @@ pub fn static_pages(start: GenTimer,
             route: &page,
             context: ctx,
         };
+        Ok(conreq)
         
     } else {
-        
+        let template = hbs_template(...); // Content does not exist
+        let template = hbs_template(TemplateBody::General(alert_success("The requested content could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
+        let express: Express = template.into();
+        Err(express)
     }
     
     
