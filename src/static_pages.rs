@@ -260,6 +260,17 @@ pub struct PageInfo {
 //     pub base_url: &'static str,
 // }
 
+impl PageCached {
+    pub fn send(&self) -> Template {
+        unimplemented!()
+    }
+    
+}
+
+
+
+
+
 
 impl PagesContextMap {
     pub fn new() -> Self {
@@ -309,6 +320,11 @@ impl PagesContextMap {
     }
 }
 
+
+
+
+
+
 impl PageContext {
     pub fn load(path: &Path) -> Result<Self, String> {
         // call PageFormat::get_file()
@@ -346,13 +362,6 @@ impl PageContext {
     // pub fn render(&self) -> PageContext {
     //     unimplemented!()
     // }
-}
-
-impl PageCached {
-    pub fn send(&self) -> Template {
-        unimplemented!()
-    }
-    
 }
 
 

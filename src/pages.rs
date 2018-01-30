@@ -122,7 +122,15 @@ use comrak::{markdown_to_html, ComrakOptions};
 
 //
 #[get("/content/<uri..>")]
-pub fn static_pages(start: GenTimer, uri: PathBuf, admin: Option<AdministratorCookie>, Option<UserCookie>, encoding: AcceptCompression, hits: Hits, pages: State<>, cache: State<>) -> Result<ContentRequest, Express> {
+pub fn static_pages(start: GenTimer, 
+                    uri: PathBuf, 
+                    admin: Option<AdministratorCookie>, 
+                    user: Option<UserCookie>, 
+                    encoding: AcceptCompression, 
+                    hits: Hits, 
+                    context: State<ContentContextLock>, 
+                    cache_lock: State<ContentCacheLock>
+                   ) -> Result<ContentRequest, Express> {
     // could also prevent hotlinking by checking the referrer
     //   and sending an error for referring sites other than BASE or blank
     
@@ -133,6 +141,23 @@ pub fn static_pages(start: GenTimer, uri: PathBuf, admin: Option<AdministratorCo
     // if it does not exist then return an Express instance with an error message
     //   use hbs_template's General template
     
+    // Could also move context out of the ContentReuqest and in the Responder use
+    // let cache = req.guard::<State<HitCount>>().unwrap();
+    
+    let page = uri.to_string_lossy().into_inner();
+    
+    if let Some(ref ctx) = context.pages.get(&page) {
+        // context request
+        let conreq = ContextRequest {
+            encoding,
+            cache: cache_lock,
+            route: &page,
+            context: ctx,
+        };
+        
+    } else {
+        
+    }
     
     
 }
