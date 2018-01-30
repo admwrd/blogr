@@ -126,7 +126,7 @@ use std::ffi::OsStr;
 use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
-use std::sync::{Mutex, Arc};
+use std::sync::{Mutex, Arc, RwLock};
 use std::collections::HashMap;
 
 // use chashmap::*;
@@ -315,6 +315,11 @@ fn main() {
     let hitcount: Counter = Counter::load();
     let views: TotalHits = TotalHits::load();
     
+    // let statics: Mutex<PageMap> = Mutex::new(PageMap::load_all());
+    // let statics: PagesMutex = PagesMutex( Mutex::new(  PageMap::load_all()  ) );
+    // let statics: PagesMutex = PagesMutex( RwLock::new(  PageContextMap::load_all()  ) );
+    let content_context: ContentContextLock = ContentContextLock::load(STATIC_PAGES_DIR);
+    let content_cache: ContentCacheLock = ContentCacheLock::new();
     
     // let hitcount: PageCount = PageCount::new();
     // let views: ViewsTotal = ViewsTotal::new();
@@ -332,7 +337,10 @@ fn main() {
         .manage(data::init_pg_pool())
         .manage(hitcount)
         .manage(views)
+        .manage(statics)
+        
         .attach(Template::fairing())
+        
         .mount("/", routes![
             
             // pages::hbs_view_articles,

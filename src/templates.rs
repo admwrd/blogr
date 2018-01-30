@@ -7,13 +7,17 @@ use chrono::{NaiveDate, NaiveDateTime};
 use titlecase::titlecase;
 use std::time::{Instant, Duration};
 
+
+// use ::serde::{Deserialize, Serialize};
+
+
 // use cookie_data::*;
 
 // not used anymore
 // use admin_auth::*;
 // use user_auth::*;
 
-use super::{BLOG_URL, INTERNAL_IMGS};
+use super::{BLOG_URL, INTERNAL_IMGS, BASE};
 use blog::*;
 use collate::*;
 use layout::*;
@@ -75,11 +79,15 @@ pub enum TemplateBody {
 
 
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TemplateMenu {
+    #[serde(default)]
     pub separator: bool,
+    #[serde(default)]
     pub name: String,
+    #[serde(default)]
     pub url: String,
+    #[serde(default)]
     pub classes: String,
 }
 
@@ -238,13 +246,13 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
     (pages, admin_pages)
 }
 
-lazy_static! {
-    static ref BASE: &'static str = if BLOG_URL.ends_with("/") {
-        &BLOG_URL[..BLOG_URL.len()-1]
-    } else {
-        &BLOG_URL
-    };
-}
+// lazy_static! {
+//     static ref BASE: &'static str = if BLOG_URL.ends_with("/") {
+//         &BLOG_URL[..BLOG_URL.len()-1]
+//     } else {
+//         &BLOG_URL
+//     };
+// }
 
 impl TemplateMenu {
     pub fn new(name: String, url: String, current_page: &str) -> TemplateMenu {

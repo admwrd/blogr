@@ -38,8 +38,9 @@
 // mod accept;
 use twoway;
 
+use super::{COMRAK_OPTIONS, BASE};
 use accept::*;
-use super::COMRAK_OPTIONS;
+use templates::TemplateMenu;
 
 use std::fmt::Display;
 use std::{env, str, thread};
@@ -87,7 +88,8 @@ use serde_json::{Value, Error};
 
 
 // pub const BLOG_URL: &'static str = "http://localhost:8000/";
-pub const BASE: &'static str = "http://localhost:8000";
+// pub const BASE: &'static str = "http://localhost:8000";
+
 
 pub const DEFAULT_TEMPLATE: &'static str = "static-default.html.hbs";
 
@@ -98,36 +100,108 @@ pub const SEPARATOR: &[u8] = b"
 
 
 
+// impl<'a, 'r> FromRequest<'a, 'r> for StaticPage {
+//     
+// }
 
-pub struct PagesMutex(pub Mutex<PageMap>);
+/*
+
+my_route(..., StaticPage, ...)
+    would need to 
+        find the req.route()
+        get the State
+        find encoding
 
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct TemplateMenu {
-    #[serde(default)]
-    pub separator: bool,
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub url: String,
-    #[serde(default)]
-    pub classes: String,
+USE A RESPONDER TO GET A &Request
+
+#[get("/content/<req_page>")]
+my_route(..., req_page: String, state: State<PagesMutex>) {
+    let mut pages = state.lock();
+    
+    if let Some(page) = pages.retrieve() {
+        page.prepare(&mut pages, encoding)
+        // prepare() produces an express instance
+    } else {
+        // Page not found
+    }
+    OR
+    if let Some(page) = pages.requested(page, &mut pages, encoding) {
+        page
+    } else {
+        // Page not found
+    }
+    Won't work because responder needs to be just a type no methods
+    could be something like:
+    // could use either StaticPage or StaticRequest
+    let requested = StaticPage::new(page, encoding, &mut pages);
+        StaticPage {
+            page: page,
+            encoding: encoding,
+            pages: &mut pages,
+        }
+    requested
+    
+    the responder would then look for the requested page
+    make sure to check for the page's existence before it gets to the responder
+    
+    NO THE FOLLOWING WILL **NOT** WORK:
+        could have the route's return type Result<StaticPage, Redirect>
+        then if the responder fails (the page requested doesn't exist)
+        it can be forwarded to another page or something
+        the responder could use the return type: Result<...>
+    
+    
 }
 
 
 
+*/
+
+
+
+
+
+pub struct PagesMutex(pub RwLock<PagesContextMap>);
+pub struct PagesCache(pub RwLock<PagesCacheMap>);
+
+
+// ACTUALLY YES... you call respond_to() with a Request not Responder
+//
+// NO!  This should not be a FromRequest, it should be a Responder
+// NO AGAIN!
+//     NO feed the following info into it and get a context
+//     NO then add a responder for the context to convert to Template/PageCached
+//     
+
 #[derive(Debug)]
-pub struct PageMap {
+pub struct StaticRequest<'a> {
+    pub route: &'a str,
+    pub encoding: AcceptCompression,
+    // pub context: &PageContext,
+    
+}
+
+#[derive(Debug)]
+pub struct PagesContextMap {
     // pub size: u64, 
+    pub pages: HashMap<String, PageContext>,
+}
+
+#[derive(Debug)]
+pub struct PagesCacheMap {
     pub pages: HashMap<String, PageCached>,
 }
 
-/// Used to retrieve html and metadata from the page
-pub struct PageFormat {
-    yaml: Vec<u8>,
-    html: Vec<u8>,
+#[derive(Debug)]
+pub struct PageCached {
+    // uses: u64,
+    // pub size: u64,
+    pub page: Template,
+    pub gzip: Option<Vec<u8>>,
+    pub br: Option<Vec<u8>>,
+    pub deflate: Option<Vec<u8>>,
 }
-
 
 #[derive(Debug, Clone, Serialize)]
 pub struct PageContext {
@@ -145,6 +219,24 @@ pub struct PageContext {
     pub menu_dropdown: Option<Vec<TemplateMenu>>,
     // pub info: TemplatePageInfo,
 }
+
+/// Used to retrieve html and metadata from the page
+pub struct PageFormat {
+    yaml: Vec<u8>,
+    html: Vec<u8>,
+}
+
+// #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+// pub struct TemplateMenu {
+//     #[serde(default)]
+//     pub separator: bool,
+//     #[serde(default)]
+//     pub name: String,
+//     #[serde(default)]
+//     pub url: String,
+//     #[serde(default)]
+//     pub classes: String,
+// }
 
 // Used for the yaml deserialization method
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -168,19 +260,10 @@ pub struct PageInfo {
 //     pub base_url: &'static str,
 // }
 
-#[derive(Debug)]
-pub struct PageCached {
-    // uses: u64,
-    // pub size: u64,
-    pub page: Template,
-    pub gzip: Option<Vec<u8>>,
-    pub br: Option<Vec<u8>>,
-    pub deflate: Option<Vec<u8>>,
-}
 
-impl PageMap {
+impl PagesContextMap {
     pub fn new() -> Self {
-        PageMap {
+        PagesContextMap {
             pages: HashMap::new(),
         }
     }
@@ -189,6 +272,7 @@ impl PageMap {
         // Iterate the directory looking for all .page files
         // Call PageContext::load(Path) on each file
         unimplemented!()
+        
         
     }
     pub fn retrieve(&mut self, uri: &str, compression: Option<AcceptCompression>) -> Option<PageContext> {

@@ -118,6 +118,36 @@ use comrak::{markdown_to_html, ComrakOptions};
 
 
 
+
+
+//
+#[get("/content/<uri..>")]
+pub fn static_pages(start: GenTimer, uri: PathBuf, admin: Option<AdministratorCookie>, Option<UserCookie>, encoding: AcceptCompression, hits: Hits, pages: State<>, cache: State<>) -> Result<ContentRequest, Express> {
+    // could also prevent hotlinking by checking the referrer
+    //   and sending an error for referring sites other than BASE or blank
+    
+    // look for the uri in the context, if it exists then make a ContextRequest
+    //   which will be passed as the output
+    //   before passing ContextRequest as the output, check for admin/user in the context
+    //     if the context has user or admin set to true then make sure the admin/user var is_some()
+    // if it does not exist then return an Express instance with an error message
+    //   use hbs_template's General template
+    
+    
+    
+}
+
+//
+
+
+
+
+
+
+
+
+
+
 #[get("/admin-test")]
 pub fn hbs_admin_test(start: GenTimer, user: Option<UserCookie>, admin: Option<AdministratorCookie>, encoding: AcceptCompression) -> Express {
     

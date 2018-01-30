@@ -302,7 +302,7 @@ impl From<Template> for Express {
     }
 }
 
-fn express_gzip(data: Vec<u8>) -> Vec<u8> {
+pub fn express_gzip(data: Vec<u8>) -> Vec<u8> {
     // let mut output = Vec::with_capacity(data.len()+200);
     // zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Gzip, &data, &mut output).expect("Gzip compression failed.");
     
@@ -328,7 +328,7 @@ fn express_gzip(data: Vec<u8>) -> Vec<u8> {
     encoder.finish().into_result().unwrap()
 }
 
-fn express_brotli(data: Vec<u8>) -> Vec<u8> {
+pub fn express_brotli(data: Vec<u8>) -> Vec<u8> {
     let length = data.len()+200;
     let mut output = Vec::with_capacity(length);
     // let mut compressor = ::brotli::CompressorReader::new(Cursor::new(data), 10*1024, 9, 22);
@@ -338,7 +338,7 @@ fn express_brotli(data: Vec<u8>) -> Vec<u8> {
     // data = output;
     output
 }
-fn express_deflate(data: Vec<u8>) -> Vec<u8> {
+pub fn express_deflate(data: Vec<u8>) -> Vec<u8> {
     let mut output = Vec::with_capacity(data.len()+200);
     
     // zopfli::compress(&zopfli::Options::default(), &zopfli::Format::Deflate, &data, &mut output).expect("Deflate compression failed.");

@@ -26,7 +26,7 @@ use std::net::Ipv4Addr;
 
 use htmlescape::*;
 
-use super::HITS_SAVE_INTERVAL;
+use super::{HITS_SAVE_INTERVAL, MULTI_SEGMENT_PATHS};
 // pub const HITS_SAVE_INTERVAL: usize = 5;
 
 pub fn cur_dir_file(name: &str) -> PathBuf {
@@ -198,7 +198,8 @@ fn route<'a>(req: &Request) -> String {
     } else if let Some(pos) = route[1..].find("/") {
         let (p, _) = route[1..].split_at(pos);
         // println!("Found route `{}`, splitting at {} to get `{}`", route, pos, p);
-        if p == "article" {
+        if MULTI_SEGMENT_PATHS.contains(&p) {
+        // if p == "article" {
             page = if &route[0..1]== "/" { &route[1..] } else { route };
             // pagestr = route.to_string();
         } else {
