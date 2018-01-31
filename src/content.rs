@@ -145,7 +145,7 @@ impl ContentContext {
     }
     
     pub fn retrieve(&self, uri: &str) -> Option<&PageContext> {
-        
+        unimplemented!()
     }
 }
 
@@ -176,7 +176,12 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
         let cache_entry: Option<ContentCached>;
         {
             let cache = self.cache.pages.read();
-            cache_entry = cache.get(&self.route);
+            if let Ok(cache) = self.cache.pages.read() {
+                // cache_entry = cache.get(self.route);
+                cache_entry = cache.get(self.route).map(|r| *r);
+            } else {
+                cache_entry = None;
+            }
         }
         
         // output_contents is used as a variable to reference in output_bytes
@@ -200,7 +205,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
             
             output_contents = output_bytes.clone();
             let express: Express = output_contents.into();
-            express.respond_to() // do not use express.compress(encoding) as the contents are already compressed!!!
+            express.respond_to(req) // do not use express.compress(encoding) as the contents are already compressed!!!
             
             // let mut xresp = express.respond_to(req).unwrap_or_default();
             // xresp.streamed_body(Cursor::new( output_bytes ))
@@ -208,7 +213,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
         } else {
             
             
-            let template: Template = Template::render(&self.context.template, &self.context);
+            let template: Template = Template::render(self.context.template, &self.context);
             
             // let bytes: Vec<u8> = Vec::new();
             let express: Express = template.into();
