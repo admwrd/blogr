@@ -122,15 +122,15 @@ use comrak::{markdown_to_html, ComrakOptions};
 
 //
 #[get("/content/<uri..>")]
-pub fn static_pages(start: GenTimer, 
+pub fn static_pages<'c, 'p, 'u>(start: GenTimer, 
                     uri: PathBuf, 
                     admin: Option<AdministratorCookie>, 
                     user: Option<UserCookie>, 
                     encoding: AcceptCompression, 
                     hits: Hits, 
-                    context: State<ContentContextLock>, 
+                    context: State<ContentContext>, 
                     cache_lock: State<ContentCacheLock>
-                   ) -> Result<ContentRequest, Express> {
+                   ) -> Result<ContentRequest<'c, 'p, 'u>, Express> {
     // could also prevent hotlinking by checking the referrer
     //   and sending an error for referring sites other than BASE or blank
     
@@ -155,7 +155,7 @@ pub fn static_pages(start: GenTimer,
         }
         
         // context request
-        let conreq = ContextRequest {
+        let conreq = ContentRequest {
             encoding,
             cache: cache_lock,
             route: &page,
@@ -164,7 +164,7 @@ pub fn static_pages(start: GenTimer,
         Ok(conreq)
         
     } else {
-        let template = hbs_template(...); // Content does not exist
+        // let template = hbs_template(...); // Content does not exist
         let template = hbs_template(TemplateBody::General(alert_success("The requested content could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
         let express: Express = template.into();
         Err(express)

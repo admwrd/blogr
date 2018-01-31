@@ -143,7 +143,8 @@ use std::collections::HashMap;
 
 use rocket_contrib::Template;
 use rocket::{Request, Data, Outcome, Response};
-use rocket::response::{content, NamedFile, Redirect, Flash, Responder, Content};
+// use rocket::response::{content, NamedFile, Redirect, Flash, Responder, Content};
+use rocket::response::{NamedFile, Redirect, Flash, Responder, Content};
 use rocket::response::content::Html;
 use rocket::data::FromData;
 use rocket::request::{FlashMessage, Form, FromForm, FormItems, FromRequest};
@@ -320,7 +321,7 @@ fn main() {
     // let statics: Mutex<PageMap> = Mutex::new(PageMap::load_all());
     // let statics: PagesMutex = PagesMutex( Mutex::new(  PageMap::load_all()  ) );
     // let statics: PagesMutex = PagesMutex( RwLock::new(  PageContextMap::load_all()  ) );
-    let content_context: ContentContextLock = ContentContextLock::load(STATIC_PAGES_DIR);
+    let content_context: ContentContext = ContentContext::load(STATIC_PAGES_DIR);
     let content_cache: ContentCacheLock = ContentCacheLock::new();
     
     // let hitcount: PageCount = PageCount::new();
@@ -339,11 +340,14 @@ fn main() {
         .manage(data::init_pg_pool())
         .manage(hitcount)
         .manage(views)
-        .manage(statics)
+        .manage(content_context)
+        .manage(content_cache)
         
         .attach(Template::fairing())
         
         .mount("/", routes![
+            
+            pages::static_pages,
             
             // pages::hbs_view_articles,
             pages::hbs_tags_all,

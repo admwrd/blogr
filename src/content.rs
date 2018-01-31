@@ -2,7 +2,7 @@
 use super::{COMRAK_OPTIONS, BASE};
 use accept::*;
 use templates::TemplateMenu;
-use xpresss::*;
+use xpress::*;
 
 use std::fmt::Display;
 use std::{env, str, thread};
@@ -13,7 +13,7 @@ use std::time::{self, Instant, Duration};
 use std::prelude::*;
 use std::ffi::OsStr;
 use std::collections::HashMap;
-use std::sync::{Mutex, Arc};
+use std::sync::{Mutex, Arc, RwLock};
 use std::sync::atomic::AtomicUsize;
 
 // use rocket;
@@ -74,7 +74,7 @@ pub struct ContentCacheLock {
 
 // pub struct ContentRequest<'c, 'u> {
 pub struct ContentRequest<'c, 'p, 'u> {
-    pub encoding: AcceptEncoding,
+    pub encoding: AcceptCompression,
     pub cache: &'c ContentCacheLock,
     // pub contexts: &'c ContentContext,
     pub route: &'u str,
@@ -228,7 +228,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
             // } else {
             //     Vec::new()
             // };
-            output_contents: Vec<u8>;
+            let output_contents: Vec<u8>;
             let entry: ContentCached;
             if let Some(body) = xresp.body_bytes() {
                 output_contents = body;
@@ -237,7 +237,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
                     let mut buffer = Vec::with_capacity(output_contents.len() + 200);
                     let mut gzip_encoder = gzip::Encoder::new(buffer).unwrap();
                     gzip_encoder.write_all(&output_contents); // .expect("Gzip compression failed.");
-                    gzip: Vec<u8> = gzip_encoder.finish().into_result().unwrap_or(Vec::new());
+                    gzip = gzip_encoder.finish().into_result().unwrap_or(Vec::new());
                 }
                 
                 let br: Vec<u8>;
@@ -252,7 +252,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
                 
                 let deflate: Vec<u8>;
                 {
-                    let mut buffer = Vec::with_capacity(data.len()+200);
+                    let mut buffer = Vec::with_capacity(output_contents.len()+200);
                     let mut encoder = deflate::Encoder::new(buffer);
                     encoder.write_all(&output_contents); //.expect("Deflate compression failed.");
                     deflate = encoder.finish().into_result().unwrap_or(Vec::new());
@@ -289,21 +289,15 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
             // which is ok because it gets 
             
             let output = match self.encoding {
-                CompressionEncoding::Uncompressed => { output = entry.page.clone(); },
-                CompressionEncoding::Brotli => { output = entry.br.clone(); },
-                CompressionEncoding::Gzip => { output = entry.gzip.clone(); },
-                CompressionEncoding::Deflate => { output = entry.deflate.clone(); },
+                CompressionEncoding::Uncompressed => { entry.page.clone() },
+                CompressionEncoding::Brotli => { entry.br.clone() },
+                CompressionEncoding::Gzip => { entry.gzip.clone() },
+                CompressionEncoding::Deflate => { entry.deflate.clone() },
             };
             
             xresp.set_streamed_body(  Cursor::new( output )  );
             xresp
         }
-        
-        
-        
-        
-        
-        
     }
 }
 
