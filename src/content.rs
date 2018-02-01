@@ -174,23 +174,27 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
         //   and pull the compression method/original (specified by encoding.preferred()) from the cache
         // if not then create the new cache entry
         
-        let cache_entry: Option<ContentCached>;
-        {
-            let cache = self.cache.pages.read();
-            if let Ok(cache) = self.cache.pages.read() {
-                // cache_entry = cache.get(self.route);
-                cache_entry = cache.get(self.route).map(|r| *r);
-            } else {
-                cache_entry = None;
-            }
-        }
+        let cache_entry: Option<&ContentCached>;
+        // let cache: Result<_, _>;
+        
+        //     cache = self.cache.pages.read();
+        //     if let Ok(cache) = self.cache.pages.read() {
+        //         // cache_entry = cache.get(self.route);
+        //         // cache_entry = cache.get(self.route).map(|r| *r);
+        //         cache_entry = cache.get(self.route);
+        //     } else {
+        //         cache_entry = None;
+        //     }
+        // }
+        
+        cache_entry = self.cache.pages.read().unwrap_or(0size).get(self.route);
         
         // output_contents is used as a variable to reference in output_bytes
         //   when there is no existing cache entry for the uri
         let mut output_contents: Vec<u8> = Vec::new();
         
         if let Some(entry) = cache_entry {
-            let mut output_bytes: &Vec<u8> = &output_contents;
+            let mut output_bytes: &Vec<u8> = &Vec::new();
             match self.encoding.preferred() {
                 CompressionEncoding::Uncompressed => { output_bytes = &entry.page; },
                 CompressionEncoding::Brotli => { output_bytes = &entry.br; },
@@ -214,7 +218,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
         } else {
             
             
-            let template: Template = Template::render(self.context.template, &self.context);
+            let template: Template = Template::render(self.context.template.clone(), &self.context);
             
             // let bytes: Vec<u8> = Vec::new();
             let express: Express = template.into();
@@ -265,27 +269,34 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
                     
                 }
                 
+                let output_length = output_contents.len();
+                let gzip_length = gzip.len();
+                let br_length = br.len();
+                let deflate_length = deflate.len();
+                
                 entry = ContentCached {
                     page: output_contents,
                     gzip,
                     br,
                     deflate,
-                    size: output_contents.len() + gzip.len() + br.len() + deflate.len(),
+                    // size: output_contents.len() + gzip.len() + br.len() + deflate.len(),
+                    size: output_length + gzip_length + br_length + deflate_length,
                 };
             } else {
+                let output_length = output_contents.len();
                 output_contents = Vec::new();
                 entry = ContentCached {
                     page: output_contents,
                     gzip: Vec::new(),
                     br: Vec::new(),
                     deflate: Vec::new(),
-                    size: output_contents.len(),
+                    size: output_length,
                 };
             }
             {
                 let map_rst = self.cache.pages.write();
-                if let Ok(map) = map_rst {
-                    map.insert(self.route.to_owned(), entry);
+                if let Ok(mut map) = map_rst {
+                    map.insert(self.route.to_owned(), entry.clone());
                 }
             }
             
@@ -297,10 +308,10 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
             // which is ok because it gets 
             
             let output = match self.encoding.preferred() {
-                CompressionEncoding::Uncompressed => { entry.page.clone() },
-                CompressionEncoding::Brotli => { entry.br.clone() },
-                CompressionEncoding::Gzip => { entry.gzip.clone() },
-                CompressionEncoding::Deflate => { entry.deflate.clone() },
+                CompressionEncoding::Uncompressed => { entry.page },
+                CompressionEncoding::Brotli => { entry.br },
+                CompressionEncoding::Gzip => { entry.gzip },
+                CompressionEncoding::Deflate => { entry.deflate },
             };
             
             xresp.set_streamed_body(  Cursor::new( output )  );
