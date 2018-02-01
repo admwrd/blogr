@@ -128,8 +128,8 @@ pub fn static_pages<'c, 'p, 'u>(start: GenTimer,
                     user: Option<UserCookie>, 
                     encoding: AcceptCompression, 
                     hits: Hits, 
-                    context: State<ContentContext>, 
-                    cache_lock: State<ContentCacheLock>
+                    context: State<'p, ContentContext>, 
+                    cache_lock: State<'c, ContentCacheLock>
                    ) -> Result<ContentRequest<'c, 'p, 'u>, Express> {
     // could also prevent hotlinking by checking the referrer
     //   and sending an error for referring sites other than BASE or blank
@@ -144,9 +144,9 @@ pub fn static_pages<'c, 'p, 'u>(start: GenTimer,
     // Could also move context out of the ContentReuqest and in the Responder use
     // let cache = req.guard::<State<HitCount>>().unwrap();
     
-    let page = uri.to_string_lossy().into_inner();
+    let page = uri.to_string_lossy().into_owned();
     
-    if let Some(ref ctx) = context.pages.get(&page) {
+    if let Some(ctx) = context.pages.get(&page) {
         // Permissions check
         if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
             let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
@@ -157,7 +157,7 @@ pub fn static_pages<'c, 'p, 'u>(start: GenTimer,
         // context request
         let conreq = ContentRequest {
             encoding,
-            cache: cache_lock,
+            cache: &cache_lock,
             route: &page,
             context: ctx,
         };

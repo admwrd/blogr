@@ -7,6 +7,7 @@ use xpress::*;
 use std::fmt::Display;
 use std::{env, str, thread};
 use std::fs::{self, File, DirEntry};
+use std::io::prelude::*;
 use std::io::{self, Cursor, Read};
 use std::path::{Path, PathBuf};
 use std::time::{self, Instant, Duration};
@@ -64,7 +65,7 @@ pub const SEPARATOR: &[u8] = b"
 
 pub struct ContentContext {
     // pub pages: RwLock<HashMap<String, ContentCached>>,
-    pub pages: HashMap<String, ContentCached>,
+    pub pages: HashMap<String, PageContext>,
     pub size: AtomicUsize,
 }
 pub struct ContentCacheLock {
@@ -241,7 +242,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
                 {
                     let mut buffer = Vec::with_capacity(output_contents.len() + 200);
                     let mut gzip_encoder = gzip::Encoder::new(buffer).unwrap();
-                    gzip_encoder.write_all(&output_contents); // .expect("Gzip compression failed.");
+                    gzip_encoder.write_all(&output_contents).expect("hi gzip"); // .expect("Gzip compression failed.");
                     gzip = gzip_encoder.finish().into_result().unwrap_or(Vec::new());
                 }
                 
@@ -282,8 +283,10 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
                 };
             }
             {
-                let map = self.cache.pages.write();
-                map.insert(self.route, entry);
+                let map_rst = self.cache.pages.write();
+                if let Ok(map) = map_rst {
+                    map.insert(self.route.to_owned(), entry);
+                }
             }
             
             // Add entry
@@ -293,7 +296,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
             // need to set the body because the body_bytes() method consumes it
             // which is ok because it gets 
             
-            let output = match self.encoding {
+            let output = match self.encoding.preferred() {
                 CompressionEncoding::Uncompressed => { entry.page.clone() },
                 CompressionEncoding::Brotli => { entry.br.clone() },
                 CompressionEncoding::Gzip => { entry.gzip.clone() },
@@ -301,7 +304,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
             };
             
             xresp.set_streamed_body(  Cursor::new( output )  );
-            xresp
+            Ok(xresp)
         }
     }
 }
