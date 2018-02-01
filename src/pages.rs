@@ -119,7 +119,6 @@ use comrak::{markdown_to_html, ComrakOptions};
 
 
 
-
 //
 #[get("/content/<uri..>")]
 pub fn static_pages<'c, 'p, 'u>(start: GenTimer, 
@@ -128,6 +127,8 @@ pub fn static_pages<'c, 'p, 'u>(start: GenTimer,
                     user: Option<UserCookie>, 
                     encoding: AcceptCompression, 
                     hits: Hits, 
+                    // context: State<'p, ContentContext>, 
+                    // cache_lock: State<'c, ContentCacheLock>
                     context: State<'p, ContentContext>, 
                     cache_lock: State<'c, ContentCacheLock>
                    ) -> Result<ContentRequest<'c, 'p, 'u>, Express> {
@@ -154,12 +155,14 @@ pub fn static_pages<'c, 'p, 'u>(start: GenTimer,
             return Err(express);
         }
         
+        // let test = ctx.clone();
         // context request
-        let conreq = ContentRequest {
+        let conreq: ContentRequest<'c, 'p, 'u> = ContentRequest {
             encoding,
             cache: &cache_lock,
             route: &page,
             context: ctx,
+            // context: &test,
         };
         Ok(conreq)
         

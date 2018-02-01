@@ -174,6 +174,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
         //   and pull the compression method/original (specified by encoding.preferred()) from the cache
         // if not then create the new cache entry
         
+        let cache_entry: Option<&ContentCached>;
         // let cache: Result<_, _>;
         
         //     cache = self.cache.pages.read();
@@ -187,16 +188,16 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
         // }
         
         // cache_entry = self.cache.pages.read().unwrap().get(self.route);
-        if let Ok(cache) = self.cache.pages.read() {
-            let cache_entry: Option<&ContentCached>;
-            cache_entry = cache.get(self.route);
+        if let Ok() = self.cache.pages.read() {
             
-            // output_contents is used as a variable to reference in output_bytes
-            //   when there is no existing cache entry for the uri
-            let mut output_contents: Vec<u8> = Vec::new();
-            
-            // if let Some(entry) = cache_entry {
-            let entry = cache_entry.unwrap(); // ok because this is guaranteed to be something
+        }
+        
+        
+        // output_contents is used as a variable to reference in output_bytes
+        //   when there is no existing cache entry for the uri
+        let mut output_contents: Vec<u8> = Vec::new();
+        
+        if let Some(entry) = cache_entry {
             let mut output_bytes: &Vec<u8> = &Vec::new();
             match self.encoding.preferred() {
                 CompressionEncoding::Uncompressed => { output_bytes = &entry.page; },
@@ -217,7 +218,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
             
             // let mut xresp = express.respond_to(req).unwrap_or_default();
             // xresp.streamed_body(Cursor::new( output_bytes ))
-                
+            
         } else {
             
             
@@ -241,7 +242,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
             // } else {
             //     Vec::new()
             // };
-            let mut output_contents: Vec<u8> = Vec::new();
+            let output_contents: Vec<u8>;
             let entry: ContentCached;
             if let Some(body) = xresp.body_bytes() {
                 output_contents = body;
