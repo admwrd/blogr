@@ -68,18 +68,26 @@ pub struct ContentContext {
     pub pages: HashMap<String, PageContext>,
     pub size: AtomicUsize,
 }
+
 pub struct ContentCacheLock {
     pub pages: RwLock<HashMap<String, ContentCached>>,
     pub size: AtomicUsize,
 }
 
 // pub struct ContentRequest<'c, 'u> {
-pub struct ContentRequest<'c, 'p, 'u> {
+// pub struct ContentRequest<'c, 'p, 'u> {
+//     pub encoding: AcceptCompression,
+//     pub cache: &'c ContentCacheLock,
+//     // pub contexts: &'c ContentContext,
+//     pub route: &'u str,
+//     pub context: &'p PageContext,
+// }
+pub struct ContentRequest {
     pub encoding: AcceptCompression,
-    pub cache: &'c ContentCacheLock,
+    pub cache: ContentCacheLock,
     // pub contexts: &'c ContentContext,
-    pub route: &'u str,
-    pub context: &'p PageContext,
+    pub route: String,
+    pub context: PageContext,
 }
 // pub struct ContentCacheMap {
 //     pub pages: HashMap<String, ContentCached>,
@@ -165,7 +173,7 @@ impl ContentCacheLock {
 }
 
 // impl<'a, 'c, 'u> Responder<'a> for ContentRequest<'c, 'u> {
-impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
+impl<'a> Responder<'a> for ContentRequest {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         // get body contents then build an Express instance
         
@@ -189,7 +197,7 @@ impl<'a, 'c, 'p, 'u> Responder<'a> for ContentRequest<'c, 'p, 'u> {
         // cache_entry = self.cache.pages.read().unwrap().get(self.route);
         if let Ok(cache) = self.cache.pages.read() {
             let cache_entry: Option<&ContentCached>;
-            cache_entry = cache.get(self.route);
+            cache_entry = cache.get(&self.route);
             
             // output_contents is used as a variable to reference in output_bytes
             //   when there is no existing cache entry for the uri

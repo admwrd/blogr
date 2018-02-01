@@ -121,7 +121,7 @@ use comrak::{markdown_to_html, ComrakOptions};
 
 //
 #[get("/content/<uri..>")]
-pub fn static_pages<'c, 'p, 'u>(start: GenTimer, 
+pub fn static_pages(start: GenTimer, 
                     uri: PathBuf, 
                     admin: Option<AdministratorCookie>, 
                     user: Option<UserCookie>, 
@@ -129,9 +129,9 @@ pub fn static_pages<'c, 'p, 'u>(start: GenTimer,
                     hits: Hits, 
                     // context: State<'p, ContentContext>, 
                     // cache_lock: State<'c, ContentCacheLock>
-                    context: State<'p, ContentContext>, 
-                    cache_lock: State<'c, ContentCacheLock>
-                   ) -> Result<ContentRequest<'c, 'p, 'u>, Express> {
+                    context: State<ContentContext>, 
+                    cache_lock: State<ContentCacheLock>
+                   ) -> Result<ContentRequest, Express> {
     // could also prevent hotlinking by checking the referrer
     //   and sending an error for referring sites other than BASE or blank
     
@@ -157,11 +157,11 @@ pub fn static_pages<'c, 'p, 'u>(start: GenTimer,
         
         // let test = ctx.clone();
         // context request
-        let conreq: ContentRequest<'c, 'p, 'u> = ContentRequest {
+        let conreq: ContentRequest = ContentRequest {
             encoding,
-            cache: &cache_lock,
-            route: &page,
-            context: ctx,
+            cache: cache_lock.inner(),
+            route: page,
+            context: ctx.clone(),
             // context: &test,
         };
         Ok(conreq)
