@@ -12,6 +12,7 @@ use rocket::{Request, Data, Outcome};
 use rocket::request::{FlashMessage, Form, FromForm};
 use rocket::data::FromData;
 use rocket::response::content::Html;
+use rocket::State;
 // use rocket::request::{Form, FlashMessage};
 use rocket::http::{Cookie, Cookies, RawStr};
 // use auth::userpass::UserPass;
@@ -159,9 +160,9 @@ pub fn static_pages(start: GenTimer,
         // context request
         let conreq: ContentRequest = ContentRequest {
             encoding,
-            cache: cache_lock.inner(),
+            // cache: cache_lock.inner(),
             route: page,
-            context: ctx.clone(),
+            // context: ctx.clone(),
             // context: &test,
         };
         Ok(conreq)
