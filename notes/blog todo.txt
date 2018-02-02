@@ -100,6 +100,10 @@ Non-Blog
 
 
 Blogr
+	Could add arbitrary context to static pages by adding an extras field
+		the extras field would be a json serialized Value
+		which would be deserialized into a json Value and added to an extra field in the struct
+
 	Maybe make static pages module a type
 		in the route the function will define an Option<StaticPage> type as a parameter
 		the StaticPage will use Request to cache Templates as bytes

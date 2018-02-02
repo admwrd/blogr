@@ -200,6 +200,109 @@ impl<'a> Responder<'a> for ContentRequest
         
         // Replacing self.cache and self.context
         
+        let context_state = req.guard::<State<ContentContext>>().unwrap();
+        let cache_state = req.guard::<State<ContentCacheLock>>().unwrap();
+        
+        
+        
+        /*  1. Check for existence of uri in cache map (the content page route already checks for existence of page context for the given uri)
+            2. If uri is not in cache map look for it in the context map (has to be in there but double check - don't use unwrap())
+                   Add combined size of ContentCached fields to ContentCacheLock's size field
+                       Use a checked add so the size never overflows, it just reaches a max value
+            
+        */
+        
+        
+        // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+        // To improve performance: instead of cloning the byte vector:
+        //   instead of body_bytes make the match'd contents a reference
+        //   make a String::new() that is converted .into() an Express instance
+        //   then do xresp.streamed_body( Cursor::new(body_bytes_reference) )
+        // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+        
+        // let cache_map = content_cache.cache.pages.read().unwrap();
+        let cache_map = content_cache.pages.read().unwrap();
+        let cache_uri_opt = cache_map.get(&self.route);
+        // let mut output_contents: Vec<u8> = Vec::new();
+        
+        if let Some(cache_uri) = cache_uri_opt {
+            let mut body_bytes = match self.encoding.preferred() {
+                Uncompressed => { entry.page.clone() },
+                Brotli => { entry.br.clone() },
+                Gzip => { entry.gzip.clone() },
+                Deflate => { entry.deflate.clone() },
+            };
+            let express: Express = body_bytes.into();
+            express.respond_to(req)
+        } else {
+            if let Some(ctx) = context_state.pages.get(&self.route) {
+                
+                let template: Template = Template::render((&ctx.template).to_owned(), &ctx);
+                let express: Express = template.into();
+                let mut resp = express.respond_to(req).unwrap_or_default();
+                let mut output_contents: Vec<u8> = Vec::new();
+                let mut new_cache = ContentCached;
+                if let Some(body) = resp.body_bytes() {
+                    output_contents = body;
+                    
+                    let gzip: Vec<u8>;
+                    {
+                        let mut buffer = Vec::with_capacity(output_contents.len() + 200);
+                        let mut gzip_encoder = gzip::Encoder::new(buffer).unwrap();
+                        gzip_encoder.write_all(&output_contents).expect("hi gzip"); // .expect("Gzip compression failed.");
+                        gzip = gzip_encoder.finish().into_result().unwrap_or(Vec::new());
+                    }
+                    
+                    let br: Vec<u8>;
+                    {
+                        let length = output_contents.len()+200;
+                        let mut buffer = Vec::with_capacity(length);
+                        // let mut compressor = ::brotli::CompressorReader::new(Cursor::new(data), 10*1024, 9, 22);
+                        let mut compressor = ::brotli::CompressorReader::new(Cursor::new(&output_contents), length, 9, 22);
+                        let _ = compressor.read_to_end(&mut buffer);
+                        br = buffer;
+                    }
+                    
+                    let deflate: Vec<u8>;
+                    {
+                        let mut buffer = Vec::with_capacity(output_contents.len()+200);
+                        let mut encoder = deflate::Encoder::new(buffer);
+                        encoder.write_all(&output_contents); //.expect("Deflate compression failed.");
+                        deflate = encoder.finish().into_result().unwrap_or(Vec::new());
+                        
+                    }
+                    
+                    let total_size = output_contents.len() + gzip.len() + br.len() + deflate.len();
+                    new_cache = ContentCached {
+                        page: output_contents.clone(),
+                        gzip,
+                        br,
+                        deflate,
+                    };
+                    // remember to put the body from body_bytes back into the resp, body_bytes() consumes the bytes
+                    // insert new_cache into cache map, make sure to unlock it for write access
+                    {
+                        let wcache = cache_state.pages.write().unwrap();
+                        wcache.inset(self.route.clone(), new_cache);
+                    }
+                    
+                    resp.set_streamed_body(  Cursor::new( output_conents )  );
+                    Outcome::Success( resp )
+                    
+                } else {
+                    Outcome::Failure("Responder failed to extract response body.")
+                    // fail - uri not found in context map
+                }
+                
+                
+            } else {
+                println!("Responder failed to find uri `{}` in the context map.", &self.route);
+                Outcome::Failure("Responder failed to find uri in context map")
+            }
+        }
+        
+        
+        /*
         // let content_context_map = req.guard::<ContentContext>();
         // let content_cache = req.guard::<ContentCacheLock>();
         let content_context_map_rst =  req.guard::<State<ContentContext>>();
@@ -371,6 +474,7 @@ impl<'a> Responder<'a> for ContentRequest
         } else {
             Err(Status::ImATeapot)
         }
+        */
     }
 }
 
