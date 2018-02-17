@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"content_conte",
+				"content_context_opt"
+			],
+			[
 				"Cach",
 				"ContentCached"
 			],
@@ -147,7 +151,7 @@
 			"file": "src/main.rs",
 			"settings":
 			{
-				"buffer_size": 13639,
+				"buffer_size": 13791,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -156,7 +160,7 @@
 			"file": "src/content.rs",
 			"settings":
 			{
-				"buffer_size": 11120,
+				"buffer_size": 21620,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -165,7 +169,7 @@
 			"file": "src/pages.rs",
 			"settings":
 			{
-				"buffer_size": 87005,
+				"buffer_size": 87244,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -174,7 +178,7 @@
 			"file": "src/settings.rs",
 			"settings":
 			{
-				"buffer_size": 6386,
+				"buffer_size": 6544,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -422,14 +426,6 @@
 			}
 		},
 		{
-			"file": "/C/code/lang/Rust/code/Snippets/Snippet Collection.rs",
-			"settings":
-			{
-				"buffer_size": 30611,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "/C/code/lang/Rust/proj/mdtest/src/main.rs",
 			"settings":
 			{
@@ -638,6 +634,14 @@
 			"settings":
 			{
 				"buffer_size": 6774,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/code/lang/Rust/code/Snippets/Snippet Collection.rs",
+			"settings":
+			{
+				"buffer_size": 30611,
 				"line_ending": "Windows"
 			}
 		}
@@ -865,6 +869,13 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"BadRequest",
+			"lazy",
+			"(),",
+			"clone",
+			"self.context",
+			"context",
+			"output",
 			"ContentContextLock",
 			"data",
 			"output",
@@ -985,14 +996,7 @@
 			"body",
 			"<date",
 			"flashmessage",
-			"impl ArticleWrapper",
-			"now",
-			"23",
-			"1\\.23",
-			"\\.23",
-			"escape_sql_pg",
-			"slash_quotes",
-			"MAX_CREATE_DESCRIPTION"
+			"impl ArticleWrapper"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1064,7 +1068,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -1073,15 +1077,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13639,
+						"buffer_size": 13791,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2648,
-								2648
+								9884,
+								9884
 							]
 						],
 						"settings":
@@ -1099,7 +1103,7 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1517089353.98
+								"last_updated": 1517532996.74
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
@@ -1107,10 +1111,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 6462.0,
+						"translation.y": 6966.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -1119,15 +1123,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11120,
+						"buffer_size": 21620,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1011,
-								1011
+								11183,
+								11183
 							]
 						],
 						"settings":
@@ -1145,16 +1149,16 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1517089353.98
+								"last_updated": 1517532996.74
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 528.0,
+						"translation.y": 6018.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -1163,15 +1167,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 87005,
+						"buffer_size": 87244,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5617,
-								5617
+								4683,
+								4699
 							]
 						],
 						"settings":
@@ -1189,7 +1193,7 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1517089353.98
+								"last_updated": 1517532996.74
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
@@ -1197,10 +1201,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2779.0,
+						"translation.y": 2595.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -1209,15 +1213,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6386,
+						"buffer_size": 6544,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5405,
-								5405
+								2478,
+								2478
 							]
 						],
 						"settings":
@@ -1227,15 +1231,12 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1517089353.98
+								"last_updated": 1517419655.26
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
@@ -1243,10 +1244,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2593.0,
+						"translation.y": 1241.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -1273,15 +1274,12 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1517089353.98
+								"last_updated": 1517419655.26
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
@@ -1289,10 +1287,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3087.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -1319,9 +1317,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -1359,7 +1354,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
@@ -1386,9 +1381,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1405,7 +1397,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
@@ -1446,7 +1438,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 27,
+					"stack_index": 28,
 					"type": "text"
 				},
 				{
@@ -1473,9 +1465,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1492,7 +1481,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
@@ -1519,9 +1508,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1538,7 +1524,7 @@
 						"translation.y": 11751.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
@@ -1581,7 +1567,7 @@
 						"translation.y": 4753.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 25,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
@@ -1939,9 +1925,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1958,7 +1941,7 @@
 						"translation.y": 1089.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -1985,9 +1968,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2004,7 +1984,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
@@ -2074,9 +2054,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2093,7 +2070,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
@@ -2120,9 +2097,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2139,7 +2113,7 @@
 						"translation.y": 2856.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
@@ -2166,15 +2140,12 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1517089353.98
+								"last_updated": 1517365339.02
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
@@ -2182,10 +2153,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -2228,7 +2199,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 24,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
@@ -2271,7 +2242,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 23,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
@@ -2356,7 +2327,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
@@ -2424,9 +2395,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".toml",
@@ -2441,7 +2409,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
@@ -2552,13 +2520,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 29,
+					"stack_index": 30,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -2574,8 +2542,8 @@
 						"selection":
 						[
 							[
-								13444,
-								13444
+								443,
+								443
 							]
 						],
 						"settings":
@@ -2585,15 +2553,12 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1517089353.98
+								"last_updated": 1517419655.26
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
@@ -2601,10 +2566,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 8278.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -2613,15 +2578,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11120,
+						"buffer_size": 21620,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2518,
-								2518
+								18329,
+								18329
 							]
 						],
 						"settings":
@@ -2639,16 +2604,16 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1517089353.98
+								"last_updated": 1517532996.74
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax"
 						},
-						"translation.x": 0.0,
-						"translation.y": 1429.0,
+						"translation.x": 192.0,
+						"translation.y": 8110.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -2675,9 +2640,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2694,7 +2656,7 @@
 						"translation.y": 4872.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -2735,7 +2697,7 @@
 						"translation.y": 1168.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 28,
+					"stack_index": 29,
 					"type": "text"
 				},
 				{
@@ -2762,9 +2724,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2781,54 +2740,11 @@
 						"translation.y": 491.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
 					"buffer": 31,
-					"file": "/C/code/lang/Rust/code/Snippets/Snippet Collection.rs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 30611,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								24094,
-								24094
-							]
-						],
-						"settings":
-						{
-							"color_helper.box_height": 23,
-							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
-							"color_helper.file_palette":
-							[
-							],
-							"color_helper.scan":
-							{
-								"current_ext": ".rs",
-								"current_syntax": "Rust/Rust",
-								"enabled": false,
-								"last_updated": 1516699241.74
-							},
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Rust/Rust.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 18754.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 30,
-					"type": "text"
-				},
-				{
-					"buffer": 32,
 					"file": "/C/code/lang/Rust/proj/mdtest/src/main.rs",
 					"semi_transient": false,
 					"settings":
@@ -2851,9 +2767,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2870,7 +2783,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
@@ -2897,9 +2810,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2916,11 +2826,11 @@
 						"translation.y": 5265.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 33,
+					"buffer": 32,
 					"file": "/C/code/www/clipboard-test.html",
 					"semi_transient": false,
 					"settings":
@@ -3079,15 +2989,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 87005,
+						"buffer_size": 87244,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1699,
-								1699
+								1718,
+								1718
 							]
 						],
 						"settings":
@@ -3160,7 +3070,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 34,
+					"buffer": 33,
 					"file": "static/hljs/styles/monokai-sublime.css",
 					"semi_transient": false,
 					"settings":
@@ -3235,7 +3145,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 35,
+					"buffer": 34,
 					"file": "src/sanitize.rs",
 					"semi_transient": false,
 					"settings":
@@ -3278,7 +3188,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 36,
+					"buffer": 35,
 					"file": "/C/code/lang/Rust/proj/rocket-auth-login/src/authorization.rs",
 					"semi_transient": false,
 					"settings":
@@ -3321,7 +3231,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 37,
+					"buffer": 36,
 					"file": "/C/code/lang/Rust/proj/rocket-auth-login/Cargo.toml",
 					"semi_transient": false,
 					"settings":
@@ -3405,7 +3315,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 38,
+					"buffer": 37,
 					"file": "static/css/blogr.css",
 					"semi_transient": false,
 					"settings":
@@ -3526,7 +3436,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 39,
+					"buffer": 38,
 					"file": "static/css/blogr-2018-01-12.css",
 					"semi_transient": false,
 					"settings":
@@ -3647,7 +3557,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 40,
+					"buffer": 39,
 					"file": "static/blog.js",
 					"semi_transient": false,
 					"settings":
@@ -3691,7 +3601,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 41,
+					"buffer": 40,
 					"file": "static/blog-2018-01-07.js",
 					"semi_transient": false,
 					"settings":
@@ -3714,9 +3624,6 @@
 							"color_helper.file_palette":
 							[
 							],
-							"color_helper.preview_meta":
-							{
-							},
 							"color_helper.scan":
 							{
 								"current_ext": ".js",
@@ -3733,11 +3640,11 @@
 						"translation.y": 1567.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
-					"buffer": 42,
+					"buffer": 41,
 					"file": "static/blog_after.js",
 					"semi_transient": false,
 					"settings":
@@ -3781,7 +3688,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 43,
+					"buffer": 42,
 					"file": "static/blog_after-2018-01-12.js",
 					"semi_transient": false,
 					"settings":
@@ -3821,11 +3728,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 26,
+					"stack_index": 27,
 					"type": "text"
 				},
 				{
-					"buffer": 44,
+					"buffer": 43,
 					"file": "templates/articles-pagination-template.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -3892,7 +3799,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 45,
+					"buffer": 44,
 					"file": "templates/article-template.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4027,7 +3934,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 46,
+					"buffer": 45,
 					"file": "templates/edit-article-template.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4094,7 +4001,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 47,
+					"buffer": 46,
 					"file": "templates/general-template.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4159,7 +4066,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 48,
+					"buffer": 47,
 					"file": "templates/login-template.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4226,7 +4133,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 49,
+					"buffer": 48,
 					"file": "templates/manage-pagination-template.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4295,7 +4202,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 50,
+					"buffer": 49,
 					"file": "templates/pageviews-template.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4362,7 +4269,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 51,
+					"buffer": 50,
 					"file": "templates/search-template.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4429,7 +4336,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 52,
+					"buffer": 51,
 					"file": "templates/tags-template.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4496,7 +4403,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 53,
+					"buffer": 52,
 					"file": "templates/common/header.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4566,7 +4473,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 54,
+					"buffer": 53,
 					"file": "templates/common/footer.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4633,7 +4540,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 55,
+					"buffer": 54,
 					"file": "templates/common/page-template.html.hbs",
 					"semi_transient": false,
 					"settings":
@@ -4696,13 +4603,56 @@
 					},
 					"stack_index": 32,
 					"type": "text"
+				},
+				{
+					"buffer": 55,
+					"file": "/C/code/lang/Rust/code/Snippets/Snippet Collection.rs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 30611,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								15094,
+								15094
+							]
+						],
+						"settings":
+						{
+							"color_helper.box_height": 21,
+							"color_helper.color_scheme": "Packages/User/Custom-Themes/RustCustom-3.tmTheme",
+							"color_helper.file_palette":
+							[
+							],
+							"color_helper.scan":
+							{
+								"current_ext": ".rs",
+								"current_syntax": "Rust/Rust",
+								"enabled": false,
+								"last_updated": 1517419655.26
+							},
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Rust/Rust.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 13043.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
 				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 29.0
+		"height": 30.0
 	},
 	"input":
 	{

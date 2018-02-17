@@ -100,6 +100,21 @@ Non-Blog
 
 
 Blogr
+	Maybe add a couple variables in the static pages and maybe even regular articles
+		something like {{BASE_URL}} gets replaced with https://some.com/
+
+	Add a template called content.html.hbs
+	
+	Add loading and retrieval methods to ContentContext to load all pages from a directory
+	
+	
+	
+
+	Maybe add a ContentHits HashMap to track how many hits each one gets
+		could use a concurrent hashmap possibly
+		his could be used to trim the cache when the size is too big
+			when cache reaches or exceeds CONTENT_CACHE_LIMIT run a prune() method
+
 	Could add arbitrary context to static pages by adding an extras field
 		the extras field would be a json serialized Value
 		which would be deserialized into a json Value and added to an extra field in the struct

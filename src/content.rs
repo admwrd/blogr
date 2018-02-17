@@ -221,16 +221,16 @@ impl<'a> Responder<'a> for ContentRequest
         // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
         
         // let cache_map = content_cache.cache.pages.read().unwrap();
-        let cache_map = content_cache.pages.read().unwrap();
+        let cache_map = cache_state.pages.read().unwrap();
         let cache_uri_opt = cache_map.get(&self.route);
         // let mut output_contents: Vec<u8> = Vec::new();
         
         if let Some(cache_uri) = cache_uri_opt {
             let mut body_bytes = match self.encoding.preferred() {
-                Uncompressed => { entry.page.clone() },
-                Brotli => { entry.br.clone() },
-                Gzip => { entry.gzip.clone() },
-                Deflate => { entry.deflate.clone() },
+                Uncompressed => { cache_uri.page.clone() },
+                Brotli => { cache_uri.br.clone() },
+                Gzip => { cache_uri.gzip.clone() },
+                Deflate => { cache_uri.deflate.clone() },
             };
             let express: Express = body_bytes.into();
             express.respond_to(req)
@@ -241,7 +241,13 @@ impl<'a> Responder<'a> for ContentRequest
                 let express: Express = template.into();
                 let mut resp = express.respond_to(req).unwrap_or_default();
                 let mut output_contents: Vec<u8> = Vec::new();
-                let mut new_cache = ContentCached;
+                let mut new_cache = ContentCached {
+                    page: Vec::new(),
+                    gzip: Vec::new(),
+                    br: Vec::new(),
+                    deflate: Vec::new(),
+                    size: 0usize,
+                };
                 if let Some(body) = resp.body_bytes() {
                     output_contents = body;
                     
@@ -278,26 +284,33 @@ impl<'a> Responder<'a> for ContentRequest
                         gzip,
                         br,
                         deflate,
+                        size: total_size,
                     };
                     // remember to put the body from body_bytes back into the resp, body_bytes() consumes the bytes
                     // insert new_cache into cache map, make sure to unlock it for write access
                     {
-                        let wcache = cache_state.pages.write().unwrap();
-                        wcache.inset(self.route.clone(), new_cache);
+                        let mut wcache = cache_state.pages.write().unwrap();
+                        wcache.insert(self.route.clone(), new_cache);
                     }
                     
-                    resp.set_streamed_body(  Cursor::new( output_conents )  );
-                    Outcome::Success( resp )
+                    resp.set_streamed_body(  Cursor::new( output_contents )  );
+                    // Outcome::Success( resp )
+                    Ok( resp )
                     
                 } else {
-                    Outcome::Failure("Responder failed to extract response body.")
+                    // Outcome::Failure("Responder failed to extract response body.")
                     // fail - uri not found in context map
+                    // Err("Responder failed to extract response body")
+                    println!("Responder failed to extract response body");
+                    Err(Status::ImATeapot)
                 }
                 
                 
             } else {
                 println!("Responder failed to find uri `{}` in the context map.", &self.route);
-                Outcome::Failure("Responder failed to find uri in context map")
+                // Outcome::Failure("Responder failed to find uri in context map")
+                // Err("Responder failed to find uri in context map")
+                Err(Status::NotFound)
             }
         }
         
