@@ -46,8 +46,8 @@ use serde_json::{Value, Error};
 
 // pub const DEFAULT_TEMPLATE: &'static str = "static-default.html.hbs";
 
-// pub const SEPARATOR: &[u8] = b"
-// -----";
+pub const SEPARATOR: &[u8] = b"
+-----";
 
 
 // How to load all the pages and get the contents of the Templates on app start?
