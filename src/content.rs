@@ -1,5 +1,5 @@
 
-use super::{COMRAK_OPTIONS, BASE, DEFAULT_PAGE_TEMPLATE, PAGE_TEMPLATES};
+use super::{BLOG_URL, COMRAK_OPTIONS, BASE, DEFAULT_PAGE_TEMPLATE, PAGE_TEMPLATES};
 use accept::*;
 // use static_pages::*;
 use templates::TemplateMenu;
@@ -436,7 +436,7 @@ impl PageFormat {
                     }
                 },
                 gentime: String::new(),
-                base_url: String::new(),
+                base_url: BLOG_URL.to_owned(),
                 admin,
                 user,
                 menu,
@@ -565,7 +565,7 @@ impl<'a> Responder<'a> for ContentRequest
         
         // Replacing self.cache and self.context
         
-        println!("Responding to static page: {}", &self.route);
+        // DEBUG PRINT - println!("Responding to static page: {}", &self.route);
         
         let context_state = req.guard::<State<ContentContext>>().unwrap();
         let cache_state = req.guard::<State<ContentCacheLock>>().unwrap();
@@ -593,6 +593,8 @@ impl<'a> Responder<'a> for ContentRequest
         // let mut output_contents: Vec<u8> = Vec::new();
         
         if let Some(cache_uri) = cache_uri_opt {
+            // DEBUG PRINT - println!("Page exists in cache");
+            
             let mut body_bytes = match self.encoding.preferred() {
                 Uncompressed => { cache_uri.page.clone() },
                 Brotli => { cache_uri.br.clone() },
@@ -602,7 +604,12 @@ impl<'a> Responder<'a> for ContentRequest
             let express: Express = body_bytes.into();
             express.respond_to(req)
         } else {
+            
+            // DEBUG PRINT - println!("Page not found in cache, generating cache for page");
+            
             if let Some(ctx) = context_state.pages.get(&self.route) {
+                
+                // DEBUG PRINT - println!("Retrieved context");
                 
                 let template: Template = Template::render( (&ctx.template).to_owned(), &ctx );
                 let express: Express = template.into();
@@ -617,6 +624,8 @@ impl<'a> Responder<'a> for ContentRequest
                 };
                 if let Some(body) = resp.body_bytes() {
                     output_contents = body;
+                    
+                    // DEBUG PRINT - print!("Generating compressed versions.. ");
                     
                     let gzip: Vec<u8>;
                     {
@@ -645,6 +654,8 @@ impl<'a> Responder<'a> for ContentRequest
                         
                     }
                     
+                    // DEBUG PRINT - print!(" Finished! Compressed versions of page have been generated.\n");
+                    
                     // resp.set_streamed_body(  Cursor::new( output_contents )  );
                     
                     // Find the best compression algorithm for the client
@@ -660,15 +671,28 @@ impl<'a> Responder<'a> for ContentRequest
                     let compression = accepted.preferred();
                     // Set the correct version of the contents based on best supported compression algorithm
                     let bytes = match compression {
-                        CompressionEncoding::Brotli => br.clone(),
-                        CompressionEncoding::Gzip => gzip.clone(),
-                        CompressionEncoding::Deflate => deflate.clone(),
+                        CompressionEncoding::Brotli => { 
+                            resp.set_raw_header("Content-Encoding", "br");
+                            br.clone() 
+                        },
+                        CompressionEncoding::Gzip => { 
+                            resp.set_raw_header("Content-Encoding", "gzip");
+                            gzip.clone() 
+                        },
+                        CompressionEncoding::Deflate => { 
+                            resp.set_raw_header("Content-Encoding", "deflate");
+                            deflate.clone() 
+                        },
                         CompressionEncoding::Uncompressed => output_contents.clone(),
                     };
+                    
+                    // DEBUG PRINT - print!("Setting body content..  ");
+                    
                     resp.set_streamed_body(
                         Cursor::new( bytes )
                     );
                     
+                    // DEBUG PRINT - print!("Finished setting body content.\n");
                     
                     let total_size = output_contents.len() + gzip.len() + br.len() + deflate.len();
                     new_cache = ContentCached {
@@ -678,12 +702,19 @@ impl<'a> Responder<'a> for ContentRequest
                         deflate,
                         size: total_size,
                     };
+                    
+                    // DEBUG PRINT - println!("Created cache object");
+                    
                     // remember to put the body from body_bytes back into the resp, body_bytes() consumes the bytes
                     // insert new_cache into cache map, make sure to unlock it for write access
                     {
-                        let mut wcache = cache_state.pages.write().unwrap();
-                        wcache.insert(self.route.clone(), new_cache);
+                        // let mut wcache = cache_state.pages.write().unwrap();
+                        // wcache.insert(self.route.clone(), new_cache);
                     }
+                    
+                    // DEBUG PRINT - println!("Successfully inserted cache object");
+                    
+                    // DEBUG PRINT - println!("Responder finished, returning response..");
                     
                     // Outcome::Success( resp )
                     Ok( resp )
