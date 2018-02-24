@@ -1,8 +1,10 @@
 
 use super::{COMRAK_OPTIONS, BASE};
 use accept::*;
+use static_pages::*;
 use templates::TemplateMenu;
 use xpress::*;
+
 
 use std::fmt::Display;
 use std::{env, str, thread};
@@ -42,10 +44,10 @@ use serde_json::{Value, Error};
 
 
 
-pub const DEFAULT_TEMPLATE: &'static str = "static-default.html.hbs";
+// pub const DEFAULT_TEMPLATE: &'static str = "static-default.html.hbs";
 
-pub const SEPARATOR: &[u8] = b"
------";
+// pub const SEPARATOR: &[u8] = b"
+// -----";
 
 
 // How to load all the pages and get the contents of the Templates on app start?
@@ -88,6 +90,7 @@ pub struct ContentRequest {
     pub encoding: AcceptCompression,
     // pub cache: ContentCacheLock,
     pub route: String,
+    // pub start: GenTimer,
     // pub context: PageContext,
     // pub contexts: &'c ContentContext,
 }
@@ -152,7 +155,51 @@ pub struct PageInfo {
 
 impl ContentContext {
     pub fn load(dir: &str) -> ContentContext {
-        unimplemented!()
+        // unimplemented!()
+        
+        let dir_iter = fs::read_dir(dir);
+        if let Ok(dir) = dir_iter {
+            let mut size = 0;
+            let mut pages: HashMap<String, PageContext> = HashMap::new();
+            
+            for file in dir {
+                if let Ok(file_type) = file.file_type() {
+                    if !file_type.is_file() {
+                        continue;
+                    }
+                } else {
+                    // if no file type can be found skip the file
+                    continue;
+                }
+                let name = file.file_name().to_string_lossy().into_owned();
+                if !name.ends_with(".page") {
+                    continue;
+                }
+                
+                
+                let loaded = PageContext::load(path);
+                if let Ok(ctx) = loaded {
+                    size += ctx.body,len();
+                    pages.insert(ctx.uri.clone(), ctx);
+                } else if let Err(err_msg) = loaded {
+                    println!("Error loading page {}: {}". page, err_msg);
+                } else {
+                    println!("Unknown error");
+                }
+            }
+            
+            ContentContext {
+                pages,
+                size,
+            }
+            
+        } else {
+            ContentContext {
+                pages: HashMap::new(),
+                size: AtomicUsize::new(0),
+            }
+        }
+        
     }
     
     pub fn retrieve(&self, uri: &str) -> Option<&PageContext> {
@@ -162,6 +209,9 @@ impl ContentContext {
 
 
 impl ContentCacheLock {
+    // Must start with an empty cache and fill it in as the pages are requested
+    //   this is because the data inside a Template is hard to get to and 
+    //   in this case uses a Responder to extract the contents
     pub fn new() -> ContentCacheLock {
         ContentCacheLock {
             pages: RwLock::new( HashMap::new() ),
@@ -237,7 +287,7 @@ impl<'a> Responder<'a> for ContentRequest
         } else {
             if let Some(ctx) = context_state.pages.get(&self.route) {
                 
-                let template: Template = Template::render((&ctx.template).to_owned(), &ctx);
+                let template: Template = Template::render( (&ctx.template).to_owned(), &ctx );
                 let express: Express = template.into();
                 let mut resp = express.respond_to(req).unwrap_or_default();
                 let mut output_contents: Vec<u8> = Vec::new();
@@ -278,9 +328,32 @@ impl<'a> Responder<'a> for ContentRequest
                         
                     }
                     
+                    // resp.set_streamed_body(  Cursor::new( output_contents )  );
+                    
+                    // Find the best compression algorithm for the client
+                    let mut supported = 0u8;
+                    let headers = request.headers();
+                    if let Some(encoding) = headers.get("Accept-Encoding").next() {
+                        if encoding.contains("gzip") { supported |= GZIP; }
+                        if encoding.contains("deflate") { supported |= DEFLATE; }
+                        if encoding.contains("br") { supported |= BROTLI; }
+                    }
+                    let accepted = AcceptCompression { supported };
+                    let compression = accepted.preferred();
+                    // Set the correct version of the contents based on best supported compression algorithm
+                    resp.set_streamed_body(
+                        match compression {
+                            CompressionEncoding::Brotli => br.clone(),
+                            CompressionEncoding::Gzip => gzip.clone(),
+                            CompressionEncoding::Deflate => deflate.clone(),
+                            CompressionEncoding::Uncompressed => output_contents.clone(),
+                        }
+                    );
+                    
+                    
                     let total_size = output_contents.len() + gzip.len() + br.len() + deflate.len();
                     new_cache = ContentCached {
-                        page: output_contents.clone(),
+                        page: output_contents,
                         gzip,
                         br,
                         deflate,
@@ -293,7 +366,6 @@ impl<'a> Responder<'a> for ContentRequest
                         wcache.insert(self.route.clone(), new_cache);
                     }
                     
-                    resp.set_streamed_body(  Cursor::new( output_contents )  );
                     // Outcome::Success( resp )
                     Ok( resp )
                     

@@ -101,7 +101,14 @@ Non-Blog
 
 Blogr
 	Maybe add a couple variables in the static pages and maybe even regular articles
-		something like {{BASE_URL}} gets replaced with https://some.com/
+		   - something like {{BASE_URL}} gets replaced with https://some.com/
+		add a javascript variable at the end of the page
+			in the footer the after.js loads before the custom js
+			so add the variable in the template itself and add a check in the
+			after.js to see if it exists
+				if exists replace all links in the body that don't start with
+				www. http:// https:// ftp:// or another protocol
+				check if it matches this: ^/|(?:www[0-9]*)|(?:\w*://)
 
 	Add a template called content.html.hbs
 	

@@ -25,6 +25,8 @@ impl AcceptCompression {
     pub fn contains_deflate(self) -> bool { self.supported & DEFLATE != 0 }
     pub fn contains_brotli(self)  -> bool { self.supported & BROTLI != 0 }
     pub fn is_uncompressed(self)  -> bool { self.supported == 0 }
+    
+    // Consider maybe using &self instead of self??
     pub fn preferred(self) -> CompressionEncoding {
         if self.supported & GZIP != 0 {
             CompressionEncoding::Gzip

@@ -38,7 +38,7 @@
 // mod accept;
 use twoway;
 
-use super::{COMRAK_OPTIONS, BASE};
+use super::{COMRAK_OPTIONS, BASE, PAGE_TEMPLATES, DEFAULT_PAGE_TEMPLATE};
 use accept::*;
 use templates::TemplateMenu;
 
@@ -91,7 +91,7 @@ use serde_json::{Value, Error};
 // pub const BASE: &'static str = "http://localhost:8000";
 
 
-pub const DEFAULT_TEMPLATE: &'static str = "static-default.html.hbs";
+// pub const DEFAULT_TEMPLATE: &'static str = "static-default.html.hbs";
 
 pub const SEPARATOR: &[u8] = b"
 -----";
@@ -435,7 +435,8 @@ impl PageFormat {
         
         let mut uri = String::new();
         let mut title = String::new();
-        let mut template = String::new();
+        // let mut template = String::new();
+        let mut template = DEFAULT_PAGE_TEMPLATE.to_owned();
         let mut js = None;
         let mut description = None;
         let mut admin = false;
@@ -484,12 +485,22 @@ impl PageFormat {
             }
         }
         
+        
+        
+        let mut title_ok = false;
+        for temp in PAGE_TEMPLATES {
+            if title == temp {
+                title_ok = true;
+            }
+        }
+        
+        
         if &uri != ""
         && &title != "" {
             Some(PageContext {
                 uri,
-                title,
-                template: if &template != "" { template } else { DEFAULT_TEMPLATE.to_owned() },
+                title: if title_ok { title } else { DEFAULT_PAGE_TEMPLATE.to_owned() },
+                template: if &template != "" { template } else { DEFAULT_PAGE_TEMPLATE.to_owned() },
                 js,
                 description,
                 body: {

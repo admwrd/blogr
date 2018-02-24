@@ -158,6 +158,7 @@ pub fn static_pages(start: GenTimer,
         
         // let test = ctx.clone();
         // context request
+        // Build a ContentRequest with the requested files
         let conreq: ContentRequest = ContentRequest {
             encoding,
             // cache: cache_lock.inner(),
