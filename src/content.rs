@@ -1,7 +1,7 @@
 
-use super::{COMRAK_OPTIONS, BASE};
+use super::{COMRAK_OPTIONS, BASE, DEFAULT_PAGE_TEMPLATE, PAGE_TEMPLATES};
 use accept::*;
-use static_pages::*;
+// use static_pages::*;
 use templates::TemplateMenu;
 use xpress::*;
 
@@ -153,6 +153,12 @@ pub struct PageInfo {
     pub description: Option<String>,
 }
 
+
+
+
+
+
+
 impl ContentContext {
     pub fn load(dir: &str) -> ContentContext {
         // unimplemented!()
@@ -179,7 +185,8 @@ impl ContentContext {
                     
                     let path = file.path();
                     
-                    let loaded = ::static_pages::PageContext::load(&path);
+                    // let loaded = ::static_pages::PageContext::load(&path);
+                    let loaded = PageContext::load(&path);
                     if let Ok(ctx) = loaded {
                         size += ctx.body.len();
                         pages.insert(ctx.uri.clone(), ctx);
@@ -193,7 +200,7 @@ impl ContentContext {
             
             ContentContext {
                 pages,
-                size,
+                size: AtomicUsize::new(size),
             }
             
         } else {
@@ -212,6 +219,11 @@ impl ContentContext {
 }
 
 
+
+
+
+
+
 impl ContentCacheLock {
     // Must start with an empty cache and fill it in as the pages are requested
     //   this is because the data inside a Template is hard to get to and 
@@ -227,6 +239,305 @@ impl ContentCacheLock {
     
     
 }
+
+
+
+
+
+impl PageContext {
+    pub fn load(path: &Path) -> Result<Self, String> {
+        // call PageFormat::get_file()
+        // then PageFormat::get_parts()
+        // then PageFormat::parse_metadata()
+        
+        let file_opt = PageFormat::get_file(path);
+        if let Some(file) = file_opt {
+                
+            // let file: Vec<u8> = PageFormat::get_file(path);
+            // let mut file: Vec<u8> = Vec::with_capacity(contents.len()+10);
+            // file.extend_from_slice(contents);
+            
+            let parts_opt = PageFormat::get_parts(file);
+            if let Some(parts) = parts_opt {
+                // if print {
+                    // println!("Yaml:\n`{:?}`\n\nHtml:\n`{:?}`", parts.yaml, parts.html);
+                // }
+                // Some(parts)
+                // let context = parts.parse_metadata();
+                // context
+                if let Some(meta) = parts.parse_metadata() {
+                    Ok(meta)
+                } else {
+                    Err(format!("Could not load metadata for: {}", path.display()))
+                }
+            } else {
+                Err(format!("Failed to load parts of: {}.", path.display()))
+            }
+        } else {
+            Err(format!("Could not load file: {} ", path.display()))
+        }
+    }
+    // Not sure what render() was supposed to do really...
+    // pub fn render(&self) -> PageContext {
+    //     unimplemented!()
+    // }
+}
+
+
+
+
+
+
+impl PageFormat {
+    /// Reads a file into a byte vector
+    pub fn get_file(path: &Path) -> Option<Vec<u8>> {
+        if let Ok(mut file) = File::open(path) {
+            if let Ok(metadata) = file.metadata() {
+                let mut buffer: Vec<u8> = Vec::with_capacity((metadata.len() + 50) as usize);
+                file.read_to_end(&mut buffer);
+                Some(buffer)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+    
+    /// Take a byte vector and convert it to metadata and html parts.
+    pub fn get_parts(buffer: Vec<u8>) -> Option<Self> {
+        let sep_pos = twoway::find_bytes(&buffer, SEPARATOR);
+        
+        if let Some(pos) = sep_pos {
+            // println!("DEBUG: found separator at index: {}", pos);
+            let start_at = pos + (SEPARATOR.len());
+            
+            // println!("DEBUG: starting search for html at index: {}", start_at);
+            
+            let html_start = twoway::find_bytes(&buffer[start_at..], b"
+");
+            if let Some(mut html_pos) = html_start {
+                html_pos += start_at+1;
+                
+                // println!("DEBUG: found html at index: {}", html_pos);
+                
+                let parts = PageFormat {
+                    yaml: buffer[..pos].to_vec(),
+                    html: buffer[html_pos..].to_vec(),
+                };
+                
+                Some(parts)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+    
+    /// Deserializes a yaml byte vector into a PageContext
+    pub fn parse_yaml(self) -> Option<PageContext> {
+        let yaml_des: Result<PageInfo, _> = ::serde_yaml::from_slice(&self.yaml);
+        
+        if let Ok(info) = yaml_des {
+            Some(info.to_context(self.html))
+        } else if let Err(err) = yaml_des {
+            println!("Error occurred converting yaml to PageContext:\n{}", err);
+            None
+        } else {
+            None
+        }
+    }
+    
+    pub fn parse_metadata(self) -> Option<PageContext> {
+        let mut pos = 0usize;
+        let colon = b":";
+        let newline = b"\n";
+        
+        let mut uri = String::new();
+        let mut title = String::new();
+        // let mut template = String::new();
+        let mut template = DEFAULT_PAGE_TEMPLATE.to_owned();
+        let mut js = None;
+        let mut description = None;
+        let mut admin = false;
+        let mut user = false;
+        let mut menu: Option<Vec<TemplateMenu>> = None;
+        let mut menu_dropdown: Option<Vec<TemplateMenu>> = None;
+        let mut markdown = false;
+        
+        while let Some(end) = next_field(&self.yaml, pos) {
+            // let end = e + pos;
+            // println!("Searching for field separator @ {}..{}", pos, end);
+            
+            // field separator
+            if let Some(f) = twoway::find_bytes(&self.yaml[pos..end], colon) {
+                let fs = f + pos;
+                // println!("Found field separator @ {fs}.  {pos} .. {fs}: .. {end}", fs=fs, pos=pos, end=end);
+                
+                let k = String::from_utf8_lossy(&self.yaml[pos..fs]).into_owned();
+                let key = k.trim();
+                // println!("Found key: `{}`, val: `{}`", key, String::from_utf8_lossy(&self.yaml[fs+1..end]));
+                
+                let val_range: &[u8] = &self.yaml[fs+1..end];
+                
+                match key {
+                    "uri" => { uri = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
+                    "title" => { title = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
+                    "template" => { template = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
+                    "js" => { js = Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned()); },
+                    "description" => { description = Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned()); },
+                    "admin" | "administrator" => { admin = bytes_are_true(&self.yaml[fs+1..end], false); },
+                    "user" | "logged_in" | "logged-in" => { user = bytes_are_true(&self.yaml[fs+1..end], false); },
+                    "menu" => { menu = json_menu(&self.yaml[fs+1..end]); },
+                    "menu-dropdown" | "dropdown-menu" | "dropdown" => { menu_dropdown = json_menu(&self.yaml[fs+1..end]); },
+                    "markdown" => { markdown = bytes_are_true(val_range, false) },
+                    _ => {},
+                }
+                
+            } else {
+                // println!("No field separator found.");
+                // break;
+            }
+            pos = end+1;
+            if pos >= self.yaml.len() {
+                // println!("Reached end, breaking...");
+                break;
+            }
+        }
+        
+        
+        
+        let mut title_ok = false;
+        for temp in PAGE_TEMPLATES {
+            if &title == temp {
+                title_ok = true;
+            }
+        }
+        
+        
+        if &uri != ""
+        && &title != "" {
+            Some(PageContext {
+                uri,
+                title: if title_ok { title } else { DEFAULT_PAGE_TEMPLATE.to_owned() },
+                template: if &template != "" { template } else { DEFAULT_PAGE_TEMPLATE.to_owned() },
+                js,
+                description,
+                body: {
+                    // String::from_utf8_lossy(&self.html).into_owned().trim().to_owned()
+                    let body = String::from_utf8_lossy(&self.html).into_owned();
+                    if markdown {
+                        // let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. COMRAK_OPTIONS };
+                         let html: String = markdown_to_html(&body, &COMRAK_OPTIONS);
+                         html
+                    } else {
+                        body
+                    }
+                },
+                gentime: String::new(),
+                base_url: String::new(),
+                admin,
+                user,
+                menu,
+                menu_dropdown,
+            })
+        } else {
+            // println!("Required fields missing for PageContext:\nuri: `{}`\ntitle: `{}`", &uri, &title);
+            None
+        }
+    }
+}
+
+/// Takes a byte vector and converts to a TemplateMenu vector.
+pub fn json_menu(json: &[u8]) -> Option<Vec<TemplateMenu>> {
+    // Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned());
+    let des: Result<Vec<TemplateMenu>, _> = ::serde_json::from_slice(json);
+    
+    if let Ok(d) = des {
+        Some(d)
+    } else if let Err(e) = des {
+        println!("Error deserializing the json menu:\n{:?}", e);
+        None
+    } else {
+        println!("Error :(");
+        None
+    }
+}
+
+pub fn bytes_are_true(bytes: &[u8], default: bool) -> bool {
+    let mut pos: usize = 0;
+    for b in bytes.iter() {
+        // look for first non-space (32 in ascii decimal)
+        if *b != 32u8 {
+            break;
+        }
+        pos += 1;
+    }
+    if &bytes[pos..pos+4] == b"true" 
+    || &bytes[pos..pos+3] == b"yes" 
+    || &bytes[pos..pos+4] == b"Yes" 
+    || &bytes[pos..pos+4] == b"True" 
+    || &bytes[pos..pos+2] == b"on" 
+    || &bytes[pos..pos+2] == b"On" {
+        !default
+    } else { 
+        default
+    }
+}
+
+/// Find next newline character until the end is reached.
+/// The final line of data will not contain a linebreak but 
+/// must still be processed.
+pub fn next_field(yaml: &Vec<u8>, pos: usize) -> Option<usize> {
+    let newline = b"
+";
+    if let Some(end) = twoway::find_bytes(&yaml[pos..yaml.len()], newline) {
+        Some(end + pos)
+    } else {
+        if pos < yaml.len() {
+            Some(yaml.len())
+        } else {
+            None
+        }
+    }
+}
+
+impl PageInfo {
+    /// Takes metadata and body contents and creates a context for the Template.
+    pub fn to_context(self, html: Vec<u8>) -> PageContext {
+        let context = PageContext {
+            uri: self.uri,
+            title: self.title,
+            body: {
+                let body = String::from_utf8_lossy(&html).into_owned();
+                if self.markdown {
+                    let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. COMRAK_OPTIONS };
+                     let html: String = markdown_to_html(&body, &cr_options);
+                     html
+                } else {
+                    body
+                }
+            },
+            template: self.template,
+            js: self.js,
+            description: self.description,
+            admin: false,           // Default values, this is only used for the yaml deserialization and not used with any actual menus
+            user: false,            // Default values, this is only used for the yaml deserialization and not used with any actual menus
+            menu: None,             // Default values, this is only used for the yaml deserialization and not used with any actual menus
+            menu_dropdown: None,    // Default values, this is only used for the yaml deserialization and not used with any actual menus
+            gentime: String::with_capacity(200),
+            base_url: String::with_capacity(200),
+        };
+        context
+    }
+}
+
+
+
+
+
+
 
 // impl<'a, 'c, 'u> Responder<'a> for ContentRequest<'c, 'u> {
 impl<'a> Responder<'a> for ContentRequest 
@@ -342,16 +653,18 @@ impl<'a> Responder<'a> for ContentRequest
                         if encoding.contains("deflate") { supported |= ::accept::DEFLATE; }
                         if encoding.contains("br") { supported |= ::accept::BROTLI; }
                     }
-                    let accepted = AcceptCompression { supported };
+                    // let accepted = AcceptCompression { supported };
+                    let accepted = AcceptCompression::new(supported);
                     let compression = accepted.preferred();
                     // Set the correct version of the contents based on best supported compression algorithm
+                    let bytes = match compression {
+                        CompressionEncoding::Brotli => br.clone(),
+                        CompressionEncoding::Gzip => gzip.clone(),
+                        CompressionEncoding::Deflate => deflate.clone(),
+                        CompressionEncoding::Uncompressed => output_contents.clone(),
+                    };
                     resp.set_streamed_body(
-                        match compression {
-                            CompressionEncoding::Brotli => br.clone(),
-                            CompressionEncoding::Gzip => gzip.clone(),
-                            CompressionEncoding::Deflate => deflate.clone(),
-                            CompressionEncoding::Uncompressed => output_contents.clone(),
-                        }
+                        Cursor::new( bytes )
                     );
                     
                     

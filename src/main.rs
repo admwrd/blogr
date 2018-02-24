@@ -76,7 +76,7 @@ extern crate rocket_auth_login;
 // mod vcache;
 // mod counthits;
 mod counter;
-mod static_pages;
+// mod static_pages;
 mod content;
 mod referrer;
 mod location;

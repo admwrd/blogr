@@ -21,6 +21,7 @@ pub struct AcceptCompression {
 }
 
 impl AcceptCompression {
+    pub fn new(supported: u8) -> AcceptCompression { AcceptCompression { supported } }
     pub fn contains_gzip(self)    -> bool { self.supported & GZIP != 0 }
     pub fn contains_deflate(self) -> bool { self.supported & DEFLATE != 0 }
     pub fn contains_brotli(self)  -> bool { self.supported & BROTLI != 0 }
