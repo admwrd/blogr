@@ -8,9 +8,9 @@ use rocket::http::Status;
 use rocket::Outcome;
 use std::collections::HashMap;
 
-const GZIP:    u8 = 1;
-const DEFLATE: u8 = 2;
-const BROTLI:  u8 = 4;
+pub const GZIP:    u8 = 1;
+pub const DEFLATE: u8 = 2;
+pub const BROTLI:  u8 = 4;
 
 #[derive(Clone, Debug, PartialEq, Hash)]
 pub enum CompressionEncoding { Brotli, Gzip, Deflate, Uncompressed }

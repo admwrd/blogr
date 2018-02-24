@@ -162,29 +162,32 @@ impl ContentContext {
             let mut size = 0;
             let mut pages: HashMap<String, PageContext> = HashMap::new();
             
-            for file in dir {
-                if let Ok(file_type) = file.file_type() {
-                    if !file_type.is_file() {
+            for file_rst in dir {
+                if let Ok(file) = file_rst {
+                    if let Ok(file_type) = file.file_type() {
+                        if !file_type.is_file() {
+                            continue;
+                        }
+                    } else {
+                        // if no file type can be found skip the file
                         continue;
                     }
-                } else {
-                    // if no file type can be found skip the file
-                    continue;
-                }
-                let name = file.file_name().to_string_lossy().into_owned();
-                if !name.ends_with(".page") {
-                    continue;
-                }
-                
-                
-                let loaded = PageContext::load(path);
-                if let Ok(ctx) = loaded {
-                    size += ctx.body,len();
-                    pages.insert(ctx.uri.clone(), ctx);
-                } else if let Err(err_msg) = loaded {
-                    println!("Error loading page {}: {}". page, err_msg);
-                } else {
-                    println!("Unknown error");
+                    let name = file.file_name().to_string_lossy().into_owned();
+                    if !name.ends_with(".page") {
+                        continue;
+                    }
+                    
+                    let path = file.path();
+                    
+                    let loaded = ::static_pages::PageContext::load(&path);
+                    if let Ok(ctx) = loaded {
+                        size += ctx.body.len();
+                        pages.insert(ctx.uri.clone(), ctx);
+                    } else if let Err(err_msg) = loaded {
+                        println!("Error loading page {}: {}", name, err_msg);
+                    } else {
+                        println!("Unknown error");
+                    }
                 }
             }
             
@@ -202,9 +205,10 @@ impl ContentContext {
         
     }
     
-    pub fn retrieve(&self, uri: &str) -> Option<&PageContext> {
-        unimplemented!()
-    }
+    // The retrieve() method does not appear to be needed
+    // pub fn retrieve(&self, uri: &str) -> Option<&PageContext> {
+    //     unimplemented!()
+    // }
 }
 
 
@@ -332,11 +336,11 @@ impl<'a> Responder<'a> for ContentRequest
                     
                     // Find the best compression algorithm for the client
                     let mut supported = 0u8;
-                    let headers = request.headers();
+                    let headers = req.headers();
                     if let Some(encoding) = headers.get("Accept-Encoding").next() {
-                        if encoding.contains("gzip") { supported |= GZIP; }
-                        if encoding.contains("deflate") { supported |= DEFLATE; }
-                        if encoding.contains("br") { supported |= BROTLI; }
+                        if encoding.contains("gzip") { supported |= ::accept::GZIP; }
+                        if encoding.contains("deflate") { supported |= ::accept::DEFLATE; }
+                        if encoding.contains("br") { supported |= ::accept::BROTLI; }
                     }
                     let accepted = AcceptCompression { supported };
                     let compression = accepted.preferred();

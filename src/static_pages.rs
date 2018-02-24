@@ -51,7 +51,7 @@ use std::time::{self, Instant, Duration};
 use std::prelude::*;
 use std::ffi::OsStr;
 use std::collections::HashMap;
-use std::sync::{Mutex, Arc};
+use std::sync::{Mutex, Arc, RwLock};
 
 // use rocket;
 use rocket_contrib::Template;
@@ -489,7 +489,7 @@ impl PageFormat {
         
         let mut title_ok = false;
         for temp in PAGE_TEMPLATES {
-            if title == temp {
+            if &title == temp {
                 title_ok = true;
             }
         }
