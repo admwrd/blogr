@@ -588,24 +588,27 @@ impl<'a> Responder<'a> for ContentRequest
         // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
         
         // let cache_map = content_cache.cache.pages.read().unwrap();
-        let cache_map = cache_state.pages.read().unwrap();
-        let cache_uri_opt = cache_map.get(&self.route);
-        // let mut output_contents: Vec<u8> = Vec::new();
-        
-        if let Some(cache_uri) = cache_uri_opt {
-            // DEBUG PRINT - println!("Page exists in cache");
+        {
+            let cache_map = cache_state.pages.read().unwrap();
+            let cache_uri_opt = cache_map.get(&self.route);
+            // let mut output_contents: Vec<u8> = Vec::new();
             
-            let mut body_bytes = match self.encoding.preferred() {
-                Uncompressed => { cache_uri.page.clone() },
-                Brotli => { cache_uri.br.clone() },
-                Gzip => { cache_uri.gzip.clone() },
-                Deflate => { cache_uri.deflate.clone() },
-            };
-            let express: Express = body_bytes.into();
-            express.respond_to(req)
-        } else {
-            
-            // DEBUG PRINT - println!("Page not found in cache, generating cache for page");
+            if let Some(cache_uri) = cache_uri_opt {
+                // DEBUG PRINT - 
+                println!("Page exists in cache");
+                
+                let mut body_bytes = match self.encoding.preferred() {
+                    Uncompressed => { cache_uri.page.clone() },
+                    Brotli => { cache_uri.br.clone() },
+                    Gzip => { cache_uri.gzip.clone() },
+                    Deflate => { cache_uri.deflate.clone() },
+                };
+                let express: Express = body_bytes.into();
+                return express.respond_to(req)
+            }
+        }
+            // DEBUG PRINT - 
+            println!("Page not found in cache, generating cache for page");
             
             if let Some(ctx) = context_state.pages.get(&self.route) {
                 
@@ -705,11 +708,15 @@ impl<'a> Responder<'a> for ContentRequest
                     
                     // DEBUG PRINT - println!("Created cache object");
                     
+                    println!("Attempting to write cache object to hashmap");
                     // remember to put the body from body_bytes back into the resp, body_bytes() consumes the bytes
                     // insert new_cache into cache map, make sure to unlock it for write access
                     {
                         // let mut wcache = cache_state.pages.write().unwrap();
                         // wcache.insert(self.route.clone(), new_cache);
+                        let mut wcache = cache_state.pages.write().unwrap();
+                        wcache.insert(self.route.clone(), new_cache.clone());
+                        
                     }
                     
                     // DEBUG PRINT - println!("Successfully inserted cache object");
@@ -734,7 +741,7 @@ impl<'a> Responder<'a> for ContentRequest
                 // Err("Responder failed to find uri in context map")
                 Err(Status::NotFound)
             }
-        }
+        // }
         
         
         /*

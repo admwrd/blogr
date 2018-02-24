@@ -100,6 +100,16 @@ Non-Blog
 
 
 Blogr
+	Test regular header/footers against the HTTP2 optimized versions
+		reminder: test on the webserver, this provides more realistic network times
+			  AND the nginx reverse proxy uses HTTP2, the built-in server in the
+			  blog app DOES NOT USE HTTP2
+			  only on webserver can this be tested
+
+	Add gentime to ContentRequest and calculate gentime before passing context to template
+		Can use blank string; right before template is rendered calculate gentime 
+		and update the gentime field
+
 	Maybe add a couple variables in the static pages and maybe even regular articles
 		   - something like {{BASE_URL}} gets replaced with https://some.com/
 		add a javascript variable at the end of the page
