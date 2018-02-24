@@ -565,6 +565,8 @@ impl<'a> Responder<'a> for ContentRequest
         
         // Replacing self.cache and self.context
         
+        println!("Responding to static page: {}", &self.route);
+        
         let context_state = req.guard::<State<ContentContext>>().unwrap();
         let cache_state = req.guard::<State<ContentCacheLock>>().unwrap();
         

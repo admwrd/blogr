@@ -1,6 +1,6 @@
 uri: siteinfo
 title: Website Details
-template: page-template.html.hbs
+template: page-template
 description: The programs I use and what powers this website.
 -----
 <h1>What I Use</h1>
