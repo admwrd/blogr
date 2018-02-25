@@ -318,11 +318,14 @@ fn main() {
     let hitcount: Counter = Counter::load();
     let views: TotalHits = TotalHits::load();
     
+    let rock = rocket::ignite();
+    
     // let statics: Mutex<PageMap> = Mutex::new(PageMap::load_all());
     // let statics: PagesMutex = PagesMutex( Mutex::new(  PageMap::load_all()  ) );
     // let statics: PagesMutex = PagesMutex( RwLock::new(  PageContextMap::load_all()  ) );
     let content_context: ContentContext = ContentContext::load(STATIC_PAGES_DIR);
     let content_cache: ContentCacheLock = ContentCacheLock::new();
+    // let content_cache: ContentCacheLock = ContentCacheLock::cache(rock, STATIC_PAGES_DIR);
     
     // let hitcount: PageCount = PageCount::new();
     // let views: ViewsTotal = ViewsTotal::new();
@@ -335,7 +338,8 @@ fn main() {
     
     init_pg_pool().get().unwrap();
     
-    rocket::ignite()
+    // rocket::ignite()
+    rock
         // .manage(vcache)
         .manage(data::init_pg_pool())
         .manage(hitcount)

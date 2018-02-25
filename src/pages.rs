@@ -116,9 +116,11 @@ use comrak::{markdown_to_html, ComrakOptions};
 
 
 
-
-
-
+// DOESN'T WORK
+// #[get("/init")]
+// pub fn initialize(admin: Option<AdministratorCookie>) {
+//     ContentCacheLock::cache(rock, STATIC_PAGES_DIR);
+// }
 
 //
 #[get("/content/<uri..>")]

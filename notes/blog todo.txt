@@ -100,6 +100,16 @@ Non-Blog
 
 
 Blogr
+	make a route that updates the context cache and content (page) cache
+		call 
+		ContentContext::load(STATIC_PAGES_DIR)
+		ContentCacheLock::cache(rocket, STATIC_PAGES_DIR)
+
+	Could eventually change the static pages to use the testing facilities instead of responders
+		generate the page cache using the testing utilities instead of creating
+			a data structure that holds information that is used to retrieve the file
+			in the responder which will render the template and fill the cache
+
 	Test regular header/footers against the HTTP2 optimized versions
 		reminder: test on the webserver, this provides more realistic network times
 			  AND the nginx reverse proxy uses HTTP2, the built-in server in the

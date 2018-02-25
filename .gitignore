@@ -1,6 +1,5 @@
 /target/
 **/*.rs.bk
-
 /__target
-src/settings.rs
+/src/settings.rs
 settings.rs
