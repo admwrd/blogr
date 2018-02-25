@@ -163,6 +163,7 @@ pub fn static_pages(start: GenTimer,
             encoding,
             // cache: cache_lock.inner(),
             route: page,
+            start,
             // context: ctx.clone(),
             // context: &test,
         };

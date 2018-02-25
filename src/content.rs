@@ -1,6 +1,7 @@
 
 use super::{BLOG_URL, COMRAK_OPTIONS, BASE, DEFAULT_PAGE_TEMPLATE, PAGE_TEMPLATES};
 use accept::*;
+use blog::GenTimer;
 // use static_pages::*;
 use templates::TemplateMenu;
 use xpress::*;
@@ -90,7 +91,7 @@ pub struct ContentRequest {
     pub encoding: AcceptCompression,
     // pub cache: ContentCacheLock,
     pub route: String,
-    // pub start: GenTimer,
+    pub start: GenTimer,
     // pub context: PageContext,
     // pub contexts: &'c ContentContext,
 }
@@ -604,6 +605,10 @@ impl<'a> Responder<'a> for ContentRequest
                     Deflate => { cache_uri.deflate.clone() },
                 };
                 let express: Express = body_bytes.into();
+                
+                let end = self.start.0.elapsed();
+                println!("Content processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+                
                 return express.respond_to(req)
             }
         }
@@ -724,6 +729,9 @@ impl<'a> Responder<'a> for ContentRequest
                     // DEBUG PRINT - println!("Responder finished, returning response..");
                     
                     // Outcome::Success( resp )
+                    let end = self.start.0.elapsed();
+                    println!("Content processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+                
                     Ok( resp )
                     
                 } else {
