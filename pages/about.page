@@ -6,7 +6,9 @@ markdown: true
 admin: true
 user: true
 js: alert("Hello!");
+dropdown: Super Menu
 menu: [{"name": "home", "url": "/", "separator": false}, {"separator": true}, {"name": "about", "url": "/about"}]
+menu_dropdown: [{"name": "User Logout", "url": "/user_logout", "separator": false}, {"separator": true}, {"name": "Admin Logout", "url": "/admin_logout"}]
 -----
 # What I Use
 **hello**

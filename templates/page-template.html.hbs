@@ -40,13 +40,13 @@
         <li class="v-nav-item nav-item {{this.classes}}"><a class="nav-link" href="{{this.url}}">{{{this.name}}}</a></li>
       {{~/if~}}
     {{~/each~}}
-    {{~#if dropdown~}}
+    {{~#if menu_dropdown~}}
     <li class="v-nav-item nav-item dropdown">
         <a class="v-nav-login nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{~#if dropdown_name}}{{dropdown_name}}{{else}}Menu{{/if}}
+            {{~#if dropdown}}{{dropdown}}{{else}}Menu{{/if}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        {{~#each dropdown~}}
+        {{~#each menu_dropdown~}}
           {{~#if this.separator~}}
               {{~#if this.name~}}
               <h6 class="dropdown-header {{{this.classes}}}">{{{this.name}}}</h6>

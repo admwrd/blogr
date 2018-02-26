@@ -131,6 +131,7 @@ pub struct PageContext {
     pub user: bool,
     pub menu: Option<Vec<TemplateMenu>>,
     pub menu_dropdown: Option<Vec<TemplateMenu>>,
+    pub dropdown: String,
     // pub info: TemplatePageInfo,
 }
 
@@ -397,6 +398,7 @@ impl PageFormat {
         let mut user = false;
         let mut menu: Option<Vec<TemplateMenu>> = None;
         let mut menu_dropdown: Option<Vec<TemplateMenu>> = None;
+        let mut dropdown: String = String::new();
         let mut markdown = false;
         
         while let Some(end) = next_field(&self.yaml, pos) {
@@ -422,8 +424,9 @@ impl PageFormat {
                     "description" => { description = Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned().replace("{{base_url}}", BLOG_URL)); },
                     "admin" | "administrator" => { admin = bytes_are_true(&self.yaml[fs+1..end], false); },
                     "user" | "logged_in" | "logged-in" => { user = bytes_are_true(&self.yaml[fs+1..end], false); },
-                    "menu" => { menu = json_menu(&self.yaml[fs+1..end]); },
-                    "menu-dropdown" | "dropdown-menu" | "dropdown" => { menu_dropdown = json_menu(&self.yaml[fs+1..end]); },
+                    "menu" | "menu_basic" | "menu-basic" => { menu = json_menu(&self.yaml[fs+1..end]); },
+                    "menu-dropdown" | "dropdown-menu" | "menu_dropdown" | "dropdown_menu" => { menu_dropdown = json_menu(&self.yaml[fs+1..end]); },
+                    "dropdown" | "dropdown_name" | "menu_name" | "dropdown-name" | "menu-name" => { dropdown = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
                     "markdown" => { markdown = bytes_are_true(val_range, false) },
                     _ => {},
                 }
@@ -476,6 +479,7 @@ impl PageFormat {
                 user,
                 menu,
                 menu_dropdown,
+                dropdown,
             })
         } else {
             // println!("Required fields missing for PageContext:\nuri: `{}`\ntitle: `{}`", &uri, &title);
@@ -492,7 +496,7 @@ pub fn json_menu(json: &[u8]) -> Option<Vec<TemplateMenu>> {
     if let Ok(d) = des {
         Some(d)
     } else if let Err(e) = des {
-        println!("Error deserializing the json menu:\n{:?}", e);
+        println!("Error deserializing the json menu:\n{:?}\n in: `{}`", e, String::from_utf8_lossy(json).into_owned());
         None
     } else {
         println!("Error :(");
@@ -563,6 +567,7 @@ impl PageInfo {
             menu_dropdown: None,    // Default values, this is only used for the yaml deserialization and not used with any actual menus
             gentime: String::with_capacity(200),
             base_url: String::with_capacity(200),
+            dropdown: String::new(),
         };
         context
     }
