@@ -19,7 +19,7 @@ use std::ffi::OsStr;
 use std::collections::HashMap;
 use std::sync::{Mutex, Arc, RwLock};
 use std::sync::atomic::AtomicUsize;
-// use rocket;
+use rocket;
 use rocket::http::Status;
 use rocket::State;
 use rocket_contrib::Template;
@@ -239,32 +239,33 @@ impl ContentCacheLock {
     // Note: this is a work in progress
     //         the rocket instance needs to be passed into it.  How?
     // Iterate through the pages directory and request the page (/content/<page>)
-    // pub fn cache(rocket: rocket::Rocket, dir: &str) {
-    //     use rocket::local::Client;
+    pub fn cache(rocket: rocket::Rocket, dir: &str) {
+        use rocket::local::Client;
         
-    //     // let client = Client::new(rocket::ignite()).expect("valid rocket");
-    //     // let req = client.post("/content/").dispatch();
+        // let client = Client::new(rocket::ignite()).expect("valid rocket");
+        // let req = client.post("/content/").dispatch();
         
-    //     let client_rst = Client::new(rocket);
-    //     if let Ok(client) = client_rst {
-    //         let dir_iter = fs::read_dir(dir);
-    //         if let Ok(dir) = dir_iter {
-    //             for file_rst in dir {
-    //                 if let Ok(file) = file_rst {
-    //                     // let name = file.file_name().to_string_lossy().into_owned();
-    //                     let name_opt = file.path().file_stem();
-    //                     if let Some(name_os) = name_opt {
-    //                         let name = name_os.to_string_lossy().into_owned();
+        let client_rst = Client::new(rocket);
+        if let Ok(client) = client_rst {
+            let dir_iter = fs::read_dir(dir);
+            if let Ok(dir) = dir_iter {
+                for file_rst in dir {
+                    if let Ok(file) = file_rst {
+                        // let name = file.file_name().to_string_lossy().into_owned();
+                        let name_path = file.path();
+                        let name_opt = name_path.file_stem();
+                        if let Some(name_os) = name_opt {
+                            let name = name_os.to_string_lossy().into_owned();
                             
-    //                         let page = format!("/content/{}", &name);
-    //                         client.post(&page).dispatch();
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
+                            let page = format!("/content/{}", &name);
+                            client.get(page).dispatch();
+                        }
+                    }
+                }
+            }
+        }
         
-    // }
+    }
     
     // pub fn retrieve() -> 
     
@@ -451,7 +452,7 @@ impl PageFormat {
         && &title != "" {
             Some(PageContext {
                 uri,
-                title: if title_ok { title } else { DEFAULT_PAGE_TEMPLATE.to_owned() },
+                title: if title_ok { title } else { String::new() },
                 template: if &template != "" { template } else { DEFAULT_PAGE_TEMPLATE.to_owned() },
                 js,
                 description,

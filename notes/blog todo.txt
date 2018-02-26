@@ -100,6 +100,15 @@ Non-Blog
 
 
 Blogr
+	May be able to cache the static pages, rocket does not need to be launched 
+		to handle local requests, right before launch call the cache function
+
+	Test markdown and other static page/content metadata, including menus
+
+	Try converting PGCONN to a RwLock instead of Mutex
+
+	http2 optimized template is looking for fonts in /assets/css/fonts
+
 	make a route that updates the context cache and content (page) cache
 		call 
 		ContentContext::load(STATIC_PAGES_DIR)
