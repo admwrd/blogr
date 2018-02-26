@@ -419,7 +419,7 @@ impl PageFormat {
                     "title" => { title = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
                     "template" => { template = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
                     "js" => { js = Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned()); },
-                    "description" => { description = Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned()); },
+                    "description" => { description = Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned().replace("{{base_url}}", BLOG_URL)); },
                     "admin" | "administrator" => { admin = bytes_are_true(&self.yaml[fs+1..end], false); },
                     "user" | "logged_in" | "logged-in" => { user = bytes_are_true(&self.yaml[fs+1..end], false); },
                     "menu" => { menu = json_menu(&self.yaml[fs+1..end]); },
@@ -459,7 +459,9 @@ impl PageFormat {
                 description,
                 body: {
                     // String::from_utf8_lossy(&self.html).into_owned().trim().to_owned()
-                    let body = String::from_utf8_lossy(&self.html).into_owned();
+                    
+                    // /* Pre-replace */ let body = String::from_utf8_lossy(&self.html).into_owned();
+                    let body = String::from_utf8_lossy(&self.html).into_owned().replace("{{base_url}}", BLOG_URL);
                     if markdown {
                         // let cr_options = ComrakOptions { ext_header_ids: Some("section-".to_string()), .. COMRAK_OPTIONS };
                          let html: String = markdown_to_html(&body, &COMRAK_OPTIONS);

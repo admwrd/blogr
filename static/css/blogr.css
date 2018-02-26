@@ -1,4 +1,8 @@
 
+img.wrap, a[data-fancybox] img {
+        width: 100%;
+}
+
 @media print {
     
     .v-article-tags a, .v-article-tags a:link, .v-article-tags a:visited {

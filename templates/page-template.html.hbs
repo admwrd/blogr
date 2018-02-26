@@ -31,6 +31,37 @@
 </button>
 <a class="blog-logo navbar-brand" href="{{base_url}}">Vishus Blog</a>
 <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+<ul class="v-nav navbar-nav mr-auto">
+    {{~#each menu~}}
+      {{~#if this.separator~}}
+        <li class="v-nav-item nav-item v-divider {{this.classes}}"></li>
+      {{~^~}}
+        <li class="v-nav-item nav-item {{this.classes}}"><a class="nav-link" href="{{this.url}}">{{{this.name}}}</a></li>
+      {{~/if~}}
+    {{~/each~}}
+    {{~#if dropdown~}}
+    <li class="v-nav-item nav-item dropdown">
+        <a class="v-nav-login nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{~#if dropdown_name}}{{dropdown_name}}{{else}}Menu{{/if}}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        {{~#each dropdown~}}
+          {{~#if this.separator~}}
+              {{~#if this.name~}}
+              <h6 class="dropdown-header {{{this.classes}}}">{{{this.name}}}</h6>
+              {{~else~}}
+              <div class="dropdown-divider {{{this.classes}}}"></div>
+              {{~/if}}
+          {{~else~}}
+              <a class="dropdown-item {{{this.classes}}}" href="{{this.url}}">{{{this.name}}}</a>
+          {{~/if}}
+        {{~/each~}}
+        </div>
+    </li>
+    {{~/if~}}
+</ul>
+
   <form id="search-form" action="{{base_url}}search" method="get" class="form-inline my-2 my-lg-0">
       <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" value="{{#if search.q}}{{search.q}}{{/if}}" aria-label="Search">
       <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">

@@ -131,6 +131,9 @@ use std::path::{Path, PathBuf};
 use std::sync::{Mutex, Arc, RwLock};
 use std::collections::HashMap;
 
+// use std::cell::Cell;
+// use std::rc::Rc;
+
 // use chashmap::*;
 
 // Rocket File Cache - Removed
@@ -319,6 +322,9 @@ fn main() {
     let views: TotalHits = TotalHits::load();
     
     let rock = rocket::ignite();
+    // let rock = Rc::new(rocket::ignite());
+    // let mut rock = Rc::new(rocket::ignite());
+    // let mut rock = Cell::new(rocket::ignite());
     
     // let statics: Mutex<PageMap> = Mutex::new(PageMap::load_all());
     // let statics: PagesMutex = PagesMutex( Mutex::new(  PageMap::load_all()  ) );
@@ -339,6 +345,7 @@ fn main() {
     init_pg_pool().get().unwrap();
     
     // rocket::ignite()
+    
     rock
         // .manage(vcache)
         .manage(data::init_pg_pool())

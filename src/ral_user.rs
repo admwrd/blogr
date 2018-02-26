@@ -311,11 +311,20 @@ impl AuthorizeForm for UserForm {
             Ok(cooky) => {
                 let cid = Self::cookie_id();
                 let contents = cooky.store_cookie();
-                cookies.add_private(
-                    Cookie::build(cid, contents)
-                        .secure(true)
-                        .finish()
-                );
+                
+                if cfg!(not(production)) {
+                    cookies.add_private(
+                        Cookie::build(cid, contents)
+                            .finish()
+                    );
+                } else {
+                    cookies.add_private(
+                        Cookie::build(cid, contents)
+                            .secure(true)
+                            .finish()
+                    );
+                }
+                
                 Ok(Redirect::to(ok_redir))
             },
             Err(fail) => {
