@@ -237,7 +237,8 @@ impl ContentCacheLock {
     }
     
     // Note: this is a work in progress
-    //         the rocket instance needs to be passed into it.  How?
+    //         the rocket instance needs to be passed into the Client::new()
+    //         but also needs to be in main, and can't use a mutable reference :(
     // Iterate through the pages directory and request the page (/content/<page>)
     pub fn cache(rocket: rocket::Rocket, dir: &str) {
         use rocket::local::Client;

@@ -100,6 +100,8 @@ Non-Blog
 
 
 Blogr
+	May need to write some javascript to automatically add FancyBox to images in articles
+
 	May be able to cache the static pages, rocket does not need to be launched 
 		to handle local requests, right before launch call the cache function
 

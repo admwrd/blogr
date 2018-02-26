@@ -425,6 +425,13 @@ fn main() {
             static_files
         ])
         .catch(errors![ error_internal_error, error_not_found ])
+        
+    // DOES NOT WORK - moved values and stuff :(
+    //     ;
+    //     {
+    //         ContentCacheLock::cache(&mut rock, STATIC_PAGES_DIR);
+    //     }
+    // rock
         .launch();
 }
 
