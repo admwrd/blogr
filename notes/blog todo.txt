@@ -38,6 +38,9 @@ Compile for production:
 
 
 Blog Theme
+	Turn off/cleanup console messages in production mode
+		use if cfg!(not(production)) { println!(...); }
+
 	Add css styling and layout support for the following bootstrap items: 
 		figures & asides, cards, carousels, jumotrons, listgroups?, popovers, scrollspy, tooltips
 
@@ -102,142 +105,20 @@ Non-Blog
 Blogr
 	May need to write some javascript to automatically add FancyBox to images in articles
 
-	May be able to cache the static pages, rocket does not need to be launched 
-		to handle local requests, right before launch call the cache function
-
-	Test markdown and other static page/content metadata, including menus
+	Iterate through json links and replace {{BASE_URL}} with BLOG_URL and {{BASE}} with BASE
 
 	Try converting PGCONN to a RwLock instead of Mutex
 
-	http2 optimized template is looking for fonts in /assets/css/fonts
-
-	make a route that updates the context cache and content (page) cache
-		call 
-		ContentContext::load(STATIC_PAGES_DIR)
-		ContentCacheLock::cache(rocket, STATIC_PAGES_DIR)
-
-	Could eventually change the static pages to use the testing facilities instead of responders
-		generate the page cache using the testing utilities instead of creating
-			a data structure that holds information that is used to retrieve the file
-			in the responder which will render the template and fill the cache
-
-	Test regular header/footers against the HTTP2 optimized versions
-		reminder: test on the webserver, this provides more realistic network times
-			  AND the nginx reverse proxy uses HTTP2, the built-in server in the
-			  blog app DOES NOT USE HTTP2
-			  only on webserver can this be tested
-
-	Add gentime to ContentRequest and calculate gentime before passing context to template
-		Can use blank string; right before template is rendered calculate gentime 
-		and update the gentime field
-
-	Maybe add a couple variables in the static pages and maybe even regular articles
-		   - something like {{BASE_URL}} gets replaced with https://some.com/
-		add a javascript variable at the end of the page
-			in the footer the after.js loads before the custom js
-			so add the variable in the template itself and add a check in the
-			after.js to see if it exists
-				if exists replace all links in the body that don't start with
-				www. http:// https:// ftp:// or another protocol
-				check if it matches this: ^/|(?:www[0-9]*)|(?:\w*://)
-
-	Add a template called content.html.hbs
-	
-	Add loading and retrieval methods to ContentContext to load all pages from a directory
-	
-	
-	
-
-	Maybe add a ContentHits HashMap to track how many hits each one gets
-		could use a concurrent hashmap possibly
-		his could be used to trim the cache when the size is too big
-			when cache reaches or exceeds CONTENT_CACHE_LIMIT run a prune() method
-
-	Could add arbitrary context to static pages by adding an extras field
-		the extras field would be a json serialized Value
-		which would be deserialized into a json Value and added to an extra field in the struct
-
-	Maybe make static pages module a type
-		in the route the function will define an Option<StaticPage> type as a parameter
-		the StaticPage will use Request to cache Templates as bytes
-			along with req.route() to figure out which page was requested
-		if there was no page found for that route it returns a 404 or something
-		
-		I Think It's Time To Merge Yamltest Into Blogr
-
-		But how to deal with mutex locking?
-			could use Request to get State then lock it
-
-	Add BASE (BLOG_URL minus the ending `/`) to all TemplateMenu's that are deserialized from JSON
-	Add json serialized menu and dropdown_menu fields to PageContext
-	Add admin and user fields to PageContext to specify that a page requires admin or user privileges
-
-	Make yamltest look for different line endings based on operating system
-		instead of a literal newline use \n and \r\n
-
-	Test if byte vectors passed into a Template as context (a field like body being a Vec<u8> instead of String) produces string output
-		or if the output of the byte vector is just numbers
-
-	Give all <h1> elements id's with their value (replace all spaces with hyphens of course)
-	
 	Generate a menu with the table of contents of the article
 		Find all <h1> elements and make a table of contents using the headers
 		Could be generated upon creation and edit
 			Either make a separate database column for storing the html for the table of contents
 			Or make a section at the beginning or end (beginning may be bad because descriptions default to first 200 chars)
 				that is separated by an HTML comment or something
-
-	On blog app startup load files from a directory and generate Template instances with the file contents
-		Could also load on demand if the files get to be too big
-		Could use either serialization or Rust source files
-		Generate a Template or Express structure which is stored for quick responses
-		Store the cached Templates/Express items in a HashMap or BTreeMap
-		Allow access to the articles by something like /content/<url-title>
-		Maybe store serialized menu and modify the basic template to create a menu
-		Maybe make a parent field and if the parent field is not empty make a link to it
-			parent-title
-			parent-url
-		Could use https://github.com/tilpner/includedir to include files at compile time
-		Use Twoway
-
-	Store:
-		hbs template
-		url-title
-		article title
-		body
-		extra js
-		description
-	
-
-	Create a minimal template with stripped down css that is used for code examples and other single-document items
-		no checks for user login cookies
-		no nav bars
-		has logo still, maybe upper left corner of bubble box
-		Tempplate context:
-			page head title
-			title
-			url - used for title link
-			gen time
-			body
-			last modified ???  Maybe if loading from files
-			
-	Remove console logs!
-
-	Load articles from files into the Article template somehow
-		could make the articles rust files, either using modules or include!()
-
 	Make favorite icons (32x32, 48x48, 128x128, 192x192)
-	
 	
 	Learn how to use branches in git so development can be done in one branch 
 		and when it compiles and is stable/ready be merged to the stable master
-
-	Maybe load articles from a folder
-		Could use jekyll (layout, title, permalink, description, date, tags)
-
-	Maybe make create page redirect user to new article page
-
-	Remove async from head javascript (before)
 
 	Add the Accept and Express modules as pages
 		use the /code/accept.html and /code/express.html (or .rs instead of .html) routes
@@ -575,6 +456,125 @@ Rocket-auth-login:
 
 
 DONE
+	May be able to cache the static pages, rocket does not need to be launched 
+		to handle local requests, right before launch call the cache function
+
+	Test markdown and other static page/content metadata, including menus
+
+	http2 optimized template is looking for fonts in /assets/css/fonts
+
+	make a route that updates the context cache and content (page) cache
+		call 
+		ContentContext::load(STATIC_PAGES_DIR)
+		ContentCacheLock::cache(rocket, STATIC_PAGES_DIR)
+
+	Could eventually change the static pages to use the testing facilities instead of responders
+		generate the page cache using the testing utilities instead of creating
+			a data structure that holds information that is used to retrieve the file
+			in the responder which will render the template and fill the cache
+
+	Test regular header/footers against the HTTP2 optimized versions
+		reminder: test on the webserver, this provides more realistic network times
+			  AND the nginx reverse proxy uses HTTP2, the built-in server in the
+			  blog app DOES NOT USE HTTP2
+			  only on webserver can this be tested
+
+	Add gentime to ContentRequest and calculate gentime before passing context to template
+		Can use blank string; right before template is rendered calculate gentime 
+		and update the gentime field
+
+	Maybe add a couple variables in the static pages and maybe even regular articles
+		   - something like {{BASE_URL}} gets replaced with https://some.com/
+		add a javascript variable at the end of the page
+			in the footer the after.js loads before the custom js
+			so add the variable in the template itself and add a check in the
+			after.js to see if it exists
+				if exists replace all links in the body that don't start with
+				www. http:// https:// ftp:// or another protocol
+				check if it matches this: ^/|(?:www[0-9]*)|(?:\w*://)
+
+	Add a template called content.html.hbs
+	
+	Add loading and retrieval methods to ContentContext to load all pages from a directory
+	
+	Maybe add a ContentHits HashMap to track how many hits each one gets
+		could use a concurrent hashmap possibly
+		his could be used to trim the cache when the size is too big
+			when cache reaches or exceeds CONTENT_CACHE_LIMIT run a prune() method
+
+	Could add arbitrary context to static pages by adding an extras field
+		the extras field would be a json serialized Value
+		which would be deserialized into a json Value and added to an extra field in the struct
+
+	Maybe make static pages module a type
+		in the route the function will define an Option<StaticPage> type as a parameter
+		the StaticPage will use Request to cache Templates as bytes
+			along with req.route() to figure out which page was requested
+		if there was no page found for that route it returns a 404 or something
+		
+		I Think It's Time To Merge Yamltest Into Blogr
+
+		But how to deal with mutex locking?
+			could use Request to get State then lock it
+
+	Add BASE (BLOG_URL minus the ending `/`) to all TemplateMenu's that are deserialized from JSON
+	Add json serialized menu and dropdown_menu fields to PageContext
+	Add admin and user fields to PageContext to specify that a page requires admin or user privileges
+
+	Make yamltest look for different line endings based on operating system
+		instead of a literal newline use \n and \r\n
+
+	Test if byte vectors passed into a Template as context (a field like body being a Vec<u8> instead of String) produces string output
+		or if the output of the byte vector is just numbers
+
+	Give all <h1> elements id's with their value (replace all spaces with hyphens of course)
+	
+	On blog app startup load files from a directory and generate Template instances with the file contents
+		Could also load on demand if the files get to be too big
+		Could use either serialization or Rust source files
+		Generate a Template or Express structure which is stored for quick responses
+		Store the cached Templates/Express items in a HashMap or BTreeMap
+		Allow access to the articles by something like /content/<url-title>
+		Maybe store serialized menu and modify the basic template to create a menu
+		Maybe make a parent field and if the parent field is not empty make a link to it
+			parent-title
+			parent-url
+		Could use https://github.com/tilpner/includedir to include files at compile time
+		Use Twoway
+
+	Store:
+		hbs template
+		url-title
+		article title
+		body
+		extra js
+		description
+	
+
+	Create a minimal template with stripped down css that is used for code examples and other single-document items
+		no checks for user login cookies
+		no nav bars
+		has logo still, maybe upper left corner of bubble box
+		Tempplate context:
+			page head title
+			title
+			url - used for title link
+			gen time
+			body
+			last modified ???  Maybe if loading from files
+			
+	Remove console logs!
+
+	Load articles from files into the Article template somehow
+		could make the articles rust files, either using modules or include!()
+
+	Maybe load articles from a folder
+		Could use jekyll (layout, title, permalink, description, date, tags)
+
+	Maybe make create page redirect user to new article page
+
+	Remove async from head javascript (before)
+
 	Move flash message option in templates method to the info part instead of the TemplateBody part
 		Change all templates' {{~#if msg~}}{{msg}}{{~/msg~}} to use info.msg
 		Change all handlebars {{#if msg}} to display {{{msg}}} (to show html)
