@@ -1,0 +1,370 @@
+
+
+vishus@localhost:/opt/letsencrypt$ cd /home/vishus
+vishus@localhost:~$ mkdir le-pad
+vishus@localhost:~$ cd le-pad
+vishus@localhost:~/le-pad$ wget https://dl.eff.org/certbot-auto
+Will not apply HSTS. The HSTS database must be a regular and non-world-writable file.
+ERROR: could not open HSTS store at '/home/vishus/.wget-hsts'. HSTS will be disabled.
+--2018-01-12 08:44:09--  https://dl.eff.org/certbot-auto
+Resolving dl.eff.org (dl.eff.org)... 2a04:4e42:a::201, 151.101.40.201
+Connecting to dl.eff.org (dl.eff.org)|2a04:4e42:a::201|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 57381 (56K) [application/octet-stream]
+Saving to: ‘certbot-auto’
+
+certbot-auto                        100%[=================================================================>]  56.04K  --.-KB/s    in 0.003s
+
+2018-01-12 08:44:10 (17.1 MB/s) - ‘certbot-auto’ saved [57381/57381]
+
+vishus@localhost:~/le-pad$ chmod a+x ./certbot-auto
+
+
+vishus@localhost:~/le-pad$ sudo ./certbot-auto -d vishus.net --nginx --dry-run
+--dry-run currently only works with the 'certonly' or 'renew' subcommands ('run')
+vishus@localhost:~/le-pad$ sudo ./certbot-auto -d vishus.net --nginx
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Plugins selected: Authenticator nginx, Installer nginx
+Obtaining a new certificate
+Performing the following challenges:
+Client with the currently selected authenticator does not support any combination of challenges that will satisfy the CA.
+Client with the currently selected authenticator does not support any combination of challenges that will satisfy the CA.
+vishus@localhost:~/le-pad$ sudo certbot --authenticator standalone --installer nginx -d vishus.net --pre-hook "service nginx stop" --post-hoo k "service nginx start"
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Plugins selected: Authenticator standalone, Installer nginx
+Running pre-hook command: service nginx stop
+Obtaining a new certificate
+Performing the following challenges:
+http-01 challenge for vishus.net
+Waiting for verification...
+Cleaning up challenges
+Running post-hook command: service nginx start
+Cannot find a VirtualHost matching domain vishus.net. In order for Certbot to correctly perform the challenge please add a corresponding server_name directive to your nginx configuration: https://nginx.org/en/docs/http/server_names.html
+
+IMPORTANT NOTES:
+ - Unable to install the certificate
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/vishus.net/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/vishus.net/privkey.pem
+   Your cert will expire on 2018-04-12. To obtain a new or tweaked
+   version of this certificate in the future, simply run certbot again
+   with the "certonly" option. To non-interactively renew *all* of
+   your certificates, run "certbot renew"
+
+
+
+sudo -H ./letsencrypt-auto certonly --standalone -d vishus.net
+
+
+
+
+
+==================================================================================================
+
+vishus@localhost:~/le-pad$ ./certbot-auto --help
+Requesting to rerun ./certbot-auto with root privileges...
+
+-------------------------------------------------------------------------------
+
+  certbot-auto [SUBCOMMAND] [options] [-d DOMAIN] [-d DOMAIN] ...
+
+Certbot can obtain and install HTTPS/TLS/SSL certificates.  By default,
+it will attempt to use a webserver both for obtaining and installing the
+certificate. The most common SUBCOMMANDS and flags are:
+
+obtain, install, and renew certificates:
+    (default) run   Obtain & install a certificate in your current webserver
+    certonly        Obtain or renew a certificate, but do not install it
+    renew           Renew all previously obtained certificates that are near
+expiry
+   -d DOMAINS       Comma-separated list of domains to obtain a certificate for
+
+  --apache          Use the Apache plugin for authentication & installation
+  --standalone      Run a standalone webserver for authentication
+  --nginx           Use the Nginx plugin for authentication & installation
+  --webroot         Place files in a server's webroot folder for authentication
+  --manual          Obtain certificates interactively, or using shell script
+hooks
+
+   -n               Run non-interactively
+  --test-cert       Obtain a test certificate from a staging server
+  --dry-run         Test "renew" or "certonly" without saving any certificates
+to disk
+
+manage certificates:
+    certificates    Display information about certificates you have from Certbot
+    revoke          Revoke a certificate (supply --cert-path)
+    delete          Delete a certificate
+
+manage your account with Let's Encrypt:
+    register        Create a Let's Encrypt ACME account
+  --agree-tos       Agree to the ACME server's Subscriber Agreement
+   -m EMAIL         Email address for important account notifications
+
+More detailed help:
+
+  -h, --help [TOPIC]    print this message, or detailed help on a topic;
+                        the available TOPICS are:
+
+   all, automation, commands, paths, security, testing, or any of the
+   subcommands or plugins (certonly, renew, install, register, nginx,
+   apache, standalone, webroot, etc.)
+-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+vishus@localhost:~$ find / -iname 'acme-nginx' -print 2>/dev/null
+/home/vishus/.local/bin/acme-nginx
+vishus@localhost:~$ cd /home/vishus/.local
+vishus@localhost:~/.local$ ls
+bin  lib
+vishus@localhost:~/.local$ ls -A
+bin  lib
+vishus@localhost:~/.local$ cd bin
+vishus@localhost:~/.local/bin$ ls -A
+acme-nginx
+vishus@localhost:~/.local/bin$ cd acme-nginx
+-bash: cd: acme-nginx: Not a directory
+vishus@localhost:~/.local/bin$ cd acme-nginx
+-bash: cd: acme-nginx: Not a directory
+vishus@localhost:~/.local/bin$ ls -l
+total 4
+-rwxrwxr-x 1 vishus vishus 219 Jan 12 08:33 acme-nginx
+vishus@localhost:~/.local/bin$ sudo acme-nginx -d vishus.net
+sudo: acme-nginx: command not found
+vishus@localhost:~/.local/bin$ vi acme-nginx
+vishus@localhost:~/.local/bin$ bash acme-nginx -d vishus.net
+acme-nginx: line 4: import: command not found
+acme-nginx: line 5: import: command not found
+from: can't read /var/mail/acme_nginx.client
+acme-nginx: line 10: syntax error near unexpected token `('
+acme-nginx: line 10: `    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])'
+vishus@localhost:~/.local/bin$ bash acme-nginx
+acme-nginx: line 4: import: command not found
+acme-nginx: line 5: import: command not found
+from: can't read /var/mail/acme_nginx.client
+acme-nginx: line 10: syntax error near unexpected token `('
+acme-nginx: line 10: `    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])'
+vishus@localhost:~/.local/bin$ acme-nginx
+acme-nginx: command not found
+vishus@localhost:~/.local/bin$ cd /opt/letsencrypt
+vishus@localhost:/opt/letsencrypt$ sudo -H ./letsencrypt-auto certonly --standalone -d vishus.net
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Plugins selected: Authenticator standalone, Installer None
+Obtaining a new certificate
+Performing the following challenges:
+http-01 challenge for vishus.net
+Cleaning up challenges
+Problem binding to port 80: Could not bind to IPv4 or IPv6.
+vishus@localhost:/opt/letsencrypt$ cd /home/vishus
+vishus@localhost:~$ mkdir le-pad
+vishus@localhost:~$ cd le-pad
+vishus@localhost:~/le-pad$ wget https://dl.eff.org/certbot-auto
+Will not apply HSTS. The HSTS database must be a regular and non-world-writable file.
+ERROR: could not open HSTS store at '/home/vishus/.wget-hsts'. HSTS will be disabled.
+--2018-01-12 08:44:09--  https://dl.eff.org/certbot-auto
+Resolving dl.eff.org (dl.eff.org)... 2a04:4e42:a::201, 151.101.40.201
+Connecting to dl.eff.org (dl.eff.org)|2a04:4e42:a::201|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 57381 (56K) [application/octet-stream]
+Saving to: ‘certbot-auto’
+
+certbot-auto                        100%[=================================================================>]  56.04K  --.-KB/s    in 0.003s
+
+2018-01-12 08:44:10 (17.1 MB/s) - ‘certbot-auto’ saved [57381/57381]
+
+vishus@localhost:~/le-pad$ chmod a+x ./certbot-auto
+vishus@localhost:~/le-pad$ ./certbot-auto --help
+Requesting to rerun ./certbot-auto with root privileges...
+
+-------------------------------------------------------------------------------
+
+  certbot-auto [SUBCOMMAND] [options] [-d DOMAIN] [-d DOMAIN] ...
+
+Certbot can obtain and install HTTPS/TLS/SSL certificates.  By default,
+it will attempt to use a webserver both for obtaining and installing the
+certificate. The most common SUBCOMMANDS and flags are:
+
+obtain, install, and renew certificates:
+    (default) run   Obtain & install a certificate in your current webserver
+    certonly        Obtain or renew a certificate, but do not install it
+    renew           Renew all previously obtained certificates that are near
+expiry
+   -d DOMAINS       Comma-separated list of domains to obtain a certificate for
+
+  --apache          Use the Apache plugin for authentication & installation
+  --standalone      Run a standalone webserver for authentication
+  --nginx           Use the Nginx plugin for authentication & installation
+  --webroot         Place files in a server's webroot folder for authentication
+  --manual          Obtain certificates interactively, or using shell script
+hooks
+
+   -n               Run non-interactively
+  --test-cert       Obtain a test certificate from a staging server
+  --dry-run         Test "renew" or "certonly" without saving any certificates
+to disk
+
+manage certificates:
+    certificates    Display information about certificates you have from Certbot
+    revoke          Revoke a certificate (supply --cert-path)
+    delete          Delete a certificate
+
+manage your account with Let's Encrypt:
+    register        Create a Let's Encrypt ACME account
+  --agree-tos       Agree to the ACME server's Subscriber Agreement
+   -m EMAIL         Email address for important account notifications
+
+More detailed help:
+
+  -h, --help [TOPIC]    print this message, or detailed help on a topic;
+                        the available TOPICS are:
+
+   all, automation, commands, paths, security, testing, or any of the
+   subcommands or plugins (certonly, renew, install, register, nginx,
+   apache, standalone, webroot, etc.)
+-------------------------------------------------------------------------------
+vishus@localhost:~/le-pad$ sudo ./certbot-auto -d vishus.net --nginx --dry-run
+--dry-run currently only works with the 'certonly' or 'renew' subcommands ('run')
+vishus@localhost:~/le-pad$ sudo ./certbot-auto -d vishus.net --nginx
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Plugins selected: Authenticator nginx, Installer nginx
+Obtaining a new certificate
+Performing the following challenges:
+Client with the currently selected authenticator does not support any combination of challenges that will satisfy the CA.
+Client with the currently selected authenticator does not support any combination of challenges that will satisfy the CA.
+vishus@localhost:~/le-pad$ sudo certbot --authenticator standalone --installer nginx -d vishus.net --pre-hook "service nginx stop" --post-hoo k "service nginx start"
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Plugins selected: Authenticator standalone, Installer nginx
+Running pre-hook command: service nginx stop
+Obtaining a new certificate
+Performing the following challenges:
+http-01 challenge for vishus.net
+Waiting for verification...
+Cleaning up challenges
+Running post-hook command: service nginx start
+Cannot find a VirtualHost matching domain vishus.net. In order for Certbot to correctly perform the challenge please add a corresponding server_name directive to your nginx configuration: https://nginx.org/en/docs/http/server_names.html
+
+IMPORTANT NOTES:
+ - Unable to install the certificate
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/vishus.net/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/vishus.net/privkey.pem
+   Your cert will expire on 2018-04-12. To obtain a new or tweaked
+   version of this certificate in the future, simply run certbot again
+   with the "certonly" option. To non-interactively renew *all* of
+   your certificates, run "certbot renew"
+vishus@localhost:~/le-pad$ cd ../backups
+vishus@localhost:~/backups$ ls
+blogr                                       blogr-systemd-backup-post-restart.service  executables  nginx
+blogr-service-backup-old-blogr-exe.service  db                                         letsenc      server
+blogr-service-backup.service                default-enabled                            logs         systemd-blogr-attempt1
+vishus@localhost:~/backups$ cd letsenc
+vishus@localhost:~/backups/letsenc$ sudo tar -cvjSf /home/vishus/backups/letsenc/lets-encrypt.tar.bz2 /etc/letsencrypt
+tar: Removing leading `/' from member names
+/etc/letsencrypt/
+/etc/letsencrypt/csr/
+/etc/letsencrypt/csr/0000_csr-certbot.pem
+/etc/letsencrypt/ssl-dhparams.pem
+/etc/letsencrypt/options-ssl-nginx.conf
+/etc/letsencrypt/accounts/
+/etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/
+/etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/
+/etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/3f6dfadb9ff20393d60d9fab8d582a81/
+/etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/3f6dfadb9ff20393d60d9fab8d582a81/private_key.json
+/etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/3f6dfadb9ff20393d60d9fab8d582a81/regr.json
+/etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/3f6dfadb9ff20393d60d9fab8d582a81/meta.json
+/etc/letsencrypt/.updated-options-ssl-nginx-conf-digest.txt
+/etc/letsencrypt/live/
+/etc/letsencrypt/live/vishus.net/
+/etc/letsencrypt/live/vishus.net/fullchain.pem
+/etc/letsencrypt/live/vishus.net/chain.pem
+/etc/letsencrypt/live/vishus.net/README
+/etc/letsencrypt/live/vishus.net/cert.pem
+/etc/letsencrypt/live/vishus.net/privkey.pem
+/etc/letsencrypt/.updated-ssl-dhparams-pem-digest.txt
+/etc/letsencrypt/renewal-hooks/
+/etc/letsencrypt/renewal-hooks/pre/
+/etc/letsencrypt/renewal-hooks/post/
+/etc/letsencrypt/renewal-hooks/deploy/
+/etc/letsencrypt/archive/
+/etc/letsencrypt/archive/vishus.net/
+/etc/letsencrypt/archive/vishus.net/fullchain1.pem
+/etc/letsencrypt/archive/vishus.net/privkey1.pem
+/etc/letsencrypt/archive/vishus.net/cert1.pem
+/etc/letsencrypt/archive/vishus.net/chain1.pem
+/etc/letsencrypt/keys/
+/etc/letsencrypt/keys/0000_key-certbot.pem
+/etc/letsencrypt/renewal/
+/etc/letsencrypt/renewal/vishus.net.conf
+vishus@localhost:~/backups/letsenc$ ls /etc/letsencrypt/live/vishus.net
+ls: cannot access '/etc/letsencrypt/live/vishus.net': Permission denied
+vishus@localhost:~/backups/letsenc$ sudo ls /etc/letsencrypt/live/vishus.net
+cert.pem  chain.pem  fullchain.pem  privkey.pem  README
+vishus@localhost:~/backups/letsenc$ openssl rand -base64 32
+XJyPFUxIUU3QIozfkk/MWyAJwPb3DihykXcEiqOMfVA=
+vishus@localhost:~/backups/letsenc$ sudo vi /etc/letsencrypt/live/vishus.net/chain.pem
+vishus@localhost:~/backups/letsenc$ sudo vi /etc/letsencrypt/live/vishus.net/cert.pem
+vishus@localhost:~/backups/letsenc$ sudo vi /etc/letsencrypt/live/vishus.net/cert.pem
+vishus@localhost:~/backups/letsenc$ sudo vi /etc/letsencrypt/live/vishus.net/chain.pem
+vishus@localhost:~/backups/letsenc$ sudo vi /etc/letsencrypt/live/vishus.net/privkey.pem
+vishus@localhost:~/backups/letsenc$ sudo vi /etc/letsencrypt/live/vishus.net/chain.pem
+
+
+
+
+
+
+vishus@localhost:~$ ls /srv/ftp
+vishus@localhost:~$ ls /etc/letsencrypt/live
+ls: cannot open directory '/etc/letsencrypt/live': Permission denied
+vishus@localhost:~$ ls /etc/letsencrypt/live/vishus.net/
+ls: cannot access '/etc/letsencrypt/live/vishus.net/': Permission denied
+vishus@localhost:~$ sudo /etc/letsencrypt/live/vishus.net/
+[sudo] password for vishus:
+sudo: /etc/letsencrypt/live/vishus.net/: command not found
+vishus@localhost:~$ sudo ls /etc/letsencrypt/live/vishus.net/
+cert.pem  chain.pem  fullchain.pem  privkey.pem  README
+vishus@localhost:~$ sudo vi /etc/hosts
+vishus@localhost:~$ vi /etc/letsencrypt/live/vishus.net/README
+vishus@localhost:~$ sudo vi /etc/letsencrypt/live/vishus.net/README
+vishus@localhost:~$ sudo vi /etc/nginx/snippets/letsencrypt.conf
+vishus@localhost:~$ sudo mkdir -p /var/www/letsencrypt/.well-known/acme-challenge
+vishus@localhost:~$ sudo vi /etc/nginx/snippets/ssl.conf
+vishus@localhost:~$ sudo vi /etc/nginx/sites-available/blog
+vishus@localhost:~$ sudo vi /etc/nginx/sites-available/blog
+vishus@localhost:~$ sudo cp /etc/nginx/sites-available/blog ~/backups/nginx-ssl-config.bak
+vishus@localhost:~$ sudo vi crontab -e
+vishus@localhost:~$ crontab -e
+no crontab for vishus - using an empty one
+
+Select an editor.  To change later, run 'select-editor'.
+  1. /bin/nano        <---- easiest
+  2. /usr/bin/vim.basic
+  3. /usr/bin/vim.tiny
+  4. /bin/ed
+
+Choose 1-4 [1]: 2
+crontab: installing new crontab
+vishus@localhost:~$ cp blogr blogr-ssl
+cp: -r not specified; omitting directory 'blogr'
+vishus@localhost:~$ ls
+backups  blog0                blogr   blogr-archive  blogr-exe-1                   blog.tar.bz2  deploy.env
+blog     blogarchive.tar.bz2  blogr0  blogr-exe      blogr-exe-pre-prod_dev-modes  default       le-pad
+
+
+
+
+
+
+
+
+

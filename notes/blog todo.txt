@@ -1,89 +1,4 @@
 
-Rocket-auth-login
-	Update examples to use the new &mut Cookies for .redirect() and .flash_redirect() as well as ::delete_cookie()
-		Publish with new version number
-
-	Add repository url link in the Cargo.toml file
-	
-	Cleanup the administrator.rs module in the tls_example
-		Remove the password module
-		Cleanup all the commented-out old byte vector password code
-
-	In examples make sure in the process route that the inner form variable is typed:
-		let login: AdministratorForm = form.into_inner().form;
-
-	In examples, in the administrator module change the folowing
-		cookies.remove_private(Cookie::named(AdministratorCooklie::cookie_id()));
-		to
-	        Administrator::delete_cookie();
-	
-	Check the OWASP guide and also check which characters are in the unicode categories
-		allowed by the sanitize functions, basically just make sure they're secure
-
-
-orange:   #de6d11
-dark ora: #853c01
-
-Favorite Header Images:
-	1	feathers
-	2	sci-fi
-	3?	fire
-	6	green sphere things
-	10	red abstract
-
-
-Compile for production:
-	#!/bin/bash
-	 cargo rustc -- --cfg production
-
-
-Blog Theme
-	Turn off/cleanup console messages in production mode
-		use if cfg!(not(production)) { println!(...); }
-
-	Add css styling and layout support for the following bootstrap items: 
-		figures & asides, cards, carousels, jumotrons, listgroups?, popovers, scrollspy, tooltips
-
-		for scrollspy: collect all <h1> tags, add id's to them, and make a table of contents
-
-	Add meta tag generator
-		<meta name="generator" content="MediaWiki 1.31.0-wmf.15"/>
-
-	Font awesome icons to use:
-		linode
-		rocket
-		rss in the rss link
-		font awesome
-		git
-		html5
-		linux
-		firefox chrome edge opera internet-expolorer
-		cubes		for cargo
-
-		fa-picture-o	create/edit image	<i class="fa fa-picture-o" aria-hidden="true"></i>
-
-
-
-v-icon-preview, v-icon-reset, v-icon-preview-end, v-icon-save, v-icon-tags, v-icon-tag 
-v-icon-image, v-icon-copyright, v-icon-title, v-icon-date, v-icon-sort, v-icon-author
-v-icon-stats, v-icon-sort, v-icon-sort-title, v-icon-sort-date, v-icon-user
-
-
-v-icon-at, v-icon-rss, v-icon-pagegen
-
-
-	Cool animated font awesome loading icons:
-		http://fontawesome.io/examples/#animated
-		fa-spinner, fa-refresh, fa-circle-o-notch, and fa-cog with the fa-spin (smooth rotate) or fa-pulse (8 step rotate)
-	Stack font awesome icons:
-		http://fontawesome.io/examples/#stacked
-		use <span class="fa-stack fa-lg"> for large
-			fa-lg (33% increase) fa-2x fa-3x fa-4x fa-5x (make sure to have enough line-height if icons are cropped)
-
-
-
-	cancel siteground hosting from renewing - use support to find out how to stop automatic renewal
-
 
 SCSS
 	Find timestamp of the consumer css file and find the created date
@@ -100,9 +15,80 @@ Non-Blog
 
 	Modify the 3d sphere to have like a red outline or something different
 
-
+Articles
+	Change the link to Configuring A VPS Webserver in the Rust VPS guide to the new article
+		change the link to use whatever aid of the new article is
 
 Blogr
+	Potentially index all header tags (<h1> through <h6>)
+		First header tag starts a list
+		for every same header level put a new list item
+		for every lower header level add a new unordered list for that level
+		for every higher header level, go back to the list of that level
+
+		Example:
+			h1 - cats
+				h2 -cat toys
+					h3 -wands
+					h3 - balls
+						h4 - tennis balls
+						h4 - jingley balls
+						h4 - catnip balls
+						h4 - treat balls
+					h3 - stuff toys
+				h2 - cat food
+					h3 - wet food
+						h4 - wellness brand
+						h4 - dave's brand
+					h3- dry food
+						h4 - purina
+							h5- indoor
+							h5- original
+				h2 - cat furniture
+					h3 -cat mansions
+					h3 - cat perch
+
+	Add a page to unlock locked accounts
+
+	Maybe add {{base_url}} variable to articles
+		replace all {{base_url}} instances with the BLOG_URL
+
+	Add css styling and layout support for the following bootstrap items: 
+		figures & asides, cards, carousels, jumotrons, listgroups?, popovers, scrollspy, tooltips
+
+		for scrollspy: collect all <h1> tags, add id's to them, and make a table of contents
+
+	Add meta tag generator
+		<meta name="generator" content="MediaWiki 1.31.0-wmf.15"/>
+
+
+	Add comments
+		Authorization
+			Only logged in users/admins can make comments
+				do not need to be user if logged in as admin
+			Make a setting that enables/disables users being able to edit/delete their own comments
+				if there are replies to it the body text is just replaced with [[deleted]]
+			Admins can edit or delete comments
+			Admins can also mute a user for a period of time (in days) or ban a user for good
+		Replies
+			Either group replies together
+			quote original message (and keep chronological order)
+			or have no replies
+		Likes
+			Add ability to "like" or "star" each comment, each user can only mark each comment once
+		Captcha - Not For Comments
+			Add captcha to user sign up page, but not for making a comment
+		Approval
+			Maybe have a setting that puts all comments into an approval queue
+			make an admin page to mass approve comments
+				radio to approve or delete by each comment
+				make buttons that change all radio boxes to approve and one to delete
+		Limit Comments
+			Limit the amount of comments a user can post in a given time period
+
+
+	Add user signup page
+
 	May need to write some javascript to automatically add FancyBox to images in articles
 
 	Iterate through json links and replace {{BASE_URL}} with BLOG_URL and {{BASE}} with BASE
@@ -250,6 +236,83 @@ Blogr
 	Make a page that lists articles by date, group by month maybe
 
 
+
+Rocket-auth-login
+	Update examples to use the new &mut Cookies for .redirect() and .flash_redirect() as well as ::delete_cookie()
+		Publish with new version number
+
+	Add repository url link in the Cargo.toml file
+	
+	Cleanup the administrator.rs module in the tls_example
+		Remove the password module
+		Cleanup all the commented-out old byte vector password code
+
+	In examples make sure in the process route that the inner form variable is typed:
+		let login: AdministratorForm = form.into_inner().form;
+
+	In examples, in the administrator module change the folowing
+		cookies.remove_private(Cookie::named(AdministratorCooklie::cookie_id()));
+		to
+	        Administrator::delete_cookie();
+	
+	Check the OWASP guide and also check which characters are in the unicode categories
+		allowed by the sanitize functions, basically just make sure they're secure
+
+
+orange:   #de6d11
+dark ora: #853c01
+
+Favorite Header Images:
+	1	feathers
+	2	sci-fi
+	3?	fire
+	6	green sphere things
+	10	red abstract
+
+
+Compile for production:
+	#!/bin/bash
+	 cargo rustc -- --cfg production
+
+
+Blog Theme
+	Turn off/cleanup console messages in production mode
+		use if cfg!(not(production)) { println!(...); }
+
+	Font awesome icons to use:
+		linode
+		rocket
+		rss in the rss link
+		font awesome
+		git
+		html5
+		linux
+		firefox chrome edge opera internet-expolorer
+		cubes		for cargo
+
+		fa-picture-o	create/edit image	<i class="fa fa-picture-o" aria-hidden="true"></i>
+
+
+
+v-icon-preview, v-icon-reset, v-icon-preview-end, v-icon-save, v-icon-tags, v-icon-tag 
+v-icon-image, v-icon-copyright, v-icon-title, v-icon-date, v-icon-sort, v-icon-author
+v-icon-stats, v-icon-sort, v-icon-sort-title, v-icon-sort-date, v-icon-user
+
+
+v-icon-at, v-icon-rss, v-icon-pagegen
+
+
+	Cool animated font awesome loading icons:
+		http://fontawesome.io/examples/#animated
+		fa-spinner, fa-refresh, fa-circle-o-notch, and fa-cog with the fa-spin (smooth rotate) or fa-pulse (8 step rotate)
+	Stack font awesome icons:
+		http://fontawesome.io/examples/#stacked
+		use <span class="fa-stack fa-lg"> for large
+			fa-lg (33% increase) fa-2x fa-3x fa-4x fa-5x (make sure to have enough line-height if icons are cropped)
+
+
+
+	cancel siteground hosting from renewing - use support to find out how to stop automatic renewal
 
 Design:
 	Figure out a way to make the middle box backgrounds transparent and the outside black still
