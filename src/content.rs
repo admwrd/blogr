@@ -312,13 +312,22 @@ impl PageContext {
             let title = titlecase(&title_new);
             println!("Creating metadata for file stem: {} with title: {}", &name, &title);
             
-            // let lang = match  {}
+            let mut code: bool = false;
+            
+            let ext = ext.to_lowercase();
+            
+            // let lang = match &ext {
+            //     "html" | "htm" | "xhtml" => { code = false; "html" },
+            //     _ => { "" },
+            // };
+            
+            let body = String::from_utf8_lossy(&body).into_owned().replace("{{base_url}}", BLOG_URL);
             
             Ok(
                 PageContext {
                     uri: name,
                     title: title,
-                    body: String::from_utf8_lossy(&body).into_owned().replace("{{base_url}}", BLOG_URL),
+                    body: if code { markdown_to_html(&body, &COMRAK_OPTIONS) } else { body },
                     template: DEFAULT_PAGE_TEMPLATE.to_owned(),
                     js: None,
                     description: Some("".to_owned()),

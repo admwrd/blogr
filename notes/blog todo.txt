@@ -20,6 +20,16 @@ Articles
 		change the link to use whatever aid of the new article is
 
 Blogr
+	Make static code pages' uri include the extension
+	Load all files in the code folder using the page-code-template.html.hbs template
+		change the description field in PageContext struct to the language used by hljs
+		add a <pre><code class="html"> block to trigger highlight js
+
+	Maybe add is_code parameter to load() method, on startup call load() with is_code = false
+		when running with is_code == false, call itself with code = true
+
+	If get_parts() fails, load all content as body and call load_simple()
+
 	Potentially index all header tags (<h1> through <h6>)
 		First header tag starts a list
 		for every same header level put a new list item
