@@ -181,13 +181,22 @@ impl ContentContext {
                         // if no file type can be found skip the file
                         continue;
                     }
+                    let path = file.path();
+                    
+                    let ext = if let Some(ext_os) = path.extension() {
+                        ext_os.to_string_lossy().into_owned()
+                    } else {
+                        "".to_owned()
+                    };
+                    
                     let name = file.file_name().to_string_lossy().into_owned();
                     if !name.ends_with(".page") && !name.ends_with(".md") {
+                        if name.ends_with(".bak") { continue; }
                         // if file is does not have metadata assign
                         // the title and uri to be the name of the file
                         // (for title replace hypens/underscores with spaces and titlecase it)
-                        let path = file.path();
-                        let load_rst = PageContext::load_simple(&path);
+                        // let path = file.path();
+                        let load_rst = PageContext::load_simple(&path, &ext);
                         if let Ok(ctx) = load_rst {
                             size += ctx.body.len();
                             println!("Adding simple file: `{}`", path.display());
@@ -201,7 +210,6 @@ impl ContentContext {
                         continue;
                     }
                     
-                    let path = file.path();
                     
                     // let loaded = ::static_pages::PageContext::load(&path);
                     let loaded = PageContext::load(&path);
@@ -294,13 +302,17 @@ impl ContentCacheLock {
 
 
 impl PageContext {
-    pub fn simple_metadata(path: &Path, body: Vec<u8>) -> Result<PageContext, String> {
+    pub fn simple_metadata(path: &Path, ext: &str, body: Vec<u8>) -> Result<PageContext, String> {
         let stem_opt = path.file_stem();
         if let Some(stem) = stem_opt {
             let name = stem.to_string_lossy().into_owned();
             
+            
             let title_new = name.clone().replace("-", " ").replace("_", " ");
             let title = titlecase(&title_new);
+            println!("Creating metadata for file stem: {} with title: {}", &name, &title);
+            
+            // let lang = match  {}
             
             Ok(
                 PageContext {
@@ -309,7 +321,7 @@ impl PageContext {
                     body: String::from_utf8_lossy(&body).into_owned().replace("{{base_url}}", BLOG_URL),
                     template: DEFAULT_PAGE_TEMPLATE.to_owned(),
                     js: None,
-                    description: None,
+                    description: Some("".to_owned()),
                     gentime: String::new(),
                     base_url: BLOG_URL.to_owned(),
                     admin: false,
@@ -326,13 +338,13 @@ impl PageContext {
         }
         
     }
-    pub fn load_simple(path: &Path) -> Result<Self, String> {
+    pub fn load_simple(path: &Path, ext: &str) -> Result<Self, String> {
         if let Ok(mut file) = File::open(path) {
             if let Ok(metadata) = file.metadata() {
                 let mut buffer: Vec<u8> = Vec::with_capacity( (metadata.len() + 50) as usize );
                 file.read_to_end(&mut buffer);
                 
-                PageContext::simple_metadata(path, buffer)
+                PageContext::simple_metadata(path, ext, buffer)
                 
             } else {
                 Err( format!("Could not load metadata for {}", path.display()) )
