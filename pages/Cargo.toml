@@ -1,0 +1,143 @@
+[package]
+name = "your_app"
+version = "0.1.0"
+authors = ["Your Name <your_email@your_domain.com>"]
+
+
+description = "Your description."
+
+documentation = "..."
+homepage = "https://github.com/your_name/your_app"
+
+# relative to root
+readme = "readme.md"
+
+# up to 5 keywords
+keywords = ["some", "keywords", "go", "here"]
+
+# This is a list of up to five categories that must match exactly
+# List of categories available at crates.io/category_slugs
+categories = ["authentication", "web-programming", "database", "text-processing"]
+
+# This is a string description of the license for this package.  Multiple licenses can be separated with a `/`.
+license = "Apache-2.0"
+
+exclude = ["database", "examples/**"]
+# another possibility for exclude:
+#   exclude = ["build/**/*.o", "doc/**/*.html"]
+
+
+
+[dependencies]
+# an implementation of the brotli compression algorithm - very good compression and decent speed
+brotli = "1.0.9"
+
+# date and time data structures and methods
+chrono = "0.4.0"
+
+# allows concurrent reads and writes to a hashmap
+chashmap = "2.2.0"
+
+# a great markdown processor. It's fast, configurable, and very powerful
+comrak = "0.2.5"
+
+# loads a file as environmental variables, useful for passwords
+dotenv = "0.10.1"
+dotenv_macros = "0.10.0"
+
+# diesel is an ORM
+diesel = { version = "0.16.0", features = ["postgres"] }
+diesel_codegen = { version = "0.16.0", features = ["postgres"] }
+
+# Provides facade of macros for logging 
+# can log to file/network/etc depends on the facade implementation
+# log = "0.3.8"
+
+# Log debug information to console using debug!() and similar macros
+# env_logger = "0.4.3"
+
+# Enable handlebars
+handlebars = "0.29.*"
+
+# Functions to escape html code
+htmlescape = "0.3.1"
+
+# Create static references to lazily-initialized code
+lazy_static = "0.2.8"
+
+# A great crate for compression, very fast.  
+# I have used the gzip and deflate modules and have seen good results
+libflate = "0.1.12"
+
+# A useful crate for processing multipart file uploads
+# multipart = "0.13.3"
+
+# The rust postgresql database driver
+postgres = { version = "0.15.1", features = ["with-chrono"] }
+# or without chrono:
+#   postgres = "0.15.1"
+
+# A database connection pool
+r2d2 = "0.7.4"
+r2d2_postgres = "0.13.0"
+
+# Fast, efficient regular expressions
+regex = "0.2.2"
+
+# Enables Serde, a serialization/deserialization framework
+serde = "1.0.11"
+# Enables derive for Serialize and Deserialize
+serde_derive = "1.0.11"
+
+# Enables json (de)serialization using Serde
+serde_json = "1.0.2"
+
+# Enable yaml (de)serialization using Serde
+serde_yaml = "0.7.3"
+# Enable MessagePack (de)serialization using Serde
+rmp-serde = "0.13.7"
+
+# Enable rocket, assuming not using TLS, for TLS see bottom
+rocket = "0.3.3"
+# Enable derive codegen in Rocket, if using templates see following line or bottom
+rocket_codegen = "0.3.3"
+rocket_contrib = { version = "0.3.3", default-features = false, features= [""] }
+
+# A crate to help logins
+rocket-auth-login = "0.2.2"
+
+# A file cache for use with Rocket
+rocket-file-cache = "0.10.1"
+
+# Generates RSS feeds
+rss = "1.*"
+
+# The time crate provides some simple methods for dealing with time
+time = "0.1"
+
+# Convert a string to titlecase
+titlecase = "0.10.0"
+
+# Quickly find a string or bytes, optionally with simd acceleration
+twoway = { version = "0.1.7", features=["pcmp"] }
+
+# Encodes/decodes url encoded strings
+urlencoding = "1.0.*"
+
+
+# rocket_contrib = { version = "0.3.3", default-features = false, features= [""] }
+# or
+[dependencies.rocket_contrib]
+version = "0.3.3"
+default-features = false
+features = ["handlebars_templates"]
+# path = "contrib"
+
+[dependencies.rocket]
+version = "0.3.3"
+features = ["tls"]
+
+
+
+
+

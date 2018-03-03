@@ -1,3 +1,7 @@
+uri: rocket-web-apps
+title: Rust Web App Design Using Rocket
+description: Tutorial on Rust web application design using the Rocket web framework.
+----------
 # Rust Web Apps Using Rocket
 
 ## Rocket
