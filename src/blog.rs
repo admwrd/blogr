@@ -20,7 +20,7 @@ use htmlescape::*;
 
 use postgres::{Connection};
 
-use super::{MAX_CREATE_TITLE, MAX_CREATE_DESCRIPTION, MAX_CREATE_TAGS, DESC_LIMIT};
+use super::{BLOG_URL, MAX_CREATE_TITLE, MAX_CREATE_DESCRIPTION, MAX_CREATE_TAGS, DESC_LIMIT};
 
 use rocket_auth_login::sanitization;
 // not used anymore
@@ -722,7 +722,7 @@ impl Article {
             title: self.title.clone(),
             posted_machine: self.posted.format("%Y-%m-%dT%H:%M:%S").to_string(),
             posted_human: self.posted.format("%Y-%m-%d @ %I:%M%P").to_string(),
-            body: self.body.clone(),
+            body: self.body.clone().replace("{{base_url}}", BLOG_URL),
             tags: self.tags.clone(),
             description: self.description.clone(),
             userid: self.userid,
