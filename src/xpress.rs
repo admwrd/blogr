@@ -410,12 +410,16 @@ impl<'a> Responder<'a> for Express {
         response.header(self.content_type);
         
         
+        // Do not print out any headers for TTL less than -1 (like -2)
+        // This allows the cache headers to be omitted
         if self.ttl == -1 {
             // `Pragma: no-cache` is Not supported by all browsers in the response
+            // Note: `Cache-Control: no-store, no-cache` will prevent IE from 
+            //   allowing the file to be downloaded using HTTPS
             response.raw_header("Pragma", "no-cache");
             response.raw_header("Cache-Control", "no-store");
             response.raw_header_adjoin("Cache-Control", "no-cache, no-store, must-revalidate");
-        } else {
+        } else if self.ttl >= 0 {
             // response.raw_header("Cache-Control", format!("max-age={}, must-revalidate", self.ttl));
             response.raw_header("Cache-Control", format!("max-age={}", self.ttl));
         }

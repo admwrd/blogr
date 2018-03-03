@@ -186,8 +186,10 @@ impl ContentContext {
                     }
                     
                     let ext = if let Some(ext_os) = path.extension() {
-                        ext_os.to_string_lossy().into_owned()
-                    } else { "".to_owned() };
+                        ext_os.to_string_lossy().into_owned().to_lowercase()
+                    } else { "unknown".to_owned() };
+                    
+                    if ext == "bak" || ext == "old" { continue; }
                     
                     let load_rst = match ext.as_ref() {
                         "html" | "htm" | "xhtml" => { PageContext::load_plain(&path, name) },
@@ -197,9 +199,33 @@ impl ContentContext {
                             } else { name };
                             PageContext::load_metadata(&path, stem)
                         },
+                        // If no extension assume it is a markdown file
+                        //   or it could also be viewed as code without syntax highlighting
+                        "" => { PageContext::load_metadata(&path, name) },
+                        "rs" => { PageContext::load_code(&path, name, "rust") },
+                        "h" => { PageContext::load_code(&path, name, "cpp") },
+                        "js" => { PageContext::load_code(&path, name, "javascript") },
+                        "md" | "markdown" | "mdown" => { PageContext::load_code(&path, name, "markdown") },
+                        "py" | "pyw" => { PageContext::load_code(&path, name, "python") },
+                        "rb" => { PageContext::load_code(&path, name, "ruby") },
+                        "bash" => { PageContext::load_code(&path, name, "bash") },
+                        "sh" => { PageContext::load_code(&path, name, "shell") },
+                        // docker is a valid highlightjs alias
+                        // "docker" => { PageContext::load_code(&path, name, "dockerfile") },
+                        "ahk" => { PageContext::load_code(&path, name, "autohotkey") },
+                        "au3" => { PageContext::load_code(&path, name, "autoit") },
+                        "coffee" => { PageContext::load_code(&path, name, "coffeescript") },
+                        "ts" | "tsx" => { PageContext::load_code(&path, name, "typescript") },
+                        "hbs" => { PageContext::load_code(&path, name, "handlebars") },
+                        "log" => { PageContext::load_code(&path, name, "accesslog") },
+                        // bat is a valid highlightjs alias
+                        // "bat" => { PageContext::load_code(&path, name, "dos") },
+                        "ps1" => { PageContext::load_code(&path, name, "powershell") },
+                        "tmtheme" => { PageContext::load_code(&path, name, "plist") },
+                        "unknown" => { PageContext::load_code(&path, name, "") },
                         _ => {
                             PageContext::load_code(&path, name, &ext)
-                        }
+                        },
                         
                     };
                     
