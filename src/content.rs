@@ -507,7 +507,7 @@ impl PageContext {
     }
     pub fn load_metadata(path: &Path, name: String) -> Result<Self, String> {
         if let Some(file) = PageFormat::get_file(path) {
-            if let Some(parts) = PageFormat::get_parts(file) {
+            if let Some(parts) = PageFormat::get_parts(&file) {
                 
                 // Thought about using Option.ok_or_else() but it
                 // is nicer to be able to still load the file even
@@ -627,8 +627,8 @@ impl PageFormat {
     }
     
     /// Take a byte vector and convert it to metadata and html parts.
-    pub fn get_parts(buffer: Vec<u8>) -> Option<Self> {
-        let sep_pos = twoway::find_bytes(&buffer, SEPARATOR);
+    pub fn get_parts(buffer: &[u8]) -> Option<Self> {
+        let sep_pos = twoway::find_bytes(buffer, SEPARATOR);
         
         if let Some(pos) = sep_pos {
             // println!("DEBUG: found separator at index: {}", pos);
