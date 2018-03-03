@@ -118,6 +118,9 @@ pub struct ContentCached {
 }
 
 // pub struct PageCached
+
+// Maybe add a markdown field ??
+// Maybe add extension and filename fields
 #[derive(Debug, Clone, Serialize)]
 pub struct PageContext {
     pub uri: String,
@@ -133,6 +136,9 @@ pub struct PageContext {
     pub menu: Option<Vec<TemplateMenu>>,
     pub menu_dropdown: Option<Vec<TemplateMenu>>,
     pub dropdown: String,
+    pub markdown: bool,
+    pub extension: Option<String>,
+    pub filename: Option<String>,
     // pub info: TemplatePageInfo,
 }
 
@@ -485,7 +491,7 @@ impl PageContext {
             
             Ok(
                 PageContext {
-                    uri: name,
+                    uri: name.clone(),
                     title: title,
                     body: body,
                     template: "page-code-template".to_owned(),
@@ -498,6 +504,9 @@ impl PageContext {
                     menu: None,
                     menu_dropdown: None,
                     dropdown: String::new(),
+                    markdown: false,
+                    extension: Some(ext.to_owned()),
+                    filename: Some(name),
                 }
             )
         } else {
@@ -512,7 +521,7 @@ impl PageContext {
             
             Ok(
                 PageContext {
-                    uri: name,
+                    uri: name.clone(),
                     title: title,
                     body: body,
                     template: "page-blank-template".to_owned(),
@@ -525,6 +534,9 @@ impl PageContext {
                     menu: None,
                     menu_dropdown: None,
                     dropdown: String::new(),
+                    markdown: false,
+                    extension: None,
+                    filename: Some(name),
                 }
             )
         } else {
@@ -547,7 +559,7 @@ impl PageContext {
                     let body = String::from_utf8_lossy(&file).into_owned().replace("{{base_url}}", BLOG_URL);
                     Ok(
                         PageContext {
-                            uri: name,
+                            uri: name.clone(),
                             title: title,
                             body: markdown_to_html(&body, &COMRAK_OPTIONS),
                             template: "page-template".to_owned(),
@@ -560,6 +572,9 @@ impl PageContext {
                             menu: None,
                             menu_dropdown: None,
                             dropdown: String::new(),
+                            markdown: true,
+                            extension: None,
+                            filename: Some(name),
                         }
                     )
                 }
@@ -568,7 +583,7 @@ impl PageContext {
                 let body = String::from_utf8_lossy(&file).into_owned().replace("{{base_url}}", BLOG_URL);
                 Ok(
                     PageContext {
-                        uri: name,
+                        uri: name.clone(),
                         title: title,
                         body: markdown_to_html(&body, &COMRAK_OPTIONS),
                         template: "page-template".to_owned(),
@@ -581,6 +596,9 @@ impl PageContext {
                         menu: None,
                         menu_dropdown: None,
                         dropdown: String::new(),
+                        markdown: true,
+                        extension: None,
+                        filename: Some(name),
                     }
                 )
             }
@@ -794,6 +812,9 @@ impl PageFormat {
                 menu,
                 menu_dropdown,
                 dropdown,
+                markdown,
+                extension: None,
+                filename: None,
             })
         } else {
             // println!("Required fields missing for PageContext:\nuri: `{}`\ntitle: `{}`", &uri, &title);
@@ -882,6 +903,9 @@ impl PageInfo {
             gentime: String::with_capacity(200),
             base_url: String::with_capacity(200),
             dropdown: String::new(),
+            markdown: false,
+            extension: None,
+            filename: None,
         };
         context
     }

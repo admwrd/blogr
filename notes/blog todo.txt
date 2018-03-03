@@ -20,6 +20,12 @@ Articles
 		change the link to use whatever aid of the new article is
 
 Blogr
+	Maybe when copying text add a little message at bottom right of page saying text copied
+		or even "x bytes copied"
+
+	Make a download button for static code files
+		it should take the body content and create a response with attachment
+
 	Make static code pages' uri include the extension
 	Load all files in the code folder using the page-code-template.html.hbs template
 		change the description field in PageContext struct to the language used by hljs
