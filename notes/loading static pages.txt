@@ -1,0 +1,36 @@
+
+pages\
+    tutorial.md	-> load_metadata()
+    code.rs	-> load_code()
+    Cargo.toml	-> load_code()
+    test.html	-> load_plain(contents)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

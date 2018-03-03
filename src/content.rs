@@ -164,6 +164,92 @@ pub struct PageInfo {
 
 impl ContentContext {
     pub fn load(dir: &str) -> ContentContext {
+        let dir_iter = fs::read_dir(dir);
+        if let Ok(dir) = dir_iter {
+            let mut size = 0;
+            let mut pages: HashMap<String, PageContext> = HashMap::new();
+            
+            for file_rst in dir {
+                if let Ok(file) = file_rst {
+                    let path = file.path();
+                    let name = file.file_name().to_string_lossy().into_owned();
+                    if let Ok(file_type) = file.file_type() {
+                        if !file_type.is_file() {
+                            // if &name == "code" {
+                            // } else {
+                                continue;
+                            // }
+                        }
+                    } else {
+                        // if no file type can be found skip the file
+                        continue;
+                    }
+                    
+                    let ext = if let Some(ext_os) = path.extension() {
+                        ext_os.to_string_lossy().into_owned()
+                    } else { "".to_owned() };
+                    
+                    let load_rst = match ext.as_ref() {
+                        "html" | "htm" | "xhtml" => { PageContext::load_plain(&path, name) },
+                        "md" | "page" => {
+                            let stem = if let Some(stem_os) = path.file_stem() {
+                                stem_os.to_string_lossy().into_owned()
+                            } else { name };
+                            PageContext::load_metadata(&path, stem)
+                        },
+                        _ => {
+                            PageContext::load_code(&path, name, &ext)
+                        }
+                        
+                    };
+                    
+                    if let Ok(ctx) = load_rst {
+                        size += ctx.body.len();
+                        println!("Loading file `{}` with uri `{}` using '.{}' extension", path.display(), &ctx.uri, &ext);
+                        pages.insert(ctx.uri.clone(), ctx);
+                    } else if let Err(err) = load_rst {
+                        println!("Error loading {}: {}", path.display(), err);
+                    } else {
+                        println!("Unkown error loading {}", path.display());
+                    }
+                    
+                    
+                    
+                    
+                    // if !name.ends_with(".page") && !name.ends_with(".md") {
+                        
+                    //     continue;
+                    // }
+                    
+                    // let loaded = ::static_pages::PageContext::load(&path);
+                    /*let loaded = PageContext::load(&path);
+                    if let Ok(ctx) = loaded {
+                        size += ctx.body.len();
+                        pages.insert(ctx.uri.clone(), ctx);
+                    } else if let Err(err_msg) = loaded {
+                        println!("Error loading page {}: {}", name, err_msg);
+                    } else {
+                        println!("Unknown error");
+                    }*/
+                }
+            }
+            
+            ContentContext {
+                pages,
+                size: AtomicUsize::new(size),
+            }
+            
+        } else {
+            ContentContext {
+                pages: HashMap::new(),
+                size: AtomicUsize::new(0),
+            }
+        }
+        
+    }
+    
+    /*
+    pub fn load(dir: &str) -> ContentContext {
         // unimplemented!()
         
         let dir_iter = fs::read_dir(dir);
@@ -236,7 +322,7 @@ impl ContentContext {
             }
         }
         
-    }
+    }*/
     
     // The retrieve() method does not appear to be needed
     // pub fn retrieve(&self, uri: &str) -> Option<&PageContext> {
@@ -298,19 +384,22 @@ impl ContentCacheLock {
     
 }
 
-
+pub fn titlize(name: &str) -> String {
+    let title_new = name.to_owned().replace("-", " ").replace("_", " ");
+    titlecase(&title_new)
+}
 
 
 impl PageContext {
-    pub fn simple_metadata(path: &Path, ext: &str, body: Vec<u8>) -> Result<PageContext, String> {
+    
+    /*pub fn simple_metadata(path: &Path, ext: &str, body: Vec<u8>) -> Result<PageContext, String> {
         let stem_opt = path.file_stem();
         if let Some(stem) = stem_opt {
             let name = stem.to_string_lossy().into_owned();
             
             
-            let title_new = name.clone().replace("-", " ").replace("_", " ");
-            let title = titlecase(&title_new);
-            println!("Creating metadata for file stem: {} with title: {}", &name, &title);
+            let title = titlize(&name);
+            // println!("Creating metadata for file stem: {} with title: {}", &name, &title);
             
             let mut code: bool = false;
             
@@ -361,9 +450,120 @@ impl PageContext {
         } else {
             Err( format!("Could not load file for {}", path.display()) )
         }
+    }*/
+    pub fn load_code(path: &Path, name: String, ext: &str) -> Result<PageContext, String> {
+        if let Some(file) = PageFormat::get_file(path) {
+            let title = titlize(&name);
+            
+            let body = String::from_utf8_lossy(&file).into_owned().replace("{{base_url}}", BLOG_URL);
+            
+            Ok(
+                PageContext {
+                    uri: name,
+                    title: title,
+                    body: body,
+                    template: "page-code-template".to_owned(),
+                    js: None,
+                    description: Some(ext.to_owned()),
+                    gentime: String::new(),
+                    base_url: BLOG_URL.to_owned(),
+                    admin: false,
+                    user: false,
+                    menu: None,
+                    menu_dropdown: None,
+                    dropdown: String::new(),
+                }
+            )
+        } else {
+            Err( format!("Could not load file for {}", path.display()) )
+        }
+    }
+    pub fn load_plain(path: &Path, name: String) -> Result<Self, String> {
+        if let Some(file) = PageFormat::get_file(path) {
+            let title = titlize(&name);
+            
+            let body = String::from_utf8_lossy(&file).into_owned().replace("{{base_url}}", BLOG_URL);
+            
+            Ok(
+                PageContext {
+                    uri: name,
+                    title: title,
+                    body: body,
+                    template: "page-blank-template".to_owned(),
+                    js: None,
+                    description: None,
+                    gentime: String::new(),
+                    base_url: BLOG_URL.to_owned(),
+                    admin: false,
+                    user: false,
+                    menu: None,
+                    menu_dropdown: None,
+                    dropdown: String::new(),
+                }
+            )
+        } else {
+            Err(format!("Could not load contents of {}", path.display()))
+        }
+    }
+    pub fn load_metadata(path: &Path, name: String) -> Result<Self, String> {
+        if let Some(file) = PageFormat::get_file(path) {
+            if let Some(parts) = PageFormat::get_parts(file) {
+                
+                // Thought about using Option.ok_or_else() but it
+                // is nicer to be able to still load the file even
+                // if the metadata can't be parsed
+                // parts.parse_metadata().ok_or_else(|| format!())
+                
+                if let Some(meta) = parts.parse_metadata() {
+                    Ok(meta)
+                } else {
+                    let title = titlize(&name);
+                    let body = String::from_utf8_lossy(&file).into_owned().replace("{{base_url}}", BLOG_URL);
+                    Ok(
+                        PageContext {
+                            uri: name,
+                            title: title,
+                            body: markdown_to_html(&body, &COMRAK_OPTIONS),
+                            template: "page-template".to_owned(),
+                            js: None,
+                            description: None,
+                            gentime: String::new(),
+                            base_url: BLOG_URL.to_owned(),
+                            admin: false,
+                            user: false,
+                            menu: None,
+                            menu_dropdown: None,
+                            dropdown: String::new(),
+                        }
+                    )
+                }
+            } else {
+                let title = titlize(&name);
+                let body = String::from_utf8_lossy(&file).into_owned().replace("{{base_url}}", BLOG_URL);
+                Ok(
+                    PageContext {
+                        uri: name,
+                        title: title,
+                        body: markdown_to_html(&body, &COMRAK_OPTIONS),
+                        template: "page-template".to_owned(),
+                        js: None,
+                        description: None,
+                        gentime: String::new(),
+                        base_url: BLOG_URL.to_owned(),
+                        admin: false,
+                        user: false,
+                        menu: None,
+                        menu_dropdown: None,
+                        dropdown: String::new(),
+                    }
+                )
+            }
+        } else {
+            Err(format!("Could not load contents of {}", path.display()))
+        }
     }
     
-    pub fn load(path: &Path) -> Result<Self, String> {
+    /*pub fn load(path: &Path) -> Result<Self, String> {
         // call PageFormat::get_file()
         // then PageFormat::get_parts()
         // then PageFormat::parse_metadata()
@@ -389,7 +589,11 @@ impl PageContext {
                     Err(format!("Could not load metadata for: {}", path.display()))
                 }
             } else {
-                Err(format!("Failed to load parts of: {}.", path.display()))
+                if let Ok() = PageContext::load_simple() {
+                    
+                } else {
+                    Err(format!("Failed to load parts of: {}.", path.display()))
+                }
             }
         } else {
             Err(format!("Could not load file: {} ", path.display()))
@@ -398,7 +602,7 @@ impl PageContext {
     // Not sure what render() was supposed to do really...
     // pub fn render(&self) -> PageContext {
     //     unimplemented!()
-    // }
+    // }*/
 }
 
 
