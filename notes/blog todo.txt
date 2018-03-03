@@ -19,28 +19,135 @@ Articles
 	Change the link to Configuring A VPS Webserver in the Rust VPS guide to the new article
 		change the link to use whatever aid of the new article is
 
-Blogr
+Blogr-Fixes
+	Fix code styling on static pages - not the same as articles
+
+	Maybe only enable hljs-line-numbers for larger code blocks, not small ones
+		test for height() maybe?
+
 	Maybe when copying text add a little message at bottom right of page saying text copied
 		or even "x bytes copied"
 
-	Make a download button for static code files
-		it should take the body content and create a response with attachment
+	Maybe allow multiple URI's for static pages
+		when parsing metadata make a vector of URI's (Vec<String>)
+		create another PageContext HashMap that references 
 
-	Make static code pages' uri include the extension
-	Load all files in the code folder using the page-code-template.html.hbs template
-		change the description field in PageContext struct to the language used by hljs
-		add a <pre><code class="html"> block to trigger highlight js
+	Add meta tag generator
+		<meta name="generator" content="MediaWiki 1.31.0-wmf.15"/>
 
-	Maybe add is_code parameter to load() method, on startup call load() with is_code = false
-		when running with is_code == false, call itself with code = true
+	May need to write some javascript to automatically add FancyBox to images in articles
 
-	If get_parts() fails, load all content as body and call load_simple()
+	In static page menu items iterate through json links and replace {{BASE_URL}} with BLOG_URL and {{BASE}} with BASE
+
+	Try converting PGCONN to a RwLock instead of Mutex
+
+	Make favorite icons (32x32, 48x48, 128x128, 192x192)
+	
+	Learn how to use branches in git so development can be done in one branch 
+		and when it compiles and is stable/ready be merged to the stable master
+
+	Add the Accept and Express modules as pages
+		use the /code/accept.html and /code/express.html (or .rs instead of .html) routes
+
+	Maybe add a database field like `visible` or `hidden` that specifies which articles are shown in
+		- hide in the article listing on the main page
+		- hide in articles by author
+		- allow in articles by tags
+		- allow in tag cloud
+			- NO - Tag Cloud (do not count/add tags from hidden articles)
+		Change the SQL code to something like `SELECT ... FROM articles WHERE ... AND visible = true
+
+	TESTED: works - Test if Referrer contains query strings or not - IT DOES
+
+	Add hbs_dashboard_admin_retry_redir_user to list of Rocket functions in main()
+	
+	Change all admin pages to redirect to admin route if they are not logged in as an admin
+
+	Maybe remove all html tags and stuff from flash message contents before sending it to the template
+		Prevents malicious code
+		Could also change alert_danger (and other alert_*()'s) to sanitize any html input
+
+	Add link to go back to manage after saving or even before saving
+		if contents have changed ask user if they want to continue
+
+	Add a loading spinner to loading images
+		Can use font awesome maybe
+		Article header images:
+			Lower margin-top of title bar and place text above title box
+
+	CLEANUP FILES!
+
+	Add more address bar color changes for other browsers like apple and ms
+
+	Suppress console messages unless they are errors (remove SQL messages for production)
+		check if PRODUCTION is set, if it is do not print the message
+
+	Find out how to prevent a specified file from being included in the git repo
+		like src/settings.rs
+		but also make a settings.example.rs that is included but does not include passwords or sensitive data
+
+	Make a disclaimer page saying I am not responsible or liable for damages or anything caused by using 
+		the code on the website or following the suggestion.
+		All opinions are my own and do not reflect any corporations or companies that may be mentioned
+
+	Privacy policy:
+		does not sell or transfer any information obtained by client
+
+	Do not allow custom commands as a security mesasure
+
+	Make SEO friendly article links replace spaces with hyphens
+
+	Add domain name configuration to the vps guide and commands text files
+
+	Cleanup source code and remove old comments
+	Remove pagination test, hit counter tests, and other page tests
+
+	Convert all pages that look for flash messages to use process_flash
+		let flash = process_flash(flash_opt);
+
+		For pages that display flash messages, use different alert_* functions for different flash msg names
+			for error flash messages use alert_danger()
+			for warning flash messages use alert_warning()
+			for success flash messages use alert_success()
+			for all others use alert_info()
+				see the /manage route for an example
+	
+	Figure out how to add version badge to github readme.md file
+
+	Add content to the about me page.
+	
+	Convert blogr to ssl
+
+	Force SSL unless in Dev mode
+
+	When creating a blog post fails for reasons other than unauthorized
+		(or maybe even if its unauthorized)
+		redirect back to create page with all of the form data filled in
+		change the insert form template to include if statements to show msg
+			{{#if info.msg}}{{{info.msg}}}{{/if}}
+
+	sanitize:
+		login rety (admin and user): username and failmsg
+		tag?<tag>: sanitize split_tags
+
+
+Blogr-Features
+	Maybe add perma-links / short-urls
+		vishus.net/p/RaND0m
+			allow optional route for /Search-Engine-Optimization
 
 	Potentially index all header tags (<h1> through <h6>)
 		First header tag starts a list
 		for every same header level put a new list item
 		for every lower header level add a new unordered list for that level
 		for every higher header level, go back to the list of that level
+
+		Search for header tags after rendering markdown html
+			otherwise the markdown headers will not show up
+
+		Build TOC with javascript/jQuery
+			add javascript to the page-template and article-template 
+				or the call to hbs_templates for the individual articles
 
 		Example:
 			h1 - cats
@@ -64,19 +171,19 @@ Blogr
 					h3 -cat mansions
 					h3 - cat perch
 
-	Add a page to unlock locked accounts
+	Generate a menu with the table of contents of the article
+		Find all <h1> elements and make a table of contents using the headers
+		Could be generated upon creation and edit
+			Either make a separate database column for storing the html for the table of contents
+			Or make a section at the beginning or end (beginning may be bad because descriptions default to first 200 chars)
+				that is separated by an HTML comment or something
 
-	Maybe add {{base_url}} variable to articles
-		replace all {{base_url}} instances with the BLOG_URL
+	Add a page to unlock locked accounts
 
 	Add css styling and layout support for the following bootstrap items: 
 		figures & asides, cards, carousels, jumotrons, listgroups?, popovers, scrollspy, tooltips
 
 		for scrollspy: collect all <h1> tags, add id's to them, and make a table of contents
-
-	Add meta tag generator
-		<meta name="generator" content="MediaWiki 1.31.0-wmf.15"/>
-
 
 	Add comments
 		Authorization
@@ -102,44 +209,19 @@ Blogr
 		Limit Comments
 			Limit the amount of comments a user can post in a given time period
 
+	Make a page that lists articles by date, group by month maybe
 
 	Add user signup page
 
-	May need to write some javascript to automatically add FancyBox to images in articles
+	Create a signup page
+		ensure the user enters a password with a min length etc
 
-	Iterate through json links and replace {{BASE_URL}} with BLOG_URL and {{BASE}} with BASE
-
-	Try converting PGCONN to a RwLock instead of Mutex
-
-	Generate a menu with the table of contents of the article
-		Find all <h1> elements and make a table of contents using the headers
-		Could be generated upon creation and edit
-			Either make a separate database column for storing the html for the table of contents
-			Or make a section at the beginning or end (beginning may be bad because descriptions default to first 200 chars)
-				that is separated by an HTML comment or something
-	Make favorite icons (32x32, 48x48, 128x128, 192x192)
-	
-	Learn how to use branches in git so development can be done in one branch 
-		and when it compiles and is stable/ready be merged to the stable master
-
-	Add the Accept and Express modules as pages
-		use the /code/accept.html and /code/express.html (or .rs instead of .html) routes
-
-	Maybe add a database field like `visible` or `hidden` that specifies which articles are shown in
-		- hide in the article listing on the main page
-		- hide in articles by author
-		- allow in articles by tags
-		- allow in tag cloud
-			- NO - Tag Cloud (do not count/add tags from hidden articles)
-		Change the SQL code to something like `SELECT ... FROM articles WHERE ... AND visible = true
-
-	TESTED: works - Test if Referrer contains query strings or not - IT DOES
+	Create a page to edit the signed in user's data.
+		Could make the template check if the client is logged in as:
+			administrator: show settings for editing admin user info
+			regular user: show settings for editing basic user info
 
 	Convert user login to use login redirect
-
-	Add hbs_dashboard_admin_retry_redir_user to list of Rocket functions in main()
-	
-	Change all admin pages to redirect to admin route if they are not logged in as an admin
 
 	Make a login redirect page
 		/login-user  and  /login-admin
@@ -157,40 +239,8 @@ Blogr
 		Allow llinks to not redirect back to original page (like menu links may do this
 			Maybe make a separate route or check if redirect == "authonly" or something like that
 
-
-	Maybe remove all html tags and stuff from flash message contents before sending it to the template
-		Prevents malicious code
-		Could also change alert_danger (and other alert_*()'s) to sanitize any html input
-
-
-	Add link to go back to manage after saving or even before saving
-		if contents have changed ask user if they want to continue
-
-	Add a loading spinner to loading images
-		Can use font awesome maybe
-		Article header images:
-			Lower margin-top of title bar and place text above title box
-
-	CLEANUP FILES!
-
-	Add more address bar color changes for other browsers like apple and ms
-
-	Suppress console messages unless they are errors (remove SQL messages for production)
-		check if PRODUCTION is set, if it is do not print the message
-
-	Find out how to prevent a specified file from being included in the git repo
-		like src/settings.rs
-		but also make a settings.example.rs that is included but does not include passwords or sensitive data
-
-	Make a disclaimer page saying I am not responsible or liable for damages or anything caused by using 
-		the code on the website or following the suggestion.
-		All opinions are my own and do not reflect any corporations or companies that may be mentioned
-	Privacy policy:
-		does not sell or transfer any information obtained by client
-
 	Make an admin page that can run different scripts that are in the `scripts` directory
 		allow arguments to be passed to the command and maybe even specify default arguments
-	Do not allow custom commands as a security mesasure
 
 	Reorganize Modules
 		Split Blog module into several modules
@@ -208,49 +258,6 @@ Blogr
 			Tag
 			User
 			ViewPage
-
-	Make SEO friendly article links replace spaces with hyphens
-
-	Add domain name configuration to the vps guide and commands text files
-
-	Cleanup source code and remove old comments
-	Remove pagination test, hit counter tests, and other page tests
-
-	Convert all pages that look for flash messages to use process_flash
-		let flash = process_flash(flash_opt);
-
-		For pages that display flash messages, use different alert_* functions for different flash msg names
-			for error flash messages use alert_danger()
-			for warning flash messages use alert_warning()
-			for success flash messages use alert_success()
-			for all others use alert_info()
-				see the /manage route for an example
-	
-	Add content to the about me page.
-	
-	Figure out how to add version badge to github readme.md file
-	
-	Convert blogr to ssl
-
-	Force SSL unless in Dev mode
-
-	When creating a blog post fails for reasons other than unauthorized
-		(or maybe even if its unauthorized)
-		redirect back to create page with all of the form data filled in
-		change the insert form template to include if statements to show msg
-			{{#if info.msg}}{{{info.msg}}}{{/if}}
-
-	sanitize:
-		login rety (admin and user): username and failmsg
-		tag?<tag>: sanitize split_tags
-
-	Create a signup page
-		ensure the user enters a password with a min length etc
-
-	Create a page to edit the signed in user's data.
-
-	Make a page that lists articles by date, group by month maybe
-
 
 
 Rocket-auth-login
@@ -535,6 +542,21 @@ Rocket-auth-login:
 
 
 DONE
+	Maybe add {{base_url}} variable to articles
+		replace all {{base_url}} instances with the BLOG_URL
+
+	Make a download button for static code files
+		it should take the body content and create a response with attachment
+
+	Make static code pages' uri include the extension
+	Load all files in the code folder using the page-code-template.html.hbs template
+		change the description field in PageContext struct to the language used by hljs
+		add a <pre><code class="html"> block to trigger highlight js
+
+	If get_parts() fails, load all content as body and call load_simple()
+
+
+
 	May be able to cache the static pages, rocket does not need to be launched 
 		to handle local requests, right before launch call the cache function
 

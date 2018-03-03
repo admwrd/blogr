@@ -379,6 +379,7 @@ impl ContentCacheLock {
         }
     }
     
+    /*
     // Note: this is a work in progress
     //         the rocket instance needs to be passed into the Client::new()
     //         but also needs to be in main, and can't use a mutable reference :(
@@ -409,7 +410,7 @@ impl ContentCacheLock {
             }
         }
         
-    }
+    }*/
     
     // pub fn retrieve() -> 
     
