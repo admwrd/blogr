@@ -25,6 +25,8 @@ use titlecase::titlecase;
 use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 
+use rocket::http::hyper::header::{Headers, ContentDisposition, DispositionType, DispositionParam, Charset};
+
 // use super::{BLOG_URL, ADMIN_LOGIN_URL, USER_LOGIN_URL, CREATE_FORM_URL, TEST_LOGIN_URL};
 
 // use super::RssContent;
@@ -130,10 +132,8 @@ pub fn static_pages(start: GenTimer,
                     user: Option<UserCookie>, 
                     encoding: AcceptCompression, 
                     hits: Hits, 
-                    // context: State<'p, ContentContext>, 
-                    // cache_lock: State<'c, ContentCacheLock>
                     context: State<ContentContext>, 
-                    cache_lock: State<ContentCacheLock>
+                    // cache_lock: State<ContentCacheLock>
                    ) -> Result<ContentRequest, Express> {
     // could also prevent hotlinking by checking the referrer
     //   and sending an error for referring sites other than BASE or blank
@@ -181,8 +181,63 @@ pub fn static_pages(start: GenTimer,
     
 }
 
-//
-
+#[get("/download/<uri..>")]
+pub fn code_download(start: GenTimer, 
+                    uri: PathBuf, 
+                    admin: Option<AdministratorCookie>, 
+                    user: Option<UserCookie>, 
+                    encoding: AcceptCompression, 
+                    hits: Hits, 
+                    context: State<ContentContext>, 
+                    // cache_lock: State<ContentCacheLock>
+                   ) -> Express {
+    // If the requested URI cannot be found in the static page cache
+    //   maybe try looking in the uploads folder
+    
+    let page = uri.to_string_lossy().into_owned();
+    
+    if let Some(ctx) = context.pages.get(&page) {
+        // Permissions check
+        if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
+            let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+            let express: Express = template.into();
+            return express;
+        }
+        
+        let express: Express = ctx.body.clone().into();
+        
+        // let mut headers = Headers::new();
+        // headers.set(ContentDisposition {
+        //     disposition: DispositionType::Attachment,
+        //     parameters: vec![DispositionParam::Filename(
+        //       Charset::Iso_8859_1, // The character set for the bytes of the filename
+        //       None, // The optional language tag (see `language-tag` crate)
+        //       b"\xa9 Copyright 1989.txt".to_vec() // the actual bytes of the filename
+        //     )]
+        // });
+        
+        let attachment = ContentDisposition {
+            disposition: DispositionType::Attachment,
+            parameters: vec![DispositionParam::Filename(
+              Charset::Iso_8859_1, // The character set for the bytes of the filename
+              None, // The optional language tag (see `language-tag` crate)
+              ctx.uri.clone().into_bytes()
+              // b"".to_vec() // the actual bytes of the filename
+            )]
+        };
+        express
+        // Disable cache headers; IE breaks if downloading a file over HTTPS with cache-control headers
+        .set_ttl(-2)
+        .add_header(attachment)
+        // express
+    } else {
+        // let template = hbs_template(...); // Content does not exist
+        let template = hbs_template(TemplateBody::General(alert_success("The requested download could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
+        let express: Express = template.into();
+        express
+    }
+    
+}
 
 
 
