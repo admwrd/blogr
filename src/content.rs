@@ -1,5 +1,5 @@
 
-use super::{BLOG_URL, COMRAK_OPTIONS, BASE, DEFAULT_PAGE_TEMPLATE, PAGE_TEMPLATES, STATIC_PAGES_DIR};
+use super::{BLOG_URL, COMRAK_OPTIONS, BASE, DEFAULT_PAGE_TEMPLATE, DEFAULT_PAGE_MENU, PAGE_TEMPLATES, STATIC_PAGES_DIR};
 use accept::*;
 use blog::GenTimer;
 // use static_pages::*;
@@ -502,7 +502,7 @@ impl PageContext {
                     base_url: BLOG_URL.to_owned(),
                     admin: false,
                     user: false,
-                    menu: None,
+                    menu: DEFAULT_PAGE_MENU.clone(),
                     menu_dropdown: None,
                     dropdown: String::new(),
                     markdown: false,
@@ -532,7 +532,7 @@ impl PageContext {
                     base_url: BLOG_URL.to_owned(),
                     admin: false,
                     user: false,
-                    menu: None,
+                    menu: DEFAULT_PAGE_MENU.clone(),
                     menu_dropdown: None,
                     dropdown: String::new(),
                     markdown: false,
@@ -570,7 +570,7 @@ impl PageContext {
                             base_url: BLOG_URL.to_owned(),
                             admin: false,
                             user: false,
-                            menu: None,
+                            menu: DEFAULT_PAGE_MENU.clone(),
                             menu_dropdown: None,
                             dropdown: String::new(),
                             markdown: true,
@@ -594,7 +594,7 @@ impl PageContext {
                         base_url: BLOG_URL.to_owned(),
                         admin: false,
                         user: false,
-                        menu: None,
+                        menu: DEFAULT_PAGE_MENU.clone(),
                         menu_dropdown: None,
                         dropdown: String::new(),
                         markdown: true,
@@ -729,7 +729,9 @@ impl PageFormat {
         let mut description = None;
         let mut admin = false;
         let mut user = false;
-        let mut menu: Option<Vec<TemplateMenu>> = None;
+        // let mut menu: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu {name: "Rust Tutorials".to_owned(), url: "content/tutorials".to_owned(), separator: false, classes: String::new()}]);
+        // let mut menu: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu::new("Rust Tutorials".to_owned(), "/content/tutorials".to_owned(), "")]);
+        let mut menu: Option<Vec<TemplateMenu>> = DEFAULT_PAGE_MENU.clone();
         let mut menu_dropdown: Option<Vec<TemplateMenu>> = None;
         let mut dropdown: String = String::new();
         let mut markdown = false;

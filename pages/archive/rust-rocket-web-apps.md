@@ -1,7 +1,7 @@
 # Rust Web Apps Using Rocket
 
 ## Rocket
-I have been using [Rocket](https://rocket.rs/) and I highly recommend using it.  It **requires using a nightly build of Rust** so it may be a little more unstable, although I have encountered few problems, and the ones I have encountered where mostly fixed by changing the nightly to a newer or older version.
+I have been using [Rocket](https://rocket.rs/) and I highly recommend using it.  It requires using a nightly build of Rust so it may be a little more unstable, although I have encountered few problems, and the ones I have encountered where mostly fixed by changing the nightly to a newer or older version.
 
 ## Design
 The design of your web app will vary but there are some common elements that I would recommend:

@@ -1,7 +1,7 @@
 uri: siteinfo
 title: Website Details
 template: page-template
-description: The programs I use and what powers this website.
+description: The programs and tools that power this website.
 markdown: true
 admin: true
 user: true
@@ -11,9 +11,10 @@ menu: [{"name": "home", "url": "/", "separator": false}, {"separator": true}, {"
 menu_dropdown: [{"name": "User Logout", "url": "/user_logout", "separator": false}, {"separator": true}, {"name": "Admin Logout", "url": "/admin_logout"}]
 -----
 # What I Use
-**hello**
 
-<a data-fancybox="gallery" href="{{base_url}}uploads/cmder.PNG"><img src="{{base_url}}uploads/cmder.PNG"></a>
+<div style="width: 60%; margin: .3em auto; min-width: 300px;">
+<a data-fancybox="gallery" href="{{base_url}}uploads/cmder.PNG"><img alt="My console emulator setup" src="{{base_url}}uploads/cmder.PNG"></a>
+</div>
 
 <p>My background is mainly in developing web applications and intranet applications.  I am proficient in HTML and CSS (and have just started using SASS). I program primarily in <a href="https://www.rust-lang.org/en-US/">Rust</a>, JavaScript, PHP.  I have done some programming in C++, C#, Python, VB, and Java.  Haskell is something I have played around with but would not yet consider myself proficient with.</p>
 <p>I currently use Windows for everyday use.  Being a web programmer I am no stranger to linux and currently have use <a href="https://www.ubuntu.com/">Ubuntu</a> as my distro of choice.</p>

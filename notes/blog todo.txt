@@ -19,6 +19,25 @@ Articles
 	Change the link to Configuring A VPS Webserver in the Rust VPS guide to the new article
 		change the link to use whatever aid of the new article is
 
+Server
+	Maybe make a backup script that takes a name of the backup
+		it will create a folder with the given name in the /home/vishus/backups folder
+		then run something like:
+			cp target/release/blogr ~/backups/<backup_name>/blogr-exe
+			cp Cargo.toml ~/backups/<backup_name>
+			cp Rocket.toml ~/backups/<backup_name>
+			cp -r pages ~/backups/<backup_name>
+			cp -r notes ~/backups/<backup_name>
+			cp -r logs ~/backups/<backup_name>
+			cp -r scripts ~/backups/<backup_name>
+			cp -r build.sh ~/backups/<backup_name>
+			cp -r production.sh ~/backups/<backup_name>
+			cp -r run.sh ~/backups/<backup_name>
+			cp -r src ~/backups/<backup_name>
+			cp -r templates ~/backups/<backup_name>
+			cp -r static ~/backups/<backup_name>
+			sudo cp -r private ~/backups/<backup_name>
+
 Blogr-Fixes
 	DEFERRED until I find a good, lightweight, jquery 3.2.1 compatible message plugin
 		Maybe when copying text add a little message at bottom right of page saying text copied
@@ -128,6 +147,10 @@ Blogr-Fixes
 
 
 Blogr-Features
+	Eventually replace database queries for articles with some kind of cache system
+		make functions to retrieve the article id's for the page
+		when requesting article(s) retrieve the cached article(s)
+
 	Maybe add perma-links / short-urls
 		vishus.net/p/RaND0m
 			allow optional route for /Search-Engine-Optimization

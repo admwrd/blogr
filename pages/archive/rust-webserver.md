@@ -1,4 +1,4 @@
-# Rust Virtual Private Server
+# VPS Using Rust And Rocket
 
 When I first started playing around with Rust web apps I had difficulty finding good tutorials on how to setup a Rust webserver.  So here is my attempt at getting some information out there.  I will try to keep this relatively short and focus on the general tasks to allow you to customize your server to your needs.  If you have any comments/suggestions/corrections please send them to <script type="text/javascript" language="javascript">show_contact();</script>.
 

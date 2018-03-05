@@ -1864,7 +1864,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
                     let mut page_information: String;
                     let pinfo = pagination.page_info(total_items);
                     if cur == 1 {
-                        let welcome = r##"<h1>Welcome</h1>
+                        let welcome = r##"<h1 style="text-align: center;">Welcome</h1>
                             <p>This is the personal blog of Andrew Prindle.  My recent topics of interest include:
                              the Rust programming language, web development, javascript, databases, cryptology, security, and compression.  
                              Feel free to contact me at the email address at the bottom of the page.</p>
