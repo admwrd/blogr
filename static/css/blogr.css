@@ -14,6 +14,7 @@ li.toc-heading { background-color: #853c01 !important; border-bottom: 1px solid 
 ul.toc-ul-root li { padding: 1px .5em; }
 li.toc-heading a { color: #fff !important; }
 code { background: unset !important; }
+.a-top-div { text-align: right; top: -2em; position: relative; width: 5em; margin-left: auto; }
 
 
 @media print {
@@ -715,9 +716,9 @@ article.v-article-single h1, .v-content h1 {
     font-size: 2.3em;
     color: #de6d11;
     /*text-align: center;*/
-    width: 100%;
+    width: 90%;
     border-bottom: 1px solid #de6d11;
-    margin: 0px auto .5em;
+    margin: 0px auto 5px;
     padding: 0px 0px 5px;
 }
 

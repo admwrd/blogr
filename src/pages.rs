@@ -900,7 +900,7 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
     let mut output: Template; 
     if let Some(article) = rst {
         let title = article.title.clone();
-        output = hbs_template(TemplateBody::Article(article), None, Some(title), String::from("/article"), admin, user, Some("enable_toc();".to_owned()), Some(start.0));
+        output = hbs_template(TemplateBody::Article(article), None, Some(title), String::from("/article"), admin, user, Some("enable_toc(true);".to_owned()), Some(start.0));
     } else {
         output = hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid.aid))), None, Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
     }

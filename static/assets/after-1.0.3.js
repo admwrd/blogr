@@ -401,18 +401,22 @@ $(":header").each( function() {
 
 
 // function toc() {
-function enable_toc() {
-    $(document).ready(function() {
-        $('#toc').toc({
-            body: ".v-content",
-            content: "div.v-article-content", 
-            headings: "h1,h2,h3,h4,h5,h6",
-            elementClass: 'toc',
-            ulClass: 'nav',
-            heading: 'Table of Contents'
-        });
-    });
-}
+// function enable_toc(toctarg = "div.v-content") {
+//         console.log("TOC enabled");
+//     $(document).ready(function() {
+//         console.log("Running toc");
+//         $('#toc').toc({
+//             // body: ".v-content",
+//             body: tocarg,
+//             content: toctarg, 
+//             // content: "div.v-article-content", 
+//             headings: "h1,h2,h3,h4,h5,h6",
+//             elementClass: 'toc',
+//             ulClass: 'nav',
+//             heading: 'Table of Contents'
+//         });
+//     });
+// }
 
 
     

@@ -20,6 +20,10 @@ Articles
 		change the link to use whatever aid of the new article is
 
 Blogr-Fixes
+	Regenerate assets (css, before) and minify after
+
+	Maybe add a return to top link
+
 	Figure out why title is not displaying for about/siteinfo static page (and others)
 
 	Fix code styling on static pages - not the same as articles

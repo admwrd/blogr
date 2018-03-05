@@ -776,21 +776,28 @@ impl PageFormat {
         }
         
         
+        // What is going on here??
+        // let mut title_ok = false;
+        // for temp in PAGE_TEMPLATES {
+        //     if &title == temp {
+        //         title_ok = true;
+        //     }
+        // }
         
-        let mut title_ok = false;
+        let mut temp_ok = false;
         for temp in PAGE_TEMPLATES {
-            if &title == temp {
-                title_ok = true;
+            if &template == temp {
+                temp_ok = true;
             }
         }
-        
         
         if &uri != ""
         && &title != "" {
             Some(PageContext {
                 uri,
-                title: if title_ok { title } else { String::new() },
-                template: if &template != "" { template } else { DEFAULT_PAGE_TEMPLATE.to_owned() },
+                title: title,
+                // title: if &title != "" { title } else { String::new() },
+                template: if temp_ok && &template != "" { template } else { DEFAULT_PAGE_TEMPLATE.to_owned() },
                 js,
                 description,
                 body: {

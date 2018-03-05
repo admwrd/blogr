@@ -87,3 +87,47 @@ function preview_markdown(html){if(!rm){return}
 var preview_form=document.getElementById('v-edit-preview');var edit_form=document.getElementById('v-edit');if(edit_form&&preview_form){var body=document.getElementById('prev-body');body.innerHTML=html}}
 function submit_markdown(html){if(!rm){return}
 var preview_form=document.getElementById('v-edit-preview');var edit_form=document.getElementById('v-edit');var bodymd=document.getElementById('mdhtml');if(edit_form&&preview_form&&bodymd){bodymd.value=html}}
+
+
+function enable_toc(is_article=false) {
+        console.log("TOC enabled");
+    $(document).ready(function() {
+        console.log("Running toc");
+        $('#toc').toc({
+            // body: ".v-content",
+            // body: tocarg,
+            // content: "article", 
+            // content: ".v-toc-body", 
+            // selector
+            
+            headings: "h1,h2,h3,h4,h5,h6",
+            elementClass: 'toc',
+            ulClass: 'nav',
+            heading: 'Table of Contents'
+        });
+        fix_toc(is_article);
+        top_links();
+    });
+}
+
+function fix_toc(is_article) {
+    $("ul.toc-ul-root li").each(function() {
+        var txt = $(this).text();
+        // if($(this).text() == "Admin Menu") {
+        if(txt == "Admin Menu" || txt == "User Menu") {
+            console.log("Removing entry");
+            $(this).remove();
+        }
+    });
+    if (is_article) {
+        $("ul.toc-ul-root li:nth-child(2)").remove();
+    }
+    if($("ul.toc-ul-root li").length <= 1) {
+        $("#toc.toc").remove();
+    }
+}
+
+function top_links() {
+    $("h1,h2").not(".v-article-title").after("<div class='a-top-div'><a class='a-top' href='#top'>Top</a></div>");
+}
+
