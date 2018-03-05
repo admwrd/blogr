@@ -219,7 +219,7 @@ if (formins) {
     // var rm = new Remarkable();
     
     // Actual default values
-    var rm = new Remarkable({
+    var rm = new Remarkable('full', {
         html:         true,        // Enable HTML tags in source
         xhtmlOut:     false,        // Use '/' to close single tags (<br />)
         breaks:       true,        // Convert '\n' in paragraphs into <br>
@@ -392,47 +392,29 @@ $(document).ready(function() {
 
 // $(":header").attr('id', '');
 
-/*
+
 $(":header").each( function() {
     var title = $(this).text().toLowerCase().replace(/ /g, "-");
-    console.log("Setting header to " + title);
+    // console.log("Setting header to " + title);
     $(this).attr('id', title);
 });
-*/
+
 
 // function toc() {
-    
-var level = 0;
-var html = "";
+function enable_toc() {
+    $(document).ready(function() {
+        $('#toc').toc({
+            body: ".v-content",
+            content: "div.v-article-content", 
+            headings: "h1,h2,h3,h4,h5,h6",
+            elementClass: 'toc',
+            ulClass: 'nav',
+            heading: 'Table of Contents'
+        });
+    });
+}
 
-$(":header").each( function(idx, elem) {
-    var l;
-    if(elem.nodeName == "H1") l = 1;
-    if(elem.nodeName == "H2") l = 2;
-    if(elem.nodeName == "H3") l = 3;
-    if(elem.nodeName == "H4") l = 4;
-    if(elem.nodeName == "H5") l = 5;
-    if(elem.nodeName == "H6") l = 6;
-    if(l) {
-        var title = $(this).text().toLowerCase().replace(/ /g, "-");
-        $(this).attr('id', title);
-        console.log("Setting header level " + l + " to " + title);
-        /*
-        if(l == level) {
-            // continue at same level
-            
-        } else if(l > level) {
-            // go deeper into list
-            
-        } else {
-            // go up in the list
-            
-        }
-        */
-    } else {
-        console.log("No l found for " + idx + " with element " + elem.nodeName);
-    }
-});
+
     
     
     

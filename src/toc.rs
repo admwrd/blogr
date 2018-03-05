@@ -66,7 +66,11 @@ pub struct<'a> Head {
     
 // }
 
+
 pub fn generate(body: &str) -> String {
+    lazy_static! {
+        static ref FIND_HEADERS: Regex = Regex::new(r#"^<h[]></h>$"#).unwrap();
+    }
     
     
     

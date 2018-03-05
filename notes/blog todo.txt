@@ -20,6 +20,8 @@ Articles
 		change the link to use whatever aid of the new article is
 
 Blogr-Fixes
+	Figure out why title is not displaying for about/siteinfo static page (and others)
+
 	Fix code styling on static pages - not the same as articles
 
 	Maybe only enable hljs-line-numbers for larger code blocks, not small ones
@@ -148,6 +150,26 @@ Blogr-Features
 		Build TOC with javascript/jQuery
 			add javascript to the page-template and article-template 
 				or the call to hbs_templates for the individual articles
+
+		Make use javascript to build a TOC using lists, and check the levels 
+			and depth to ensure the correct placement of lists and items
+			The TOC is stored as a floating nav/list element that can be later
+				attached somewhere when finished, but until finished being
+				part of the DOM allows more information to be gathered dynamically
+
+		Articles: v-article-content
+		Static Pages: v-content
+
+		For individual articles add js:
+			$(document).ready(function() {
+				$('#toc').toc({
+					content: "div.v-article-content", 
+					headings: "h1,h2,h3,h4,h5,h6",
+				        elementClass: 'toc',
+				        ulClass: 'nav',
+				        heading: 'Table of Contents'
+				})
+			})
 
 		Example:
 			h1 - cats

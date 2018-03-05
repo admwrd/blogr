@@ -2,7 +2,7 @@
 {{~#if info.msg~}}
     {{{info.msg}}}
 {{~/if~}}
-<article class="v-article v-article-single">
+<article class="v-article v-article-single" style="backround: url({{info.base_url}}assets/sphere-trans2.png) no-repeat bottom center fixed;">
     <header class="v-article-header"{{#if body.image}} style="background: url('{{info.base_url}}imgs/{{body.image}}') center center no-repeat;"{{else}} style="background: url('{{info.base_url}}imgs/vishus-1.jpg') center center no-repeat;"{{/if}}>
         <div class="v-article-header-sub">
             <h2 class="v-article-title"><a href="{{info.base_url}}article/{{body.aid}}/{{body.title}}">{{body.title}}</a></h2>
@@ -30,10 +30,14 @@
         </div>
     </header>
     <div class="v-article-content">
+    <div id="toc"></div>
+    <!-- <div id="toc-body"> -->
         {{{body.body~}}}
         <div class="v-article-tags">
             {{~#each body.tags}} <a href="{{../info.base_url}}tag/{{this}}">{{this}}</a> {{/each~}}
         </div>
+    <!-- </div> -->
     </div>
 </article>
+<script type="text/javascript"> enable_toc(); </script>
 {{> common/footer }}
