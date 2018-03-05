@@ -20,18 +20,8 @@ Articles
 		change the link to use whatever aid of the new article is
 
 Blogr-Fixes
-	Regenerate assets (css, before) and minify after
-
-	Maybe add a return to top link
-
-	Figure out why title is not displaying for about/siteinfo static page (and others)
-
-	Fix code styling on static pages - not the same as articles
-
-	Maybe only enable hljs-line-numbers for larger code blocks, not small ones
-		test for height() maybe?
-
-	Maybe when copying text add a little message at bottom right of page saying text copied
+	DEFERRED until I find a good, lightweight, jquery 3.2.1 compatible message plugin
+		Maybe when copying text add a little message at bottom right of page saying text copied
 		or even "x bytes copied"
 
 	Maybe allow multiple URI's for static pages
@@ -287,6 +277,11 @@ Blogr-Features
 
 
 Rocket-auth-login
+	Build docs
+
+	Fix warnings
+		Remove environmental variable preventing warning messages - then build again
+
 	Update examples to use the new &mut Cookies for .redirect() and .flash_redirect() as well as ::delete_cookie()
 		Publish with new version number
 
@@ -568,6 +563,17 @@ Rocket-auth-login:
 
 
 DONE
+	Regenerate assets (css, before) and minify after
+
+	Maybe add a return to top link
+
+	Figure out why title is not displaying for about/siteinfo static page (and others)
+
+	Fix code styling on static pages - not the same as articles
+
+	Maybe only enable hljs-line-numbers for larger code blocks, not small ones
+		test for height() maybe?
+
 	Maybe add {{base_url}} variable to articles
 		replace all {{base_url}} instances with the BLOG_URL
 

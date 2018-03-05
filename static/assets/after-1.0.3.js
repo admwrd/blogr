@@ -371,9 +371,10 @@ $(".v-code").each( function(idx, elem) {
 var codeclip = new Clipboard('.v-copy', {
     target: function(trigger) {
         
-        // !!!!! maybe add popover here!!!!!
-        
-        // return trigger.parentNode.nextElementSibling.firstElementChild;
+        // var bytes = trigger.parentNode.parentNode.firstElementChild.nextElementSibling.firstElementChild.firstElementChild.
+        show_toast("Text copied to clipboard.");
+        // clear selection in 50ms
+        window.setTimeout(clearSelection, 50);
         return trigger.parentNode.parentNode.firstElementChild.nextElementSibling;
     }
 });
@@ -386,7 +387,9 @@ codeclip.on('error', function(e) { console.log(e);});
 $(document).ready(function() {
     // $('code.hljs').each(function(i, block) {
     $('code').each(function(i, block) {
-        hljs.lineNumbersBlock(block);
+        if($(this).height() > 200) {
+            hljs.lineNumbersBlock(block);
+        }
     });
 });
 
@@ -418,12 +421,29 @@ $(":header").each( function() {
 //     });
 // }
 
-
-    
-    
-    
-// }
-// toc();
+// https://github.com/kamranahmedse/jquery-toast-plugin
+// http://kamranahmed.info/toast
+function show_toast(msg="Text copied to clipboard.") {
+    $.toast({
+        text: msg, // Text that is to be shown in the toast
+        // text: "Text copied to clipboard.", // Text that is to be shown in the toast
+        showHideTransition: 'plain', // fade, slide or plain
+        allowToastClose: true, // Boolean value true or false
+        hideAfter: 4000, // false to make it sticky or number representing the miliseconds as time after which toast needs to be hidden
+        stack: 4, // false if there should be only one toast at a time or a number representing the maximum number of toasts to be shown at a time
+        position: 'bottom-right', // bottom-left or bottom-right or bottom-center or top-left or top-right or top-center or mid-center or an object representing the left, right, top, bottom values
+        
+        bgColor: '#444444',  // Background color of the toast
+        textColor: '#eeeeee',  // Text color of the toast
+        textAlign: 'left',  // Text alignment i.e. left, right or center
+        loader: false,  // Whether to show loader or not. True by default
+        loaderBg: '#9EC600',  // Background color of the toast loader
+        beforeShow: function () {}, // will be triggered before the toast is shown
+        afterShown: function () {}, // will be triggered after the toat has been shown
+        beforeHide: function () {}, // will be triggered before the toast gets hidden
+        afterHidden: function () {}  // will be triggered after the toast has been hidden
+    });
+}
 
 
 

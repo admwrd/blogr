@@ -131,3 +131,24 @@ function top_links() {
     $("h1,h2").not(".v-article-title").after("<div class='a-top-div'><a class='a-top' href='#top'>Top</a></div>");
 }
 
+// http://jsfiddle.net/SLQpM/23/
+// https://stackoverflow.com/a/14788286
+function clearSelection() {
+    var sel;
+    if ( (sel = document.selection) && sel.empty ) {
+        sel.empty();
+    } else {
+        if (window.getSelection) {
+            window.getSelection().removeAllRanges();
+        }
+        var activeEl = document.activeElement;
+        if (activeEl) {
+            var tagName = activeEl.nodeName.toLowerCase();
+            if ( tagName == "textarea" || (tagName == "input" && activeEl.type == "text") ) {
+                // Collapse the selection to the end
+                activeEl.selectionStart = activeEl.selectionEnd;
+            }
+        }
+    }
+}
+
