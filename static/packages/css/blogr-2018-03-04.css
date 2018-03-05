@@ -713,7 +713,6 @@ OLD - OUTDATED PAGINATION STYLES
 }
 
 article.v-article-single h1, .v-content h1 {
-    text-align: left;
     font-size: 2.3em;
     color: #de6d11;
     /*text-align: center;*/

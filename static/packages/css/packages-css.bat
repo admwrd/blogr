@@ -1,1 +1,1 @@
-cat "bootstrap.min.css" line.txt "toc.min.css" line.txt "toast.min.css" line.txt "font-awesome.min.css" line.txt "jquery.fancybox.min.css" line.txt "vishus-theme.min.css" line.txt "blogr.min.css" > blog-css.min.css
+cat "bootstrap.min.css" line.txt "toc.min.css" line.txt "toast.min.css" line.txt "font-awesome.min.css" line.txt "jquery.fancybox.min.css" line.txt "vishus-theme.min.css" line.txt "blogr-input.min.css" > blog-css-output.min.css
