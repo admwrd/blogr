@@ -1,5 +1,5 @@
 
-img.wrap, a[data-fancybox] img {
+a.wrap img, a img.wrap, a[data-fancybox]:not(.unwrap) img, a[data-fancybox] img:not(.unwrap) {
         width: 100%;
 }
 
@@ -14,7 +14,10 @@ li.toc-heading { background-color: #853c01 !important; border-bottom: 1px solid 
 ul.toc-ul-root li { padding: 1px .5em; text-align: left; }
 li.toc-heading a { color: #fff !important; }
 code { background: unset !important; }
+
 .a-top-div { text-align: right; top: -2em; position: relative; width: 5em; margin-left: auto; }
+div.img-wrap-center { width: 60%; margin: .3em auto; min-width: 300px; }
+div.img-wrap-center img { width: 100%; }
 
 @media print {
     

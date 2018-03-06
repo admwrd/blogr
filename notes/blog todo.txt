@@ -16,6 +16,17 @@ Non-Blog
 	Modify the 3d sphere to have like a red outline or something different
 
 Articles
+	Add all of the javascript and css packages/modules/plugins/scripts that I use
+		jquery
+		highlight.js
+		toc jquery plugin
+		fancybox jquery plugin
+		clipboard
+		hljs-line-numbers
+		remarkable
+		toast jquery plugin
+		bootstrap
+
 	Change the link to Configuring A VPS Webserver in the Rust VPS guide to the new article
 		change the link to use whatever aid of the new article is
 
@@ -39,12 +50,7 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
-	Figure out why the code is not geting highlighted on non-article pages and fix it
-		I am guessing it is because the hljs is not being called or something??
-
-	DEFERRED until I find a good, lightweight, jquery 3.2.1 compatible message plugin
-		Maybe when copying text add a little message at bottom right of page saying text copied
-		or even "x bytes copied"
+	Find out how to pass the real client's ip address from NGINX to the Blog web app
 
 	Maybe allow multiple URI's for static pages
 		when parsing metadata make a vector of URI's (Vec<String>)
@@ -536,6 +542,13 @@ Rocket-auth-login:
 
 
 DONE
+
+	Figure out why the code is not geting highlighted on non-article pages and fix it
+		I am guessing it is because the hljs is not being called or something??
+
+	DEFERRED until I find a good, lightweight, jquery 3.2.1 compatible message plugin
+		Maybe when copying text add a little message at bottom right of page saying text copied
+		or even "x bytes copied"
 
 	Potentially index all header tags (<h1> through <h6>)
 		First header tag starts a list

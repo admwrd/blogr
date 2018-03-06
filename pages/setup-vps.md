@@ -73,6 +73,10 @@ My configuration file is fairly simple since I have a very limited number of fil
 
 Compression will be disabled for compressed archvies, images, and movies  due to their high entropy.  
 
+#### NGINX Configuration
+Your configuration may vary greatly than the examples I will show here.  For some more examples of NGINX configurations see:
+- [H5BP NGINX Configs](https://github.com/h5bp/server-configs-nginx)
+
 I would highly recommend securing your website with HTTPS since you can now get TLS/SSL certificates for free using LetsEncrypt.  If you handle passwords at all you need to use HTTPS, there is no good way to secure the user's credentials without using a public key encryption algorithm like TLS uses.  Hashing a password will only keep others from immediately knowing what the original password was; with enough computing power and/or lookup tables for common hash algorithms the hash can be reversed.
 
 Here is an example of an NGINX configuration similar to mine:
