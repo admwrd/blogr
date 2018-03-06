@@ -1,5 +1,5 @@
 
-use super::{BLOG_URL, COMRAK_OPTIONS, BASE, DEFAULT_PAGE_TEMPLATE, DEFAULT_PAGE_MENU, PAGE_TEMPLATES, STATIC_PAGES_DIR};
+use super::{BLOG_URL, COMRAK_OPTIONS, BASE, DEFAULT_PAGE_TEMPLATE, DEFAULT_PAGE_DROPDOWN, DEFAULT_PAGE_MENU, PAGE_TEMPLATES, STATIC_PAGES_DIR};
 use accept::*;
 use blog::GenTimer;
 // use static_pages::*;
@@ -503,7 +503,7 @@ impl PageContext {
                     admin: false,
                     user: false,
                     menu: DEFAULT_PAGE_MENU.clone(),
-                    menu_dropdown: None,
+                    menu_dropdown: DEFAULT_PAGE_DROPDOWN.clone(),
                     dropdown: String::new(),
                     markdown: false,
                     extension: Some(ext.to_owned()),
@@ -533,7 +533,7 @@ impl PageContext {
                     admin: false,
                     user: false,
                     menu: DEFAULT_PAGE_MENU.clone(),
-                    menu_dropdown: None,
+                    menu_dropdown: DEFAULT_PAGE_DROPDOWN.clone(),
                     dropdown: String::new(),
                     markdown: false,
                     extension: None,
@@ -571,7 +571,7 @@ impl PageContext {
                             admin: false,
                             user: false,
                             menu: DEFAULT_PAGE_MENU.clone(),
-                            menu_dropdown: None,
+                            menu_dropdown: DEFAULT_PAGE_DROPDOWN.clone(),
                             dropdown: String::new(),
                             markdown: true,
                             extension: None,
@@ -595,7 +595,7 @@ impl PageContext {
                         admin: false,
                         user: false,
                         menu: DEFAULT_PAGE_MENU.clone(),
-                        menu_dropdown: None,
+                        menu_dropdown: DEFAULT_PAGE_DROPDOWN.clone(),
                         dropdown: String::new(),
                         markdown: true,
                         extension: None,
@@ -732,7 +732,7 @@ impl PageFormat {
         // let mut menu: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu {name: "Rust Tutorials".to_owned(), url: "content/tutorials".to_owned(), separator: false, classes: String::new()}]);
         // let mut menu: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu::new("Rust Tutorials".to_owned(), "/content/tutorials".to_owned(), "")]);
         let mut menu: Option<Vec<TemplateMenu>> = DEFAULT_PAGE_MENU.clone();
-        let mut menu_dropdown: Option<Vec<TemplateMenu>> = None;
+        let mut menu_dropdown: Option<Vec<TemplateMenu>> = DEFAULT_PAGE_DROPDOWN.clone();
         let mut dropdown: String = String::new();
         let mut markdown = false;
         

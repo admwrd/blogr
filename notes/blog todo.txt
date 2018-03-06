@@ -147,6 +147,13 @@ Blogr-Fixes
 
 
 Blogr-Features
+	Maybe add an admin page to upload files and maybe even manage them?
+		choose folder to upload file to:
+			/ (web root)
+			/assets /assets/bg /assets/fonts /assets/imgs
+			/imgs (for fractals)
+			/upload
+
 	Eventually replace database queries for articles with some kind of cache system
 		make functions to retrieve the article id's for the page
 		when requesting article(s) retrieve the cached article(s)
