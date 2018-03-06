@@ -236,7 +236,15 @@ hr.preview-divider {
     border-top: 1px dashed #aaa;
 }
 
+.v-pageinfo hr {
+    border-top: 1px solid #de6d11;
+    width: 90%;
+}
 
+.v-pageinfo p {
+    margin: 0px auto 1rem auto;
+    width: 90%;
+}
 
 /*{
 orange:   #de6d11
@@ -594,6 +602,14 @@ hr.v-am-item-tag-divider:after {
 
 .hljs-ln tr:hover {
     background-color: #44444490;
+}
+
+tr:nth-of-type(2n) td.hljs-ln-code {
+    background-color: #ffffff08;
+}
+
+tr:nth-of-type(2n+1) td.hljs-ln-code {
+    background-color: #ffffff10;
 }
 
 /*.v-am-item-desription .tooltip-inner {
