@@ -11,7 +11,7 @@
     <div class="v-am-sortbar col">
             Sort By: 
             <a href="{{info.base_url}}manage/title/{{#if sort.sort_date}}asc{{else}}{{#if sort.sort_desc}}asc{{else}}desc{{/if}}{{/if}}">
-                <i class="v-icon-title fa fa-header" aria-hidden="true"></i>
+                <i class="v-icon-title fa fa-header" aria-hidden="true"></i>&nbsp;
                 {{~#if sort.sort_date~}}
                     Title
                     <i class="v-icon-sort v-icon-sort-title fa fa-sort-desc" aria-hidden="true"></i>
@@ -27,7 +27,7 @@
             </a>
             or
             <a href="{{info.base_url}}manage/date/{{#if sort.sort_title}}desc{{else}}{{#if sort.sort_desc}}asc{{else}}desc{{/if}}{{/if}}">
-                <i class="v-icon-date fa fa-calendar" aria-hidden="true"></i>
+                <i class="v-icon-date fa fa-calendar" aria-hidden="true"></i>&nbsp;
                 {{~#if sort.sort_title~}}
                     Date
                     <i class="v-icon-sort v-icon-sort-date fa fa-sort-asc" aria-hidden="true"></i>

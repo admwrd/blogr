@@ -11,11 +11,10 @@ img.wrap, a[data-fancybox] img {
 #toc.toc { width: 55%; min-width: 300px; margin: 0px auto 2em; border-radius: .4em !important; border: 1px solid #de6d11 !important; }
 ul.toc-ul-root.nav { display: block !important; /*background-color: #222;*/ }
 li.toc-heading { background-color: #853c01 !important; border-bottom: 1px solid #de6d11 !important; border-radius: .3em .3em 0px 0px; text-align: center; }
-ul.toc-ul-root li { padding: 1px .5em; }
+ul.toc-ul-root li { padding: 1px .5em; text-align: left; }
 li.toc-heading a { color: #fff !important; }
 code { background: unset !important; }
 .a-top-div { text-align: right; top: -2em; position: relative; width: 5em; margin-left: auto; }
-
 
 @media print {
     
@@ -50,6 +49,7 @@ code { background: unset !important; }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: vishusBlogTitle;
+    text-align: left;
 }
 
 
@@ -206,11 +206,21 @@ a:active {
 }
 
 .pagination-ipp {
-    background-color: #444;
+    /*background-color: #444;*/
     color: #fff;
     border: 1px solid #de6d11;
     border-radius: .4em;
-    padding: 4px;
+    
+    display: inline-block;
+    height: calc(2.25rem + 2px);
+    vertical-align: middle;
+    background: #444 url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23ffffff' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right .75rem center;
+    background-size: auto auto;
+    background-size: 8px 10px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 0px 1.3em 0px .2em;
 }
 
 .pagination-ipp option {
@@ -319,9 +329,9 @@ li.v-am-item:nth-of-type(odd):hover hr.v-am-item-tag-divider:after {
     font-size: 90%;
 }
 
-.v-am-item-posted {
+/*.v-am-item-posted {
     font-size: 90%;
-}
+}*/
 
 .v-am-item-tags {
     /*margin: .25em 11px -7px 10px;*/
@@ -362,7 +372,8 @@ hr.v-am-item-tag-divider:after {
     /*background-color: #333;*/
     background-color: #212529;
     display: inline-block;
-    color: #888;
+    /*color: #888;*/
+    color: #bbb;
     padding: 0px 0.2em;
 }
 
@@ -497,10 +508,44 @@ hr.v-am-item-tag-divider:after {
     
 }
 
+.v-am-itemlink i.fa.fa-pencil {
+    color: #e0e442;
+}
+.v-am-itemlink:hover i.fa.fa-pencil {
+    color: #ffc600;
+}
+
+.v-am-item-viewlink-a i.fa.fa-external-link {
+    color: #ccf9ff;
+}
+
+.v-am-item-author {
+    text-align: center;
+    border-left: 1px solid #888;
+    border-right: 1px solid #888;
+}
+.v-am-item-posted {
+    border-right: 1px solid #888;
+}
+
+.v-icon-author {
+    color: #999;
+}
+
+.v-am-item-posted .fa.fa-clock-o {
+    color: #999;
+}
+
+.v-icon-title.fa, .v-icon-date.fa {
+    color: #e06500;
+    color: #9ae4fc;
+}
+
 .v-icon-stats {
     /*color: #ffcf00;*/
-    color: #de00ff;
+    /*color: #de00ff;*/
     font-size: 120%;
+    color: #e06500;
 }
 
 
@@ -680,6 +725,10 @@ OLD - OUTDATED PAGINATION STYLES
 }
 .v-nav-item {
     font-size: 1.15em;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255,255,255,.8);
 }
 
 .v-form-label {
@@ -863,7 +912,7 @@ article.v-article-single h1, .v-content h1 {
     margin: 1em 0px 1em 0px;
     background-color: #212529;
     padding: 1em 0.5em 1em 0.5em;
-    text-align: justify;
+    text-align: left;
 }
 
 .v-all-tags {
@@ -1274,6 +1323,8 @@ h6 ~ h6 {
 
 /*@media (min-width: 978px) {*/
 @media (min-width: 992px) {
+    
+    .v-content { text-align: justify; }
     
     .blog-logo {
         font-size: 250%;

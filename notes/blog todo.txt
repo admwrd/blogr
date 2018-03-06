@@ -341,7 +341,7 @@ Security
 			if the 250th character is the first single quote, then the sql string containing
 				the text would be quoted instead! Oh no's!
 
-Future Todo:	
+Future Todo:
 	Could change templates module to take the TemplateBody enum and separate the variants into their own data structures
 
 	Add pageviews template?

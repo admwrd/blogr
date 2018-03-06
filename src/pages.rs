@@ -1864,6 +1864,13 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
                     let mut page_information: String;
                     let pinfo = pagination.page_info(total_items);
                     if cur == 1 {
+                        // r##"background: rgba(0, 0, 0, 0) url("http://localhost:8000/assets/welcome.png") no-repeat scroll center center;"##
+                        /*let welcome = format!(r##"<h1 style="text-align: center; background: #212529 url('{}assets/welcome.png') no-repeat scroll center center;">Welcome</h1>
+                            <p>This is the personal blog of Andrew Prindle.  My recent topics of interest include:
+                             the Rust programming language, web development, javascript, databases, cryptology, security, and compression.  
+                             Feel free to contact me at the email address at the bottom of the page.</p>
+                             <hr>
+                             "##, BLOG_URL);*/
                         let welcome = r##"<h1 style="text-align: center;">Welcome</h1>
                             <p>This is the personal blog of Andrew Prindle.  My recent topics of interest include:
                              the Rust programming language, web development, javascript, databases, cryptology, security, and compression.  
@@ -1878,8 +1885,10 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
                     } else {
                         // page_information = pagination.page_info(total_items);
                         // page_information = String::with_capacity(pinfo.len() + 50);
-                        let welcome = r##"<h2>All Articles By Date</h2>
+                        let welcome = r##"<h1 style="text-align: center;">Articles By Date</h1>
                         "##;
+                        /*let welcome = format!(r##"</*h1*/ style="text-align: center; background: #212529 url('{}assets/welcome.png') no-repeat scroll center center;">Articles By Date</h1>
+                        "##, BLOG_URL);*/
                         page_information = String::with_capacity(pinfo.len() + welcome.len() + 50);
                         page_information.push_str( welcome );
                         page_information.push_str( &pinfo );
