@@ -1,8 +1,6 @@
 /target/
 **/*.rs.bk
 /__target
-/src/settings.rs
-settings.rs
 /src/settings-https-prod.rs
 /src/private.rs
 private.rs
