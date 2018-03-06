@@ -27,5 +27,6 @@
 
 ## About Me
 - [Sublime Theme]({{base_url}}content/sublime-theme) - The custom Sublime Text theme I use for Rust programming
-- [Tools I Use]({{base_url}}content/about-me) - A list of programs and tools I use for programming and web development
+- [About Me]({{base_url}}content/about-me) - A list of programs and tools I use as well as some information about me
+- [Website Details]({{base_url}}content/about-site) - A list of libraries and services that were used to create this website
 

@@ -50,6 +50,9 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	Make a route to refresh the cache PageContext's as well as clear the ContentCacheLock
+		How to change the ContentContext HashMap?  I don't think it's mutable...
+
 	Find out how to pass the real client's ip address from NGINX to the Blog web app
 
 	Maybe allow multiple URI's for static pages
