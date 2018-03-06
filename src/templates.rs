@@ -205,7 +205,7 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
         TemplateMenu::new(String::from("Home"), String::from("/"), page),
         TemplateMenu::new(String::from("Rust Tutorials"), String::from("/content/tutorials"), page),
         TemplateMenu::new(String::from("Tags"), String::from("/all_tags"), page),
-        TemplateMenu::new(String::from("About"), String::from("/about"), page),
+        TemplateMenu::new(String::from("About"), String::from("/content/about-me"), page),
     ];
     
     // Displays both admin and user menus if user is logged in as both
