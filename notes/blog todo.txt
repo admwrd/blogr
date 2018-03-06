@@ -162,68 +162,6 @@ Blogr-Features
 		vishus.net/p/RaND0m
 			allow optional route for /Search-Engine-Optimization
 
-	Potentially index all header tags (<h1> through <h6>)
-		First header tag starts a list
-		for every same header level put a new list item
-		for every lower header level add a new unordered list for that level
-		for every higher header level, go back to the list of that level
-
-		Search for header tags after rendering markdown html
-			otherwise the markdown headers will not show up
-
-		Build TOC with javascript/jQuery
-			add javascript to the page-template and article-template 
-				or the call to hbs_templates for the individual articles
-
-		Make use javascript to build a TOC using lists, and check the levels 
-			and depth to ensure the correct placement of lists and items
-			The TOC is stored as a floating nav/list element that can be later
-				attached somewhere when finished, but until finished being
-				part of the DOM allows more information to be gathered dynamically
-
-		Articles: v-article-content
-		Static Pages: v-content
-
-		For individual articles add js:
-			$(document).ready(function() {
-				$('#toc').toc({
-					content: "div.v-article-content", 
-					headings: "h1,h2,h3,h4,h5,h6",
-				        elementClass: 'toc',
-				        ulClass: 'nav',
-				        heading: 'Table of Contents'
-				})
-			})
-
-		Example:
-			h1 - cats
-				h2 -cat toys
-					h3 -wands
-					h3 - balls
-						h4 - tennis balls
-						h4 - jingley balls
-						h4 - catnip balls
-						h4 - treat balls
-					h3 - stuff toys
-				h2 - cat food
-					h3 - wet food
-						h4 - wellness brand
-						h4 - dave's brand
-					h3- dry food
-						h4 - purina
-							h5- indoor
-							h5- original
-				h2 - cat furniture
-					h3 -cat mansions
-					h3 - cat perch
-
-	Generate a menu with the table of contents of the article
-		Find all <h1> elements and make a table of contents using the headers
-		Could be generated upon creation and edit
-			Either make a separate database column for storing the html for the table of contents
-			Or make a section at the beginning or end (beginning may be bad because descriptions default to first 200 chars)
-				that is separated by an HTML comment or something
-
 	Add a page to unlock locked accounts
 
 	Add css styling and layout support for the following bootstrap items: 
@@ -593,6 +531,69 @@ Rocket-auth-login:
 
 
 DONE
+
+	Potentially index all header tags (<h1> through <h6>)
+		First header tag starts a list
+		for every same header level put a new list item
+		for every lower header level add a new unordered list for that level
+		for every higher header level, go back to the list of that level
+
+		Search for header tags after rendering markdown html
+			otherwise the markdown headers will not show up
+
+		Build TOC with javascript/jQuery
+			add javascript to the page-template and article-template 
+				or the call to hbs_templates for the individual articles
+
+		Make use javascript to build a TOC using lists, and check the levels 
+			and depth to ensure the correct placement of lists and items
+			The TOC is stored as a floating nav/list element that can be later
+				attached somewhere when finished, but until finished being
+				part of the DOM allows more information to be gathered dynamically
+
+		Articles: v-article-content
+		Static Pages: v-content
+
+		For individual articles add js:
+			$(document).ready(function() {
+				$('#toc').toc({
+					content: "div.v-article-content", 
+					headings: "h1,h2,h3,h4,h5,h6",
+				        elementClass: 'toc',
+				        ulClass: 'nav',
+				        heading: 'Table of Contents'
+				})
+			})
+
+		Example:
+			h1 - cats
+				h2 -cat toys
+					h3 -wands
+					h3 - balls
+						h4 - tennis balls
+						h4 - jingley balls
+						h4 - catnip balls
+						h4 - treat balls
+					h3 - stuff toys
+				h2 - cat food
+					h3 - wet food
+						h4 - wellness brand
+						h4 - dave's brand
+					h3- dry food
+						h4 - purina
+							h5- indoor
+							h5- original
+				h2 - cat furniture
+					h3 -cat mansions
+					h3 - cat perch
+
+	Generate a menu with the table of contents of the article
+		Find all <h1> elements and make a table of contents using the headers
+		Could be generated upon creation and edit
+			Either make a separate database column for storing the html for the table of contents
+			Or make a section at the beginning or end (beginning may be bad because descriptions default to first 200 chars)
+				that is separated by an HTML comment or something
+
 	Regenerate assets (css, before) and minify after
 
 	Maybe add a return to top link
