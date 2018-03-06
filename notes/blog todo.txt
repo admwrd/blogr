@@ -39,6 +39,9 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	Figure out why the code is not geting highlighted on non-article pages and fix it
+		I am guessing it is because the hljs is not being called or something??
+
 	DEFERRED until I find a good, lightweight, jquery 3.2.1 compatible message plugin
 		Maybe when copying text add a little message at bottom right of page saying text copied
 		or even "x bytes copied"
@@ -147,6 +150,8 @@ Blogr-Fixes
 
 
 Blogr-Features
+	Maybe add an External Icon to all outside links (to links outside vishus.net)
+
 	Maybe add an admin page to upload files and maybe even manage them?
 		choose folder to upload file to:
 			/ (web root)

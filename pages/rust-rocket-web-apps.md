@@ -1,11 +1,14 @@
 # Rust Web Apps Using Rocket
 
+## Web Apps
+Rocket allows a more type-driven approach to web apps.  I was not used to programming like that and it took a little time for me to see just how powerful and easy Rocket makes web programming.  The purpose of this article is to help you understand how to better use Rocket to write great Rust web apps.
+
 ## Rocket
-I have been using [Rocket](https://rocket.rs/) and I highly recommend using it.  It **requires using a nightly build of Rust** so it may be a little more unstable, although I have encountered few problems, and the ones I have encountered where mostly fixed by changing the nightly to a newer or older version.
+I have been using [Rocket](https://rocket.rs/) and I highly recommend using it.  It **requires using a nightly build of Rust** so it may be a little more unstable, although I have encountered few problems, and the ones I have encountered where mostly fixed by changing the nightly to a newer or older version.  I recommend reading the [Rocket Guide](https://rocket.rs/guide/) if you are new to Rocket.
 
 ## Design
-The design of your web app will vary but there are some common elements that I would recommend:
-- User login
+The design of your web app will vary, however there are several common aspects that many of your web apps can use:
+- User logins - I recommend using the Rocket-auth-login module
 - Templates (Rocket supports Tera and Handlebars - I prefer Handlebars)
 - Database (My personal preference is Postgresql)
 - Pagination (not suitable for all applications)
@@ -14,20 +17,27 @@ The design of your web app will vary but there are some common elements that I w
 - Hit Counter
 
 ## User Logins
-I created a Rust crate named [Rocket-auth-login](https://crates.io/crates/rocket-auth-login) to help with managing logins.
+I created a Rust crate named [Rocket-auth-login](https://crates.io/crates/rocket-auth-login) to help with managing logins.  I have tried using rocket-simpleauth but found it to be too limited.  While it is fairly easy to use it just was not as flexible as I needed it to be.
 
 See the article on [Using Rocket-auth-login](https://vishus.net/content/rocket-auth-login.rs)
 
 ## Database
 
-[Database Module Usage Example in Rust](https://vishus.net/content/rocket-dbconn-example.rs) 
-[Database Module Example](https://vishus.net/content/database.rs)
+- [Database Module Usage Example in Rust](https://vishus.net/content/rocket-dbconn-example.rs) 
+- [Database Module Example](https://vishus.net/content/database.rs)
 
 If you will accessing a database frequently the [R2D2](https://github.com/sfackler/r2d2) crate is wonderful.  R2D2 is a connection pool - it manages multiple open database connections that can be reused as opposed to creating a new connection whenever one is needed and throwing it away afterwards.
 
 In my web app I created a database module which includes a database structure.  The database structure incldues a Request Guard to allow easy access to database connections from your routes' functions.  The Request Guard implements `FromRequest` allowing you to do something like:
 ```rust
 #[get("/database")]
+fn main() {
+    rocket::ignite()
+        .manage(data::init_pg_pool())
+        .mount("/something", routes![something])
+        .launch();
+}
+
 pub fn database(conn: DbConn) -> Html<String> {
     // ...
 }
@@ -46,6 +56,15 @@ The example demonstrated retrieving multiple rows or a single row form a Postgre
 ## Templates
 For anything other than simple webpages you should be using templates.  I have adopted handlebars templates, and it has made my life (and my blog) much more simple and powerful.
 
+```rust
+fn main() {
+    rocket::ignite()
+        .attach(Template::fairing())
+        .mount("/something", routes![something])
+        .launch();
+}
+```
+
 How you use templates may differ greatly from how I use them.  In the end this is merely an example, that is why there is no example module for using templates.
 
 I created a single templating function.  The function take an enum indicating which template to call and some basic information present on every page. The full parameter list of my template function is:
@@ -63,8 +82,8 @@ Each enum variant has its own new() method to generate a context to pass to the 
 
 ## Compression And HTTP Headers
 
-[Accept Module](https://vishus.net/content/accept.rs)
-[Xpress Module](https://vishus.net/content/xpress.rs)
+- [Accept Module](https://vishus.net/content/accept.rs)
+- [Xpress Module](https://vishus.net/content/xpress.rs)
 
 Compressing pages before sending them can result in a nice performance gain, depending on the size and content of the file.  When I created my blog I wanted to be able to send compressed pages, as well as set the expiration headers of static files so client browsers will cache the content and improve performance.  To make setting headers and compressing content easier I created a module I called xpress.
 
@@ -95,11 +114,23 @@ pub fn compressed(foo: u32, bar: String, encoding: AcceptCompression) -> Express
 ```
 
 ## Hit Counter
-[Counter Module](https://vishus.net/content/counter.rs)
+- [Counter Module](https://vishus.net/content/counter.rs)
 
 WHen you are running a website it is often beneficial to know how much traffic each pages gets.  I created a counter module for this purpose.  The module will track the number of hits each page gets and every so often write the data to a file.  It will also track the total number of hits the website recieves and write that to a file.  Upon app start the two files are loaded to start off approximately where the app left off.  A few htis may be lost but most of the data should remain intact.
 
 ```rust
+fn main() {
+    let hitcount: Counter = Counter::load();
+    let views: TotalHits = TotalHits::load();
+
+    rocket::ignite()
+        .manage(hitcount)
+        .manage(views)
+        .mount("/something", routes![something])
+        .launch();
+
+}
+
 #[get("/something")]
 pub fn something(hits: Hits) -> Html<String> {
     format!();
@@ -111,7 +142,7 @@ See my counter module: [Counter Module](https://vishus.net/content/counter.rs)
 
 ## Pagination
 
-[Pagination Module](https://vishus.net/content/pagination.rs)
+- [Pagination Module](https://vishus.net/content/pagination.rs)
 
 Pagination can be tricky.  You often want the pagination generalized enough to allow any page to use it, but different pages may need different settings.  If you know there will be many items which will generate many pages you may want the page navigation to display more pages than something with very few items.  You may also want to customize the links.
 

@@ -42,6 +42,7 @@ rustup toolchain install stable-x86_64-unkown-linux-gnu
 `openssl rand -base64 32`
 
 #### Example configuration
+If you are using HTTPS (highly recommended) make sure to change your paths to your certificates to the correct location.
 ```conf
 [global]
 workers = 8
@@ -52,6 +53,7 @@ port = 8000
 log = "normal"
 secret_key = "<secret key - see above command>"
 limits = { forms = 32768 }
+tls = { certs = "/path/to/private/fullchain.pem", key = "/path/to/private/privkey.pem" }
 
 [staging]
 address = "localhost"
@@ -59,6 +61,7 @@ port = 8000
 log = "debug"
 secret_key = "<secret key - see above command>"
 limits = { forms = 32768 }
+tls = { certs = "/path/to/private/fullchain.pem", key = "/path/to/private/privkey.pem" }
 
 [production]
 address = "localhost"
@@ -66,6 +69,7 @@ port = 8000
 log = "critical"
 secret_key = "<secret key - see above command>"
 limits = { forms = 131072 }
+tls = { certs = "/path/to/private/fullchain.pem", key = "/path/to/private/privkey.pem" }
 
 
 

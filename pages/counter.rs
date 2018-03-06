@@ -27,7 +27,7 @@ use std::net::Ipv4Addr;
 use htmlescape::*;
 
 // specify how often the htis should be saved to disk (save every x hits)
-const Hits_SAVE_INTERVAL: usize = 20;
+const HITS_SAVE_INTERVAL: usize = 20;
 
 // define which pages can have sub-pages that should be counted separately
 const MULTI_SEGMENT_PATHS: &[&'static str] = &["article", "search", "tag"];
