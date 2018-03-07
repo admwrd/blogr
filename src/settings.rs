@@ -8,10 +8,15 @@ pub const PRODUCTION: bool = false;
 
 include!("private.rs");
 
+/*
+private.rs will contain:
 
+#[cfg(not(production))]
+pub const DATABASE_URL: &'static str = "postgres://dbuser:dbpass@localhost/blog";
 
-
-
+#[cfg(production)]
+pub const DATABASE_URL: &'static str = "postgres://dbuser:dbpass@localhost/blog";
+*/
 
 
 
