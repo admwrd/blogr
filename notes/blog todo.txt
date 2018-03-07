@@ -50,6 +50,8 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	Rename tags to topics
+
 	Make a route to refresh the cache PageContext's as well as clear the ContentCacheLock
 		How to change the ContentContext HashMap?  I don't think it's mutable...
 
