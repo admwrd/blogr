@@ -29,10 +29,12 @@ impl AcceptCompression {
     
     // Consider maybe using &self instead of self??
     pub fn preferred(self) -> CompressionEncoding {
-        if self.supported & GZIP != 0 {
-            CompressionEncoding::Gzip
-        } else if self.supported & BROTLI != 0 {
+        if self.supported & BROTLI != 0 {
             CompressionEncoding::Brotli
+        } else if self.supported & GZIP != 0 {
+            CompressionEncoding::Gzip
+        // Disable Deflate due to problems with IE6 
+        // gzip and brotli are so much better anways, not really worth using anyways
         // } else if self.supported & DEFLATE != 0 {
             // CompressionEncoding::Deflate
         } else {
