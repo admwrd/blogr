@@ -13,8 +13,8 @@ use super::{BLOG_URL, USER_LOGIN_URL, ADMIN_LOGIN_URL};
 pub const UNAUTHORIZED_POST_MESSAGE: &'static str = "You are not authorized to post articles.  Please login as an administrator.<br><a href=\"admin\">Admin Login</a>";
 
 
-const HEADER: &'static str = include_str!("../static/template_header.html");
-const FOOTER: &'static str = include_str!("../static/template_footer.html");
+// const HEADER: &'static str = include_str!("../static/template_header.html");
+// const FOOTER: &'static str = include_str!("../static/template_footer.html");
 const GENERIC_PAGE_START: &'static str = "<div class=\"v-content\">\n\t\t\t\t\t\t";
 const GENERIC_PAGE_END: &'static str = "\n\t\t\t\t\t</div>";
 const TABS: &'static str = "\t\t\t\t\t\t\t";
@@ -186,19 +186,19 @@ pub fn login_form_fail(url: &str, user: &str, why: &str) -> String {
 }
 
 
-pub fn template(body: &str) -> Html<String> {
+// pub fn template(body: &str) -> Html<String> {
     
-    let mut webpage = HEADER.to_string();
+//     let mut webpage = HEADER.to_string();
     
-    webpage.reserve(FOOTER.len() + body.len() + GENERIC_PAGE_START.len() + GENERIC_PAGE_END.len() + 200);
-    webpage.push_str(GENERIC_PAGE_START);
-    // do not add tabs to first line, add TABS to every newline after
-    webpage.push_str(body);
-    webpage.push_str(GENERIC_PAGE_END);
-    webpage.push_str(FOOTER);
+//     webpage.reserve(FOOTER.len() + body.len() + GENERIC_PAGE_START.len() + GENERIC_PAGE_END.len() + 200);
+//     webpage.push_str(GENERIC_PAGE_START);
+//     // do not add tabs to first line, add TABS to every newline after
+//     webpage.push_str(body);
+//     webpage.push_str(GENERIC_PAGE_END);
+//     webpage.push_str(FOOTER);
     
-    Html(webpage)
-}
+//     Html(webpage)
+// }
 
 pub fn link_tags(tags: &Vec<String>) -> String {
     let mut contents = String::new();
@@ -208,120 +208,120 @@ pub fn link_tags(tags: &Vec<String>) -> String {
     contents
 }
 
-pub fn template_create_article(url: &str) -> String {
-    // Do not add the <div class="v-content">  line as GENERIC_PAGE_START does this
-    format!(r##"
-                        <form method="post" action="{url}article" name="insert_form">
-                            <div class="col-md-7 mx-auto mb-3">
-                                <input name="title" type="text" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">
-                            </div>
-                            <div class="form-group">
-                                <label for="input_body" class="v-form-label">Contents</label>
-                                <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
-                            </div>
-                            <div class="col-md-8 mx-auto">
-                                <label for="insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
-                                    <input name="tags" id="insert-tags" type="text" class="v-centered-input v-form-control form-control" placeholder="Tags">
-                                    <div class="v-form-message" id="tag-msg">
-                                        Did you mean to <b>Comma Separate</b> the tags?
-                                    </div>
-                            </div>
-                            <div class="v-submit">
-                                <button type="submit" class="btn btn-primary">Create Article</button>
-                            </div>
-                        </form>
-                        <script>
-                            StartText();
-                        </script>
-        "##, url=url)
-}
+// pub fn template_create_article(url: &str) -> String {
+//     // Do not add the <div class="v-content">  line as GENERIC_PAGE_START does this
+//     format!(r##"
+//                         <form method="post" action="{url}article" name="insert_form">
+//                             <div class="col-md-7 mx-auto mb-3">
+//                                 <input name="title" type="text" class="v-centered-input v-form-control form-control" id="inputTitle" placeholder="Title">
+//                             </div>
+//                             <div class="form-group">
+//                                 <label for="input_body" class="v-form-label">Contents</label>
+//                                 <textarea class="form-control" name="body" id="insert_body" rows="3"></textarea>
+//                             </div>
+//                             <div class="col-md-8 mx-auto">
+//                                 <label for="insert-tags" class="v-center-label v-form-label">Tags -Comma Separated</label>
+//                                     <input name="tags" id="insert-tags" type="text" class="v-centered-input v-form-control form-control" placeholder="Tags">
+//                                     <div class="v-form-message" id="tag-msg">
+//                                         Did you mean to <b>Comma Separate</b> the tags?
+//                                     </div>
+//                             </div>
+//                             <div class="v-submit">
+//                                 <button type="submit" class="btn btn-primary">Create Article</button>
+//                             </div>
+//                         </form>
+//                         <script>
+//                             StartText();
+//                         </script>
+//         "##, url=url)
+// }
 
-pub fn full_template_article_new(article: &Article, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
-    unimplemented!()
-}
+// pub fn full_template_article_new(article: &Article, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
+//     unimplemented!()
+// }
 
-pub fn template_article(article: &Article, is_admin: bool, is_user: bool, username: Option<String>) -> String {
-    // display created time, and modified time if it differs from created date
-    // display how long ago it was created if modified == created
-    //   or if modified != created display how long ago it was modified
-    let mut contents = String::with_capacity(article.body.len() + 50);
-    let mut bodytxt = if article.body.trim().starts_with("<") {
-        article.body.clone()
-    } else {
-        let mut bt = String::new();
-        bt.push_str("<p>");
-        bt.push_str(&article.body);
-        bt.push_str("</p>");
-        bt
-    };
-    // let mut indented = String::new();
-    // // ensure correct tab formatting
-    // // extremely needless but it's removable
-    // for line in bodytxt.lines() {
-    //     if line.starts_with(TABS) {
-    //         indented.push_str(line);
-    //         indented.push_str("\n");
-    //     } else {
-    //         indented.push_str(TABS);
-    //         indented.push_str(line.trim_left());
-    //         indented.push_str("\n");
-    //     }
-    // }
-    // bodytxt = indented;
-    contents.push_str(&format!(r##"
-                    <article class="v-article">
-                        <header class="v-article-header">
-                            <h2 class="v-article-title"><a href="/article?aid={aid}">{title}</a></h2>
-                            <div class="row">
-                                <date class="v-article-date" datetime="{date_machine}">{date}</date>
-                                <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
-                            </div>
-                        </header>
-                        {body}
-                        <div class="v-article-tags">Tags:{tags}</div>
-                    </article>
-"##, aid=article.aid, title=titlecase(&article.title), date_machine=article.posted.format("%Y-%m-%dT%H:%M:%S"), date=article.posted.format("%Y-%m-%d @ %I:%M%P"), body=bodytxt, tags=link_tags(&article.tags)));
-    contents
-}
+// pub fn template_article(article: &Article, is_admin: bool, is_user: bool, username: Option<String>) -> String {
+//     // display created time, and modified time if it differs from created date
+//     // display how long ago it was created if modified == created
+//     //   or if modified != created display how long ago it was modified
+//     let mut contents = String::with_capacity(article.body.len() + 50);
+//     let mut bodytxt = if article.body.trim().starts_with("<") {
+//         article.body.clone()
+//     } else {
+//         let mut bt = String::new();
+//         bt.push_str("<p>");
+//         bt.push_str(&article.body);
+//         bt.push_str("</p>");
+//         bt
+//     };
+//     // let mut indented = String::new();
+//     // // ensure correct tab formatting
+//     // // extremely needless but it's removable
+//     // for line in bodytxt.lines() {
+//     //     if line.starts_with(TABS) {
+//     //         indented.push_str(line);
+//     //         indented.push_str("\n");
+//     //     } else {
+//     //         indented.push_str(TABS);
+//     //         indented.push_str(line.trim_left());
+//     //         indented.push_str("\n");
+//     //     }
+//     // }
+//     // bodytxt = indented;
+//     contents.push_str(&format!(r##"
+//                     <article class="v-article">
+//                         <header class="v-article-header">
+//                             <h2 class="v-article-title"><a href="/article?aid={aid}">{title}</a></h2>
+//                             <div class="row">
+//                                 <date class="v-article-date" datetime="{date_machine}">{date}</date>
+//                                 <!-- YYYY-MM-DDThh:mm:ssTZD OR PTDHMS -->
+//                             </div>
+//                         </header>
+//                         {body}
+//                         <div class="v-article-tags">Tags:{tags}</div>
+//                     </article>
+// "##, aid=article.aid, title=titlecase(&article.title), date_machine=article.posted.format("%Y-%m-%dT%H:%M:%S"), date=article.posted.format("%Y-%m-%d @ %I:%M%P"), body=bodytxt, tags=link_tags(&article.tags)));
+//     contents
+// }
 
-pub fn full_template_article(article: &Article, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
-    let mut contents: String = String::from(HEADER);
-    contents.push_str(&template_article(article, is_admin, is_user, username));
-    contents.push_str(FOOTER);
-    Html(contents)
-}
-pub fn template_articles_msg(msg: &str, generic_template: bool, articles: Vec<Article>, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
-    let mut contents: String = String::from(HEADER);
-    if generic_template { contents.push_str(GENERIC_PAGE_START); }
-    contents.push_str(msg);
-    if generic_template { contents.push_str(GENERIC_PAGE_END); }
-    for a in articles {
-        contents.push_str(&template_article(&a, is_admin, is_user, username.clone()));
-    }
-    contents.push_str(FOOTER);
-    Html(contents)
-}
+// pub fn full_template_article(article: &Article, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
+//     let mut contents: String = String::from(HEADER);
+//     contents.push_str(&template_article(article, is_admin, is_user, username));
+//     contents.push_str(FOOTER);
+//     Html(contents)
+// }
+// pub fn template_articles_msg(msg: &str, generic_template: bool, articles: Vec<Article>, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
+//     let mut contents: String = String::from(HEADER);
+//     if generic_template { contents.push_str(GENERIC_PAGE_START); }
+//     contents.push_str(msg);
+//     if generic_template { contents.push_str(GENERIC_PAGE_END); }
+//     for a in articles {
+//         contents.push_str(&template_article(&a, is_admin, is_user, username.clone()));
+//     }
+//     contents.push_str(FOOTER);
+//     Html(contents)
+// }
 
-pub fn template_articles(articles: Vec<Article>, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
-    let mut contents: String = String::from(HEADER);
-    for a in articles {
-        contents.push_str(&template_article(&a, is_admin, is_user, username.clone()));
-    }
-    contents.push_str(FOOTER);
-    Html(contents)
-}
+// pub fn template_articles(articles: Vec<Article>, is_admin: bool, is_user: bool, username: Option<String>) -> Html<String> {
+//     let mut contents: String = String::from(HEADER);
+//     for a in articles {
+//         contents.push_str(&template_article(&a, is_admin, is_user, username.clone()));
+//     }
+//     contents.push_str(FOOTER);
+//     Html(contents)
+// }
 
-pub fn template_list_articles(articles: &Vec<u32>, title: String) -> Html<String> {
-    // lookup each aid and return author,
-    // the title shortened to 128 characters, 
-    // and body shortened to 512 characters)
-    unimplemented!()
-}
+// pub fn template_list_articles(articles: &Vec<u32>, title: String) -> Html<String> {
+//     // lookup each aid and return author,
+//     // the title shortened to 128 characters, 
+//     // and body shortened to 512 characters)
+//     unimplemented!()
+// }
 
-pub fn template_header() -> &'static str {
-    HEADER
-}
+// pub fn template_header() -> &'static str {
+//     HEADER
+// }
 
-pub fn template_footer() -> &'static str {
-    FOOTER
-}
+// pub fn template_footer() -> &'static str {
+//     FOOTER
+// }

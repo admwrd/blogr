@@ -1,0 +1,48 @@
+MathJax.Hub.Config({
+  config: ["MMLorHTML.js"],
+  jax: ["input/TeX","input/MathML","output/HTML-CSS","output/NativeMML", "output/PreviewHTML"],
+  extensions: ["tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js", "fast-preview.js", "AssistiveMML.js", "a11y/accessibility-menu.js"],
+  TeX: {
+    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]
+  }
+});
+
+
+
+// INLINE - MATHJAX CONFIG
+MathJax.Hub.Config({
+  config: ["MMLorHTML.js"],
+  jax: ["input/TeX","input/MathML","output/HTML-CSS","output/NativeMML", "output/PreviewHTML"],
+  extensions: ["tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js", "fast-preview.js", "AssistiveMML.js", "a11y/accessibility-menu.js"],
+  text2jax: {
+    inlineMath: [ ['$$$', '$$$'] ],
+    displayMath: [ ['$$', '$$'] ],
+    processEscapes: true
+  },
+  TeX: {
+    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]
+  }
+});
+
+
+// INLINE - WINDOW METHOD
+window.MathJax = {
+  config: ["MMLorHTML.js"],
+  jax: ["input/TeX","input/MathML","output/HTML-CSS","output/NativeMML", "output/PreviewHTML"],
+  extensions: ["tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js", "fast-preview.js", "AssistiveMML.js", "a11y/accessibility-menu.js"],
+  text2jax: {
+    inlineMath: [ ['$$$', '$$$'] ],
+    displayMath: [ ['$$', '$$'] ],
+    processEscapes: true
+  },
+  TeX: {
+    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]
+  }
+
+};
+
+
+window.MathJax={config:["MMLorHTML.js"],jax:["input/TeX","input/MathML","output/HTML-CSS","output/NativeMML","output/PreviewHTML"],extensions:["tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js","fast-preview.js","AssistiveMML.js","a11y/accessibility-menu.js"],text2jax:{inlineMath:[['$$$','$$$']],displayMath:[['$$','$$']],processEscapes:true},TeX:{extensions:["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]}};
+
+
+

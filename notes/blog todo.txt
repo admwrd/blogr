@@ -50,6 +50,14 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	Add MathJax 
+
+	Add a hide article button to admin page
+		change all other pages to look for hide = 0 in the SQL statements
+
+	Add background image to edit and create templates
+		style="background: url('{{base_url}}assets/sphere-trans2.png') no-repeat center center fixed"
+
 	Rename tags to topics
 
 	Make a route to refresh the cache PageContext's as well as clear the ContentCacheLock

@@ -1,0 +1,5 @@
+﻿original markdown formula
+$$-\sum_{k=1}^{n} p_k log_2 p_k$$
+
+modified jqMath formula
+$$∑↙{k=0}↖n p_k log_2 p_k$$

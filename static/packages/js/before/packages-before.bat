@@ -1,0 +1,1 @@
+cat "highlight.pack.js" line.txt "jquery-3.2.1.slim.min.js" line.txt "bootstrap.bundle.min.js" line.txt "hljs-line-numbers.min.js" line.txt "remarkable.min.js" line.txt "toc.min.js" line.txt "toast.min.js" line.txt "clipboard.min.js" line.txt "jquery.fancybox.min.js" line.txt "jqmath-etc-0.4.6.min.js" line.txt "blog.min.js" > ../before.js
