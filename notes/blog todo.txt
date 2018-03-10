@@ -50,6 +50,9 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	On image when using a mobile devices add a growl/toast message 
+		telling user to swipe up or down to close image
+
 	Add MathJax 
 
 	Add a hide article button to admin page
@@ -169,6 +172,13 @@ Blogr-Fixes
 
 
 Blogr-Features
+	Show top pages for each tag category
+		Use the hit counter for this, 
+		get the aid's of the top articles of all time or in a given tag (in tag cloud)
+
+	Add a hide article button to admin page
+		change all other pages to look for hide = 0 in the SQL statements
+
 	Maybe add an External Icon to all outside links (to links outside vishus.net)
 
 	Maybe add an admin page to upload files and maybe even manage them?

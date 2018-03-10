@@ -413,19 +413,19 @@ function clearSelection() {
 
 // https://github.com/kamranahmedse/jquery-toast-plugin
 // http://kamranahmed.info/toast
-function show_toast(msg="Text copied to clipboard.") {
+function show_toast(msg="Text copied to clipboard.", timeout=4000, bgcol="#444444", txtcol="#eeeeee", pos="bottom-right", txtalign="left", ) {
     $.toast({
         text: msg, // Text that is to be shown in the toast
         // text: "Text copied to clipboard.", // Text that is to be shown in the toast
         showHideTransition: 'plain', // fade, slide or plain
         allowToastClose: true, // Boolean value true or false
-        hideAfter: 4000, // false to make it sticky or number representing the miliseconds as time after which toast needs to be hidden
+        hideAfter: timeout, // false to make it sticky or number representing the miliseconds as time after which toast needs to be hidden
         stack: 4, // false if there should be only one toast at a time or a number representing the maximum number of toasts to be shown at a time
-        position: 'bottom-right', // bottom-left or bottom-right or bottom-center or top-left or top-right or top-center or mid-center or an object representing the left, right, top, bottom values
+        position: pos, // bottom-left or bottom-right or bottom-center or top-left or top-right or top-center or mid-center or an object representing the left, right, top, bottom values
         
-        bgColor: '#444444',  // Background color of the toast
-        textColor: '#eeeeee',  // Text color of the toast
-        textAlign: 'left',  // Text alignment i.e. left, right or center
+        bgColor: bgcol,  // Background color of the toast
+        textColor: txtcol,  // Text color of the toast
+        textAlign: txtalign,  // Text alignment i.e. left, right or center
         loader: false,  // Whether to show loader or not. True by default
         loaderBg: '#9EC600',  // Background color of the toast loader
         beforeShow: function () {}, // will be triggered before the toast is shown
@@ -435,6 +435,17 @@ function show_toast(msg="Text copied to clipboard.") {
     });
 }
 
-
+var vMobile = false;
+$( document ).ready(function() {      
+    var isMobile = window.matchMedia("only screen and (max-width: 760px)");
+    
+    if (isMobile.matches) {
+        vMobile = true;
+        $("a[data-fancybox]").click(function() {
+            show_toast(msg="Swipe up or down to close", timeout=1000);
+        })
+    }
+});
+ // show_toast("Swipe up or down to close image");
 
 
