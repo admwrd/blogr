@@ -360,6 +360,7 @@ fn main() {
             
             pages::static_pages,
             pages::code_download,
+            pages::refresh_content,
             
             // pages::hbs_view_articles,
             pages::hbs_tags_all,

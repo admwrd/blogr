@@ -1,3 +1,8 @@
+uri: about-me
+title: About Me Page
+markdown: true
+js: show_toast(msg="Welcome to the about page.");
+-----
 # About Me
 
 <div class="img-wrap-center">

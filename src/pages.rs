@@ -144,7 +144,7 @@ pub fn refresh_content(start: GenTimer, admin: AdministratorCookie, user: Option
     if let Ok(ctx) = context_state.pages.write() {
         ctx_writer = ctx;
     } else {
-        let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), Some(admin), user, None, Some(start.0));
+        let template = hbs_template(TemplateBody::General(alert_danger("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), Some(admin), user, None, Some(start.0));
         let express: Express = template.into();
         return express.compress(encoding);
     }
@@ -153,7 +153,7 @@ pub fn refresh_content(start: GenTimer, admin: AdministratorCookie, user: Option
     if let Ok(cache) = cache_state.pages.write() {
         cache_writer = cache;
     } else {
-        let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), Some(admin), user, None, Some(start.0));
+        let template = hbs_template(TemplateBody::General(alert_danger("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), Some(admin), user, None, Some(start.0));
         let express: Express = template.into();
         return express.compress(encoding);
     }
@@ -220,7 +220,7 @@ pub fn static_pages(start: GenTimer,
         if let Some(ctx) = ctx_reader.get(&page) {
             // Permissions check
             if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
-                let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+                let template = hbs_template(TemplateBody::General(alert_danger("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
                 let express: Express = template.into();
                 return Err(express.compress(encoding));
             }
@@ -240,14 +240,14 @@ pub fn static_pages(start: GenTimer,
             
         } else {
             // let template = hbs_template(...); // Content does not exist
-            let template = hbs_template(TemplateBody::General(alert_success("The requested content could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
+            let template = hbs_template(TemplateBody::General(alert_danger("The requested content could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
             let express: Express = template.into();
             Err(express.compress(encoding))
         }
         
     } else {
         // let template = hbs_template(...); // Content does not exist
-        let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
+        let template = hbs_template(TemplateBody::General(alert_danger("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
         let express: Express = template.into();
         Err(express.compress(encoding))
     }
@@ -277,7 +277,7 @@ pub fn code_download(start: GenTimer,
         if let Some(ctx) = ctx_reader.get(&page) {
             // Permissions check
             if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
-                let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+                let template = hbs_template(TemplateBody::General(alert_danger("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
                 let express: Express = template.into();
                 return express.compress(encoding);
             }
@@ -310,13 +310,13 @@ pub fn code_download(start: GenTimer,
             // express
         } else {
             // let template = hbs_template(...); // Content does not exist
-            let template = hbs_template(TemplateBody::General(alert_success("The requested download could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
+            let template = hbs_template(TemplateBody::General(alert_danger("The requested download could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
             let express: Express = template.into();
             express.compress(encoding)
         }
     } else {
         // let template = hbs_template(...); // Content does not exist
-        let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
+        let template = hbs_template(TemplateBody::General(alert_danger("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
         let express: Express = template.into();
         express.compress(encoding)
     }

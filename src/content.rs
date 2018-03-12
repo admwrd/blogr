@@ -633,7 +633,7 @@ impl PageFormat {
         let mut menu: Option<Vec<TemplateMenu>> = DEFAULT_PAGE_MENU.clone();
         let mut menu_dropdown: Option<Vec<TemplateMenu>> = DEFAULT_PAGE_DROPDOWN.clone();
         let mut dropdown: String = String::new();
-        let mut markdown = false;
+        let mut markdown = true;
         
         while let Some(end) = next_field(&self.yaml, pos) {
             // let end = e + pos;
@@ -651,17 +651,17 @@ impl PageFormat {
                 let val_range: &[u8] = &self.yaml[fs+1..end];
                 
                 match key {
-                    "uri" => { uri = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
+                    "uri" | "url" | "address" => { uri = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
                     "title" => { title = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
-                    "template" => { template = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
-                    "js" => { js = Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned()); },
-                    "description" => { description = Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned().replace("{{base_url}}", BLOG_URL)); },
+                    "template" | "layout" | "theme" => { template = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
+                    "js" | "javascript" | "script" => { js = Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned()); },
+                    "description" | "desc" => { description = Some(String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned().replace("{{base_url}}", BLOG_URL)); },
                     "admin" | "administrator" => { admin = bytes_are_true(&self.yaml[fs+1..end], false); },
                     "user" | "logged_in" | "logged-in" => { user = bytes_are_true(&self.yaml[fs+1..end], false); },
                     "menu" | "menu_basic" | "menu-basic" => { menu = json_menu(&self.yaml[fs+1..end]); },
                     "menu-dropdown" | "dropdown-menu" | "menu_dropdown" | "dropdown_menu" => { menu_dropdown = json_menu(&self.yaml[fs+1..end]); },
                     "dropdown" | "dropdown_name" | "menu_name" | "dropdown-name" | "menu-name" => { dropdown = String::from_utf8_lossy(&self.yaml[fs+1..end]).into_owned().trim().to_owned(); },
-                    "markdown" => { markdown = bytes_are_true(val_range, false) },
+                    "markdown" | "md" => { markdown = bytes_are_true(val_range, false) },
                     _ => {},
                 }
                 
