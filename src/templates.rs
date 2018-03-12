@@ -234,6 +234,7 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
         admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create"), page) );
         admin_pages.push( TemplateMenu::new(String::from("Page Statistics"), String::from("/pageviews"), page) );
         admin_pages.push( TemplateMenu::with_class(String::from("Database Backup"), String::from("/backup"), String::from("\" target=\"_blank"), page) );
+        admin_pages.push( TemplateMenu::new(String::from("Refresh Content"), String::from("/refresh_content"), page) );
         // admin_pages.push( TemplateMenu::separator() );
         admin_pages.push( TemplateMenu::new(String::from("Logout Administrator"), String::from("/admin_logout"), page) );
     } else {

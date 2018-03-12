@@ -52,6 +52,10 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	Track ip addresses?
+	
+	Add modified date to template module and contexts as well as in the templates
+
 	Add a hide article button to admin page
 		change all other pages to look for hide = 0 in the SQL statements
 		Edit 'add article' and 'edit article' to have a stage field
@@ -168,6 +172,11 @@ Blogr-Fixes
 
 
 Blogr-Features
+	Create a unique hits counter that [asynchronously] adds ip addresses of visitors
+		to a HashMap<String, Vec<Ipv4Addr>
+		The number of entries is the number of unique hits
+		UniqueHits(pub String, pub usize, )
+
 	Add better SEO links, could even  use new handlebars helper functions to do so
 		to use handlebars helpers blog must be upgraded to rocket 3.6 first
 
@@ -181,6 +190,10 @@ Blogr-Features
 		change all other pages to look for hide = 0 in the SQL statements
 
 	Maybe add an External Icon to all outside links (to links outside vishus.net)
+
+	Add a recent posts module/function
+		modify header/footer and static page templates accordingly
+		add recent posts to template contexts
 
 	Maybe add an admin page to approve/publish article drafts
 
