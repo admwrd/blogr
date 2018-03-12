@@ -16,6 +16,8 @@ Non-Blog
 	Modify the 3d sphere to have like a red outline or something different
 
 Articles
+	Add the jqMath javascript library
+
 	Add all of the javascript and css packages/modules/plugins/scripts that I use
 		jquery
 		highlight.js
@@ -50,16 +52,10 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
-	On image when using a mobile devices add a growl/toast message 
-		telling user to swipe up or down to close image
-
-	Add MathJax 
-
 	Add a hide article button to admin page
 		change all other pages to look for hide = 0 in the SQL statements
-
-	Add background image to edit and create templates
-		style="background: url('{{base_url}}assets/sphere-trans2.png') no-repeat center center fixed"
+		Edit 'add article' and 'edit article' to have a stage field
+		Edit admin page to sort by stage.
 
 	Rename tags to topics
 
@@ -172,6 +168,11 @@ Blogr-Fixes
 
 
 Blogr-Features
+	Add better SEO links, could even  use new handlebars helper functions to do so
+		to use handlebars helpers blog must be upgraded to rocket 3.6 first
+
+	Add sitemap generator, looks at database and the pages folder
+
 	Show top pages for each tag category
 		Use the hit counter for this, 
 		get the aid's of the top articles of all time or in a given tag (in tag cloud)
@@ -180,6 +181,8 @@ Blogr-Features
 		change all other pages to look for hide = 0 in the SQL statements
 
 	Maybe add an External Icon to all outside links (to links outside vishus.net)
+
+	Maybe add an admin page to approve/publish article drafts
 
 	Maybe add an admin page to upload files and maybe even manage them?
 		choose folder to upload file to:
@@ -565,6 +568,13 @@ Rocket-auth-login:
 
 
 DONE
+	On image when using a mobile devices add a growl/toast message 
+		telling user to swipe up or down to close image
+
+	Add MathJax 
+
+	Add background image to edit and create templates
+		style="background: url('{{base_url}}assets/sphere-trans2.png') no-repeat center center fixed"
 
 	Figure out why the code is not geting highlighted on non-article pages and fix it
 		I am guessing it is because the hljs is not being called or something??

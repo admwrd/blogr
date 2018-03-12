@@ -1,0 +1,10 @@
+Describes what stage of publication the article is in.
+Greater than 10 means published.
+10 means it was approved only because it previously had no stage field.
+12 means it was approved by an admin.
+0 means it has been deleted and is in the trash bin.
+5 is a draft awaiting approval.
+3 is a draft that was rejected.
+7 is a draft that requires editing before being published.
+
+
