@@ -1,0 +1,577 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+	<title>Color Palette</title>
+	<meta name="description" content="This is the website">
+	<meta name="author" content="ME!">
+	<style>
+		.septitle {
+			font-family: "corbel";
+			font-size: 180%;
+			font-weight: bold;
+			text-align: center;
+		}
+		.separater {
+			float: left;
+			margin: 15px 0px;
+		}
+		.colortitle {
+			font-family: "segoe ui semibold", calibri;
+			font-size: 120%;
+		}
+		.colors {
+			font-family: calibri light;
+			margin: 6px 0px 0px 0px;
+		}
+		.container {
+			background-color: #fafafa;
+			border: 1px solid #999;
+			border-radius: 4px;
+			box-shadow: 2px 2px 5px 1px #ddd;
+			/*color: #f9f9f9;*/
+            float: left;
+			height: 5em;
+			margin: .5em;
+			padding: .5em;
+			width: 230px;
+		}
+		.colorbox {
+			border: 1px solid #666;
+			border-radius: 4px;
+			box-shadow: 0px 0px 4px 1px #999;
+			height: 50px;
+			float: right;
+			width: 50px;
+		}
+		.colorhex {
+			font-family: calibri light;
+			margin-top: 6px;
+		}
+	</style>
+	<script type="text/javascript">
+		// http://stackoverflow.com/questions/8743482/calculating-opacity-value-mathematically
+
+		var COLOR_REGEX = /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/;
+		function colorHexToRGB(htmlColor) {
+
+		    arrRGB = htmlColor.match(COLOR_REGEX);
+		    if (arrRGB == null) {
+		        alert("Invalid color passed, the color should be in the html format. Example: #ff0033");
+		    }
+		    var red = parseInt(arrRGB[1], 16);
+		    var green = parseInt(arrRGB[2], 16);
+		    var blue = parseInt(arrRGB[3], 16);
+		    return {"r":red, "g":green, "b":blue};
+		}
+
+		function calculateTransparentColor(foregroundColor, backgroundColor, opacity) {
+		    if (opacity < 0.0 || opacity > 1.0) {
+		        alert("assertion, opacity should be between 0 and 1");
+		    }
+		    opacity = opacity * 1.0; // to make it float
+		    var foregroundRGB = colorHexToRGB(foregroundColor);
+		    var backgroundRGB = colorHexToRGB(backgroundColor);
+		    var finalRed = Math.round(backgroundRGB.r * (1-opacity) + foregroundRGB.r * opacity);
+		    var finalGreen = Math.round(backgroundRGB.g * (1-opacity) + foregroundRGB.g * opacity);
+		    var finalBlue = Math.round(backgroundRGB.b * (1-opacity) + foregroundRGB.b * opacity);
+		    return colorRGBToHex(finalRed, finalGreen, finalBlue);
+		}
+
+		function colorRGBToHex(red, green, blue) {
+		    if (red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
+		        alert("Invalid color value passed. Should be between 0 and 255.");
+		    }
+		    var formatHex = function(value) {
+		        value = value + "";
+		        if (value.length == 1) {
+		            return "0" + value;
+		        }
+		        return value;
+		    }
+		    hexRed = formatHex(red.toString(16));
+		    hexGreen = formatHex(green.toString(16));
+		    hexBlue = formatHex(blue.toString(16));
+
+		    return "#" + hexRed + hexGreen + hexBlue;
+		}
+		function calcopacity(fore, back, opac) {
+			return calculateTransparentColor(fore, back, opac);
+		}
+		//with help from: https://gist.github.com/larryfox/1636338
+        function isLight(hexColor, threshold=127.5) {
+            c = colorHexToRGB(hexColor);
+            hsp = Math.sqrt(0.299 * (c.r * c.r) + 
+                            0.587 * (c.g * c.g) + 
+                            0.114 * (c.b * c.b))
+            if(hsp > threshold) {
+                return true; //light
+            } else {
+                return false; //dark
+            }
+        }
+	</script>
+	<script src="clipboard.min.js"></script>
+	<script src="getElementByClassName.js"></script>
+	<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+	<![endif]-->
+</head>
+<body>        <div class="container">
+            <div class="colorbox" data-clipboard-text="#4ceb31">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="76,235,49">76,235,49</div>
+            <div class="colorhex" data-clipboard-text="#4ceb31">#4ceb31</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#50fb21">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="80,251,33">80,251,33</div>
+            <div class="colorhex" data-clipboard-text="#50fb21">#50fb21</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#c8fe1e">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="200,254,30">200,254,30</div>
+            <div class="colorhex" data-clipboard-text="#c8fe1e">#c8fe1e</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#93fb21">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="147,251,33">147,251,33</div>
+            <div class="colorhex" data-clipboard-text="#93fb21">#93fb21</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#27e344">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="39,227,68">39,227,68</div>
+            <div class="colorhex" data-clipboard-text="#27e344">#27e344</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#fea628">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="254,166,40">254,166,40</div>
+            <div class="colorhex" data-clipboard-text="#fea628">#fea628</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#fe8034">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="254,128,52">254,128,52</div>
+            <div class="colorhex" data-clipboard-text="#fe8034">#fe8034</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ffa71d">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="255,167,29">255,167,29</div>
+            <div class="colorhex" data-clipboard-text="#ffa71d">#ffa71d</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ff9b0d">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="255,155,13">255,155,13</div>
+            <div class="colorhex" data-clipboard-text="#ff9b0d">#ff9b0d</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ea4c9a">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="234,76,154">234,76,154</div>
+            <div class="colorhex" data-clipboard-text="#ea4c9a">#ea4c9a</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#b22a66">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="178,42,102">178,42,102</div>
+            <div class="colorhex" data-clipboard-text="#b22a66">#b22a66</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ca44a9">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="202,68,169">202,68,169</div>
+            <div class="colorhex" data-clipboard-text="#ca44a9">#ca44a9</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#df2f86">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="223,47,134">223,47,134</div>
+            <div class="colorhex" data-clipboard-text="#df2f86">#df2f86</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#d96196">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="217,97,150">217,97,150</div>
+            <div class="colorhex" data-clipboard-text="#d96196">#d96196</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#fc02db">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="252,2,219">252,2,219</div>
+            <div class="colorhex" data-clipboard-text="#fc02db">#fc02db</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ec4ec1">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="236,78,193">236,78,193</div>
+            <div class="colorhex" data-clipboard-text="#ec4ec1">#ec4ec1</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#fd69a8">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="253,105,168">253,105,168</div>
+            <div class="colorhex" data-clipboard-text="#fd69a8">#fd69a8</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#fb1375">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="251,19,117">251,19,117</div>
+            <div class="colorhex" data-clipboard-text="#fb1375">#fb1375</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#fd119b">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="253,17,155">253,17,155</div>
+            <div class="colorhex" data-clipboard-text="#fd119b">#fd119b</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#fc1eb0">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="252,30,176">252,30,176</div>
+            <div class="colorhex" data-clipboard-text="#fc1eb0">#fc1eb0</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#822ba1">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="130,43,161">130,43,161</div>
+            <div class="colorhex" data-clipboard-text="#822ba1">#822ba1</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#cc02fc">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="204,2,252">204,2,252</div>
+            <div class="colorhex" data-clipboard-text="#cc02fc">#cc02fc</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ab47cf">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="171,71,207">171,71,207</div>
+            <div class="colorhex" data-clipboard-text="#ab47cf">#ab47cf</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#d235fd">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="210,53,253">210,53,253</div>
+            <div class="colorhex" data-clipboard-text="#d235fd">#d235fd</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#8902ae">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="137,2,174">137,2,174</div>
+            <div class="colorhex" data-clipboard-text="#8902ae">#8902ae</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#c90dfd">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="201,13,253">201,13,253</div>
+            <div class="colorhex" data-clipboard-text="#c90dfd">#c90dfd</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ad5cfe">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="173,92,254">173,92,254</div>
+            <div class="colorhex" data-clipboard-text="#ad5cfe">#ad5cfe</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#9329fd">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="147,41,253">147,41,253</div>
+            <div class="colorhex" data-clipboard-text="#9329fd">#9329fd</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#5f3395">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="95,51,149">95,51,149</div>
+            <div class="colorhex" data-clipboard-text="#5f3395">#5f3395</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#9a6fcd">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="154,111,205">154,111,205</div>
+            <div class="colorhex" data-clipboard-text="#9a6fcd">#9a6fcd</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#c31efe">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="195,30,254">195,30,254</div>
+            <div class="colorhex" data-clipboard-text="#c31efe">#c31efe</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#6502c0">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="101,2,192">101,2,192</div>
+            <div class="colorhex" data-clipboard-text="#6502c0">#6502c0</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#8502c0">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="133,2,192">133,2,192</div>
+            <div class="colorhex" data-clipboard-text="#8502c0">#8502c0</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ad02c0">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="173,2,192">173,2,192</div>
+            <div class="colorhex" data-clipboard-text="#ad02c0">#ad02c0</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#c93359">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="201,51,89">201,51,89</div>
+            <div class="colorhex" data-clipboard-text="#c93359">#c93359</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#e00230">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="224,2,48">224,2,48</div>
+            <div class="colorhex" data-clipboard-text="#e00230">#e00230</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#da0248">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="218,2,72">218,2,72</div>
+            <div class="colorhex" data-clipboard-text="#da0248">#da0248</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#fd2d58">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="253,45,88">253,45,88</div>
+            <div class="colorhex" data-clipboard-text="#fd2d58">#fd2d58</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#e6507a">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="230,80,122">230,80,122</div>
+            <div class="colorhex" data-clipboard-text="#e6507a">#e6507a</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ef476a">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="239,71,106">239,71,106</div>
+            <div class="colorhex" data-clipboard-text="#ef476a">#ef476a</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#1f9d9a">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="31,157,154">31,157,154</div>
+            <div class="colorhex" data-clipboard-text="#1f9d9a">#1f9d9a</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#1ee4d7">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="30,228,215">30,228,215</div>
+            <div class="colorhex" data-clipboard-text="#1ee4d7">#1ee4d7</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#11f1c7">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="17,241,199">17,241,199</div>
+            <div class="colorhex" data-clipboard-text="#11f1c7">#11f1c7</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#06cdcc">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="6,205,204">6,205,204</div>
+            <div class="colorhex" data-clipboard-text="#06cdcc">#06cdcc</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#19f1c4">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="25,241,196">25,241,196</div>
+            <div class="colorhex" data-clipboard-text="#19f1c4">#19f1c4</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#0dfdf2">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="13,253,242">13,253,242</div>
+            <div class="colorhex" data-clipboard-text="#0dfdf2">#0dfdf2</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#fdfe0e">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="253,254,14">253,254,14</div>
+            <div class="colorhex" data-clipboard-text="#fdfe0e">#fdfe0e</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ffe50d">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="255,229,13">255,229,13</div>
+            <div class="colorhex" data-clipboard-text="#ffe50d">#ffe50d</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ffdc1d">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="255,220,29">255,220,29</div>
+            <div class="colorhex" data-clipboard-text="#ffdc1d">#ffdc1d</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#f2f329">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="242,243,41">242,243,41</div>
+            <div class="colorhex" data-clipboard-text="#f2f329">#f2f329</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#ffd40d">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="255,212,13">255,212,13</div>
+            <div class="colorhex" data-clipboard-text="#ffd40d">#ffd40d</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#11a19b">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="17,161,155">17,161,155</div>
+            <div class="colorhex" data-clipboard-text="#11a19b">#11a19b</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#17ddd4">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="23,221,212">23,221,212</div>
+            <div class="colorhex" data-clipboard-text="#17ddd4">#17ddd4</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#355497">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="53,84,151">53,84,151</div>
+            <div class="colorhex" data-clipboard-text="#355497">#355497</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#456bbd">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="69,107,189">69,107,189</div>
+            <div class="colorhex" data-clipboard-text="#456bbd">#456bbd</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#223660">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="34,54,96">34,54,96</div>
+            <div class="colorhex" data-clipboard-text="#223660">#223660</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#0d95a7">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="13,149,167">13,149,167</div>
+            <div class="colorhex" data-clipboard-text="#0d95a7">#0d95a7</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#12d1ea">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="18,209,234">18,209,234</div>
+            <div class="colorhex" data-clipboard-text="#12d1ea">#12d1ea</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#6be4f3">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="107,228,243">107,228,243</div>
+            <div class="colorhex" data-clipboard-text="#6be4f3">#6be4f3</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#10a8f2">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="16,168,242">16,168,242</div>
+            <div class="colorhex" data-clipboard-text="#10a8f2">#10a8f2</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#248bde">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="36,139,222">36,139,222</div>
+            <div class="colorhex" data-clipboard-text="#248bde">#248bde</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#460cfe">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="70,12,254">70,12,254</div>
+            <div class="colorhex" data-clipboard-text="#460cfe">#460cfe</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#0b6aff">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="11,106,255">11,106,255</div>
+            <div class="colorhex" data-clipboard-text="#0b6aff">#0b6aff</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#0da3fd">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="13,163,253">13,163,253</div>
+            <div class="colorhex" data-clipboard-text="#0da3fd">#0da3fd</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#382ae0">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="56,42,224">56,42,224</div>
+            <div class="colorhex" data-clipboard-text="#382ae0">#382ae0</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#8cfe0e">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="140,254,14">140,254,14</div>
+            <div class="colorhex" data-clipboard-text="#8cfe0e">#8cfe0e</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#a8fd0f">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="168,253,15">168,253,15</div>
+            <div class="colorhex" data-clipboard-text="#a8fd0f">#a8fd0f</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#1abb0d">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="26,187,13">26,187,13</div>
+            <div class="colorhex" data-clipboard-text="#1abb0d">#1abb0d</div>
+        </div>
+        <div class="container">
+            <div class="colorbox" data-clipboard-text="#23c763">&nbsp;</div>
+            <div class="colortitle"> </div>
+            <div class="colors" data-clipboard-text="35,199,99">35,199,99</div>
+            <div class="colorhex" data-clipboard-text="#23c763">#23c763</div>
+        </div>
+
+	<script type="text/javascript">
+	    var clipboard = new Clipboard('.colorbox');
+	    var clipboard2 = new Clipboard('.colorhex');
+	    var clipboard3 = new Clipboard('.colors');
+	    clipboard.on('success', function(e) {
+	        console.log(e);
+	    });
+	    clipboard.on('error', function(e) {
+	        console.log(e);
+	    });
+	    clipboard2.on('success', function(e) {
+	        console.log(e);
+	    });
+	    clipboard2.on('error', function(e) {
+	        console.log(e);
+	    });
+	    clipboard3.on('success', function(e) {
+	        console.log(e);
+	    });
+	    clipboard3.on('error', function(e) {
+	        console.log(e);
+	    });
+		x = getElementsByClassName('colors');
+		for(i=0;i<x.length;i++){
+			var colr = x[i].innerHTML;
+            var hex = x[i].parentNode.children[3].innerHTML;
+			x[i].parentNode.children[0].style.backgroundColor = "rgb(" + colr + ")";
+			x[i].parentNode.children[0].title = colr;
+            var darkcolr = calcopacity(hex, "#000000", 0.8);
+			x[i].parentNode.style.backgroundColor = darkcolr;
+            if(isLight(darkcolr, 127.5)) {
+                // x[i].parentNode.children[1].innerHTML = "Light : " + x[i].parentNode.children[1].innerHTML;
+                x[i].parentNode.style.color = "#161616";
+            } else {
+                // x[i].parentNode.children[1].innerHTML = "Dark : " + x[i].parentNode.children[1].innerHTML;
+                x[i].parentNode.style.color = "#f9f9f9";
+            }
+		}
+	</script>
+</body>
+</html>

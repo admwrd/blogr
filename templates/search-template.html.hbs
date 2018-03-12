@@ -19,9 +19,9 @@
         {{{this.body}}}
     </p>
     <div class="v-article-tags">
-        {{~#each this.tags~}}
-        <a href="{{../../info.base_url}}tag/{{this}}">{{this}}</a>
-        {{~/each~}}
+        {{~#if this.tags}}{{~#each this.tags~}}
+        <a href="{{../../info.base_url}}tag/{{this}}">#{{this}}</a>
+        {{~/each~}}{{/if}}
     </div>
     <div class="v-full-article v-right-text">
         <a href="{{../info.base_url}}article/{{this.aid}}/{{this.title}}">Full Article</a>

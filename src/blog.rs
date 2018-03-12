@@ -778,9 +778,11 @@ impl Article {
             "{{{}}}", vtags
             .iter()
             // .split(",")
-            .map(
-                |s| format!("\"{}\"", s.trim().to_lowercase())
-            ).collect::<Vec<_>>()
+            .map(|s| s.trim().to_lowercase())
+            .filter(|s| s.as_str() != "")
+            .map(|s| format!("\"{}\"", s))
+            // .map(|s| format!("\"{}\"", s.trim().to_lowercase()))
+            .collect::<Vec<_>>()
             .join(",")
             // .replace(",''")
         );
@@ -963,9 +965,11 @@ impl ArticleForm {
         let tagstr = format!( 
             "{{{}}}", self.tags.clone()
             .split(',')
-            .map(
-                |s| format!("\"{}\"", s.trim().to_lowercase())
-            ).collect::<Vec<_>>()
+            .map(|s| s.trim().to_lowercase())
+            .filter(|s| s.as_str() != "")
+            .map(|s| format!("\"{}\"", s))
+            // .map(|s| format!("\"{}\"", s.trim().to_lowercase()))
+            .collect::<Vec<_>>()
             .join(",")
             // .replace(",''")
         );

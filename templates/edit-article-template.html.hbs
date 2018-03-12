@@ -237,7 +237,7 @@
         
         <!-- Tags -->
         <div id="prev-tags" class="v-article-tags">
-            {{~#each body.tags}} <a href="{{../info.base_url}}tag?tag={{this}}">{{this}}</a> {{/each~}}
+            {{~#if body.tags}}{{#each body.tags}} <a href="{{../info.base_url}}tag?tag={{this}}">#{{this}}</a> {{/each}}{{/if~}}
         </div>
         
         <!-- Button - End Preview -->

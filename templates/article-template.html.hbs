@@ -34,7 +34,7 @@
     <!-- <div id="toc-body"> -->
         {{{body.body~}}}
         <div class="v-article-tags">
-            {{~#each body.tags}} <a href="{{../info.base_url}}tag/{{this}}">{{this}}</a> {{/each~}}
+            {{~#if body.tags}}{{#each body.tags}} <a href="{{../info.base_url}}tag/{{this}}">#{{this}}</a> {{/each}}{{/if~}}
         </div>
     <!-- </div> -->
     </div>

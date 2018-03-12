@@ -188,7 +188,7 @@ function preview_edit() {
         if (tags_array && tags_array.length > 0) {
             for(var i=0; i < tags_array.length; i++) {
                 var cur_tag = escapeHtml(tags_array[i]);
-                tags_html += " <a href=\"" + base_url + "tag?tag=" + cur_tag + "\">" + cur_tag + "</a> ";
+                tags_html += " <a href=\"" + base_url + "tag?tag=" + cur_tag + "\">#" + cur_tag + "</a> ";
             }
         }
         
@@ -257,7 +257,7 @@ function preview_create() {
         if (tags_array && tags_array.length > 0) {
             for(var i=0; i < tags_array.length; i++) {
                 var cur_tag = escapeHtml(tags_array[i]);
-                tags_html += " <a href=\"" + base_url + "tag?tag=" + cur_tag + "\">" + cur_tag + "</a> ";
+                tags_html += " <a href=\"" + base_url + "tag?tag=" + cur_tag + "\">#" + cur_tag + "</a> ";
             }
         }
         

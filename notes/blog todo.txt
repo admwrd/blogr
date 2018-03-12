@@ -52,9 +52,20 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	Add the requested uri to the ContentRequest struct
+		allowing the current page's link in the template to be higlighted
+
 	Track ip addresses?
 	
 	Add modified date to template module and contexts as well as in the templates
+
+	Log ip addresses for error pages
+		Make a new BlogErrors structure that tracks:
+		Internal 500 errors: HashMap<page, (datetime, ip, message)> or Vec<page, datetime, ip address, message>
+		NotFound 400 errors: HashMap<page, (datetime, ip)> or Vec<page, datetime, ip address>
+
+	In the pagestats admin page make a link to all 404 errors
+		the 404 error should 
 
 	Add a hide article button to admin page
 		change all other pages to look for hide = 0 in the SQL statements
@@ -172,6 +183,11 @@ Blogr-Fixes
 
 
 Blogr-Features
+	Maybe eventually change the metadata parsing function is the content module for static pages
+		make the function take a &Path (reference to a path) and its parent callees
+		this will allow automatic uri and title generation, allowing the metadata function
+		to handle every markdown related file
+
 	Create a unique hits counter that [asynchronously] adds ip addresses of visitors
 		to a HashMap<String, Vec<Ipv4Addr>
 		The number of entries is the number of unique hits
@@ -207,6 +223,14 @@ Blogr-Features
 	Eventually replace database queries for articles with some kind of cache system
 		make functions to retrieve the article id's for the page
 		when requesting article(s) retrieve the cached article(s)
+	Could use the xpress module for the cache system
+	Create a type that contains:
+		
+		xpress should call the pagination functions from within 
+	Could have a thread that sleeps for an hour, checks for new/updated articles
+		keeps a variable of last update
+		chceks for updates by checking for articles modified after last update
+		if new content run update function
 
 	Maybe add perma-links / short-urls
 		vishus.net/p/RaND0m
