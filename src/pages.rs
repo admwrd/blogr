@@ -24,6 +24,7 @@ use titlecase::titlecase;
 
 use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use rocket::http::hyper::header::{Headers, ContentDisposition, DispositionType, DispositionParam, Charset};
 
@@ -124,6 +125,69 @@ use comrak::{markdown_to_html, ComrakOptions};
 //     ContentCacheLock::cache(rock, STATIC_PAGES_DIR);
 // }
 
+fn destruct_context(ctx: ContentContext) -> (HashMap<String, PageContext>, usize) {
+    let reader = ctx.pages.read().unwrap();
+    let size = ctx.size.load(Ordering::SeqCst);
+    (*reader, size)
+}
+
+fn destruct_cache(cache: ContentCacheLock) -> (HashMap<String, ContentCached>, usize) {
+    let reader = cache.pages.read().unwrap();
+    let size = cache.size.load(Ordering::SeqCst);
+    (*reader, size)
+}
+
+#[get("/refresh_content")]
+pub fn refresh_content(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits, context_state: State<ContentContext>, cache_state: State<ContentCacheLock>) -> Express {
+    
+    let mut ctx_writer;
+    if let Ok(ctx) = context_state.pages.write() {
+        ctx_writer = ctx;
+    } else {
+        let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), Some(admin), user, None, Some(start.0));
+        let express: Express = template.into();
+    }
+    
+    let mut cache_writer;
+    if let Ok(cache) = cache_state.pages.write() {
+        cache_writer = cache;
+    } else {
+        let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), Some(admin), user, None, Some(start.0));
+        let express: Express = template.into();
+        return express.compress(encoding);
+    }
+    
+    // let content_context: ContentContext = ContentContext::load(STATIC_PAGES_DIR);
+    // let content_cache: ContentCacheLock = ContentCacheLock::new();
+    
+    let (ctx_pages, ctx_size) = destruct_context(ContentContext::load(STATIC_PAGES_DIR));
+    *ctx_writer = ctx_pages;
+    context_state.size.store(ctx_size, Ordering::SeqCst);
+    
+    // let cache = ContentCacheLock::new();
+    let (cache_pages, cache_size) = destruct_cache(ContentCacheLock::new());
+    *cache_writer = cache_pages;
+    cache_state.size.store(cache_size, Ordering::SeqCst);
+    
+    
+    // // load template contexts for all content files in the pages directory
+    // *ctx_writer = *ctx.pages.read().unwrap();
+    
+    // // ctx_writer = ctx.pages.read();
+    // context_state.size.store(ctx.size.load(Ordering::SeqCst), Ordering::SeqCst);
+    
+    // // reset cache back to nothing
+    // *cache_writer = *cache.pages.read().unwrap();
+    // cache_state.size.store(cache.size.load(Ordering::SeqCst), Ordering::SeqCst);
+    
+    let template = hbs_template(TemplateBody::General(alert_success("Content has been refreshed successfully.")), None, Some("Content refreshed.".to_string()), String::from("/error404"), Some(admin), user, None, Some(start.0));
+    let express: Express = template.into();
+    express.compress(encoding)
+}
+
+
+
+
 //
 #[get("/content/<uri..>")]
 pub fn static_pages(start: GenTimer, 
@@ -157,7 +221,7 @@ pub fn static_pages(start: GenTimer,
             if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
                 let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
                 let express: Express = template.into();
-                return Err(express);
+                return Err(express.compress(encoding));
             }
             
             // let test = ctx.clone();
@@ -177,14 +241,14 @@ pub fn static_pages(start: GenTimer,
             // let template = hbs_template(...); // Content does not exist
             let template = hbs_template(TemplateBody::General(alert_success("The requested content could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
             let express: Express = template.into();
-            Err(express)
+            Err(express.compress(encoding))
         }
         
     } else {
         // let template = hbs_template(...); // Content does not exist
         let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
         let express: Express = template.into();
-        Err(express)
+        Err(express.compress(encoding))
     }
         
     
@@ -214,7 +278,7 @@ pub fn code_download(start: GenTimer,
             if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
                 let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
                 let express: Express = template.into();
-                return express;
+                return express.compress(encoding);
             }
             
             let express: Express = ctx.body.clone().into();
@@ -247,13 +311,13 @@ pub fn code_download(start: GenTimer,
             // let template = hbs_template(...); // Content does not exist
             let template = hbs_template(TemplateBody::General(alert_success("The requested download could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
             let express: Express = template.into();
-            express
+            express.compress(encoding)
         }
     } else {
         // let template = hbs_template(...); // Content does not exist
         let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
         let express: Express = template.into();
-        express
+        express.compress(encoding)
     }
     
 }
