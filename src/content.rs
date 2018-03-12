@@ -71,7 +71,7 @@ pub const SEPARATOR: &[u8] = b"
 
 pub struct ContentContext {
     // pub pages: RwLock<HashMap<String, ContentCached>>,
-    pub pages: HashMap<String, PageContext>,
+    pub pages: RwLock<HashMap<String, PageContext>>,
     pub size: AtomicUsize,
 }
 
@@ -244,122 +244,21 @@ impl ContentContext {
                     } else {
                         println!("Unkown error loading {}", path.display());
                     }
-                    
-                    
-                    
-                    
-                    // if !name.ends_with(".page") && !name.ends_with(".md") {
-                        
-                    //     continue;
-                    // }
-                    
-                    // let loaded = ::static_pages::PageContext::load(&path);
-                    /*let loaded = PageContext::load(&path);
-                    if let Ok(ctx) = loaded {
-                        size += ctx.body.len();
-                        pages.insert(ctx.uri.clone(), ctx);
-                    } else if let Err(err_msg) = loaded {
-                        println!("Error loading page {}: {}", name, err_msg);
-                    } else {
-                        println!("Unknown error");
-                    }*/
                 }
             }
-            
             ContentContext {
-                pages,
+                pages: RwLock::new(pages),
                 size: AtomicUsize::new(size),
             }
             
         } else {
             ContentContext {
-                pages: HashMap::new(),
+                pages: RwLock::new(HashMap::new()),
                 size: AtomicUsize::new(0),
             }
         }
         
     }
-    
-    /*
-    pub fn load(dir: &str) -> ContentContext {
-        // unimplemented!()
-        
-        let dir_iter = fs::read_dir(dir);
-        if let Ok(dir) = dir_iter {
-            let mut size = 0;
-            let mut pages: HashMap<String, PageContext> = HashMap::new();
-            
-            for file_rst in dir {
-                if let Ok(file) = file_rst {
-                    if let Ok(file_type) = file.file_type() {
-                        if !file_type.is_file() {
-                            continue;
-                        }
-                    } else {
-                        // if no file type can be found skip the file
-                        continue;
-                    }
-                    let path = file.path();
-                    
-                    let ext = if let Some(ext_os) = path.extension() {
-                        ext_os.to_string_lossy().into_owned()
-                    } else {
-                        "".to_owned()
-                    };
-                    
-                    let name = file.file_name().to_string_lossy().into_owned();
-                    if !name.ends_with(".page") && !name.ends_with(".md") {
-                        if name.ends_with(".bak") { continue; }
-                        // if file is does not have metadata assign
-                        // the title and uri to be the name of the file
-                        // (for title replace hypens/underscores with spaces and titlecase it)
-                        // let path = file.path();
-                        let load_rst = PageContext::load_simple(&path, &ext);
-                        if let Ok(ctx) = load_rst {
-                            size += ctx.body.len();
-                            println!("Adding simple file: `{}`", path.display());
-                            pages.insert(ctx.uri.clone(), ctx);
-                        } else if let Err(err) = load_rst {
-                            println!("Error loading `{}`: '{}'", path.display(), err);
-                        } else {
-                            println!("Unknown error loading file: {}", path.display());
-                        }
-                        
-                        continue;
-                    }
-                    
-                    
-                    // let loaded = ::static_pages::PageContext::load(&path);
-                    let loaded = PageContext::load(&path);
-                    if let Ok(ctx) = loaded {
-                        size += ctx.body.len();
-                        pages.insert(ctx.uri.clone(), ctx);
-                    } else if let Err(err_msg) = loaded {
-                        println!("Error loading page {}: {}", name, err_msg);
-                    } else {
-                        println!("Unknown error");
-                    }
-                }
-            }
-            
-            ContentContext {
-                pages,
-                size: AtomicUsize::new(size),
-            }
-            
-        } else {
-            ContentContext {
-                pages: HashMap::new(),
-                size: AtomicUsize::new(0),
-            }
-        }
-        
-    }*/
-    
-    // The retrieve() method does not appear to be needed
-    // pub fn retrieve(&self, uri: &str) -> Option<&PageContext> {
-    //     unimplemented!()
-    // }
 }
 
 
@@ -956,6 +855,15 @@ impl<'a> Responder<'a> for ContentRequest
         // DEBUG PRINT - println!("Responding to static page: {}", &self.route);
         
         let context_state = req.guard::<State<ContentContext>>().unwrap();
+        // let context_state_lock = req.guard::<State<ContentContext>>().unwrap();
+        // let context_state = context_state_lock;
+        let ctx_pages_rst = context_state.pages.read();
+        let ctx_pages;
+        if let Ok(ctxpages) = ctx_pages_rst {
+            ctx_pages = ctxpages;
+        } else {
+            return Err(Status::InternalServerError);
+        }
         let cache_state = req.guard::<State<ContentCacheLock>>().unwrap();
         
         
@@ -977,7 +885,14 @@ impl<'a> Responder<'a> for ContentRequest
         
         // let cache_map = content_cache.cache.pages.read().unwrap();
         {
-            let cache_map = cache_state.pages.read().unwrap();
+            // let cache_map = cache_state.pages.read().unwrap();
+            let cache_map_lock = cache_state.pages.read();
+            let cache_map;
+            if let Ok(cm) = cache_map_lock {
+                cache_map = cm;
+            } else {
+                return Err(Status::InternalServerError)
+            }
             let cache_uri_opt = cache_map.get(&self.route);
             // let mut output_contents: Vec<u8> = Vec::new();
             
@@ -1002,7 +917,8 @@ impl<'a> Responder<'a> for ContentRequest
             // DEBUG PRINT - 
             println!("Page not found in cache, generating cache for page");
             
-            if let Some(ctx) = context_state.pages.get(&self.route) {
+            // if let Some(ctx) = context_state.pages.get(&self.route) {
+            if let Some(ctx) = ctx_pages.get(&self.route) {
                 
                 // DEBUG PRINT - println!("Retrieved context");
                 

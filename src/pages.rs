@@ -150,33 +150,43 @@ pub fn static_pages(start: GenTimer,
     
     let page = uri.to_string_lossy().into_owned();
     
-    if let Some(ctx) = context.pages.get(&page) {
-        // Permissions check
-        if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
-            let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+    if let Ok(ctx_reader) = context.pages.read() {
+        // if let Some(ctx) = context.pages.get(&page) {
+        if let Some(ctx) = ctx_reader.get(&page) {
+            // Permissions check
+            if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
+                let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+                let express: Express = template.into();
+                return Err(express);
+            }
+            
+            // let test = ctx.clone();
+            // context request
+            // Build a ContentRequest with the requested files
+            let conreq: ContentRequest = ContentRequest {
+                encoding,
+                // cache: cache_lock.inner(),
+                route: page,
+                start,
+                // context: ctx.clone(),
+                // context: &test,
+            };
+            Ok(conreq)
+            
+        } else {
+            // let template = hbs_template(...); // Content does not exist
+            let template = hbs_template(TemplateBody::General(alert_success("The requested content could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
             let express: Express = template.into();
-            return Err(express);
+            Err(express)
         }
-        
-        // let test = ctx.clone();
-        // context request
-        // Build a ContentRequest with the requested files
-        let conreq: ContentRequest = ContentRequest {
-            encoding,
-            // cache: cache_lock.inner(),
-            route: page,
-            start,
-            // context: ctx.clone(),
-            // context: &test,
-        };
-        Ok(conreq)
         
     } else {
         // let template = hbs_template(...); // Content does not exist
-        let template = hbs_template(TemplateBody::General(alert_success("The requested content could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
+        let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
         let express: Express = template.into();
         Err(express)
     }
+        
     
     
 }
@@ -196,43 +206,52 @@ pub fn code_download(start: GenTimer,
     
     let page = uri.to_string_lossy().into_owned();
     
-    if let Some(ctx) = context.pages.get(&page) {
-        // Permissions check
-        if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
-            let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+    if let Ok(ctx_reader) = context.pages.read() {
+            
+        // if let Some(ctx) = context.pages.get(&page) {
+        if let Some(ctx) = ctx_reader.get(&page) {
+            // Permissions check
+            if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {
+                let template = hbs_template(TemplateBody::General(alert_success("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+                let express: Express = template.into();
+                return express;
+            }
+            
+            let express: Express = ctx.body.clone().into();
+            
+            // let mut headers = Headers::new();
+            // headers.set(ContentDisposition {
+            //     disposition: DispositionType::Attachment,
+            //     parameters: vec![DispositionParam::Filename(
+            //       Charset::Iso_8859_1, // The character set for the bytes of the filename
+            //       None, // The optional language tag (see `language-tag` crate)
+            //       b"\xa9 Copyright 1989.txt".to_vec() // the actual bytes of the filename
+            //     )]
+            // });
+            
+            let attachment = ContentDisposition {
+                disposition: DispositionType::Attachment,
+                parameters: vec![DispositionParam::Filename(
+                  Charset::Iso_8859_1, // The character set for the bytes of the filename
+                  None, // The optional language tag (see `language-tag` crate)
+                  ctx.uri.clone().into_bytes()
+                  // b"".to_vec() // the actual bytes of the filename
+                )]
+            };
+            express
+            // Disable cache headers; IE breaks if downloading a file over HTTPS with cache-control headers
+            .set_ttl(-2)
+            .add_header(attachment)
+            // express
+        } else {
+            // let template = hbs_template(...); // Content does not exist
+            let template = hbs_template(TemplateBody::General(alert_success("The requested download could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
             let express: Express = template.into();
-            return express;
+            express
         }
-        
-        let express: Express = ctx.body.clone().into();
-        
-        // let mut headers = Headers::new();
-        // headers.set(ContentDisposition {
-        //     disposition: DispositionType::Attachment,
-        //     parameters: vec![DispositionParam::Filename(
-        //       Charset::Iso_8859_1, // The character set for the bytes of the filename
-        //       None, // The optional language tag (see `language-tag` crate)
-        //       b"\xa9 Copyright 1989.txt".to_vec() // the actual bytes of the filename
-        //     )]
-        // });
-        
-        let attachment = ContentDisposition {
-            disposition: DispositionType::Attachment,
-            parameters: vec![DispositionParam::Filename(
-              Charset::Iso_8859_1, // The character set for the bytes of the filename
-              None, // The optional language tag (see `language-tag` crate)
-              ctx.uri.clone().into_bytes()
-              // b"".to_vec() // the actual bytes of the filename
-            )]
-        };
-        express
-        // Disable cache headers; IE breaks if downloading a file over HTTPS with cache-control headers
-        .set_ttl(-2)
-        .add_header(attachment)
-        // express
     } else {
         // let template = hbs_template(...); // Content does not exist
-        let template = hbs_template(TemplateBody::General(alert_success("The requested download could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
+        let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
         let express: Express = template.into();
         express
     }
