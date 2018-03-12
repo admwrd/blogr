@@ -43,7 +43,7 @@ use libflate::deflate;
 
 use accept::*;
 
-use super::DEFAULT_TTL;
+use super::{DEFAULT_TTL, PRODUCTION};
 // use vcache::*;
 // use rocket::State;
 
@@ -395,7 +395,9 @@ pub fn find_ip(req: &Request) -> Ipv4Addr {
 impl<'a> Responder<'a> for Express {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         
-        println!("Served to: {}", find_ip(req));
+        if cfg!(PRODUCTION) {
+            println!("Served to: {}", find_ip(req));
+        }
         
         let mut response = Response::build();
         let extras = self.extras;

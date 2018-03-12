@@ -53,10 +53,10 @@ function ChangeHeight() {
     this.style.height = 'auto';
     if(original != this.scrollHeight) {
         this.style.height = (this.scrollHeight) + 'px';
-    } else {
+    } // else {
         // REMOVE THIS
-        console.log("Not updating height");
-    }
+        // console.log("Not updating height");
+    //}
 }
 
 function StartText() {
@@ -141,7 +141,7 @@ function escapeHtml(str) {
 
 
 function preview_edit() {
-    console.log("article - editing");
+    // console.log("article - editing");
     var preview_form = document.getElementById('v-edit-preview');
     var edit_form = document.getElementById('v-edit');
     // var edit_form = document.getElementById('insert_form');
@@ -174,10 +174,10 @@ function preview_edit() {
             }
         } else if(imgs && header) {
             // if image field is a dropdown select box
-            console.log("Select image");
+            // console.log("Select image");
             var imgsrc = imgs.value.trim();
             if (imgsrc != "") {
-                console.log("setting background");
+                // console.log("setting background");
                 header.style.background = "url('" + base_url + "imgs/" + imgsrc + "') center center no-repeat";
             }
         }
@@ -212,7 +212,7 @@ function preview_create() {
     var preview_form = document.getElementById('v-edit-preview');
     var edit_form = document.getElementById('v-edit');
     // var edit_form = document.getElementById('insert_form');
-    console.log("article - creating");
+    // console.log("article - creating");
     if (edit_form && preview_form) {
         var title = document.getElementById('inputTitle');
         var desc = document.getElementById('insert_desc');
@@ -243,10 +243,10 @@ function preview_create() {
             }
         } else if(imgs && header) {
             // if image field is a dropdown select box
-            console.log("Select image");
+            // console.log("Select image");
             var imgsrc = imgs.value.trim();
             if (imgsrc != "") {
-                console.log("setting background");
+                // console.log("setting background");
                 header.style.background = "url('" + base_url + "imgs/" + imgsrc + "') center center no-repeat";
             }
         }
@@ -349,9 +349,9 @@ function submit_markdown(html) {
 // https://github.com/ndabas/toc
 // https://ndabas.github.io/toc/
 function enable_toc(is_article=false) {
-        console.log("TOC enabled");
+        // console.log("TOC enabled");
     $(document).ready(function() {
-        console.log("Running toc");
+        // console.log("Running toc");
         $('#toc').toc({
             // body: ".v-content",
             // body: tocarg,
@@ -374,7 +374,7 @@ function fix_toc(is_article) {
         var txt = $(this).text();
         // if($(this).text() == "Admin Menu") {
         if(txt == "Admin Menu" || txt == "User Menu") {
-            console.log("Removing entry");
+            // console.log("Removing entry");
             $(this).remove();
         }
     });

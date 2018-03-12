@@ -758,11 +758,11 @@ pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCo
     let qry = conn.query(qrystr, &[]);
     let mut tags: Vec<TagCount> = Vec::new();
     if let Ok(result) = qry {
-        let mut sizes: Vec<u16> = Vec::new();
+        // let mut sizes: Vec<u16> = Vec::new();
         for row in &result {
             let c: i64 = row.get(0);
             let c2: u32 = c as u32;
-            sizes.push(c2 as u16);
+            // sizes.push(c2 as u16);
             let t: String = row.get(1);
             let t2: String = t.trim_matches('\'').to_string();
             let tagcount = TagCount { 
