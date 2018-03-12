@@ -126,15 +126,15 @@ use comrak::{markdown_to_html, ComrakOptions};
 // }
 
 fn destruct_context(ctx: ContentContext) -> (HashMap<String, PageContext>, usize) {
-    let reader = ctx.pages.read().unwrap();
+    let reader = ctx.pages.read().unwrap().clone();
     let size = ctx.size.load(Ordering::SeqCst);
-    (*reader, size)
+    (reader, size)
 }
 
 fn destruct_cache(cache: ContentCacheLock) -> (HashMap<String, ContentCached>, usize) {
-    let reader = cache.pages.read().unwrap();
+    let reader = cache.pages.read().unwrap().clone();
     let size = cache.size.load(Ordering::SeqCst);
-    (*reader, size)
+    (reader, size)
 }
 
 #[get("/refresh_content")]
@@ -146,6 +146,7 @@ pub fn refresh_content(start: GenTimer, admin: AdministratorCookie, user: Option
     } else {
         let template = hbs_template(TemplateBody::General(alert_success("An error occurred attempting to access content.")), None, Some("Content not available.".to_string()), String::from("/error404"), Some(admin), user, None, Some(start.0));
         let express: Express = template.into();
+        return express.compress(encoding);
     }
     
     let mut cache_writer;
