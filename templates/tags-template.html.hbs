@@ -6,9 +6,11 @@
     
     <div class="v-article-tags v-all-tags">
         <ul>
+    {{~#if tags~}}
     {{~#each tags~}}
-        <li class="v-tag-size-{{this.size}}"><a href="{{../info.base_url}}/tag/{{this.url}}">{{this.tag}} ({{this.count}})</a></li>
+        <li class="v-tag-size-{{this.size}}"><a href="{{../info.base_url}}/tag/{{this.url}}">#{{this.tag}} ({{this.count}})</a></li>
     {{~/each~}}
+    {{/if}}
         </ul>
     </div>
 </div>

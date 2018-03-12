@@ -516,7 +516,9 @@ impl ArticleId {
                     title: row.get(1), // todo: call sanitize title here
                     posted: row.get(2),
                     body: row.get(3), // Todo: call sanitize body here
-                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
+                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim_matches('\'').trim().to_string()).filter(|s| s.as_str() != "").collect(),
+                    // tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'')).filter(|s| *s != "").map(|s| s.to_string()).collect(),
+                    // tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     // description: opt_col(row.get_opt(5)),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     // author_id: row.get(6),
@@ -552,7 +554,9 @@ impl ArticleId {
                     title: row.get(1), // todo: call sanitize title here
                     posted: row.get(2),
                     body: row.get(3), // Todo: call sanitize body here
-                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
+                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim_matches('\'').trim().to_string()).filter(|s| s.as_str() != "").collect(),
+                    // tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'')).filter(|s| *s != "").map(|s| s.to_string()).collect(),
+                    // tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     userid: row.get(6),
                     username: titlecase( &sanitization::sanitize(&username) ),
@@ -759,7 +763,9 @@ impl Article {
                     title: row.get(1), // todo: call sanitize title here
                     posted: row.get(2),
                     body: row.get(3), // Todo: call sanitize body here
-                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
+                    // tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
+                    // tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'')).filter(|s| *s != "").map(|s| s.to_string()).collect(),
+                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim_matches('\'').trim().to_string()).filter(|s| s.as_str() != "").collect(),
                     description: row.get_opt(5).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     userid: row.get(6),
                     username: titlecase( &sanitization::sanitize(&username) ),
@@ -901,7 +907,9 @@ impl Article {
                             if &d == "" { row.get(3) }
                             else { d }
                         } else { row.get(3) },
-                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
+                    tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim_matches('\'').trim().to_string()).filter(|s| s.as_str() != "").collect(),
+                    // tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'')).filter(|s| *s != "").map(|s| s.to_string()).collect(),
+                    // tags: row.get_opt(4).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()).into_iter().map(|s| s.trim().trim_matches('\'').to_string()).collect(),
                     // description: if show_desc { String::new() } else { String::new() },
                     // show_desc moves the description to the body
                     description: if show_desc { 
