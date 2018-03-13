@@ -353,7 +353,12 @@ pub fn express_deflate(data: Vec<u8>) -> Vec<u8> {
 }
 
 
-pub fn find_ip(req: &Request) -> Ipv4Addr {
+pub fn find_ip(request: &Request) -> Option<String> {
+    let forward: &str = request.headers().get_one("X-Forwarded-For")?;
+    Some(forward.to_owned())
+}
+
+/*pub fn find_ip(req: &Request) -> Ipv4Addr {
     let mut ipaddy: Ipv4Addr = Ipv4Addr::new(0, 0, 0, 0);
     
     if let Some(sock) = req.remote() {
@@ -390,13 +395,18 @@ pub fn find_ip(req: &Request) -> Ipv4Addr {
     
     ipaddy
 }
-
+*/
 
 impl<'a> Responder<'a> for Express {
     fn respond_to(self, req: &Request) -> response::Result<'a> {
         
         if cfg!(PRODUCTION) {
-            println!("Served to: {}", find_ip(req));
+            if let Some(ip) = find_ip(req) {
+                // println!("Served to: {}", find_ip(req));
+                println!("Served to: {}", ip);
+            } else {
+                println!("Could not find ip address.");
+            }
         }
         
         let mut response = Response::build();

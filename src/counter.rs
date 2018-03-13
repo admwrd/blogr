@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 use std::fs::{self, File};
 use ::serde::{Deserialize, Serialize};
 
-use std::sync::{Mutex};
+use std::sync::{Mutex, Arc, RwLock};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::net::Ipv4Addr;
 
@@ -28,6 +28,7 @@ use htmlescape::*;
 
 use super::{HITS_SAVE_INTERVAL, MULTI_SEGMENT_PATHS};
 // pub const HITS_SAVE_INTERVAL: usize = 5;
+use xpress::find_ip;
 
 pub fn cur_dir_file(name: &str) -> PathBuf {
     if let Ok(mut dir) = env::current_exe() {
@@ -69,7 +70,6 @@ pub struct Counter {
     pub stats: Mutex<PageStats>,
 }
 
-
 // Implements a Request Guard to pull data into a route
 // current page/route, page views, total site hits/views
 #[derive(Debug, Clone, Serialize)]
@@ -78,6 +78,48 @@ pub struct Hits(pub String, pub usize, pub usize);
 // Use this for error pages to track errors
 #[derive(Debug, Clone, Serialize)]
 pub struct ErrorHits(pub String, pub usize, pub usize);
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UniqueStats {
+    // For each page track the number of hits from each ip address
+    stats: RwLock<HashMap<String, HashMap<String, usize>>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+// Use in a route's parameter list
+// Returns page, client's ip address, and unique hits
+pub struct UniqueHits(pub String, pub String, pub usize);
+
+
+impl UniqueStats {
+    pub fn new(ip: String) -> bool {
+        false
+    }
+}
+
+
+impl Default for UniqueStats {
+    fn default() -> Self {
+        UniqueStats {
+            stats: RwLock::new(
+                HashMap::new()
+            ),
+        }
+    }
+}
+
+impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
+    type Error = ();
+    
+    fn from_request(req: &'a Request<'r>) -> ::rocket::request::Outcome<UniqueHits,Self::Error> {
+        let route = route(req);
+        let unique_stats = req.guard::<State<UniqueStats>>()?;
+        
+        
+        // Outcome::Failure( () )
+        Outcome::Forward( () )
+    }
+}
 
 
 impl TotalHits {

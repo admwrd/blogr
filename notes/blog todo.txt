@@ -236,6 +236,10 @@ Blogr-Features
 		vishus.net/p/RaND0m
 			allow optional route for /Search-Engine-Optimization
 
+	Eventually make a lib.rs alongside the main.rs (in same folder) to allow both lib and bin
+		The lib.rs library should contain most of the modules
+		The main.rs binary should have the code to execute the program, should be very small
+
 	Add a page to unlock locked accounts
 
 	Add css styling and layout support for the following bootstrap items: 
