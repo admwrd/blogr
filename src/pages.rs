@@ -1921,7 +1921,9 @@ pub fn hbs_pageviews(start: GenTimer, admin: AdministratorCookie, user: Option<U
 
 
 #[get("/")]
-pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits) -> Express {
+pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits, uhits: UniqueHits) -> Express {
+    
+    println!("Unique hits:\n\tRoute: {}\n\tIP Address: {}\n\tVisits: {}\n\tUnique Visitors: {}\n", &uhits.0, &uhits.1, &uhits.2, &uhits.3);
     
     let fmsg: Option<String>;
     if let Some(flashmsg) = flash {

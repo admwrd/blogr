@@ -136,7 +136,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
         let ipaddy = if let Some(ip) = find_ip(&req) {
             ip
         } else {
-            return Outcome::Failure( (Status::InternalServerError, () ) );
+            println!("No Ip Address found.");
+            // return Outcome::Failure( (Status::InternalServerError, () ) );
+            "127.0.0.1".to_owned()
         };
             
         if let Ok(mut pages) = unique_lock.stats.write() {

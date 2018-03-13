@@ -52,6 +52,8 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	Implement serializing/deserializing the UniqueStats to allow it to be saved and loaded
+
 	Add the requested uri to the ContentRequest struct
 		allowing the current page's link in the template to be higlighted
 
