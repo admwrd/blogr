@@ -91,17 +91,17 @@ pub struct UniqueStats {
 //   client's ip address, 
 //   number of visits for that page from the client, 
 //   and unique hits for that page
-// pub struct UniqueHits(pub String, pub String, pub usize, pub usize);
-pub struct UniqueHits(pub String, pub String);
+pub struct UniqueHits(pub String, pub String, pub usize, pub usize);
+// pub struct UniqueHits(pub String, pub String);
 
 
 impl UniqueHits {
-    // pub fn new(route: String, ipaddy: String, visits: usize, uhits: usize) -> Self {
-    //     UniqueHits(route, ipaddy, visits, uhits)
-    // }
-    pub fn new(route: String, ipaddy: String) -> Self {
-        UniqueHits(route, ipaddy)
+    pub fn new(route: String, ipaddy: String, visits: usize, uhits: usize) -> Self {
+        UniqueHits(route, ipaddy, visits, uhits)
     }
+    // pub fn new(route: String, ipaddy: String) -> Self {
+    //     UniqueHits(route, ipaddy)
+    // }
 }
 
 impl UniqueStats {
@@ -141,18 +141,22 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
             
         if let Ok(mut pages) = unique_lock.stats.write() {
             if let Some(mut ips) = pages.get_mut(&route) {
-                ips.entry(ipaddy.clone())
-                    .and_modify(|e| { *e += 1; } )
-                    // .or_insert( new_ip_map(ipaddy) );
-                    .or_insert( 1 );
-                // let 
-                return Outcome::Success( UniqueHits::new(route, ipaddy) )
+                let visits: usize;
+                {
+                    let v = ips.entry(ipaddy.clone())
+                        .and_modify(|e| { *e += 1; } )
+                        // .or_insert( new_ip_map(ipaddy) );
+                        .or_insert( 1 );
+                    visits = *v;
+                }
+                let uhits = ips.len();
+                return Outcome::Success( UniqueHits::new(route, ipaddy , visits, uhits) )
             }
             // let mut pages: HashMap<String, HashMap<String, usize>> = HashMap::new();
             let mut page: HashMap<String, usize> = HashMap::new();
             page.insert(ipaddy.clone(), 1);
             pages.insert(ipaddy.clone(), page);
-            return Outcome::Success( UniqueHits::new(route, ipaddy) )
+            return Outcome::Success( UniqueHits::new(route, ipaddy , 1, 1) )
         }
         
         Outcome::Failure( (Status::InternalServerError, ()) )

@@ -354,6 +354,7 @@ fn main() {
         .manage(data::init_pg_pool())
         .manage(hitcount)
         .manage(views)
+        .manage(uhits)
         .manage(content_context)
         .manage(content_cache)
         
