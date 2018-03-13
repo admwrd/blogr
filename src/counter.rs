@@ -141,6 +141,34 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
             "127.0.0.1".to_owned()
         };
         
+        let visits: usize;
+        let uhits: usize;
+        {
+            // let pages = unique_lock.stats.write()?;
+            if let Ok(mut pages) = unique_lock.stats.write() {
+                if let Some(mut ips) = pages.get_mut(&route) {
+                    uhits = ips.len();
+                    if let Some(mut v) = ips.get_mut(&ipaddy) {
+                        *v += 1;
+                        visits = *v;
+                        return Outcome::Success( UniqueHits::new(route, ipaddy, visits, uhits) );
+                    }
+                    ips.insert(ipaddy.clone(), 1);
+                    return Outcome::Success( UniqueHits::new(route, ipaddy, 1, uhits+1) );
+                }
+                let mut page: HashMap<String, usize> = HashMap::new();
+                page.insert(ipaddy.clone(), 1);
+                pages.insert(route.clone(), page);
+                return Outcome::Success( UniqueHits::new(route, ipaddy, 1, 1) );
+            }
+            Outcome::Failure( ( Status::InternalServerError, () ) )
+        }
+        
+        
+        
+        
+        /*
+        
         // let pages = unique_lock.stats.write()?;
         let mut pages = if let Ok(p) = unique_lock.stats.write() {
             p
@@ -158,7 +186,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
                 println!("page exists in unique hits");
                 let visits: usize;
                 {
-                    let v = ips.entry(ipaddy.clone())
+                    let v = (*ips).entry(ipaddy.clone())
                         .and_modify(|e| { println!("ip addy found in unique hits for specified page"); *e += 1; } )
                         // .or_insert( new_ip_map(ipaddy) );
                         .or_insert( 1 );
@@ -176,7 +204,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
         // }
         // println!("Error acquiring write lock to unique hit counter");
         // Outcome::Failure( (Status::InternalServerError, ()) )
-        
+        */
             
             
             
