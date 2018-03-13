@@ -140,13 +140,26 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
             // return Outcome::Failure( (Status::InternalServerError, () ) );
             "127.0.0.1".to_owned()
         };
+        
+        // let pages = unique_lock.stats.write()?;
+        let mut pages = if let Ok(p) = unique_lock.stats.write() {
+            p
+        } else {
+            return Outcome::Failure( (Status::InternalServerError, ()) );
+        };
+        
+        // if let Ok(mut pages) = unique_lock.stats.write() {
             
-        if let Ok(mut pages) = unique_lock.stats.write() {
+        // }
+        
+        // if let Ok(mut pages) = unique_lock.stats.write() {
+            // println!("Write lock acquired to uhits");
             if let Some(mut ips) = pages.get_mut(&route) {
+                println!("page exists in unique hits");
                 let visits: usize;
                 {
                     let v = ips.entry(ipaddy.clone())
-                        .and_modify(|e| { *e += 1; } )
+                        .and_modify(|e| { println!("ip addy found in unique hits for specified page"); *e += 1; } )
                         // .or_insert( new_ip_map(ipaddy) );
                         .or_insert( 1 );
                     visits = *v;
@@ -155,13 +168,14 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
                 return Outcome::Success( UniqueHits::new(route, ipaddy , visits, uhits) )
             }
             // let mut pages: HashMap<String, HashMap<String, usize>> = HashMap::new();
+            println!("page was not found in unique hits");
             let mut page: HashMap<String, usize> = HashMap::new();
             page.insert(ipaddy.clone(), 1);
             pages.insert(ipaddy.clone(), page);
             return Outcome::Success( UniqueHits::new(route, ipaddy , 1, 1) )
-        }
-        
-        Outcome::Failure( (Status::InternalServerError, ()) )
+        // }
+        // println!("Error acquiring write lock to unique hit counter");
+        // Outcome::Failure( (Status::InternalServerError, ()) )
         
             
             
