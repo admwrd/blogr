@@ -26,7 +26,7 @@ use std::net::Ipv4Addr;
 
 use htmlescape::*;
 
-use super::{HITS_SAVE_INTERVAL, MULTI_SEGMENT_PATHS};
+use super::{HITS_SAVE_INTERVAL, MULTI_SEGMENT_PATHS, UNIQUE_HITS_LOG, TOTAL_HITS_LOG, HIT_COUNTER_LOG};
 // pub const HITS_SAVE_INTERVAL: usize = 5;
 use xpress::find_ip;
 
@@ -92,7 +92,7 @@ pub struct UniqueStats {
 //   number of visits for that page from the client, 
 //   and unique hits for that page
 pub struct UniqueHits(pub String, pub String, pub usize, pub usize);
-// pub struct UniqueHits(pub String, pub String);
+// pub struct UniqueHits(hits: Hits, pub usize, pub usize);
 
 
 impl UniqueHits {
@@ -108,6 +108,58 @@ impl UniqueHits {
 impl UniqueStats {
     pub fn new(ip: String) -> bool {
         false
+    }
+    pub fn ser(&self) -> String {
+        let ser: String = ::serde_json::to_string_pretty(self)
+            .unwrap_or(String::new());
+        ser
+    }
+    pub fn des(mut buffer: String) -> Self {
+        let des_rst = ::serde_json::from_str(&mut buffer);
+        if let Ok(des) = des_rst {
+            des
+        } else {
+            println!("Deserialization failed for UniqueStats.");
+            UniqueStats::default()
+        }
+    }
+    pub fn load() -> Self {
+        let filename = cur_dir_file(UNIQUE_HITS_LOG);
+        let mut f_rst = File::open(&filename);
+        if let Ok(mut f) = f_rst {
+            let mut buffer: String = String::with_capacity(10000);
+            {
+                f.read_to_string(&mut buffer);
+            }
+            let des: UniqueStats = UniqueStats::des(buffer);
+            des
+        } else {
+            panic!()
+        }
+    }
+    pub fn save(&self) -> bool {
+        let ser = self.ser();
+        let filename = cur_dir_file(UNIQUE_HITS_LOG);
+        let mut f_rst = File::create(&filename);
+        if let Ok(mut f) = f_rst {
+            let bytes = f.write( buffer.as_bytes() );
+            if let Ok(b) == bytes {
+                if bytes != 0 {
+                    true
+                } else {
+                    println!("Writing to unique hits log file failed");
+                    false
+                }
+            } else {
+                println!("Writing to unique hits log file failed");
+                false
+            }
+        } else {
+            println!("Writing to unique hits log file failed");
+            false
+        }
+        
+        
     }
 }
 
@@ -169,77 +221,6 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
             Outcome::Failure( ( Status::InternalServerError, () ) )
         }
         
-        
-        
-        
-        /*
-        
-        // let pages = unique_lock.stats.write()?;
-        let mut pages = if let Ok(p) = unique_lock.stats.write() {
-            p
-        } else {
-            return Outcome::Failure( (Status::InternalServerError, ()) );
-        };
-        
-        // if let Ok(mut pages) = unique_lock.stats.write() {
-            
-        // }
-        
-        // if let Ok(mut pages) = unique_lock.stats.write() {
-            // println!("Write lock acquired to uhits");
-            if let Some(mut ips) = pages.get_mut(&route) {
-                println!("page exists in unique hits");
-                let visits: usize;
-                {
-                    let v = (*ips).entry(ipaddy.clone())
-                        .and_modify(|e| { println!("ip addy found in unique hits for specified page"); *e += 1; } )
-                        // .or_insert( new_ip_map(ipaddy) );
-                        .or_insert( 1 );
-                    visits = *v;
-                }
-                let uhits = ips.len();
-                return Outcome::Success( UniqueHits::new(route, ipaddy , visits, uhits) )
-            }
-            // let mut pages: HashMap<String, HashMap<String, usize>> = HashMap::new();
-            println!("page was not found in unique hits");
-            let mut page: HashMap<String, usize> = HashMap::new();
-            page.insert(ipaddy.clone(), 1);
-            pages.insert(ipaddy.clone(), page);
-            return Outcome::Success( UniqueHits::new(route, ipaddy , 1, 1) )
-        // }
-        // println!("Error acquiring write lock to unique hit counter");
-        // Outcome::Failure( (Status::InternalServerError, ()) )
-        */
-            
-            
-            
-        //     // check if page exists
-        //     if let Some(mut ips) = pages.get_mut(&route) { 
-        //         let uhits = ips.len();
-        //         // look for IP Address
-        //         if let Some(mut visits) = ips.get_mut(&ipaddy) { 
-        //             *visits += 1;
-        //             Outcome::Success( UniqueHits::new(route, ipaddy, *visits, uhits) )
-        //         } else { 
-        //             // IP Address was not found in that page, make new entry
-        //             ips.insert(ipaddy, 1);
-        //             Outcome::Success( UniqueHits::new(route, ipaddy, 1, uhits+1) )
-        //         }
-        //     } else { 
-        //         // insert new page
-        //         let mut page: HashMap<String, usize> = HashMap::new();
-        //         {
-        //             page.insert(ipaddy.clone(), 1);
-        //         }
-        //         pages.insert(route.clone(), page);
-        //         Outcome::Success( UniqueHits::new(route, ipaddy, 1, 1) )
-        //     }
-        // } else {
-        //     Outcome::Failure( (Status::InternalServerError, () ) )
-        // }
-        // // Outcome::Failure( () )
-        // // Outcome::Forward( () )
-        // }
     }
 }
 
@@ -249,7 +230,7 @@ impl TotalHits {
         TotalHits { total: AtomicUsize::new(0) }
     }
     pub fn save(&self) {
-        let filename = cur_dir_file("logs/total_views.json");
+        let filename = cur_dir_file(TOTAL_HITS_LOG);
         
         let mut f = File::create(&filename)
             .expect("Could not create file for TotalHits.");
@@ -263,7 +244,7 @@ impl TotalHits {
         let bytes = f.write( ser.as_bytes() );
     }
     pub fn load() -> Self {
-        let filename = cur_dir_file("logs/total_views.json");
+        let filename = cur_dir_file(TOTAL_HITS_LOG);
         let mut f_rst = File::open(&filename);
         if let Ok(mut f) = f_rst {
             let mut buffer: String = String::with_capacity(100);
@@ -291,7 +272,7 @@ impl Counter {
         Counter { stats: Mutex::new( PageStats::new() ) }
     }
     pub fn save(buffer: &str) {
-        let filename = cur_dir_file("logs/page_stats.json");
+        let filename = cur_dir_file(HIT_COUNTER_LOG);
         
         let mut f = File::create(&filename)
             .expect("Could not create file for Counter.");
@@ -299,7 +280,7 @@ impl Counter {
         let bytes = f.write( buffer.as_bytes() );
     }
     pub fn load() -> Counter {
-        let filename = cur_dir_file("logs/page_stats.json");
+        let filename = cur_dir_file(HIT_COUNTER_LOG);
         let mut f_rst = File::open(&filename);
         if let Ok(mut f) = f_rst {
             let mut buffer: String = String::with_capacity(1000);
@@ -328,7 +309,8 @@ impl PageStats {
     }
     pub fn ser(&self) -> String {
         let ser: String = ::serde_json::to_string_pretty(self)
-            .expect("Could not serialize PageStats");
+            // .expect("Could not serialize PageStats");
+            .unwrap_or(String::new());
         ser
     }
     pub fn des(mut buffer: String) -> Self {
@@ -408,11 +390,18 @@ fn req_guard(req: &Request, pagestr: String) -> ::rocket::request::Outcome<Hits,
                 }
                 page_views = *hits;
             }
-            ser_stats = stats.ser();
+            
+            // ser_stats = if total % 10 == 0 || &pagestr == "save-hits" {
+            ser_stats = if total % HITS_SAVE_INTERVAL == 0 || &pagestr == "save-hits" {
+                stats.ser()
+            } else {
+                String::new()
+            };
         }
         // (*hits).wrapping_add(1);
         // page_views = (*hits);
-        if total % 10 == 0 || &pagestr == "save-hits" {
+        // if total % 10 == 0 || &pagestr == "save-hits" {
+        if total % HITS_SAVE_INTERVAL == 0 || &pagestr == "save-hits" {
             // println!("Save interval reached. Saving page stats.");
             Counter::save(&ser_stats);
             // println!("Saved page stats, saving total hits.");

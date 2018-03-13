@@ -52,6 +52,12 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	change UniqueHits to hold an instance of Hits
+		inside he UniqueHits responder call the Hits responder
+		change the UniqueHits::new()'s println to print out modified struct info
+	call Uniquestats::load() in main when creating the state variable
+	every HITS_SAVE_INTERVAL (use total hits from Hits (last - hits.2)) call the save() method
+
 	Implement serializing/deserializing the UniqueStats to allow it to be saved and loaded
 
 	Add the requested uri to the ContentRequest struct

@@ -78,6 +78,12 @@ const MULTI_SEGMENT_PATHS: &[&'static str] = &["article", "search", "tag"];
 const PAGE_TEMPLATES: &[&'static str] = &["page-template", "page-code-template", "page-blank-template"];
 #[cfg(not(production))]
 const DEFAULT_PAGE_TEMPLATE: &'static str = "page-template";
+#[cfg(not(production))]
+const HIT_COUNTER_LOG: &'static str = "logs/page_stats.json";
+#[cfg(not(production))]
+const TOTAL_HITS_LOG: &'static str = "logs/total_views.json";
+#[cfg(not(production))]
+const UNIQUE_HITS_LOG: &'static str = "logs/unique_stats.json";
 // #[cfg(not(production))]
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu::new("Rust Tutorials".to_owned(), "/content/tutorials".to_owned(), "")]);
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu {name: "Rust Tutorials".to_owned(), url: format!("{}content/tutorials", BLOG_URL), separator: false, classes: String::new()}]);
@@ -167,6 +173,14 @@ const MULTI_SEGMENT_PATHS: &[&'static str] = &["article", "search", "tag"];
 const PAGE_TEMPLATES: &[&'static str] = &["page-template", "page-code-template", "page-blank-template"];
 #[cfg(production)]
 const DEFAULT_PAGE_TEMPLATE: &'static str = "page-template";
+#[cfg(production)]
+const HIT_COUNTER_LOG: &'static str = "logs/page_stats.json";
+#[cfg(production)]
+const TOTAL_HITS_LOG: &'static str = "logs/total_views.json";
+#[cfg(production)]
+const UNIQUE_HITS_LOG: &'static str = "logs/unique_stats.json";
+
+
 // #[cfg(production)]
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu::new("Rust Tutorials".to_owned(), "/content/tutorials".to_owned(), "")]);
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu {name: "Rust Tutorials".to_owned(), url: format!("{}content/tutorials", BLOG_URL), separator: false, classes: String::new()}]);
