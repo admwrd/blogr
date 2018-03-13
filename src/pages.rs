@@ -751,7 +751,7 @@ pub fn hbs_logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Resul
 
 
 #[get("/all_tags")]
-pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits, uhits: UniqueHits) -> Express {
     // let start = Instant::now();
     
     let qrystr = "SELECT COUNT(*) as cnt, unnest(tag) as untag FROM articles GROUP BY untag ORDER BY cnt DESC;";
@@ -1500,7 +1500,7 @@ pub fn hbs_author(start: GenTimer, authorid: u32, pagination: Page<Pagination>, 
 }
 
 #[get("/about")]
-pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits) -> Express {
+pub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, hits: Hits, uhits: UniqueHits) -> Express {
     // don't forget to put the start Instant in the hbs_template() function
     let output = hbs_template(TemplateBody::General("This page is not implemented yet.  Soon it will tell a little about me.".to_string()), None, Some("About Me".to_string()), String::from("/about"), admin, user, None, Some(start.0));
     let express: Express = output.into();
@@ -1923,7 +1923,7 @@ pub fn hbs_pageviews(start: GenTimer, admin: AdministratorCookie, user: Option<U
 #[get("/")]
 pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, hits: Hits, uhits: UniqueHits) -> Express {
     
-    println!("Unique hits:\n\tRoute: {}\n\tIP Address: {}\n\tVisits: {}\n\tUnique Visitors: {}\n", &uhits.0, &uhits.1, &uhits.2, &uhits.3);
+    // println!("Unique hits:\n\tRoute: {}\n\tIP Address: {}\n\tVisits: {}\n\tUnique Visitors: {}\n", &uhits.0, &uhits.1, &uhits.2, &uhits.3);
     
     let fmsg: Option<String>;
     if let Some(flashmsg) = flash {

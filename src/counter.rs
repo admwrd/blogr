@@ -97,6 +97,7 @@ pub struct UniqueHits(pub String, pub String, pub usize, pub usize);
 
 impl UniqueHits {
     pub fn new(route: String, ipaddy: String, visits: usize, uhits: usize) -> Self {
+        println!("Route: {}, ip: {}, visits: {}, unique hits: {}", &route, &ipaddy, &visits, &uhits);
         UniqueHits(route, ipaddy, visits, uhits)
     }
     // pub fn new(route: String, ipaddy: String) -> Self {
@@ -147,15 +148,19 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
             // let pages = unique_lock.stats.write()?;
             if let Ok(mut pages) = unique_lock.stats.write() {
                 if let Some(mut ips) = pages.get_mut(&route) {
+                    println!("Found entry for route");
                     uhits = ips.len();
                     if let Some(mut v) = ips.get_mut(&ipaddy) {
+                        println!("Found entry for ip address for route");
                         *v += 1;
                         visits = *v;
                         return Outcome::Success( UniqueHits::new(route, ipaddy, visits, uhits) );
                     }
+                    println!("Could not find entry for ip address for route");
                     ips.insert(ipaddy.clone(), 1);
                     return Outcome::Success( UniqueHits::new(route, ipaddy, 1, uhits+1) );
                 }
+                println!("Could not find an entry for the route");
                 let mut page: HashMap<String, usize> = HashMap::new();
                 page.insert(ipaddy.clone(), 1);
                 pages.insert(route.clone(), page);
