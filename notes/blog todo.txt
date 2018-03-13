@@ -74,6 +74,8 @@ Blogr-Fixes
 
 	Rename tags to topics
 
+	Eventually convert counter artithmetic to use wrapping_add() or somethign similar
+
 	Make a route to refresh the cache PageContext's as well as clear the ContentCacheLock
 		How to change the ContentContext HashMap?  I don't think it's mutable...
 

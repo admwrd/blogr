@@ -86,10 +86,23 @@ pub struct UniqueStats {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-// Use in a route's parameter list
-// Returns page, client's ip address, and unique hits
-pub struct UniqueHits(pub String, pub String, pub usize);
+// Use in a route's parameter list.  Returns :
+//   page route,
+//   client's ip address, 
+//   number of visits for that page from the client, 
+//   and unique hits for that page
+// pub struct UniqueHits(pub String, pub String, pub usize, pub usize);
+pub struct UniqueHits(pub String, pub String);
 
+
+impl UniqueHits {
+    // pub fn new(route: String, ipaddy: String, visits: usize, uhits: usize) -> Self {
+    //     UniqueHits(route, ipaddy, visits, uhits)
+    // }
+    pub fn new(route: String, ipaddy: String) -> Self {
+        UniqueHits(route, ipaddy)
+    }
+}
 
 impl UniqueStats {
     pub fn new(ip: String) -> bool {
@@ -108,16 +121,72 @@ impl Default for UniqueStats {
     }
 }
 
+// fn new_ip_map(ipaddy: String) -> HashMap<String, usize> {
+//     let mut ips: HashMap<String, usize> = HashMap::new();
+//     ips.insert(ipaddy, 1);
+//     ips
+// }
+
 impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
     type Error = ();
     
     fn from_request(req: &'a Request<'r>) -> ::rocket::request::Outcome<UniqueHits,Self::Error> {
+        let unique_lock = req.guard::<State<UniqueStats>>()?;
         let route = route(req);
-        let unique_stats = req.guard::<State<UniqueStats>>()?;
+        let ipaddy = if let Some(ip) = find_ip(&req) {
+            ip
+        } else {
+            return Outcome::Failure( (Status::InternalServerError, () ) );
+        };
+            
+        if let Ok(mut pages) = unique_lock.stats.write() {
+            if let Some(mut ips) = pages.get_mut(&route) {
+                ips.entry(ipaddy.clone())
+                    .and_modify(|e| { *e += 1; } )
+                    // .or_insert( new_ip_map(ipaddy) );
+                    .or_insert( 1 );
+                // let 
+                return Outcome::Success( UniqueHits::new(route, ipaddy) )
+            }
+            // let mut pages: HashMap<String, HashMap<String, usize>> = HashMap::new();
+            let mut page: HashMap<String, usize> = HashMap::new();
+            page.insert(ipaddy.clone(), 1);
+            pages.insert(ipaddy.clone(), page);
+            return Outcome::Success( UniqueHits::new(route, ipaddy) )
+        }
         
+        Outcome::Failure( (Status::InternalServerError, ()) )
         
-        // Outcome::Failure( () )
-        Outcome::Forward( () )
+            
+            
+            
+        //     // check if page exists
+        //     if let Some(mut ips) = pages.get_mut(&route) { 
+        //         let uhits = ips.len();
+        //         // look for IP Address
+        //         if let Some(mut visits) = ips.get_mut(&ipaddy) { 
+        //             *visits += 1;
+        //             Outcome::Success( UniqueHits::new(route, ipaddy, *visits, uhits) )
+        //         } else { 
+        //             // IP Address was not found in that page, make new entry
+        //             ips.insert(ipaddy, 1);
+        //             Outcome::Success( UniqueHits::new(route, ipaddy, 1, uhits+1) )
+        //         }
+        //     } else { 
+        //         // insert new page
+        //         let mut page: HashMap<String, usize> = HashMap::new();
+        //         {
+        //             page.insert(ipaddy.clone(), 1);
+        //         }
+        //         pages.insert(route.clone(), page);
+        //         Outcome::Success( UniqueHits::new(route, ipaddy, 1, 1) )
+        //     }
+        // } else {
+        //     Outcome::Failure( (Status::InternalServerError, () ) )
+        // }
+        // // Outcome::Failure( () )
+        // // Outcome::Forward( () )
+        // }
     }
 }
 

@@ -16,7 +16,7 @@
 */
 
 
-
+#![feature(entry_and_modify)]
 #![feature(custom_derive)]
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
@@ -320,6 +320,7 @@ fn main() {
     // let views: TotalHits = TotalHits::new();
     let hitcount: Counter = Counter::load();
     let views: TotalHits = TotalHits::load();
+    let uhits: UniqueStats = UniqueStats::default();
     
     let rock = rocket::ignite();
     // let rock = Rc::new(rocket::ignite());
@@ -331,6 +332,8 @@ fn main() {
     // let statics: PagesMutex = PagesMutex( RwLock::new(  PageContextMap::load_all()  ) );
     let content_context: ContentContext = ContentContext::load(STATIC_PAGES_DIR);
     let content_cache: ContentCacheLock = ContentCacheLock::new();
+    
+    
     // let content_cache: ContentCacheLock = ContentCacheLock::cache(rock, STATIC_PAGES_DIR);
     
     // let hitcount: PageCount = PageCount::new();
