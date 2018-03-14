@@ -52,23 +52,21 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
-	the /tag/<tag> route seems to call an image from /tag/assets/sphere-trans2.png
-		fix this to call from root dir
+	FIX setup-vps PAGE - javascript popup appearing when it shouldn't?
 
-	empty tags still seem to appear in the tag cloud
+	Rust Snippets page isn't highlighting all code snippets correctly, I think
 
-	change UniqueHits to hold an instance of Hits
-		inside he UniqueHits responder call the Hits responder
-		change the UniqueHits::new()'s println to print out modified struct info
-	call Uniquestats::load() in main when creating the state variable
-	every HITS_SAVE_INTERVAL (use total hits from Hits (last - hits.2)) call the save() method
-
-	Implement serializing/deserializing the UniqueStats to allow it to be saved and loaded
+	Add IP Address related stats to the pagestats admin page
+		add number of unique visitors for each page
+		calculate the average number of visits for each user
+			iterate a given page's ip address map
+				add up all of the visits
+				then divide by the len() of the page's ip address map
+		Could iterate over the pages map, then iterate over each ip address entry
 
 	Add the requested uri to the ContentRequest struct
 		allowing the current page's link in the template to be higlighted
 
-	Track ip addresses?
 	
 	Add modified date to template module and contexts as well as in the templates
 
@@ -624,6 +622,21 @@ Rocket-auth-login:
 
 
 DONE
+	the /tag/<tag> route seems to call an image from /tag/assets/sphere-trans2.png
+		fix this to call from root dir
+
+	empty tags still seem to appear in the tag cloud
+
+	change UniqueHits to hold an instance of Hits
+		inside he UniqueHits responder call the Hits responder
+		change the UniqueHits::new()'s println to print out modified struct info
+	call Uniquestats::load() in main when creating the state variable
+	every HITS_SAVE_INTERVAL (use total hits from Hits (last - hits.2)) call the save() method
+
+	Implement serializing/deserializing the UniqueStats to allow it to be saved and loaded
+
+	Track ip addresses?
+
 	On image when using a mobile devices add a growl/toast message 
 		telling user to swipe up or down to close image
 
