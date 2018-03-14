@@ -235,6 +235,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
                         page_entry
                     });
                 let visits: usize = *page.entry(ipaddy.clone())
+                    .and_modify(|e| *e += 1)
                     .or_insert(1);
                 let uhits: usize = page.len();
             } else {

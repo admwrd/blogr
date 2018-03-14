@@ -52,6 +52,9 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	the /tag/<tag> route seems to call an image from /tag/assets/sphere-trans2.png
+		fix this to call from root dir
+
 	change UniqueHits to hold an instance of Hits
 		inside he UniqueHits responder call the Hits responder
 		change the UniqueHits::new()'s println to print out modified struct info
