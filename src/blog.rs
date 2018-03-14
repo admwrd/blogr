@@ -500,7 +500,7 @@ impl ArticleId {
         // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
-            println!("Querying articles: found {} rows", aqry.len());
+            // println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
                 let row = aqry.get(0); // get first row
                 
@@ -538,7 +538,7 @@ impl ArticleId {
         let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
         let rawqry = pgconn.query(&qrystr, &[]);
         
-        println!("Running query:\n{}", qrystr);
+        // println!("Running query:\n{}", qrystr);
         if let Ok(aqry) = rawqry {
             // userid 6
             // display 7
@@ -813,7 +813,7 @@ impl Article {
             aid=self.aid
         );
         
-        println!("Generated update query:\n{}", qrystr);
+        // println!("Generated update query:\n{}", qrystr);
         
         if let Ok(num) = conn.execute(&qrystr, &[]) {
             if num == 1 {
@@ -888,7 +888,7 @@ impl Article {
         }
         qrystr.push_str(" ORDER BY posted DESC");
         if limit != 0 { qrystr.push_str(&format!(" LIMIT {}", limit)); }
-        println!("Query: {}", qrystr);
+        // println!("Query: {}", qrystr);
         let qryrst = pgconn.query(&qrystr, &[]);
         if let Ok(result) = qryrst {
             let mut articles: Vec<Article> = Vec::new();
@@ -925,7 +925,7 @@ impl Article {
                 };
                 articles.push(a);
             }
-            println!("Found {} articles with the specified query.", articles.len());
+            // println!("Found {} articles with the specified query.", articles.len());
             articles
         } else {
             println!("Query failed.");
@@ -986,7 +986,7 @@ impl ArticleForm {
         // let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid, posted",
         let qrystr = format!("INSERT INTO articles (title, posted, body, tag, description, author, markdown, image) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}', {author}, '{md}', '{img}') RETURNING aid",
             title=&self.title, posted=&now, body=&self.body, tags=tagstr, desc=&self.description, author=userid, md=&self.markdown, img=&self.image);
-        println!("Insert query: {}", qrystr);
+        // println!("Insert query: {}", qrystr);
         let result = conn.query(&qrystr, &[]);
         match result {
             Err(err) => Err(format!("Could not insert article. Error: {}", err)),

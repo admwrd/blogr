@@ -392,10 +392,10 @@ pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<Use
     let mut fields: HashMap<String, String> = HashMap::new();
     
     if let Referrer(Some(refer)) = referrer {
-        // println!("Referrer: {}", &refer);
+        println!("Referrer: {}", &refer);
         fields.insert("referrer".to_string(), refer);
     } else {
-        // println!("No referrer");
+        println!("No referrer");
     }
     
     if let Some(flash_msg) = flash_msg_opt {
@@ -406,7 +406,7 @@ pub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<Use
     }
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -442,7 +442,7 @@ pub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Optio
     let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), username), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -458,10 +458,10 @@ pub fn hbs_dashboard_admin_retry_redir(start: GenTimer, conn: DbConn, user: Opti
     let mut fields: HashMap<String, String> = HashMap::new();
     
     if &rediruser.referrer != "" && &rediruser.referrer != "noredirect" {
-        // println!("Adding referrer {}", &rediruser.referrer);
+        println!("Adding referrer {}", &rediruser.referrer);
         fields.insert("referrer".to_string(), rediruser.referrer.clone());
     } else {
-        // println!("No referring page\n{:?}", rediruser);
+        println!("No referring page\n{:?}", rediruser);
     }
     // if let Referrer(Some(refer)) = referrer {
     //     println!("Referrer: {}", &refer);
@@ -474,7 +474,7 @@ pub fn hbs_dashboard_admin_retry_redir(start: GenTimer, conn: DbConn, user: Opti
     let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -490,10 +490,10 @@ pub fn hbs_dashboard_admin_retry_redir_only(start: GenTimer, conn: DbConn, user:
     let mut fields: HashMap<String, String> = HashMap::new();
     
     if &rediruser.referrer != "" && &rediruser.referrer != "noredirect" {
-        // println!("Adding referrer {}", &rediruser.referrer);
+        println!("Adding referrer {}", &rediruser.referrer);
         fields.insert("referrer".to_string(), rediruser.referrer.clone());
     } else {
-        // println!("No referring page\n{:?}", rediruser);
+        println!("No referring page\n{:?}", rediruser);
     }
     // if let Referrer(Some(refer)) = referrer {
     //     println!("Referrer: {}", &refer);
@@ -507,7 +507,7 @@ pub fn hbs_dashboard_admin_retry_redir_only(start: GenTimer, conn: DbConn, user:
     let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some("Administrator Login".to_string()), String::from("/admin"), None, user, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -526,7 +526,7 @@ pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<Administrat
     let ok_addy: &str;
     let err_addy: &str;
     if &login.referrer != "" && &login.referrer != "noredierct" {
-        // println!("Processing referrer: {}", &login.referrer);
+        println!("Processing referrer: {}", &login.referrer);
         let referring = if login.referrer.starts_with(BLOG_URL) {
             &login.referrer[BLOG_URL.len()-1..]
         } else {
@@ -548,13 +548,13 @@ pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<Administrat
     // } else {
     //     "/admin"
     // };
-    // println!("Forwaring to {} or {}", ok_addy, err_addy);
+    println!("Forwaring to {} or {}", ok_addy, err_addy);
     
     // let mut output = login.flash_redirect("/admin", "/admin", &mut cookies);
     let mut output = login.flash_redirect(ok_addy, err_addy, &mut cookies);
     
     if output.is_ok() {
-        // println!("Login success, forwarding to {}", ok_addy);
+        println!("Login success, forwarding to {}", ok_addy);
         if let Some(user_cookie) = user {
             if &user_cookie.username != &login.username {
                 if let Ok(redir) = output {
@@ -576,7 +576,7 @@ pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<Administrat
     }
     
     let end = start.0.elapsed();
-    // println!("Processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     output
 }
 
@@ -614,7 +614,7 @@ pub fn hbs_dashboard_user_authorized(start: GenTimer, conn: DbConn, admin: Optio
     let output: Template = hbs_template(TemplateBody::General(format!("Welcome User {user}.  You are viewing the User dashboard page.", user=user.username)), flash, Some("User Dashboard".to_string()), String::from("/user"), admin, Some(user), None, Some(start.0));
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -633,7 +633,7 @@ pub fn hbs_dashboard_user_flash(start: GenTimer, conn: DbConn, admin: Option<Adm
     }
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -653,7 +653,7 @@ pub fn hbs_dashboard_user_retry_user(start: GenTimer, conn: DbConn, admin: Optio
     let output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), username), flash, Some("User Login".to_string()), String::from("/user"), admin, None, Some("set_login_focus();".to_string()), Some(start.0));
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -689,7 +689,7 @@ pub fn hbs_process_user_login(start: GenTimer, form: Form<LoginCont<UserForm>>, 
     }
     
     let end = start.0.elapsed();
-    // println!("Processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     output
 }
 
@@ -796,7 +796,7 @@ pub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCo
     let output: Template = hbs_template(TemplateBody::Tags(tags), None, Some("Viewing All Tags".to_string()), String::from("/all_tags"), admin, user, None, Some(start.0));
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -883,7 +883,7 @@ pub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Paginatio
         qrystr.push_str(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT));
         qrystr.push_str(&sql);
         
-        // println!("\nTag count query: {}\nTag articles query: {}\n", countqrystr, qrystr);
+        println!("\nTag count query: {}\nTag articles query: {}\n", countqrystr, qrystr);
         
         if let Ok(rst) = conn.query(&countqrystr, &[]) {
             if !rst.is_empty() && rst.len() == 1 {
@@ -892,7 +892,7 @@ pub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Paginatio
                 let total_items: u32 = count as u32;
                 let (ipp, cur, num_pages) = pagination.page_data(total_items);
                 let pagesql = pagination.sql(&qrystr, Some("posted DESC"));
-                // println!("Tag pagination query:\n{}", pagesql);
+                println!("Tag pagination query:\n{}", pagesql);
                 if let Some(results) = conn.articles(&pagesql) {
                     if results.len() != 0 {
                         let page_information = pagination.page_info(total_items);
@@ -989,7 +989,7 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
         output = hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid.aid))), None, Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
     }
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -999,7 +999,7 @@ pub fn hbs_article_not_found(start: GenTimer, conn: DbConn, admin: Option<Admini
     // let start = Instant::now();
     let output: Template = hbs_template(TemplateBody::General(alert_danger("Article not found")), None, Some("Article not found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -1035,7 +1035,7 @@ pub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbCon
     }
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -1053,7 +1053,7 @@ pub fn hbs_create_unauthorized(start: GenTimer, conn: DbConn, admin: Option<Admi
     let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some("Create".to_string()), String::from("/create"), None, user, None, Some(start.0));
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -1070,7 +1070,7 @@ pub fn hbs_create_form(start: GenTimer, conn: DbConn, admin: Option<Administrato
     }
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -1168,7 +1168,7 @@ pub fn hbs_search_results(start: GenTimer, pagination: Page<Pagination>, searchs
     // full-text search: title, description, body
     // entirety match 'each word' = ANY(tag)
     
-    // println!("Search parameters:\n{:?}", search);
+    println!("Search parameters:\n{:?}", search);
     
     let mut countqry = String::with_capacity(750);
     let mut qrystr = String::with_capacity(750);
@@ -1260,7 +1260,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
     //     countqry.push_str(" LIMIT 40");
     // }
     
-    // println!("Generated the following SQL Query:\nCount:\n{}\n\nSearch Query:\n{}", countqry, qrystr);
+    println!("Generated the following SQL Query:\nCount:\n{}\n\nSearch Query:\n{}", countqry, qrystr);
     // println!("Generated the following SQL Query:\n{}", qrystr);
     
     let total_query = countqry;
@@ -1273,7 +1273,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
             let (ipp, cur, num_pages) = pagination.page_data(total_items);
             // let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
             let sql = pagination.sql(&qrystr, Some("rank DESC"));
-            // println!("Prepared paginated query:\n{}", sql);
+            println!("Prepared paginated query:\n{}", sql);
             if let Some(results) = conn.articles(&sql) {
                 if results.len() != 0 {
                     // let page_information = pagination.page_info(total_items);
@@ -1288,7 +1288,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
                     let express: Express = output.into();
                     
                     let end = start.0.elapsed();
-                    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+                    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
                     
                     return express.compress( encoding );
                 }
@@ -1300,7 +1300,7 @@ FROM articles a JOIN users u ON (a.author = u.userid),
     let express: Express = output.into();
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     
     express.compress( encoding )
     
@@ -1438,7 +1438,7 @@ pub fn rss_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie
     }
     
     let end = start.0.elapsed();
-    // println!("RSS Generated in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("RSS Generated in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     rss
 }
 
@@ -1474,7 +1474,7 @@ pub fn hbs_author(start: GenTimer, authorid: u32, pagination: Page<Pagination>, 
             let total_items: u32 = count as u32;
             let (ipp, cur, num_pages) = pagination.page_data(total_items);
             let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.author = {}", DESC_LIMIT, authorid), Some("posted DESC"));
-            // println!("Prepared paginated query:\n{}", sql);
+            println!("Prepared paginated query:\n{}", sql);
             if let Some(results) = conn.articles(&sql) {
                 if results.len() != 0 {
                     let page_information = pagination.page_info(total_items);
@@ -1494,7 +1494,7 @@ pub fn hbs_author(start: GenTimer, authorid: u32, pagination: Page<Pagination>, 
     }
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     let express: Express = output.into();
     express.compress(encoding)
 }
@@ -1686,7 +1686,7 @@ pub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagin
             let total_items: u32 = count as u32;
             let (ipp, cur, num_pages) = pagination.page_data(total_items);
             let pagesql = pagination.sql(page_query, Some(order));
-            // println!("Manage paginated query: {}", pagesql);
+            println!("Manage paginated query: {}", pagesql);
             if let Some(results) = conn.articles(&pagesql) {
                 if results.len() != 0 {
                     // let page_info = pagination.page_info(total_items);
@@ -1779,11 +1779,11 @@ pub fn hbs_delete_confirm(start: GenTimer, aid: u32, conn: DbConn, admin: Admini
 pub fn hbs_process_delete(aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>) -> Result<Flash<Redirect>, Redirect> {
     let qrystr = format!("DELETE FROM articles WHERE aid = {}", aid);
     
-    // println!("Delete query:\n{}\n", &qrystr);
+    println!("Delete query:\n{}\n", &qrystr);
     
     if let Ok(num) = conn.execute(&qrystr, &[]) {
         if num == 1 {
-            // println!("Delete succeeded");
+            println!("Delete succeeded");
             Ok( Flash::success(Redirect::to("/manage"), &format!("Article {} successfully deleted.", aid)) )
         } else if num == 0 {
             println!("Delete failed - no articles deleted.");
@@ -1858,7 +1858,7 @@ pub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCook
         
         let backup = String::from_utf8_lossy(&output.stdout).into_owned();
         let length = backup.len();
-        // println!("Backup succeeded with a length of {} bytes", length);
+        println!("Backup succeeded with a length of {} bytes", length);
         let express: Express = backup.into();
         express.set_content_type(ContentType::Binary)
                 .add_header(disposition)
@@ -1944,7 +1944,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
             let total_items: u32 = count as u32;
             let (ipp, cur, num_pages) = pagination.page_data(total_items);
             let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
-            // println!("Prepared paginated query:\n{}", sql);
+            println!("Prepared paginated query:\n{}", sql);
             if let Some(results) = conn.articles(&sql) {
                 if results.len() != 0 {
                     // let page_information = pagination.page_info(total_items);
@@ -1985,7 +1985,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
                     let express: Express = output.into();
                     
                     let end = start.0.elapsed();
-                    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+                    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
                     
                     return express.compress( encoding );
                 }
@@ -1997,7 +1997,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
     let express: Express = output.into();
     
     let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     
     express.compress( encoding )
     

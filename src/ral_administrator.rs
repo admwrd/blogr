@@ -86,7 +86,7 @@ impl AuthorizeForm for AdministratorForm {
         let is_admin_qrystr = format!("SELECT userid FROM users WHERE username = '{}' AND is_admin = '1'", &self.username);
         let password_qrystr = format!("SELECT username, attempts FROM users WHERE username = '{}' AND hash_salt = crypt('{}', hash_salt)", &self.username, &self.password);
         
-        println!("Running: {}", authstr);
+        // println!("Running: {}", authstr);
         
         // Checking to see if user credentials are valid
         // does not work if user is locked out
@@ -114,7 +114,7 @@ impl AuthorizeForm for AdministratorForm {
         // Check if the user is locked out
         if let Ok(eqry) = conn.query(&lockout_qrystr, &[]) {
             if !eqry.is_empty() && eqry.len() != 0 {
-                println!("User has been locked out!!  Query ran: {}", lockout_qrystr);
+                // println!("User has been locked out!!  Query ran: {}", lockout_qrystr);
                 let row = eqry.get(0);
                 let username: String = row.get(0);
                 let attempts: i16 = row.get(1);
@@ -132,11 +132,11 @@ impl AuthorizeForm for AdministratorForm {
                 // if the lockout has expired unlock the account but do not reset the attempts
                 // if now > lockout {
                     // do not increment attempt it will be incremented when calling authenticate() again
-                    println!("Lockout has expired, valid: {}", valid);
+                    // println!("Lockout has expired, valid: {}", valid);
                     
                     if valid {
                         let unlock_qrystr = format!("UPDATE users SET lockout = NULL, attempts = 0 WHERE username = '{}' RETURNING userid, username, display", &self.username);
-                        println!("Lockout has expired, credentials valid, running: {}", unlock_qrystr);
+                        // println!("Lockout has expired, credentials valid, running: {}", unlock_qrystr);
                         if let Ok(aqry) = conn.query(&unlock_qrystr, &[]) {
                             if !aqry.is_empty() && aqry.len() == 1 {
                                 let row = aqry.get(0);
@@ -159,7 +159,7 @@ impl AuthorizeForm for AdministratorForm {
                     } else {
                         let unlock_qrystr = format!("UPDATE users SET lockout = NULL WHERE username = '{}'", &self.username);
                         
-                        println!("Lockout has expired. Running: {}", unlock_qrystr);
+                        // println!("Lockout has expired. Running: {}", unlock_qrystr);
                         conn.query(&unlock_qrystr, &[]);
                         
                         return Err(AuthFail::new(self.username.clone(), "Account Unlocked.  Invalid username / password combination.".to_string()));
@@ -170,7 +170,7 @@ impl AuthorizeForm for AdministratorForm {
                     // println!("User account is still locked!");
                     // return Err( AuthFail::new(self.username.clone(), "User has been locked due to excessive login attempts.  Please try again later.".to_string()) );
                     
-                    println!("User account is still locked!");
+                    // println!("User account is still locked!");
                     let lockout_diff = lockout.timestamp() - now.timestamp();
                     // let lockout_period = if lockout_diff > 86400 {
                     let lockout_period = if lockout_diff > 7200 { //3600
@@ -228,7 +228,7 @@ impl AuthorizeForm for AdministratorForm {
         // // recent tries
         // let tries = attempts % MAX_ATTEMPTS;
         attempts += 1;
-        println!("{} have made {} attempts to login.", &self.username, attempts);
+        // println!("{} have made {} attempts to login.", &self.username, attempts);
         // Check the remainder of attempts divided by MAX_ATTEMPTS
         // If the result is 0 that means they have already tried the maximum number of attempts
         //   before the user account is locked
@@ -266,12 +266,12 @@ impl AuthorizeForm for AdministratorForm {
             } else {
                 format!("{} seconds", lock_interval)
             };
-            println!("Running query to lockout the user for {} and incrementing attempts: {}", &period, &qrylock);
+            // println!("Running query to lockout the user for {} and incrementing attempts: {}", &period, &qrylock);
             conn.query(&qrylock, &[]);
         } else {
             lock_interval = 0;
             let inc_qrystr = format!("UPDATE users SET attempts = attempts+1 WHERE username = '{}'", &self.username);
-            println!("Running query to increment attempts: {}", &inc_qrystr);
+            // println!("Running query to increment attempts: {}", &inc_qrystr);
             conn.query(&inc_qrystr, &[]);
         }
         

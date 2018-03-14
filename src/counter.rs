@@ -101,7 +101,8 @@ impl UniqueHits {
     // pub fn new(route: String, ipaddy: String, visits: usize, uhits: usize) -> Self {
     pub fn new(hits: Hits, ipaddy: String, visits: usize, uhits: usize) -> Self {
         // println!("Route: {}, ip: {}, visits: {}, unique hits: {}", &route, &ipaddy, &visits, &uhits);
-        println!("Route: {}, ip: {}, page hits: {}, total site hits; {}, visits: {}, unique hits: {}", &hits.0, &ipaddy, &hits.1, &hits.2, &visits, &uhits);
+        
+        // println!("Route: {}, ip: {}, page hits: {}, total site hits; {}, visits: {}, unique hits: {}", &hits.0, &ipaddy, &hits.1, &hits.2, &visits, &uhits);
         UniqueHits(hits, ipaddy, visits, uhits)
     }
     // pub fn new(route: String, ipaddy: String) -> Self {
@@ -113,9 +114,9 @@ impl UniqueStats {
     pub fn check_save(&self, total: usize) {
         // let save = |hits: &Hits, ip: &str, visits: usize, uhits: usize| {
         if total % HITS_SAVE_INTERVAL == 0 {
-            println!("Attempting to save unique hits.  Total hits: {}", total);
+            // println!("Attempting to save unique hits.  Total hits: {}", total);
             if self.save() {
-                println!("Successfully saved unique hits");
+                // println!("Successfully saved unique hits");
             } else {
                 println!("Failed to save unique hits");
             }
@@ -146,14 +147,14 @@ impl UniqueStats {
             let des: UniqueStats = UniqueStats::des(buffer);
             des
         } else {
-            println!("Could not find unique hits log file.\nIf this is the first time the app has been executed this is fine.");
+            // println!("Could not find unique hits log file.\nIf this is the first time the app has been executed this is fine.");
             UniqueStats::default()
         }
     }
     pub fn save(&self) -> bool {
-        println!("Attempting to serialize unique hits");
+        // println!("Attempting to serialize unique hits");
         let ser = self.ser();
-        println!("Serialized unique hits into:\n{}", &ser);
+        // println!("Serialized unique hits into:\n{}", &ser);
         let filename = cur_dir_file(UNIQUE_HITS_LOG);
         let mut f_rst = File::create(&filename);
         if let Ok(mut f) = f_rst {
@@ -211,7 +212,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
         let ipaddy = if let Some(ip) = find_ip(&req) {
             ip
         } else {
-            println!("No Ip Address found.");
+            // println!("No Ip Address found.");
             // return Outcome::Failure( (Status::InternalServerError, () ) );
             "127.0.0.1".to_owned()
         };
