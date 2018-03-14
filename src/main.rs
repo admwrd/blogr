@@ -320,7 +320,7 @@ fn main() {
     // let views: TotalHits = TotalHits::new();
     let hitcount: Counter = Counter::load();
     let views: TotalHits = TotalHits::load();
-    let uhits: UniqueStats = UniqueStats::default();
+    let uhits: UniqueStats = UniqueStats::load();
     
     let rock = rocket::ignite();
     // let rock = Rc::new(rocket::ignite());

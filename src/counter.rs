@@ -108,6 +108,16 @@ impl UniqueHits {
 }
 
 impl UniqueStats {
+    pub fn save_return(&self, total: usize) {
+        // let save = |hits: &Hits, ip: &str, visits: usize, uhits: usize| {
+        if total % HITS_SAVE_INTERVAL == 0 {
+            if self.save() {
+                println!("Successfully saved unique hits");
+            } else {
+                println!("Failed to save unique hits");
+            }
+        }
+    }
     pub fn ser(&self) -> String {
         let ser: String = ::serde_json::to_string_pretty(self)
             .unwrap_or(String::new());
@@ -133,7 +143,8 @@ impl UniqueStats {
             let des: UniqueStats = UniqueStats::des(buffer);
             des
         } else {
-            panic!()
+            println!("Could not find unique hits config file.\nIf this is the first time the app has been executed this is fine.");
+            UniqueStats::default()
         }
     }
     pub fn save(&self) -> bool {
@@ -213,11 +224,13 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
                         println!("Found entry for ip address for route");
                         *v += 1;
                         visits = *v;
+                        unique_lock.save_return(hits.2);
                         // return Outcome::Success( UniqueHits::new(route, ipaddy, visits, uhits) );
                         return Outcome::Success( UniqueHits::new(hits, ipaddy, visits, uhits) );
                     }
                     println!("Could not find entry for ip address for route");
                     ips.insert(ipaddy.clone(), 1);
+                    unique_lock.save_return(hits.2);
                     // return Outcome::Success( UniqueHits::new(route, ipaddy, 1, uhits+1) );
                     return Outcome::Success( UniqueHits::new(hits, ipaddy, 1, uhits+1) );
                 }
@@ -225,6 +238,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
                 let mut page: HashMap<String, usize> = HashMap::new();
                 page.insert(ipaddy.clone(), 1);
                 pages.insert(route.clone(), page);
+                unique_lock.save_return(hits.2);
                 // return Outcome::Success( UniqueHits::new(route, ipaddy, 1, 1) );
                 return Outcome::Success( UniqueHits::new(hits, ipaddy, 1, 1) );
             }
