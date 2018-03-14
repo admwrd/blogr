@@ -58,7 +58,7 @@ const USER_LOCK: i16 = 40;
 #[cfg(not(production))]
 const INTERNAL_IMGS: &'static str = r"c:\code\lang\rust\proj\blogr\static\imgs";
 #[cfg(not(production))]
-pub const HITS_SAVE_INTERVAL: usize = 20;
+pub const HITS_SAVE_INTERVAL: usize = 2;
 // Default http caching value (max age value)
 #[cfg(not(production))]
 const DEFAULT_TTL: isize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
@@ -154,7 +154,7 @@ const USER_LOCK: i16 = 40;
 #[cfg(production)]
 const INTERNAL_IMGS: &'static str = r"/var/www/html/imgs";
 #[cfg(production)]
-pub const HITS_SAVE_INTERVAL: usize = 5;
+pub const HITS_SAVE_INTERVAL: usize = 35;
 // Default http caching value (max age value)
 #[cfg(production)]
 const DEFAULT_TTL: isize = 3600;  // 1*60*60 = 1 hour, 43200=1/2 day, 86400=1 day
