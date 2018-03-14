@@ -72,7 +72,7 @@ pub struct Counter {
 
 // Implements a Request Guard to pull data into a route
 // current page/route, page views, total site hits/views
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Hits(pub String, pub usize, pub usize);
 
 // Use this for error pages to track errors
@@ -91,14 +91,16 @@ pub struct UniqueStats {
 //   client's ip address, 
 //   number of visits for that page from the client, 
 //   and unique hits for that page
-pub struct UniqueHits(pub String, pub String, pub usize, pub usize);
-// pub struct UniqueHits(hits: Hits, pub usize, pub usize);
+pub struct UniqueHits(pub Hits, pub String, pub usize, pub usize);
+// pub struct UniqueHits(hits: Hits, pub string, pub usize, pub usize);
 
 
 impl UniqueHits {
-    pub fn new(route: String, ipaddy: String, visits: usize, uhits: usize) -> Self {
-        println!("Route: {}, ip: {}, visits: {}, unique hits: {}", &route, &ipaddy, &visits, &uhits);
-        UniqueHits(route, ipaddy, visits, uhits)
+    // pub fn new(route: String, ipaddy: String, visits: usize, uhits: usize) -> Self {
+    pub fn new(hits: Hits, ipaddy: String, visits: usize, uhits: usize) -> Self {
+        // println!("Route: {}, ip: {}, visits: {}, unique hits: {}", &route, &ipaddy, &visits, &uhits);
+        println!("Route: {}, ip: {}, page hits: {}, total site hits; {}, visits: {}, unique hits: {}", &hits.0, &ipaddy, &hits.1, &hits.2, &visits, &uhits);
+        UniqueHits(hits, ipaddy, visits, uhits)
     }
     // pub fn new(route: String, ipaddy: String) -> Self {
     //     UniqueHits(route, ipaddy)
@@ -106,9 +108,6 @@ impl UniqueHits {
 }
 
 impl UniqueStats {
-    pub fn new(ip: String) -> bool {
-        false
-    }
     pub fn ser(&self) -> String {
         let ser: String = ::serde_json::to_string_pretty(self)
             .unwrap_or(String::new());
@@ -142,9 +141,9 @@ impl UniqueStats {
         let filename = cur_dir_file(UNIQUE_HITS_LOG);
         let mut f_rst = File::create(&filename);
         if let Ok(mut f) = f_rst {
-            let bytes = f.write( buffer.as_bytes() );
-            if let Ok(b) == bytes {
-                if bytes != 0 {
+            let bytes = f.write( ser.as_bytes() );
+            if let Ok(b) = bytes {
+                if b != 0 {
                     true
                 } else {
                     println!("Writing to unique hits log file failed");
@@ -194,6 +193,14 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
             "127.0.0.1".to_owned()
         };
         
+        let hits: Hits;
+        if let Outcome::Success(h) = req_guard(req, route.clone()) {
+            hits = h;
+        } else {
+            println!("Failed to retrieve Hits State from Request Guard");
+            return Outcome::Failure( ( Status::InternalServerError, () ) );
+        }
+        
         let visits: usize;
         let uhits: usize;
         {
@@ -206,17 +213,20 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
                         println!("Found entry for ip address for route");
                         *v += 1;
                         visits = *v;
-                        return Outcome::Success( UniqueHits::new(route, ipaddy, visits, uhits) );
+                        // return Outcome::Success( UniqueHits::new(route, ipaddy, visits, uhits) );
+                        return Outcome::Success( UniqueHits::new(hits, ipaddy, visits, uhits) );
                     }
                     println!("Could not find entry for ip address for route");
                     ips.insert(ipaddy.clone(), 1);
-                    return Outcome::Success( UniqueHits::new(route, ipaddy, 1, uhits+1) );
+                    // return Outcome::Success( UniqueHits::new(route, ipaddy, 1, uhits+1) );
+                    return Outcome::Success( UniqueHits::new(hits, ipaddy, 1, uhits+1) );
                 }
                 println!("Could not find an entry for the route");
                 let mut page: HashMap<String, usize> = HashMap::new();
                 page.insert(ipaddy.clone(), 1);
                 pages.insert(route.clone(), page);
-                return Outcome::Success( UniqueHits::new(route, ipaddy, 1, 1) );
+                // return Outcome::Success( UniqueHits::new(route, ipaddy, 1, 1) );
+                return Outcome::Success( UniqueHits::new(hits, ipaddy, 1, 1) );
             }
             Outcome::Failure( ( Status::InternalServerError, () ) )
         }
