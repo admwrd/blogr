@@ -1,16 +1,19 @@
 {
   "stats": {
-    "/": {
-      "127.0.0.1": 6
-    },
     "//tag/rust%20code": {
       "127.0.0.1": 2
     },
-    "article/21/Accept%20Encoding": {
+    "article/22/My%20Dev%20Env": {
       "127.0.0.1": 2
     },
     "all_tags": {
       "127.0.0.1": 8
+    },
+    "/": {
+      "127.0.0.1": 8
+    },
+    "article/21/Accept%20Encoding": {
+      "127.0.0.1": 3
     }
   }
 }
