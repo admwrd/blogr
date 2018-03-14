@@ -231,7 +231,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for UniqueHits {
                 let mut page = ustats.stats.entry(route.clone())
                     .or_insert_with(|| {
                         let mut page_entry: HashMap<String, usize> = HashMap::new();
-                        page_entry.insert(route, 1);
+                        page_entry.insert(ipaddy.clone(), 1);
                         page_entry
                     });
                 let visits: usize = *page.entry(ipaddy.clone())
