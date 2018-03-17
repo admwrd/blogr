@@ -1,0 +1,31 @@
+{{> common/header }}
+<div class="v-content">
+    {{~#if info.msg~}}
+        {{{info.msg}}}
+    {{~/if~}}
+    <div class="v-stats-container-totals container">
+        <div class="v-stats v-stats-total row">
+            <div class="v-stats-page col">
+                <i class="fa fa-bar-chart" aria-hidden="true"></i> Total Hits
+            </div>
+            <div class="v-stats-hits col-auto">
+                {{#total}}
+            </div>
+        </div>
+    </div>
+    <div class="v-stats-container container">
+    {{~#each items~}}
+    <div class="v-stats row">
+        <div class="v-stats-page col">
+            {{items.}}
+        </div>
+    </div>
+    <div class="v-stats row">
+        <div class="v-stats-hits col-auto">
+            {}
+        </div>
+    </div>
+    {{/each}}
+    </div>
+</div>
+{{> common/footer }}

@@ -82,7 +82,7 @@ pub struct ErrorHits(pub String, pub usize, pub usize);
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UniqueStats {
     // For each page track the number of hits from each ip address
-    stats: HashMap<String, HashMap<String, usize>>,
+    pub stats: HashMap<String, HashMap<String, usize>>,
 }
 #[derive(Debug)]
 pub struct UStatsWrapper(pub RwLock<UniqueStats>);

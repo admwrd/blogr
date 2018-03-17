@@ -52,6 +52,8 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	Make option in new pagestats page to view error pages or not
+
 	FIX setup-vps PAGE - javascript popup appearing when it shouldn't?
 
 	Rust Snippets page isn't highlighting all code snippets correctly, I think

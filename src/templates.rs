@@ -74,10 +74,21 @@ pub enum TemplateBody {
     Manage(Vec<Article>, Page<Pagination>, u32, Sort), // Articles, pagination, total items, sort info
     
     Tags(Vec<TagCount>), // list of tags and their counts, and optional message
+    
+    // Stats(Vec<PageStats>, usize) // list of page stats items and the total number of hits
+    
 }
 
 
 
+// #[derive(Debug, Clone, Serialize)]
+// pub struct PageStats {
+//     pub route: String,
+//     pub ip: String,
+//     pub visits: usize,
+//     pub hits: usize,
+//     pub uhits: usize,
+// }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TemplateMenu {
@@ -151,6 +162,13 @@ pub struct TemplateGeneral {
     pub info: TemplateInfo,
 
 }
+// #[derive(Debug, Clone, Serialize)]
+// pub struct TemplateStats {
+//     pub items: Vec<PageStats>,
+//     pub total: usize,
+//     pub visitors: usize,
+//     pub info: TemplateInfo,
+// }
 #[derive(Debug, Clone, Serialize)]
 pub struct TemplateArticle {
     pub body: ArticleDisplay,
@@ -394,6 +412,16 @@ impl TemplateGeneral  {
         }
     }
 }
+// impl TemplateStats  {
+//     pub fn new(stats: Vec<PageStats>, total: usize, info: TemplateInfo) -> TemplateGeneral {
+//         TemplateGeneral {
+//             stats,
+//             total,
+//             visitors: 0, // not implemented yet
+//             info
+//         }
+//     }
+// }
 impl TemplateArticle {
     pub fn new(content: Article, info: TemplateInfo) -> TemplateArticle {
         TemplateArticle {

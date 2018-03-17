@@ -25,6 +25,7 @@ use titlecase::titlecase;
 use chrono::prelude::*;
 use chrono::{NaiveDate, NaiveDateTime};
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{Mutex, Arc, RwLock};
 
 use rocket::http::hyper::header::{Headers, ContentDisposition, DispositionType, DispositionParam, Charset};
 
@@ -1881,6 +1882,92 @@ pub fn hbs_pageviews_unauthorized(start: GenTimer, user: Option<UserCookie>, enc
     let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some("Unauthorized".to_string()), String::from("/pageviews"), None, user, None, Some(start.0));
     let express: Express = output.into();
     express.compress( encoding )
+}
+
+#[get("/pagestats", rank=2)]
+pub fn hbs_pagestats_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {
+    let mut loginmsg = String::with_capacity(300);
+        loginmsg.push_str("You are not logged in, please <a href=\"");
+        loginmsg.push_str(BLOG_URL);
+        loginmsg.push_str("admin");
+        loginmsg.push_str("\">Login</a>");
+    
+    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some("Unauthorized".to_string()), String::from("/pagestats"), None, user, None, Some(start.0));
+    let express: Express = output.into();
+    express.compress( encoding )
+}
+
+
+#[get("/pagestats")]
+// pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression/*, uhits: UniqueHits*/, counter_state: State<Counter>, unique_state: State<UniqueHits>) -> Express {
+pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression/*, uhits: UniqueHits*/, counter_state: State<Counter>, unique_state: State<UStatsWrapper>) -> Express {
+    use urlencoding::decode;
+    use htmlescape::*;
+    
+    let output: Template;
+    let stats_lock = counter_state.stats.lock();
+    if let Ok(counter) = stats_lock {
+        let unique_lock = unique_state.0.read();
+        if let Ok(unique_unlocked) = unique_lock {
+            let unique = unique_unlocked;
+            // let mut buffer = String::with_capacity(unique.len() * 200);
+            let mut buffer = String::with_capacity(unique.stats.len() * 500);
+            
+            // for ref page in unique.keys() {
+            for (page, ips) in unique.stats.iter() {
+                // buffer.push(r#"<div class="v-stats row"><div class="v-stats-page col">"#);
+                // buffer.push(&page);
+                // buffer.push(r#"</div><div class="v-stats-hits col-auto">"#);
+                // buffer.push();
+                // buffer.push(r#"</div></div>"#);
+                let total_ips: usize = ips.len();
+                // let mut total_visits: usize = 0;
+                let mut total_visits: usize = ips.values().sum();
+                let avg_visits: usize = total_visits / total_ips;
+                
+                // let hits: String = if let Some(h) = (*counter).get(&page) {
+                let hits: String = if let Some(h) = (*counter).map.get(page) {
+                    h.to_string()
+                } else {
+                    "-".to_owned()
+                };
+                
+                buffer.push_str(r#"<div class="v-stats row"><div class="v-stats-page col">"#);
+                buffer.push_str(&page);
+                buffer.push_str(r#"</div></div><div class="v-stats row"><div class="v-stats-hits col-4" data-toggle="tooltip" data-html="false" title="Total hitsr">Hits: "#);
+                buffer.push_str(&hits);
+                buffer.push_str(r#"</div><div class="v-stats-hits col-4" data-toggle="tooltip" data-html="false" title="Unique Visitors">Visitors: "#);
+                buffer.push_str(&total_ips.to_string());
+                buffer.push_str(r#"</div><div class="v-stats-hits col-4" data-toggle="tooltip" data-html="false" title="Average Visits Per Unique Visitor">Avg Visits: "#);
+                buffer.push_str(&avg_visits.to_string());
+                
+                // buffer.push(r#"</div><div class="v-stats-hits col-4" data-toggle="tooltip" data-html="false" title="">"#);
+                // buffer.push();
+                buffer.push_str(r#"</div></div>"#);
+            }
+            
+            // if buffer.capacity() > (unique.len() * 500) {
+            //     println!("Pagestats buffer capacity increased to {}, using {} items", buffer.capacity(), buffer.len() ):
+            // }
+            
+            let mut page = String::with_capacity(buffer.len() + 500);
+            // <div class="v-stats-container-totals container"><div class="v-stats v-stats-total row"><div class="v-stats-page col"><i class="fa fa-bar-chart" aria-hidden="true"></i> Total Hits</div><div class="v-stats-hits col-auto">
+            // </div></div></div><div class="v-stats-container container">
+            output = hbs_template(TemplateBody::General(page), None, Some("Page Statistics".to_string()), String::from("/pagestats"), Some(admin), user, None, Some(start.0));
+            
+        } else {
+            output = hbs_template(TemplateBody::General(alert_danger("Could not retrieve page statistics.<br>Failed to acquire read lock.")), None, Some("Page Views".to_string()), String::from("/pagestats"), Some(admin), user, None, Some(start.0));
+        }
+    } else {
+        output = hbs_template(TemplateBody::General(alert_danger("Could not retrieve page statistics.<br>Failed to acquire mutex lock.")), None, Some("Page Views".to_string()), String::from("/pagestats"), Some(admin), user, None, Some(start.0));
+        
+    }
+    
+    let end = start.0.elapsed();
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    
+    let express: Express = output.into();
+    express.compress(encoding)
 }
 
 #[get("/pageviews")]
