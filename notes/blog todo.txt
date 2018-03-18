@@ -52,30 +52,9 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
-	Change pagestats to iterate over the counter structure rather than unique stats
-		then get unique stats entry for that route
-
-	Add ability for admins to download error logs
-	
-	Make option in new pagestats page to view error pages or not
-		Show unique visitors, average visits per client/ip-address, num total hits
-		
+	Change the menu items for pageviews to pagestats
 
 	FIX setup-vps PAGE - javascript popup appearing when it shouldn't?
-
-	Rust Snippets page isn't highlighting all code snippets correctly, I think
-
-	Add IP Address related stats to the pagestats admin page
-		add number of unique visitors for each page
-		calculate the average number of visits for each user
-			iterate a given page's ip address map
-				add up all of the visits
-				then divide by the len() of the page's ip address map
-		Could iterate over the pages map, then iterate over each ip address entry
-
-	Add the requested uri to the ContentRequest struct
-		allowing the current page's link in the template to be higlighted
-
 	
 	Add modified date to template module and contexts as well as in the templates
 
@@ -631,6 +610,29 @@ Rocket-auth-login:
 
 
 DONE
+	Change pagestats to iterate over the counter structure rather than unique stats
+		then get unique stats entry for that route
+
+	Add ability for admins to download error logs
+	
+	Make option in new pagestats page to view error pages or not
+		Show unique visitors, average visits per client/ip-address, num total hits
+		
+
+	Rust Snippets page isn't highlighting all code snippets correctly, I think
+
+	Add IP Address related stats to the pagestats admin page
+		add number of unique visitors for each page
+		calculate the average number of visits for each user
+			iterate a given page's ip address map
+				add up all of the visits
+				then divide by the len() of the page's ip address map
+		Could iterate over the pages map, then iterate over each ip address entry
+
+	Add the requested uri to the ContentRequest struct
+		allowing the current page's link in the template to be higlighted
+
+
 	the /tag/<tag> route seems to call an image from /tag/assets/sphere-trans2.png
 		fix this to call from root dir
 

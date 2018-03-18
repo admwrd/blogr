@@ -17,7 +17,7 @@ use std::time::{Instant, Duration};
 // use admin_auth::*;
 // use user_auth::*;
 
-use super::{BLOG_URL, INTERNAL_IMGS, BASE};
+use super::{BLOG_URL, INTERNAL_IMGS, BASE, DEFAULT_PAGE_MENU};
 use blog::*;
 use collate::*;
 use layout::*;
@@ -219,12 +219,18 @@ pub struct TemplateManage {
 
 pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt: &Option<UserCookie>) -> (Vec<TemplateMenu>, Vec<TemplateMenu>) {
     
-    let mut pages: Vec<TemplateMenu> = vec![
+    // let mut pages: Vec<TemplateMenu> = vec![
+    //     TemplateMenu::new(String::from("Home"), String::from("/"), page),
+    //     TemplateMenu::new(String::from("Rust Tutorials"), String::from("/content/tutorials"), page),
+    //     TemplateMenu::new(String::from("Tags"), String::from("/all_tags"), page),
+    //     TemplateMenu::new(String::from("About"), String::from("/content/about-me"), page),
+    // ];
+    let mut pages: Vec<TemplateMenu> = DEFAULT_PAGE_MENU.clone().unwrap_or(vec![
         TemplateMenu::new(String::from("Home"), String::from("/"), page),
         TemplateMenu::new(String::from("Rust Tutorials"), String::from("/content/tutorials"), page),
         TemplateMenu::new(String::from("Tags"), String::from("/all_tags"), page),
         TemplateMenu::new(String::from("About"), String::from("/content/about-me"), page),
-    ];
+    ]);
     
     // Displays both admin and user menus if user is logged in as both
     let mut admin_pages: Vec<TemplateMenu> = Vec::new();
@@ -250,7 +256,7 @@ pub fn create_menu(page: &str, admin_opt: &Option<AdministratorCookie>, user_opt
     if admin_opt.is_some() {
         admin_pages.push( TemplateMenu::new(String::from("Admin Dashboard"), String::from("/admin"), page) );
         admin_pages.push( TemplateMenu::new(String::from("New Article"), String::from("/create"), page) );
-        admin_pages.push( TemplateMenu::new(String::from("Page Statistics"), String::from("/pageviews"), page) );
+        admin_pages.push( TemplateMenu::new(String::from("Page Statistics"), String::from("/pagestats/false"), page) );
         admin_pages.push( TemplateMenu::with_class(String::from("Database Backup"), String::from("/backup"), String::from("\" target=\"_blank"), page) );
         admin_pages.push( TemplateMenu::new(String::from("Refresh Content"), String::from("/refresh_content"), page) );
         // admin_pages.push( TemplateMenu::separator() );
