@@ -1897,10 +1897,71 @@ pub fn hbs_pagestats_unauthorized(start: GenTimer, user: Option<UserCookie>, enc
     express.compress( encoding )
 }
 
-
 #[get("/pagestats")]
-// pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression/*, uhits: UniqueHits*/, counter_state: State<Counter>, unique_state: State<UniqueHits>) -> Express {
 pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits, counter_state: State<Counter>, unique_state: State<UStatsWrapper>) -> Express {
+    use urlencoding::decode;
+    use htmlescape::*;
+    
+    let output: Template;
+    let counter_mutex = counter_state.stats.lock();
+    if let Ok(counter) = counter_mutex {
+        let unique_rwlock = unique_state.0.read();
+        if let Ok(unique) = unique_rwlock {
+            let mut buffer = String::with_capacity(unique.stats.len() * 600 + 1000);
+            
+            buffer.push_str(r#"<div class="v-stats-container-totals container"><div class="v-stats v-stats-total row"><div class="v-stats-page col"><i class="fa fa-bar-chart" aria-hidden="true"></i> Total Hits</div><div class="v-stats-hits col-auto">"#);
+            buffer.push_str( &((&uhits.0).2.to_string()) );
+            buffer.push_str(r#"</div></div></div><div class="v-stats-container container">"#);
+            
+            for (page, hits) in counter.map.iter() {
+                if let Some(u_stats) = unique.stats.get(page) {
+                    // Extended statistics are available
+                    let total_ips: usize = u_stats.len();
+                    let total_visits: usize = u_stats.values().sum();
+                    let avg_visits: usize = total_visits / total_ips;
+                    
+                    buffer.push_str(r#"<div class="v-stats row v-stats-extended"><div class="v-stats-page col">"#);
+                    buffer.push_str(&page);
+                    buffer.push_str(r#"</div></div><div class="v-stats row"><div class="v-stats col-1"></div><div class="v-stats-hits col-3" data-toggle="tooltip" data-html="false" title="Total hits / Total visits">Hits: "#);
+                    buffer.push_str(&hits.to_string());
+                    buffer.push_str("/");
+                    buffer.push_str(&total_visits.to_string());
+                    buffer.push_str(r#"</div><div class="v-stats-hits col-4" data-toggle="tooltip" data-html="false" title="Unique Visitors">Visitors: "#);
+                    buffer.push_str(&total_ips.to_string());
+                    buffer.push_str(r#"</div><div class="v-stats-hits col-4" data-toggle="tooltip" data-html="false" title="Average Visits Per Unique Visitor">Avg Visits: "#);
+                    buffer.push_str(&avg_visits.to_string());
+                    buffer.push_str(r#"</div></div>"#);
+                } else {
+                    buffer.push_str(r#"<div class="v-stats row v-stats-basic"><div class="v-stats-page col">"#);
+                    buffer.push_str(&page);
+                    buffer.push_str(r#"</div></div><div class="v-stats row"><div class="v-stats col-1"></div><div class="v-stats-hits col-11" data-toggle="tooltip" data-html="false" title="Total hits">Hits: "#);
+                    buffer.push_str(&hits.to_string());
+                    buffer.push_str(r#"</div></div>"#);
+                }
+                
+            }
+            
+            buffer.push_str("</div>");
+            
+            output = hbs_template(TemplateBody::General(buffer), None, Some("Page Statistics".to_string()), String::from("/pagestats"), Some(admin), user, None, Some(start.0));
+        } else {
+            output = hbs_template(TemplateBody::General(alert_danger("Could not retrieve page statistics.<br>Failed to acquire read lock.")), None, Some("Page Views".to_string()), String::from("/pagestats"), Some(admin), user, None, Some(start.0));
+        }
+        
+    } else {
+        output = hbs_template(TemplateBody::General(alert_danger("Could not retrieve page statistics.<br>Failed to acquire mutex lock.")), None, Some("Page Views".to_string()), String::from("/pagestats"), Some(admin), user, None, Some(start.0));
+    }
+    
+    let end = start.0.elapsed();
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    
+    let express: Express = output.into();
+    express.compress(encoding)
+}
+
+#[get("/pagestats2")]
+// pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression/*, uhits: UniqueHits*/, counter_state: State<Counter>, unique_state: State<UniqueHits>) -> Express {
+pub fn hbs_pagestats2(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits, counter_state: State<Counter>, unique_state: State<UStatsWrapper>) -> Express {
     use urlencoding::decode;
     use htmlescape::*;
     
