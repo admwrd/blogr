@@ -1996,6 +1996,7 @@ pub fn hbs_pagestats(start: GenTimer, show_errors: bool, admin: AdministratorCoo
             // buffer.push_str(r#"</div><div class="v-stats-hits col-auto">"#);
             buffer.push_str(r#"</div><div class="v-stats-hits col-md">"#);
             buffer.push_str( &((&uhits.0).2.to_string()) );
+            buffer.push_str(&format!(r#"<br><a href="{url}download/page_stats.json">Download basic log</a><br><a href="{url}download/unique_stats.json">Download IP Logs</a>"#, url=BLOG_URL));
             // buffer.push_str(r#"</div></div></div><div class="v-stats-container container">"#);
             buffer.push_str(r#"</div></div></div><div class="v-stats-container container">"#);
             
