@@ -5,6 +5,8 @@ use std::time::Duration;
 use std::{env, str, io};
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
+use std::io::prelude::*;
+use std::fs::{self, File};
 
 use rocket_contrib::Template;
 use rocket::response::{content, NamedFile, Redirect, Flash};
@@ -257,6 +259,26 @@ pub fn static_pages(start: GenTimer,
     
 }
 
+fn err_file_name(name: &str) -> PathBuf {
+    if let Ok(mut dir) = env::current_exe() {
+        dir.pop();
+        // println!("Climbing directory tree into: {}", &dir.display());
+        dir.pop();
+        // println!("Loading into directory: {}", &dir.display());
+        // dir.push("log");
+        // dir.set_file_name(name);
+        if cfg!(target_os = "windows") {
+            dir.set_file_name(&format!("logs\\{}", name));
+        } else {
+            dir.set_file_name(&format!("logs/{}", name));
+        }
+        // println!("Load file is: {}", &dir.display());
+        dir
+    } else {
+        PathBuf::from(name)
+    }
+}
+
 #[get("/download/<uri..>")]
 pub fn code_download(start: GenTimer, 
                     uri: PathBuf, 
@@ -315,10 +337,19 @@ pub fn code_download(start: GenTimer,
                 // if error_logs.iter().any(|&log| page == log) {
                 if page == log {
                     if admin.is_some() {
-                        if let Ok(mut f) = NamedFile::open(Path::new("logs/").join(log)) {
+                        
+                        // if let Ok(mut f) = NamedFile::open(Path::new("logs/").join(log)) {
+                        let err_path = err_file_name(log);
+                        println!("Attempting to open {}", err_path.display());
+                        if !err_path.exists() {
+                            let template = hbs_template(TemplateBody::General(alert_danger("Error log could not be found.")), None, Some("Content not Found".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
+                            let express: Express = template.into();
+                            return express.compress(encoding);
+                        }
+                        if let Ok(mut f) = File::open( err_path ) {
                             let mut buffer = Vec::new();
                             f.read_to_end(&mut buffer);
-                            let express: Express = f.into();
+                            let express: Express = buffer.into();
                             
                             let attachment = ContentDisposition {
                                 disposition: DispositionType::Attachment,
@@ -335,7 +366,7 @@ pub fn code_download(start: GenTimer,
                             .set_ttl(-2)
                             .add_header(attachment);
                         } else {
-                            let template = hbs_template(TemplateBody::General(alert_danger("Error log could not be found.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+                            let template = hbs_template(TemplateBody::General(alert_danger("Error log could not be found.")), None, Some("Content not Found".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
                             let express: Express = template.into();
                             return express.compress(encoding);
                         }
