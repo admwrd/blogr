@@ -17,11 +17,21 @@
     {{~#each items~}}
     <div class="v-stats row">
         <div class="v-stats-page col">
-            {{items.}}
+            {{items.route}}
         </div>
     </div>
     <div class="v-stats row">
-        <div class="v-stats-hits col-auto">
+        <div class="v-stats-hits col-4">
+            {{item.uhits}}
+        </div>
+    </div>
+    <div class="v-stats row">
+        <div class="v-stats-hits col-4">
+            {}
+        </div>
+    </div>
+    <div class="v-stats row">
+        <div class="v-stats-hits col-4">
             {}
         </div>
     </div>

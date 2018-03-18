@@ -1900,7 +1900,7 @@ pub fn hbs_pagestats_unauthorized(start: GenTimer, user: Option<UserCookie>, enc
 
 #[get("/pagestats")]
 // pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression/*, uhits: UniqueHits*/, counter_state: State<Counter>, unique_state: State<UniqueHits>) -> Express {
-pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression/*, uhits: UniqueHits*/, counter_state: State<Counter>, unique_state: State<UStatsWrapper>) -> Express {
+pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits, counter_state: State<Counter>, unique_state: State<UStatsWrapper>) -> Express {
     use urlencoding::decode;
     use htmlescape::*;
     
@@ -1913,28 +1913,32 @@ pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<U
             // let mut buffer = String::with_capacity(unique.len() * 200);
             let mut buffer = String::with_capacity(unique.stats.len() * 500);
             
-            // for ref page in unique.keys() {
+            // for (page, ips) in unique.stats.iter() {
+            // let u_stats = unique.stats.get(page);
+            
             for (page, ips) in unique.stats.iter() {
-                // buffer.push(r#"<div class="v-stats row"><div class="v-stats-page col">"#);
-                // buffer.push(&page);
-                // buffer.push(r#"</div><div class="v-stats-hits col-auto">"#);
-                // buffer.push();
-                // buffer.push(r#"</div></div>"#);
+            // for (page, ips) in unique.stats.iter() {
                 let total_ips: usize = ips.len();
-                // let mut total_visits: usize = 0;
                 let mut total_visits: usize = ips.values().sum();
                 let avg_visits: usize = total_visits / total_ips;
                 
-                // let hits: String = if let Some(h) = (*counter).get(&page) {
+                // let hits: String = if let Some(h) = (*counter).map.get(page) {
+                //     h.to_string()
+                // } else {
+                //     "-".to_owned()
+                // };
+                
+                
                 let hits: String = if let Some(h) = (*counter).map.get(page) {
                     h.to_string()
                 } else {
                     "-".to_owned()
                 };
                 
+                
                 buffer.push_str(r#"<div class="v-stats row"><div class="v-stats-page col">"#);
                 buffer.push_str(&page);
-                buffer.push_str(r#"</div></div><div class="v-stats row"><div class="v-stats-hits col-4" data-toggle="tooltip" data-html="false" title="Total hitsr">Hits: "#);
+                buffer.push_str(r#"</div></div><div class="v-stats row"><div class="v-stats col-1"></div><div class="v-stats-hits col-3" data-toggle="tooltip" data-html="false" title="Total hitsr">Hits: "#);
                 buffer.push_str(&hits);
                 buffer.push_str(r#"</div><div class="v-stats-hits col-4" data-toggle="tooltip" data-html="false" title="Unique Visitors">Visitors: "#);
                 buffer.push_str(&total_ips.to_string());
@@ -1951,8 +1955,17 @@ pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<U
             // }
             
             let mut page = String::with_capacity(buffer.len() + 500);
+            
             // <div class="v-stats-container-totals container"><div class="v-stats v-stats-total row"><div class="v-stats-page col"><i class="fa fa-bar-chart" aria-hidden="true"></i> Total Hits</div><div class="v-stats-hits col-auto">
             // </div></div></div><div class="v-stats-container container">
+            
+            
+            page.push_str(r#"<div class="v-stats-container-totals container"><div class="v-stats v-stats-total row"><div class="v-stats-page col"><i class="fa fa-bar-chart" aria-hidden="true"></i> Total Hits</div><div class="v-stats-hits col-auto">"#);
+            page.push_str( &((&uhits.0).2.to_string()) );
+            page.push_str(r#"</div></div></div><div class="v-stats-container container">"#);
+            page.push_str( &buffer );
+            page.push_str("</div>");
+            
             output = hbs_template(TemplateBody::General(page), None, Some("Page Statistics".to_string()), String::from("/pagestats"), Some(admin), user, None, Some(start.0));
             
         } else {

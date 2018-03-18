@@ -420,6 +420,8 @@ fn main() {
             pages::hbs_pageviews_unauthorized,
             pages::hbs_backup_unauthorized,
             
+            pages::hbs_pagestats,
+            pages::hbs_pagestats_unauthorized,
             
             // pages_administrator::resp_test,
             // pages_administrator::uncompressed,
