@@ -54,6 +54,8 @@ Server
 Blogr-Fixes
 	Change pagestats to iterate over the counter structure rather than unique stats
 		then get unique stats entry for that route
+
+	Add ability for admins to download error logs
 	
 	Make option in new pagestats page to view error pages or not
 		Show unique visitors, average visits per client/ip-address, num total hits

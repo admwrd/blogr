@@ -310,6 +310,42 @@ pub fn code_download(start: GenTimer,
             .add_header(attachment)
             // express
         } else {
+            let error_logs = vec![/*"page_stats", "unique_stats",*/ "page_stats.json", "unique_stats.json"];
+            for log in error_logs {
+                // if error_logs.iter().any(|&log| page == log) {
+                if page == log {
+                    if admin.is_some() {
+                        if let Ok(mut f) = NamedFile::open(Path::new("logs/").join(log)) {
+                            let mut buffer = Vec::new();
+                            f.read_to_end(&mut buffer);
+                            let express: Express = f.into();
+                            
+                            let attachment = ContentDisposition {
+                                disposition: DispositionType::Attachment,
+                                parameters: vec![DispositionParam::Filename(
+                                  Charset::Iso_8859_1, // The character set for the bytes of the filename
+                                  None, // The optional language tag (see `language-tag` crate)
+                                  // log.clone().into_bytes()
+                                  log.to_string().into_bytes()
+                                  // b"".to_vec() // the actual bytes of the filename
+                                )]
+                            };
+                            
+                            return express
+                            .set_ttl(-2)
+                            .add_header(attachment);
+                        } else {
+                            let template = hbs_template(TemplateBody::General(alert_danger("Error log could not be found.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+                            let express: Express = template.into();
+                            return express.compress(encoding);
+                        }
+                    } else {
+                        let template = hbs_template(TemplateBody::General(alert_danger("You do not have sufficient privileges to view this content.")), None, Some("Insufficient Privileges".to_string()), String::from("/error403"), admin, user, None, Some(start.0));
+                        let express: Express = template.into();
+                        return express.compress(encoding);
+                    }
+                }
+            }
             // let template = hbs_template(...); // Content does not exist
             let template = hbs_template(TemplateBody::General(alert_danger("The requested download could not be found.")), None, Some("Content not found.".to_string()), String::from("/error404"), admin, user, None, Some(start.0));
             let express: Express = template.into();
