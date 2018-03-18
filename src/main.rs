@@ -422,6 +422,7 @@ fn main() {
             
             pages::hbs_pagestats,
             pages::hbs_pagestats_unauthorized,
+            pages::hbs_pagestats_no_errors,
             
             // pages_administrator::resp_test,
             // pages_administrator::uncompressed,
