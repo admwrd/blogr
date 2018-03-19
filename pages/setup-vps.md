@@ -81,72 +81,9 @@ I would highly recommend securing your website with HTTPS since you can now get 
 
 Here is an example of an NGINX configuration similar to mine:
 
-== /etc/nginx/sites-available/blog ==
+- [Nginx Site Configuration]({{base_url}}content/nginx-site.conf) - located at /etc/nginx/sites-available/<site name>
 
-```conf
-# This first server block will forward the users to the https 
-# version of the website, ensuring the website is secured
-server {
-    listen 80; 
-    server_name your_domain.com;
-    include /etc/nginx/snippetsletsencrypt.conf;
-    
-    location / {
-        return 301 https://vishus.net$request_uri;
-    }
-}
 
-# This block contains settings for the https version of the website.
-server {
-    server_name your_domain.com;
-    # Enable HTTP2 as well as HTTPS on port 443
-    listen 443 ssl http2 default_server;
-    # Enable IPv6
-    listen [::]:443 ssl http2 default_server ipv6only=on;
-    
-    # Enable TLS/SSL using LetsEncrypt
-    ssl_certificate /etc/letsencrypt/live/your_domain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/your_domain.com/privkey.pem;
-    ssl_trusted_certificate /etc/letsencrypt/live/your_domain.com/fullchain.pem;
-    include /etc/nginx/snippets/ssl.conf;
-    
-    # Specify settings for compressable files (files with low entropy)
-    location ~* \.(css|js|ttf|otf|txt)$ {
-        # Specify your root folder for web documents
-        root /var/www/html;
-        # Allow the client to cache the static files
-        expires 60d;
-        # Enable Gzip compression
-        gzip on;
-        # Specify a minimum file length when compressing files
-          # small files are often not worth compresing as 
-          # the resources required do not justify the small
-          # amount of space saved by the compression
-        gzip_min_length 1000;
-        gzip_types
-        	text/plain
-            application/javascript
-            text/javascript
-            application/x-font-ttf
-            font/opentype
-            text/css
-    }
-    
-    # Settings for files that should not be compressed
-    location ~* \.(png|gif|jpg|jpeg|zip|tar|bz2|gz|7z|mp4|mkv|m4v) {
-        root /var/www/html;
-        expires 60d;
-        gzip off;
-    }
-    
-    # Send all other requests to the web application
-    location / {
-       proxy_pass https://localhost:8000;
-    }
-    
-
-}
-```
 Then create two snippet config files for an SSL setup (taken from the wonderul tutorial at [The Code Ship](https://www.thecodeship.com/web-development/guide-implementing-free-ssl-certificate-nginx-lets-encrypt/)):
 
 == /etc/nginx/snippets/ssl.conf ==

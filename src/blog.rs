@@ -60,7 +60,6 @@ pub struct Article {
     pub markdown: String,
     pub image: String,
     
-    
     // pub author_id: u32,
     // pub author_name: String,
 }
@@ -157,8 +156,6 @@ pub struct ArticleForm {
     pub tags: String,
     pub description: String,
     pub image: String,
-    // pub author_id: u32,
-    // pub author_name: String,
 }
 
 #[derive(Debug, Clone)]
