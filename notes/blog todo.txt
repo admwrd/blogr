@@ -52,6 +52,10 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	Add modified date to articles
+		if the modified date equals the created date don't show modified date (in tempplate.rs)
+		
+
 	Change the menu items for pageviews to pagestats
 
 	FIX setup-vps PAGE - javascript popup appearing when it shouldn't?

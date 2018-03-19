@@ -52,6 +52,7 @@ pub struct Article {
     pub aid: u32,
     pub title: String,
     pub posted: NaiveDateTime,
+    pub modified: NaiveDateTime,
     pub userid: u32,
     pub username: String,
     pub body: String,
@@ -80,11 +81,13 @@ pub struct Article {
 
 
 // #[derive(Debug, Clone, FromForm)]
+// The /edit route is the only page module route this struct is used in
 #[derive(Debug, Clone)]
 pub struct ArticleWrapper {
     pub aid: u32,
     pub title: String,
     pub posted: NaiveDateTimeWrapper,
+    pub modified: NaiveDateTimeWrapper,
     pub userid: u32,
     pub username: String,
     pub body: String,
@@ -118,6 +121,8 @@ pub struct ArticleDisplay {
     pub title: String,
     pub posted_machine: String,
     pub posted_human: String,
+    pub modified_machine: String,
+    pub modified_human: String,
     pub userid: u32,
     pub username: String,
     pub body: String,
@@ -147,6 +152,7 @@ pub struct ArticleDisplay {
 //     // pub author_name: String,
 // }
 
+// Used for creating a new article
 #[derive(Debug, Clone)]
 pub struct ArticleForm {
     // pub userid: u32,
@@ -413,7 +419,7 @@ impl ArticleWrapper {
         Article {
             aid: self.aid,
             title: self.title,
-            posted: self.posted.0,
+            posted: self.posted.0.clone(),
             userid: self.userid,
             username: self.username,
             body: self.body,
@@ -421,6 +427,7 @@ impl ArticleWrapper {
             description: self.description,
             markdown: self.markdown,
             image: self.image,
+            modified: self.posted.0,
         }
     }
     pub fn is_valid(&self) -> bool {
@@ -495,7 +502,7 @@ impl ArticleId {
     pub fn retrieve(&self) -> Option<Article> {
         let pgconn = establish_connection();
         // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
-        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid), &[]);
         if let Ok(aqry) = rawqry {
             // println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -524,6 +531,7 @@ impl ArticleId {
                     username: titlecase( &sanitization::sanitize(&username) ),
                     markdown: row.get_opt(10).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     image,
+                    modified: row.get(11),
                 })
             } else { None }
         } else { None }
@@ -532,7 +540,7 @@ impl ArticleId {
     pub fn retrieve_with_conn(&self, pgconn: DbConn) -> Option<Article> {
         // let rawqry = pgconn.query(&format!("SELECT aid, title, posted, body, tag, description FROM articles WHERE aid = {id}", id=self.aid), &[]);
         // let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid))) WHERE a.aid = {id}", id=self.aid), &[]);
-        let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
+        let qrystr = format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {id}", id=self.aid);
         let rawqry = pgconn.query(&qrystr, &[]);
         
         // println!("Running query:\n{}", qrystr);
@@ -559,6 +567,7 @@ impl ArticleId {
                     username: titlecase( &sanitization::sanitize(&username) ),
                     markdown: row.get_opt(10).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     image,
+                    modified: row.get(11),
                     // author_id: row.get(6),
                     // author_name: row.get_opt(7).unwrap_or(Ok(row.get(8))).unwrap_or(String::new()), 
                 })
@@ -730,7 +739,8 @@ impl Article {
             username: self.username.clone(),
             markdown: self.markdown.clone(),
             image: self.image.clone(),
-            
+            modified_machine: self.modified.format("%Y-%m-%dT%H:%M:%S").to_string(),
+            modified_human: self.modified.format("%Y-%m-%d @ %I:%M%P").to_string(),
             // author_id: self.author_id,
             // author_name: self.author_name.clone(),
         }
@@ -745,7 +755,7 @@ impl Article {
     }
     pub fn retrieve(aid: u32) -> Option<Article> {
         let pgconn = establish_connection();
-        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON (a.author = u.userid) WHERE aid = {id}", id=aid), &[]);
+        let rawqry = pgconn.query(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified FROM articles a JOIN users u ON (a.author = u.userid) WHERE aid = {id}", id=aid), &[]);
         if let Ok(aqry) = rawqry {
             // println!("Querying articles: found {} rows", aqry.len());
             if !aqry.is_empty() && aqry.len() == 1 {
@@ -768,6 +778,7 @@ impl Article {
                     username: titlecase( &sanitization::sanitize(&username) ),
                     markdown: row.get_opt(10).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     image,
+                    modified: row.get(11),
                 })
             } else { None }
         } else { None }
@@ -789,6 +800,7 @@ impl Article {
             .join(",")
             // .replace(",''")
         );
+        let now = Local::now().naive_local();
         let qrystr = format!("
             UPDATE articles 
                 SET title = '{title}',
@@ -796,7 +808,8 @@ impl Article {
                     tag = '{tag}',
                     description = '{desc}',
                     markdown = '{src}',
-                    image = '{img}'
+                    image = '{img}',
+                    modified = '{modified}'
                 WHERE aid = {aid}
             ", 
                     // posted = '{posted}',
@@ -807,7 +820,8 @@ impl Article {
             desc=&self.description,
             src=&self.markdown,
             img=&self.image,
-            aid=self.aid
+            aid=self.aid,
+            modified=&now
         );
         
         // println!("Generated update query:\n{}", qrystr);
@@ -842,12 +856,12 @@ impl Article {
         let mut qrystr: String = if let Some(summary) = description {
             if summary < 1 {
                 show_desc = true;
-                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) as body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON(a.author = u.userid)", DESC_LIMIT)
+                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) as body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified FROM articles a JOIN users u ON(a.author = u.userid)", DESC_LIMIT)
             } else {
-                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) AS body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON(a.author = u.userid)", summary)
+                format!("SELECT a.aid, a.title, a.posted, LEFT(a.body, {}) AS body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified FROM articles a JOIN users u ON(a.author = u.userid)", summary)
             }
         } else {
-            String::from("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON(a.author = u.userid)")
+            String::from("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified FROM articles a JOIN users u ON(a.author = u.userid)")
         };
         if min_date.is_some() || max_date.is_some() || (tag.is_some() && get_len(&tag) != 0) || (search.is_some() && get_len(&search) != 0) {
             qrystr.push_str(" WHERE");
@@ -918,6 +932,7 @@ impl Article {
                     username: titlecase( &sanitization::sanitize(&username) ),
                     markdown: row.get_opt(10).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     image,
+                    modified: row.get(11)
                     
                 };
                 articles.push(a);
@@ -981,7 +996,7 @@ impl ArticleForm {
             
         //  can return both id and posted date
         // let qrystr = format!("INSERT INTO blog (aid, title, posted, body, tags) VALUES ('', '{title}', '{posted}', '{body}', {tags}) RETURNING aid, posted",
-        let qrystr = format!("INSERT INTO articles (title, posted, body, tag, description, author, markdown, image) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}', {author}, '{md}', '{img}') RETURNING aid",
+        let qrystr = format!("INSERT INTO articles (title, posted, body, tag, description, author, markdown, image, modified) VALUES ('{title}', '{posted}', '{body}', '{tags}', '{desc}', {author}, '{md}', '{img}', '{posted}') RETURNING aid",
             title=&self.title, posted=&now, body=&self.body, tags=tagstr, desc=&self.description, author=userid, md=&self.markdown, img=&self.image);
         // println!("Insert query: {}", qrystr);
         let result = conn.query(&qrystr, &[]);
@@ -993,7 +1008,7 @@ impl ArticleForm {
                     Ok( Article {
                         aid: row.get(0),
                         title: self.title,
-                        posted: now,
+                        posted: now.clone(),
                         body: self.body,
                         markdown: self.markdown,
                         tags: Article::split_tags(self.tags),
@@ -1001,6 +1016,7 @@ impl ArticleForm {
                         userid,
                         username: titlecase( &sanitization::sanitize(username) ), 
                         image: self.image,
+                        modified: now,
                     })
                 } else if qry.is_empty() {
                     Err("Error inserting article, result is empty.".to_string())
@@ -1196,6 +1212,8 @@ impl<'f> FromForm<'f> for ArticleWrapper {
         let mut description: String = String::new();
         let mut markdown: String = String::new();
         let mut image: String = String::new();
+        // modified should not be determined by a form field
+        let mut modified: NaiveDateTimeWrapper = NaiveDateTimeWrapper(now());
         
         for (field, value) in form_items {
             match field.as_str() {
@@ -1226,6 +1244,7 @@ impl<'f> FromForm<'f> for ArticleWrapper {
                 description,
                 markdown,
                 image,
+                modified,
             } )
         // }
     }

@@ -87,7 +87,7 @@ impl DbConn {
         let qryrst: Result<_, _> = if qrystr != "" {
             self.query(qrystr, &[])
         } else {
-            self.query(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description), a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), &[])
+            self.query(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description), a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), &[])
         };
         if let Ok(result) = qryrst {
             let mut articles: Vec<Article> = Vec::new();
@@ -109,6 +109,7 @@ impl DbConn {
                     username: titlecase( &username ),
                     markdown: row.get_opt(10).unwrap_or(Ok(String::new())).unwrap_or(String::new()),
                     image,
+                    modified: row.get(11),
                 };
                 articles.push(a);
             }
