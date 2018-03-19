@@ -23,6 +23,8 @@ div.img-wrap-center img { width: 100%; }
 .fancybox-stage, .fancybox-slide { z-index: 8994 !important; }
 .fancybox-image-wrap { z-index: 8995 !important; }
 
+.v-stats-extended:hover, .v-stats-basic:hover { padding-top: 5px; }
+.v-stats-extended, .v-stats-basic { border-top: 1px solid #ff8000aa; }
 
 @media print {
     

@@ -739,8 +739,8 @@ impl Article {
             username: self.username.clone(),
             markdown: self.markdown.clone(),
             image: self.image.clone(),
-            modified_machine: self.modified.format("%Y-%m-%dT%H:%M:%S").to_string(),
-            modified_human: self.modified.format("%Y-%m-%d @ %I:%M%P").to_string(),
+            modified_machine: if &self.posted != &self.modified { self.modified.format("%Y-%m-%dT%H:%M:%S").to_string() } else { String::new() },
+            modified_human: if &self.posted != &self.modified { self.modified.format("%Y-%m-%d @ %I:%M%P").to_string() } else { String::new() },
             // author_id: self.author_id,
             // author_name: self.author_name.clone(),
         }

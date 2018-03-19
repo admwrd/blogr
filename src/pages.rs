@@ -332,10 +332,11 @@ pub fn code_download(start: GenTimer,
             .add_header(attachment)
             // express
         } else {
-            let error_logs = vec![/*"page_stats", "unique_stats",*/ "page_stats.json", "unique_stats.json"];
-            for log in error_logs {
+            // let error_logs = vec![/*"page_stats", "unique_stats",*/ "page_stats.json", "unique_stats.json"];
+            // for log in error_logs {
+            for log in DOWNLOADABLE_LOGS {
                 // if error_logs.iter().any(|&log| page == log) {
-                if page == log {
+                if &page == log {
                     if admin.is_some() {
                         
                         // if let Ok(mut f) = NamedFile::open(Path::new("logs/").join(log)) {
@@ -2207,7 +2208,7 @@ pub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, ad
             let count: i64 = row.get(0);
             let total_items: u32 = count as u32;
             let (ipp, cur, num_pages) = pagination.page_data(total_items);
-            let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
+            let sql = pagination.sql(&format!("SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified FROM articles a JOIN users u ON (a.author = u.userid)", DESC_LIMIT), Some("posted DESC"));
             // println!("Prepared paginated query:\n{}", sql);
             if let Some(results) = conn.articles(&sql) {
                 if results.len() != 0 {

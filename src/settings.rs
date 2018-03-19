@@ -84,6 +84,9 @@ const HIT_COUNTER_LOG: &'static str = "logs/page_stats.json";
 const TOTAL_HITS_LOG: &'static str = "logs/total_views.json";
 #[cfg(not(production))]
 const UNIQUE_HITS_LOG: &'static str = "logs/unique_stats.json";
+#[cfg(not(production))]
+// const DOWNLOADABLE_LOGS: &[&'static str] = vec!["page_stats.json", "unique_stats.json", "total_views.json"];
+const DOWNLOADABLE_LOGS: &[&'static str] = &["page_stats.json", "unique_stats.json", "total_views.json"];
 // #[cfg(not(production))]
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu::new("Rust Tutorials".to_owned(), "/content/tutorials".to_owned(), "")]);
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu {name: "Rust Tutorials".to_owned(), url: format!("{}content/tutorials", BLOG_URL), separator: false, classes: String::new()}]);
@@ -179,7 +182,9 @@ const HIT_COUNTER_LOG: &'static str = "logs/page_stats.json";
 const TOTAL_HITS_LOG: &'static str = "logs/total_views.json";
 #[cfg(production)]
 const UNIQUE_HITS_LOG: &'static str = "logs/unique_stats.json";
-
+#[cfg(production)]
+// const DOWNLOADABLE_LOGS = vec!["page_stats.json", "unique_stats.json", "total_views.json"];
+const DOWNLOADABLE_LOGS: &[&'static str] = &["page_stats.json", "unique_stats.json", "total_views.json"];
 
 // #[cfg(production)]
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu::new("Rust Tutorials".to_owned(), "/content/tutorials".to_owned(), "")]);

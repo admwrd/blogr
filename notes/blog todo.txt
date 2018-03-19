@@ -52,6 +52,8 @@ Server
 			sudo cp -r private ~/backups/<backup_name>
 
 Blogr-Fixes
+	Maybe add a sort by last modified in manage admin page
+
 	Add modified date to articles
 		if the modified date equals the created date don't show modified date (in tempplate.rs)
 		
@@ -188,6 +190,12 @@ Blogr-Fixes
 
 
 Blogr-Features
+	Eventually maybe add more author information, maybe allow a pic and large textarea field
+		- that will hold the author's description, which will be used on the first
+		page of the paginated author results
+		- add author description and optional picture to the top of the first page
+		of the paginated author results
+
 	Eventually add ability for markdown pages and articles to include other files
 		- they should be in the pages or upload directories
 		- to include the file use something like: {{``filename``}}

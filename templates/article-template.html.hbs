@@ -7,7 +7,10 @@
         <div class="v-article-header-sub">
             <h2 class="v-article-title"><a href="{{info.base_url}}article/{{body.aid}}/{{body.title}}">{{body.title}}</a></h2>
             <div class="row">
-                <time class="v-article-date" datetime="{{body.posted_machine}}">{{body.posted_human}}</time> 
+                <div class="v-article-date">
+                   Created <time datetime="{{body.posted_machine}}">{{body.posted_human}}</time> 
+                    {{~#if body.modified_human~}}<br>Last edit <time datetime="{{body.modified_machine}}">{{body.modified_human}}</time>{{/if}}
+                </div>
                 <div class="v-article-info row">
                     <div class="col"></div>
                     <div class="col">
