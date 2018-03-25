@@ -64,6 +64,7 @@ extern crate titlecase;
 #[allow(unused_imports)]
 extern crate htmlescape;
 extern crate rss;
+extern crate evmap;
 
 // extern crate dotenv;
 
@@ -76,6 +77,7 @@ extern crate rocket_auth_login;
 
 // mod vcache;
 // mod counthits;
+mod routes;
 mod counter;
 // mod static_pages;
 mod content;
@@ -104,6 +106,8 @@ mod ral_user;
 // use cache::*;
 // use vcache::*;
 // use counthits::*;
+use blog::*;
+use routes::*;
 use counter::*;
 // use counter::*;
 use xpress::*;
@@ -323,6 +327,17 @@ fn main() {
     let views: TotalHits = TotalHits::load();
     let uhits: UStatsWrapper = UStatsWrapper( RwLock::new( UniqueStats::load() ) );
     
+    // let init_pg_pool().get().unwrap();
+    let mut pg_pool = data::init_pg_pool();
+    
+    let conn;
+    if let Ok(pooled_conn) = pg_pool.get() {
+        conn = DbConn(pooled_conn);
+    } else {
+        panic!("Connection could not be retrieved from db connection pool")
+    }
+    
+    
     let rock = rocket::ignite();
     // let rock = Rc::new(rocket::ignite());
     // let mut rock = Rc::new(rocket::ignite());
@@ -335,6 +350,74 @@ fn main() {
     let content_cache: ContentCacheLock = ContentCacheLock::new();
     
     
+    // let all_articles = Arc<Vec<Article>>;
+    // let all_articles: Vec<Article> = routes::load_all_articles(&conn);
+    // maybe use RwLock??
+    // let all_articles: Arc<Vec<Article>> = Arc::new(routes::load_all_articles(&conn));
+    
+    
+    // let all_articles: Vec<Article> = routes::load_all_articles(&conn);
+    
+    let all_articles: Vec<Article>;
+    if let Some(articles) = routes::load_all_articles(&conn) {
+        all_articles = articles;
+    } else {
+        panic!("Could not load articles from database.");
+    }
+    
+    let map_articles: HashMap<u32, Article>;
+    if let Some(articles) = routes::load_articles_map(&conn) {
+        map_articles = articles;
+    } else {
+        panic!("Could not load articles map from database.");
+    }
+    
+    let (articles_reader, mut articles_writer) = evmap::new();
+    match routes::load_article_cache(&all_articles, &mut articles_writer, &conn) {
+        Ok( num ) => {
+            if !PRODUCTION {
+                println!("Article cache loaded with {} articles.", num);
+            }
+        },
+        Err( err ) => { panic!("{}", err); },
+    }
+    
+    let (pages_reader, mut pages_writer) = evmap::new();
+    match routes::load_pages(&mut pages_writer, &conn) {
+        Ok( num ) => {
+            if !PRODUCTION {
+                println!("Pages cache loaded with {} pages.", num);
+            }
+        },
+        Err( err ) => { panic!("{}", err); },
+    }
+    
+    /*
+    
+    all_tags
+    /tag/<tag>
+        /tag?<tag>
+    
+    /article?<aid>
+        /article/<aid>
+        /article/<aid>/<title>
+    /article (hbs_article_not_found)
+    /rss.xml
+    /author/<authorid>
+        /author/<authorid>/<authorname>
+    /about
+    
+    
+    /pageviews
+    /pagestats
+    /pagestats/<show_errors>
+    /manage/<sortstr>/<orderstr>
+    /manage
+    
+    
+    
+    */
+    
     // let content_cache: ContentCacheLock = ContentCacheLock::cache(rock, STATIC_PAGES_DIR);
     
     // let hitcount: PageCount = PageCount::new();
@@ -346,18 +429,23 @@ fn main() {
     
     // let vcache: VCache = VCache(CHashMap::new());
     
-    init_pg_pool().get().unwrap();
+    // init_pg_pool().get().unwrap();
     
     // rocket::ignite()
     
     rock
         // .manage(vcache)
-        .manage(data::init_pg_pool())
+        
+        // .manage(data::init_pg_pool())
+        .manage(pg_pool)
         .manage(hitcount)
         .manage(views)
         .manage(uhits)
         .manage(content_context)
         .manage(content_cache)
+        
+        // .manage(all_articles)
+        // .manage(articles_reader.clone())
         
         .attach(Template::fairing())
         

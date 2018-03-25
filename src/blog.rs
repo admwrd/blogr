@@ -29,6 +29,7 @@ use rocket_auth_login::sanitization;
 use data::*;
 use sanitize::*;
 
+use evmap::*;
 
 
 // pub const DESC_LIMIT: usize = 300;
@@ -945,6 +946,41 @@ impl Article {
         }
     }
 }
+
+impl PartialEq for Article {
+    fn eq(&self, other: &Article) -> bool {
+        self.aid == other.aid
+    }
+}
+
+impl Eq for Article {}
+
+impl ShallowCopy for Article {
+    unsafe fn shallow_copy(&mut self) -> Self {
+        self.clone()
+    }
+}
+
+// the &T version of ShallowCopy
+// impl<'a> ShallowCopy for &'a Article
+// // where
+// //     T: ?Sized,
+// {
+//     unsafe fn shallow_copy(&mut self) -> Article {
+//         &*self
+//     }
+// }
+
+// the mut version works
+/* impl<'b> ShallowCopy for &'b mut Article {
+// impl<'b> ShallowCopy for &'b Article {
+    unsafe fn shallow_copy(&mut self) -> Self {
+        & mut *self
+    }
+} */
+
+
+
 
 impl ArticleForm {
     pub fn new(title: String, body: String, tags: String, description: String, markdown: String, image: String) -> ArticleForm {

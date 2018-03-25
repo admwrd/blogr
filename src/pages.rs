@@ -47,6 +47,7 @@ use rocket::http::hyper::header::{Headers, ContentDisposition, DispositionType, 
 // use roles::*;
 use super::*;
 // use counter::*;
+use routes::*;
 use counter::*;
 use location::*;
 use referrer::*;
@@ -139,6 +140,14 @@ fn destruct_cache(cache: ContentCacheLock) -> (HashMap<String, ContentCached>, u
     let size = cache.size.load(Ordering::SeqCst);
     (reader, size)
 }
+
+
+// #[get("/test_cache")]
+// // pub fn test_cache(articles: State<Vec<Article>>) -> Express {
+// pub fn test_cache(articles: State<Vec<Article>>) -> Express {
+    
+// }
+
 
 #[get("/refresh_content")]
 pub fn refresh_content(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits, context_state: State<ContentContext>, cache_state: State<ContentCacheLock>) -> Express {
