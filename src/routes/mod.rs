@@ -45,6 +45,8 @@ pub struct ArticleCacheReader<'b> {
 }
 
 
+
+
 pub struct ArticleCache {
     pub articles: HashMap<u32, Article>,
 }
@@ -60,6 +62,15 @@ pub struct PageCacheLock {
     pub lock: RwLock<PageCache>,
 }
 
+pub struct MultiArticlePages {
+    pub pages: HashMap<String, Vec<u32>>,
+}
+
+pub struct TextPages {
+    pub pages: HashMap<String, String>,
+}
+
+
 
 // Make the articles_cache a lazy_static wrapped in a mutex/rwlock/arc?
 // make a request guard to retrieve a reference to the articles
@@ -67,7 +78,7 @@ pub struct PageCacheLock {
 
 pub fn load_all_articles(conn: &DbConn) -> Option<Vec<Article>> {
     // unimplemented!()
-    if let Some(articles) = conn.articles("") {
+    if let Some(articles) = conn.articles_full("") {
         Some(articles)
     } else {
         None
@@ -76,7 +87,7 @@ pub fn load_all_articles(conn: &DbConn) -> Option<Vec<Article>> {
 
 pub fn load_articles_map(conn: &DbConn) -> Option<HashMap<u32, Article>> {
     // unimplemented!()
-    if let Some(articles) = conn.articles("") {
+    if let Some(articles) = conn.articles_full("") {
         let mut map: HashMap<u32, Article> = HashMap::new();
         for article in articles {
             map.insert(article.aid, article);

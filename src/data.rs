@@ -121,7 +121,7 @@ impl DbConn {
     /// Runs a query returning articles from the database.  If the text passed in is equal to "" then the default 
     /// query is to return all articles with full body content.
     pub fn articles_full(&self, qrystr: &str) -> Option<Vec<Article>> {
-        let qry = if qrystr != "" { qrystr } else { "SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)" };
+        let qry = if qrystr != "" { qrystr } else { "SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified  FROM articles a JOIN users u ON (a.author = u.userid)" };
         self.articles(qry)
     }
 }
