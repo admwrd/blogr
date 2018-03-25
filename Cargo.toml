@@ -23,7 +23,7 @@ categories = ["authentication", "web-programming", "database", "text-processing"
 license = "Apache-2.0"
 
 # exclude = ["build/**/*.o", "doc/**/*.html"]
-exclude = ["database", "examples/**"]
+exclude = ["database", "examples/**", "src/private.rs"]
 
 
 

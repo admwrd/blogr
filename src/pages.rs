@@ -1984,7 +1984,8 @@ pub fn hbs_pagestats(start: GenTimer, show_errors: bool, admin: AdministratorCoo
             
             // buffer.push_str(r#"<div class="v-stats-container-totals container"><div class="v-stats v-stats-total row"><div class="v-stats-page col"><i class="fa fa-bar-chart" aria-hidden="true"></i> Total Hits</div><div class="v-stats-hits col-auto">"#);
             buffer.push_str(r#"<div class="v-stats-container-totals container">
-                <div class="v-stats v-stats-total row"><div class="v-stats-page col-md">
+                <div class="v-stats v-stats-total row">
+                <div class="v-stats-page col-md">
                 <i class="fa fa-bar-chart" aria-hidden="true"></i> Total Hits"#);
             buffer.push_str("<br>");
             if show_errors {

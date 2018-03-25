@@ -52,6 +52,7 @@ extern crate r2d2_postgres;
 extern crate comrak;
 extern crate twoway;
 // extern crate pulldown_cmark;
+extern crate chashmap;
 
 extern crate libflate;
 extern crate brotli;

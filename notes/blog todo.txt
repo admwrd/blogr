@@ -51,6 +51,22 @@ Server
 			cp -r static ~/backups/<backup_name>
 			sudo cp -r private ~/backups/<backup_name>
 
+Theme
+	Add scope for comment.line.documentation
+
+Organization
+	Make blogr into blogre as a library and binary project
+		In the lib.rs import all of the modules
+		In main.rs import the library use blogre::*;
+	
+	Reorganize the modules into smaller folder moudles (folder modules can have sub-modules)
+
+	Re-organize the pages module into a module that has methods for each page
+		Each Rocket route will call the corresponding method in the module
+		using Request Guard parameters 
+	
+	
+
 Blogr-Fixes
 	Maybe add a sort by last modified in manage admin page
 
@@ -190,6 +206,20 @@ Blogr-Fixes
 
 
 Blogr-Features
+	Maybe add tests.  For testing add comments with special codes identifying
+		certain parts of the page
+
+	Add a related Articles section
+
+	Try adding a left menu for non-mobile users
+
+	Try slimming down the mobile layout and code sections for mobile devices
+
+	Maybe add suggested/featured articles to the dropdown menu
+
+	Try the jumbotron to show featured articles or something
+		Could also use like aside or captions or cards or something for featured articles
+
 	Eventually maybe add more author information, maybe allow a pic and large textarea field
 		- that will hold the author's description, which will be used on the first
 		page of the paginated author results
@@ -204,6 +234,17 @@ Blogr-Features
 	Eventually, instead of deleting articles, move them into a different table
 		Could also make a staging table
 	Add admin pages to manage the trash bin and staging tables
+	Move rows with the following SQL:
+		WITH moved_rows AS (
+		    DELETE FROM <original_table> a
+		    USING <other_table> b
+		    WHERE <condition>
+		    RETURNING a.* -- or specify columns
+		)
+		INSERT INTO <existing_table> --specify columns if necessary
+		SELECT [DISTINCT] * FROM moved_rows;
+
+
 
 	Maybe eventually change the metadata parsing function is the content module for static pages
 		make the function take a &Path (reference to a path) and its parent callees

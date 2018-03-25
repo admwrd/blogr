@@ -207,7 +207,10 @@
 			}
 		},
 		{
+			"contents": "\nuse std::{thread, time};\nuse std::time::Instant;\nuse std::time::Duration;\nuse std::{env, str, io};\nuse std::io::{Cursor, Read};\nuse std::path::{Path, PathBuf};\nuse std::io::prelude::*;\nuse std::fs::{self, File};\n\nuse rocket_contrib::Template;\nuse rocket::response::{content, NamedFile, Redirect, Flash};\nuse rocket::{Request, Data, Outcome};\nuse rocket::request::{FlashMessage, Form, FromForm};\nuse rocket::data::FromData;\nuse rocket::response::content::Html;\nuse rocket::State;\n// use rocket::request::{Form, FlashMessage};\nuse rocket::http::{Cookie, Cookies, RawStr};\n// use auth::userpass::UserPass;\n// use auth::status::{LoginStatus,LoginRedirect};\n// use auth::dummy::DummyAuthenticator;\n// use auth::authenticator::Authenticator;\nuse regex::Regex;\nuse titlecase::titlecase;\n\nuse chrono::prelude::*;\nuse chrono::{NaiveDate, NaiveDateTime};\nuse std::sync::atomic::{AtomicUsize, Ordering};\nuse std::sync::{Mutex, Arc, RwLock};\n\nuse rocket::http::hyper::header::{Headers, ContentDisposition, DispositionType, DispositionParam, Charset};\n\n// use super::{BLOG_URL, ADMIN_LOGIN_URL, USER_LOGIN_URL, CREATE_FORM_URL, TEST_LOGIN_URL};\n\n// use super::RssContent;\n// use cookie_data::*;\n// use cookie_data::CookieId;\n// use admin_auth::*;\n// use user_auth::*;\n// use users::*;\n// use login_form_status::*;\n// use login_form_status::LoginFormRedirect;\n// use templates::*;\n// use authorize::*;\n// use administrator::*;\n// use roles::*;\nuse super::*;\n// use counter::*;\nuse counter::*;\nuse location::*;\nuse referrer::*;\nuse collate::*;\nuse layout::*;\nuse blog::*;\nuse data::*;\nuse sanitize::*;\nuse rocket_auth_login::authorization::*;\nuse rocket_auth_login::sanitization::*;\nuse ral_administrator::*;\nuse ral_user::*;\nuse templates::*;\nuse xpress::*;\nuse accept::*;\n// use ::templates::*;\n\n\nuse comrak::{markdown_to_html, ComrakOptions};\n\n// pub const COMRAK_OPTIONS: ComrakOptions = ComrakOptions {\n//     hardbreaks: true,            // \\n => <br>\\n\n//     width: 120usize,             \n//     github_pre_lang: false,      \n//     ext_strikethrough: true,     // hello ~world~ person.\n//     ext_tagfilter: true,         // filters out certain html tags\n//     ext_table: true,             // | a | b |\\n|---|---|\\n| c | d |\n//     ext_autolink: true,          \n//     ext_tasklist: true,          // * [x] Done\\n* [ ] Not Done\n//     ext_superscript: true,       // e = mc^2^\n//     ext_header_ids: None,        // None / Some(\"some-id-prefix-\".to_string())\n//     ext_footnotes: true,         // Hi[^x]\\n\\n[^x]: A footnote here\\n\n// };\n\n\n// TODO: Collate: make a route that takes a number in the route (not query string)\n//                use this number to determine how many pages to list\n//                on each page say the page number as determined in the Page structure\n\n\n\n\n\n\n\n\n\n\n// output\\.into\\(\\)\\.compress\\(encoding\\)\n// let express: Express = output.into();\n//   express.compress(encoding)\n\n// #[get(\"/login-user\")]\n// fn hbs_login_form_admin(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression, referrer: Referrer) -> Express {\n    \n    // let mut fields: HashMap<String, String> = HashMap::new();\n    \n    // if let Referrer(Some(refer)) = referrer {\n    //     println!(\"Referrer: {}\", &refer);\n    //     fields.insert(\"\");\n    // }\n    \n    \n//     let express: Express = String::new().into();\n//     express.compress(encoding)\n// }\n// #[post(\"/login-user\", data = \"<form>\")]\n// fn hbs_login_process_admin() -> Redirect {\n    \n// }\n\n\n\n\n\n// DOESN'T WORK\n// #[get(\"/init\")]\n// pub fn initialize(admin: Option<AdministratorCookie>) {\n//     ContentCacheLock::cache(rock, STATIC_PAGES_DIR);\n// }\n\nfn destruct_context(ctx: ContentContext) -> (HashMap<String, PageContext>, usize) {\n    let reader = ctx.pages.read().unwrap().clone();\n    let size = ctx.size.load(Ordering::SeqCst);\n    (reader, size)\n}\n\nfn destruct_cache(cache: ContentCacheLock) -> (HashMap<String, ContentCached>, usize) {\n    let reader = cache.pages.read().unwrap().clone();\n    let size = cache.size.load(Ordering::SeqCst);\n    (reader, size)\n}\n\n#[get(\"/refresh_content\")]\npub fn refresh_content(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits, context_state: State<ContentContext>, cache_state: State<ContentCacheLock>) -> Express {\n    \n    let mut ctx_writer;\n    if let Ok(ctx) = context_state.pages.write() {\n        ctx_writer = ctx;\n    } else {\n        let template = hbs_template(TemplateBody::General(alert_danger(\"An error occurred attempting to access content.\")), None, Some(\"Content not available.\".to_string()), String::from(\"/error404\"), Some(admin), user, None, Some(start.0));\n        let express: Express = template.into();\n        return express.compress(encoding);\n    }\n    \n    let mut cache_writer;\n    if let Ok(cache) = cache_state.pages.write() {\n        cache_writer = cache;\n    } else {\n        let template = hbs_template(TemplateBody::General(alert_danger(\"An error occurred attempting to access content.\")), None, Some(\"Content not available.\".to_string()), String::from(\"/error404\"), Some(admin), user, None, Some(start.0));\n        let express: Express = template.into();\n        return express.compress(encoding);\n    }\n    \n    // let content_context: ContentContext = ContentContext::load(STATIC_PAGES_DIR);\n    // let content_cache: ContentCacheLock = ContentCacheLock::new();\n    \n    let (ctx_pages, ctx_size) = destruct_context(ContentContext::load(STATIC_PAGES_DIR));\n    *ctx_writer = ctx_pages;\n    context_state.size.store(ctx_size, Ordering::SeqCst);\n    \n    // let cache = ContentCacheLock::new();\n    let (cache_pages, cache_size) = destruct_cache(ContentCacheLock::new());\n    *cache_writer = cache_pages;\n    cache_state.size.store(cache_size, Ordering::SeqCst);\n    \n    \n    // // load template contexts for all content files in the pages directory\n    // *ctx_writer = *ctx.pages.read().unwrap();\n    \n    // // ctx_writer = ctx.pages.read();\n    // context_state.size.store(ctx.size.load(Ordering::SeqCst), Ordering::SeqCst);\n    \n    // // reset cache back to nothing\n    // *cache_writer = *cache.pages.read().unwrap();\n    // cache_state.size.store(cache.size.load(Ordering::SeqCst), Ordering::SeqCst);\n    \n    let template = hbs_template(TemplateBody::General(alert_success(\"Content has been refreshed successfully.\")), None, Some(\"Content refreshed.\".to_string()), String::from(\"/error404\"), Some(admin), user, None, Some(start.0));\n    let express: Express = template.into();\n    express.compress(encoding)\n}\n\n\n\n\n//\n#[get(\"/content/<uri..>\")]\npub fn static_pages(start: GenTimer, \n                    uri: PathBuf, \n                    admin: Option<AdministratorCookie>, \n                    user: Option<UserCookie>, \n                    encoding: AcceptCompression, \n                    uhits: UniqueHits, \n                    context: State<ContentContext>, \n                    // cache_lock: State<ContentCacheLock>\n                   ) -> Result<ContentRequest, Express> {\n    // could also prevent hotlinking by checking the referrer\n    //   and sending an error for referring sites other than BASE or blank\n    \n    // look for the uri in the context, if it exists then make a ContextRequest\n    //   which will be passed as the output\n    //   before passing ContextRequest as the output, check for admin/user in the context\n    //     if the context has user or admin set to true then make sure the admin/user var is_some()\n    // if it does not exist then return an Express instance with an error message\n    //   use hbs_template's General template\n    \n    // Could also move context out of the ContentReuqest and in the Responder use\n    // let cache = req.guard::<State<HitCount>>().unwrap();\n    \n    let page = uri.to_string_lossy().into_owned();\n    \n    if let Ok(ctx_reader) = context.pages.read() {\n        // if let Some(ctx) = context.pages.get(&page) {\n        if let Some(ctx) = ctx_reader.get(&page) {\n            // Permissions check\n            if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {\n                let template = hbs_template(TemplateBody::General(alert_danger(\"You do not have sufficient privileges to view this content.\")), None, Some(\"Insufficient Privileges\".to_string()), String::from(\"/error403\"), admin, user, None, Some(start.0));\n                let express: Express = template.into();\n                return Err(express.compress(encoding));\n            }\n            \n            // let test = ctx.clone();\n            // context request\n            // Build a ContentRequest with the requested files\n            let conreq: ContentRequest = ContentRequest {\n                encoding,\n                // cache: cache_lock.inner(),\n                route: page,\n                start,\n                // context: ctx.clone(),\n                // context: &test,\n            };\n            Ok(conreq)\n            \n        } else {\n            // let template = hbs_template(...); // Content does not exist\n            let template = hbs_template(TemplateBody::General(alert_danger(\"The requested content could not be found.\")), None, Some(\"Content not found.\".to_string()), String::from(\"/error404\"), admin, user, None, Some(start.0));\n            let express: Express = template.into();\n            Err(express.compress(encoding))\n        }\n        \n    } else {\n        // let template = hbs_template(...); // Content does not exist\n        let template = hbs_template(TemplateBody::General(alert_danger(\"An error occurred attempting to access content.\")), None, Some(\"Content not available.\".to_string()), String::from(\"/error404\"), admin, user, None, Some(start.0));\n        let express: Express = template.into();\n        Err(express.compress(encoding))\n    }\n        \n    \n    \n}\n\nfn err_file_name(name: &str) -> PathBuf {\n    if let Ok(mut dir) = env::current_exe() {\n        dir.pop();\n        // println!(\"Climbing directory tree into: {}\", &dir.display());\n        dir.pop();\n        // println!(\"Loading into directory: {}\", &dir.display());\n        // dir.push(\"log\");\n        // dir.set_file_name(name);\n        if cfg!(target_os = \"windows\") {\n            dir.set_file_name(&format!(\"logs\\\\{}\", name));\n        } else {\n            dir.set_file_name(&format!(\"logs/{}\", name));\n        }\n        // println!(\"Load file is: {}\", &dir.display());\n        dir\n    } else {\n        PathBuf::from(name)\n    }\n}\n\n#[get(\"/download/<uri..>\")]\npub fn code_download(start: GenTimer, \n                    uri: PathBuf, \n                    admin: Option<AdministratorCookie>, \n                    user: Option<UserCookie>, \n                    encoding: AcceptCompression, \n                    uhits: UniqueHits, \n                    context: State<ContentContext>, \n                    // cache_lock: State<ContentCacheLock>\n                   ) -> Express {\n    // If the requested URI cannot be found in the static page cache\n    //   maybe try looking in the uploads folder\n    \n    let page = uri.to_string_lossy().into_owned();\n    \n    if let Ok(ctx_reader) = context.pages.read() {\n            \n        // if let Some(ctx) = context.pages.get(&page) {\n        if let Some(ctx) = ctx_reader.get(&page) {\n            // Permissions check\n            if (ctx.admin && admin.is_none()) || (ctx.user && user.is_none()) {\n                let template = hbs_template(TemplateBody::General(alert_danger(\"You do not have sufficient privileges to view this content.\")), None, Some(\"Insufficient Privileges\".to_string()), String::from(\"/error403\"), admin, user, None, Some(start.0));\n                let express: Express = template.into();\n                return express.compress(encoding);\n            }\n            \n            let express: Express = ctx.body.clone().into();\n            \n            // let mut headers = Headers::new();\n            // headers.set(ContentDisposition {\n            //     disposition: DispositionType::Attachment,\n            //     parameters: vec![DispositionParam::Filename(\n            //       Charset::Iso_8859_1, // The character set for the bytes of the filename\n            //       None, // The optional language tag (see `language-tag` crate)\n            //       b\"\\xa9 Copyright 1989.txt\".to_vec() // the actual bytes of the filename\n            //     )]\n            // });\n            \n            let attachment = ContentDisposition {\n                disposition: DispositionType::Attachment,\n                parameters: vec![DispositionParam::Filename(\n                  Charset::Iso_8859_1, // The character set for the bytes of the filename\n                  None, // The optional language tag (see `language-tag` crate)\n                  ctx.uri.clone().into_bytes()\n                  // b\"\".to_vec() // the actual bytes of the filename\n                )]\n            };\n            express\n            // Disable cache headers; IE breaks if downloading a file over HTTPS with cache-control headers\n            .set_ttl(-2)\n            .add_header(attachment)\n            // express\n        } else {\n            // let error_logs = vec![/*\"page_stats\", \"unique_stats\",*/ \"page_stats.json\", \"unique_stats.json\"];\n            // for log in error_logs {\n            for log in DOWNLOADABLE_LOGS {\n                // if error_logs.iter().any(|&log| page == log) {\n                if &page == log {\n                    if admin.is_some() {\n                        \n                        // if let Ok(mut f) = NamedFile::open(Path::new(\"logs/\").join(log)) {\n                        let err_path = err_file_name(log);\n                        println!(\"Attempting to open {}\", err_path.display());\n                        if !err_path.exists() {\n                            let template = hbs_template(TemplateBody::General(alert_danger(\"Error log could not be found.\")), None, Some(\"Content not Found\".to_string()), String::from(\"/error404\"), admin, user, None, Some(start.0));\n                            let express: Express = template.into();\n                            return express.compress(encoding);\n                        }\n                        if let Ok(mut f) = File::open( err_path ) {\n                            let mut buffer = Vec::new();\n                            f.read_to_end(&mut buffer);\n                            let express: Express = buffer.into();\n                            \n                            let attachment = ContentDisposition {\n                                disposition: DispositionType::Attachment,\n                                parameters: vec![DispositionParam::Filename(\n                                  Charset::Iso_8859_1, // The character set for the bytes of the filename\n                                  None, // The optional language tag (see `language-tag` crate)\n                                  // log.clone().into_bytes()\n                                  log.to_string().into_bytes()\n                                  // b\"\".to_vec() // the actual bytes of the filename\n                                )]\n                            };\n                            \n                            return express\n                            .set_ttl(-2)\n                            .add_header(attachment);\n                        } else {\n                            let template = hbs_template(TemplateBody::General(alert_danger(\"Error log could not be found.\")), None, Some(\"Content not Found\".to_string()), String::from(\"/error404\"), admin, user, None, Some(start.0));\n                            let express: Express = template.into();\n                            return express.compress(encoding);\n                        }\n                    } else {\n                        let template = hbs_template(TemplateBody::General(alert_danger(\"You do not have sufficient privileges to view this content.\")), None, Some(\"Insufficient Privileges\".to_string()), String::from(\"/error403\"), admin, user, None, Some(start.0));\n                        let express: Express = template.into();\n                        return express.compress(encoding);\n                    }\n                }\n            }\n            // let template = hbs_template(...); // Content does not exist\n            let template = hbs_template(TemplateBody::General(alert_danger(\"The requested download could not be found.\")), None, Some(\"Content not found.\".to_string()), String::from(\"/error404\"), admin, user, None, Some(start.0));\n            let express: Express = template.into();\n            express.compress(encoding)\n        }\n    } else {\n        // let template = hbs_template(...); // Content does not exist\n        let template = hbs_template(TemplateBody::General(alert_danger(\"An error occurred attempting to access content.\")), None, Some(\"Content not available.\".to_string()), String::from(\"/error404\"), admin, user, None, Some(start.0));\n        let express: Express = template.into();\n        express.compress(encoding)\n    }\n    \n}\n\n\n\n\n\n\n\n\n\n#[get(\"/admin-test\")]\npub fn hbs_admin_test(start: GenTimer, user: Option<UserCookie>, admin: Option<AdministratorCookie>, encoding: AcceptCompression) -> Express {\n    \n    let output: Template;\n    if let Some(a) = admin {\n        output = hbs_template(TemplateBody::General(alert_success(\"You are logged in.\")), None, Some(\"Admin Test\".to_string()), String::from(\"/admin-test\"), Some(a), user, None, Some(start.0));\n    } else {\n        let mut loginmsg = String::with_capacity(300);\n        loginmsg.push_str(\"You are not logged in, please <a href=\\\"\");\n        loginmsg.push_str(BLOG_URL);\n        loginmsg.push_str(\"admin\");\n        loginmsg.push_str(\"\\\">Login</a>\");\n        \n        output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some(\"Admin Test\".to_string()), String::from(\"/admin-test\"), admin, user, None, Some(start.0));\n    }\n    \n    let express: Express = output.into();\n    express.compress( encoding )\n    \n}\n// #[get(\"/admin-test\", rank = 2)]\n// pub fn hbs_admin_test_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression, location: Location) -> Redirect {\n//     // Redirect::to(\"/admin?referrer=\")\n//     admin_login(location)\n// }\n\n\n\n\n\n\n#[get(\"/admin\", rank = 1)]\npub fn hbs_dashboard_admin_authorized(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, user: Option<UserCookie>, admin: AdministratorCookie, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    // let start = Instant::now();\n    // let flash = if let Some(flash) = flash_msg_opt {\n    //     Some( alert_warning(flash.msg()) )\n    // } else {\n    //     None\n    // };\n    \n    // let output: Template = hbs_template(TemplateBody::General(format!(\"Welcome Administrator {user}.  You are viewing the administrator dashboard page.\", user=admin.username), flash), Some(\"Dashboard\".to_string()), String::from(\"/admin\"), Some(admin), user, None, Some(start.0));\n    \n    // let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    // let express: Express = output.into();\n    // express.compress(encoding)\n    \n    hbs_manage_full(start, \"\".to_string(), \"\".to_string(), pagination, conn, admin, user, flash_msg_opt, encoding, uhits)\n    \n}\n\n// No longer needed - hbs_dashboard_admin_authorized takes care of flash messages\n// #[get(\"/admin\", rank = 2)]\n#[get(\"/admin\", rank = 7)]\npub fn hbs_dashboard_admin_flash(start: GenTimer, conn: DbConn, user: Option<UserCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression, referrer: Referrer) -> Express {\n    // let start = Instant::now();\n    let output: Template;\n    \n    let mut fields: HashMap<String, String> = HashMap::new();\n    \n    if let Referrer(Some(refer)) = referrer {\n        // println!(\"Referrer: {}\", &refer);\n        fields.insert(\"referrer\".to_string(), refer);\n    } else {\n        // println!(\"No referrer\");\n    }\n    \n    if let Some(flash_msg) = flash_msg_opt {\n        let flash = Some( alert_danger(flash_msg.msg()) );\n        output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), None, fields), flash, Some(\"Administrator Login\".to_string()), String::from(\"/admin\"), None, user, Some(\"set_login_focus();\".to_string()), Some(start.0));\n    } else {\n        output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), None, fields), None, Some(\"Administrator Login\".to_string()), String::from(\"/admin\"), None, user, Some(\"set_login_focus();\".to_string()), Some(start.0));\n    }\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n// No longer needed.  Was getting errors because the dashboard_admin_retry_user() route\n// named the qrystr parameter user which already has a variable binding, renamed and fixed it\n\n// #[get(\"/admin/<userqry>\")]\n// pub fn dashboard_admin_retry_route(conn: DbConn, user: Option<UserCookie>, mut userqry: String, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {\n//     unimplemented!()\n// }\n\n\n// #[get(\"/admin?<userqry>\", rank=3)]\n#[get(\"/admin?<userqry>\", rank=4)]\npub fn hbs_dashboard_admin_retry_user(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut userqry: QueryUser, flash_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {\n    // let start = Instant::now();\n    // let userqry: QueryUser = userqry_form.get();\n    \n    let flash = process_flash(flash_opt);\n    \n    // let mut fields: HashMap<String, String> = HashMap::new();\n    \n    // if let Referrer(Some(refer)) = referrer {\n    //     println!(\"Referrer: {}\", &refer);\n    //     fields.insert(\"referrer\".to_string(), refer);\n    // }\n    // // user = login::sanitization::sanitize(&user);\n    \n    let username = if &userqry.user != \"\" { Some(userqry.user.clone() ) } else { None };\n    // let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };\n    // let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some(\"Administrator Login\".to_string()), String::from(\"/admin\"), None, user, Some(\"set_login_focus();\".to_string()), Some(start.0));\n    let output = hbs_template(TemplateBody::Login(ADMIN_LOGIN_URL.to_string(), username), flash, Some(\"Administrator Login\".to_string()), String::from(\"/admin\"), None, user, Some(\"set_login_focus();\".to_string()), Some(start.0));\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n// #[get(\"/admin?<rediruser>\")]\n#[get(\"/admin?<rediruser>\", rank = 2)]\npub fn hbs_dashboard_admin_retry_redir(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut rediruser: QueryUserRedir, flash_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {\n    // let start = Instant::now();\n    // let userqry: QueryUser = userqry_form.get();\n    \n    let flash = process_flash(flash_opt);\n    \n    let mut fields: HashMap<String, String> = HashMap::new();\n    \n    if &rediruser.referrer != \"\" && &rediruser.referrer != \"noredirect\" {\n        // println!(\"Adding referrer {}\", &rediruser.referrer);\n        fields.insert(\"referrer\".to_string(), rediruser.referrer.clone());\n    } else {\n        // println!(\"No referring page\\n{:?}\", rediruser);\n    }\n    // if let Referrer(Some(refer)) = referrer {\n    //     println!(\"Referrer: {}\", &refer);\n    //     fields.insert(\"referrer\".to_string(), refer);\n    // }\n    // // user = login::sanitization::sanitize(&user);\n    \n    let username = if &rediruser.user != \"\" { Some(rediruser.user.clone() ) } else { None };\n    // let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };\n    let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some(\"Administrator Login\".to_string()), String::from(\"/admin\"), None, user, Some(\"set_login_focus();\".to_string()), Some(start.0));\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n// #[get(\"/admin?<rediruser>\")]\n#[get(\"/admin?<rediruser>\", rank = 3)]\npub fn hbs_dashboard_admin_retry_redir_only(start: GenTimer, conn: DbConn, user: Option<UserCookie>, mut rediruser: QueryRedir, flash_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {\n    // let start = Instant::now();\n    // let userqry: QueryUser = userqry_form.get();\n    \n    let flash = process_flash(flash_opt);\n    \n    let mut fields: HashMap<String, String> = HashMap::new();\n    \n    if &rediruser.referrer != \"\" && &rediruser.referrer != \"noredirect\" {\n        // println!(\"Adding referrer {}\", &rediruser.referrer);\n        fields.insert(\"referrer\".to_string(), rediruser.referrer.clone());\n    } else {\n        // println!(\"No referring page\\n{:?}\", rediruser);\n    }\n    // if let Referrer(Some(refer)) = referrer {\n    //     println!(\"Referrer: {}\", &refer);\n    //     fields.insert(\"referrer\".to_string(), refer);\n    // }\n    // // user = login::sanitization::sanitize(&user);\n    \n    // let username = if &rediruser.user != \"\" { Some(rediruser.user.clone() ) } else { None };\n    let username = None;\n    // let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };\n    let output = hbs_template(TemplateBody::LoginData(ADMIN_LOGIN_URL.to_string(), username, fields), flash, Some(\"Administrator Login\".to_string()), String::from(\"/admin\"), None, user, Some(\"set_login_focus();\".to_string()), Some(start.0));\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n#[allow(unused_mut)]\n// #[post(\"/admin\", data = \"<form>\")]\n#[post(\"/admin\", data = \"<form>\")]\n// pub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<AdministratorForm>>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {\npub fn hbs_process_admin_login(start: GenTimer, form: Form<LoginCont<AdministratorForm>>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {\n    // let start = Instant::now();\n    \n    let login: AdministratorForm = form.get().form();\n    // let login: AdministratorForm = form.into_inner().form;\n    \n    let mut err_temp: String;\n    let ok_addy: &str;\n    let err_addy: &str;\n    if &login.referrer != \"\" && &login.referrer != \"noredierct\" {\n        // println!(\"Processing referrer: {}\", &login.referrer);\n        let referring = if login.referrer.starts_with(BLOG_URL) {\n            &login.referrer[BLOG_URL.len()-1..]\n        } else {\n            &login.referrer\n        };\n        ok_addy = &referring;\n        err_addy = {\n            err_temp = String::with_capacity(referring.len() + 20);\n            err_temp.push_str(\"/admin?redir=\");\n            err_temp.push_str(referring);\n            &err_temp\n        };\n    } else {\n        ok_addy = \"/admin\";\n        err_addy = \"/admin\";\n    }\n    // let ok_addy: &str = if &login.referrer != \"\" {\n    //     &login.referrer\n    // } else {\n    //     \"/admin\"\n    // };\n    // println!(\"Forwaring to {} or {}\", ok_addy, err_addy);\n    \n    // let mut output = login.flash_redirect(\"/admin\", \"/admin\", &mut cookies);\n    let mut output = login.flash_redirect(ok_addy, err_addy, &mut cookies);\n    \n    if output.is_ok() {\n        // println!(\"Login success, forwarding to {}\", ok_addy);\n        if let Some(user_cookie) = user {\n            if &user_cookie.username != &login.username {\n                if let Ok(redir) = output {\n                    let flash_message: Flash<Redirect> = Flash::error( \n                        redir, \n                        &format!(\"The regular user {} has been logged out.  You cannot log in with two separate user accounts at once.\", \n                            &user_cookie.username\n                        )\n                    );\n                    // Log the regular user out\n                    // would use UserCookie::delete_cookie(cookies) but cookies already gets sent elsewhere\n                    cookies.remove_private( Cookie::named( UserCookie::cookie_id() ) );\n                    \n                    // the Err will still allow the cookies to get set to log the user in but will allow a message to be passed\n                    output = Err( flash_message );\n                }\n            }\n        }\n    }\n    \n    let end = start.0.elapsed();\n    // println!(\"Processed in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    output\n}\n\n// #[get(\"/admin_logout\")]\n#[get(\"/admin_logout\")]\npub fn hbs_logout_admin(admin: Option<AdministratorCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {\n    if let Some(_) = admin {\n        // cookies.remove_private(Cookie::named(AdministratorCookie::cookie_id()));\n        AdministratorCookie::delete_cookie(&mut cookies);\n        Ok(Flash::success(Redirect::to(\"/\"), \"Successfully logged out.\"))\n    } else {\n        Err(Redirect::to(\"/admin\"))\n    }\n}\n\n\n\n\n\n\n\n\n\n\n\n#[get(\"/user\", rank = 1)]\npub fn hbs_dashboard_user_authorized(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: UserCookie, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {\n    // let start = Instant::now();\n    let flash = if let Some(flash) = flash_msg_opt {\n        Some( alert_warning(flash.msg()) )\n    } else {\n        None\n    };\n    \n    let output: Template = hbs_template(TemplateBody::General(format!(\"Welcome User {user}.  You are viewing the User dashboard page.\", user=user.username)), flash, Some(\"User Dashboard\".to_string()), String::from(\"/user\"), admin, Some(user), None, Some(start.0));\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n// No longer needed - hbs_dhasboard_user_authorized handles flash messages\n#[get(\"/user\", rank = 2)]\npub fn hbs_dashboard_user_flash(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {\n    // let start = Instant::now();\n    let output: Template;\n    \n    if let Some(flash_msg) = flash_msg_opt {\n        let flash = Some( alert_danger(flash_msg.msg()) );\n        output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None), flash, Some(\"User Login\".to_string()), String::from(\"/user\"), admin, None, Some(\"set_login_focus();\".to_string()), Some(start.0));\n    } else {\n        output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), None), None, Some(\"User Login\".to_string()), String::from(\"/user\"), admin, None, Some(\"set_login_focus();\".to_string()), Some(start.0));\n    }\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n\n// #[get(\"/user\", rank = 3)]\n// pub fn dashboard_user_login(conn: DbConn, admin: Option<AdministratorCookie>, encoding: AcceptCompression) -> Express {\n//     hbs_template(TemplateBody::Login(URL_LOGIN_USER.to_string(), None, None), Some(\"User Login\".to_string()), String::from(\"/user\"), admin, None, None, None)\n// }\n\n#[get(\"/user?<user>\")]\npub fn hbs_dashboard_user_retry_user(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, mut user: QueryUser, flash_msg_opt: Option<FlashMessage>, encoding: AcceptCompression) -> Express {\n    // let start = Instant::now();\n    // user = login::sanitization::sanitize(&user);\n    let username = if &user.user != \"\" { Some(user.user.clone() ) } else { None };\n    let flash = if let Some(f) = flash_msg_opt { Some(alert_danger(f.msg())) } else { None };\n    let output = hbs_template(TemplateBody::Login(USER_LOGIN_URL.to_string(), username), flash, Some(\"User Login\".to_string()), String::from(\"/user\"), admin, None, Some(\"set_login_focus();\".to_string()), Some(start.0));\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n#[allow(unused_mut)]\n#[post(\"/user\", data = \"<form>\")]\npub fn hbs_process_user_login(start: GenTimer, form: Form<LoginCont<UserForm>>, admin: Option<AdministratorCookie>, mut cookies: Cookies) -> Result<Redirect, Flash<Redirect>> {\n    // let start = Instant::now();\n    \n    let login: UserForm = form.get().form();\n    // let login: AdministratorForm = form.into_inner().form;\n    let mut output = login.flash_redirect(\"/user\", \"/user\", &mut cookies);\n    \n    if output.is_ok() {\n        if let Some(admin_cookie) = admin {\n            if &admin_cookie.username != &login.username {\n                if let Ok(redir) = output {\n                    let flash_message: Flash<Redirect> = Flash::error( \n                        redir, \n                        &format!(\"The administrator user {} has been logged out.  You cannot log in with two separate user accounts at once.\", \n                            &admin_cookie.username\n                        )\n                    );\n                    // Log the regular user out\n                    // would use UserCookie::delete_cookie(cookies) but cookies already gets sent elsewhere\n                    cookies.remove_private( Cookie::named( AdministratorCookie::cookie_id() ) );\n                    \n                    // the Err will still allow the cookies to get set to log the user in but will allow a message to be passed\n                    output = Err( flash_message );\n                }\n            }\n        }\n    }\n    \n    let end = start.0.elapsed();\n    // println!(\"Processed in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    output\n}\n\n#[get(\"/user_logout\")]\npub fn hbs_logout_user(admin: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {\n    if let Some(_) = admin {\n        // cookies.remove_private(Cookie::named(UserCookie::cookie_id()));\n        UserCookie::delete_cookie(&mut cookies);\n        Ok(Flash::success(Redirect::to(\"/\"), \"Successfully logged out.\"))\n    } else {\n        Err(Redirect::to(\"/user\"))\n    }\n}\n\n\n\n\n\n\n\n\n\n\n// #[get(\"/view\")]\n// pub fn hbs_all_articles(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n//     // let start = Instant::now();\n//     let output: Template;\n//     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);\n    \n//     if results.len() != 0 {\n//         output = hbs_template(TemplateBody::Articles(results, None), Some(\"Viewing All Articles\".to_string()), String::from(\"/\"), admin, user, None, Some(start.0));\n//     } else {\n//         if admin.is_some() {\n//             output = hbs_template(TemplateBody::General(\"There are no articles<br>\\n<a href =\\\"/insert\\\">Create Article</a>\".to_string(), None), Some(\"Viewing All Articles\".to_string()), String::from(\"/\"), admin, user, None, Some(start.0));\n//         } else {\n//             output = hbs_template(TemplateBody::General(\"There are no articles.\".to_string(), None), Some(\"Viewing All Articles\".to_string()), String::from(\"/\"), admin, user, None, Some(start.0));\n//         }\n//     }\n    \n//     let end = start.0.elapsed();\n//     println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n//     let express: Express = output.into();\n//     express.compress(encoding)\n// }\n\n// #[get(\"/view?<page>\")]\n// pub fn hbs_articles_page(start: GenTimer, page: ViewPage, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n//     // let start = Instant::now();\n//     let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);\n    \n//     // Todo: Change title to: Viewing Article Page x/z\n//     let output: Template = hbs_template(TemplateBody::General(\"You are viewing paginated articles.\".to_string(), None), Some(\"Viewing Articles\".to_string()), String::from(\"/\"), admin, user, None, Some(start.0));\n    \n//     let end = start.0.elapsed();\n//     println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n//     let express: Express = output.into();\n//     express.compress(encoding)\n// }\n\n\n#[get(\"/all_tags\")]\npub fn hbs_tags_all(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    // let start = Instant::now();\n    \n    let qrystr = \"SELECT COUNT(*) as cnt, unnest(tag) as untag FROM articles GROUP BY untag ORDER BY cnt DESC;\";\n    let qry = conn.query(qrystr, &[]);\n    let mut tags: Vec<TagCount> = Vec::new();\n    if let Ok(result) = qry {\n        // let mut sizes: Vec<u16> = Vec::new();\n        for row in &result {\n            let c: i64 = row.get(0);\n            let c2: u32 = c as u32;\n            // sizes.push(c2 as u16);\n            let t: String = row.get(1);\n            let t2: String = t.trim_matches('\\'').to_string();\n            let tagcount = TagCount { \n                // tag: titlecase(t.trim_matches('\\'')), \n                url: t2.clone(), \n                tag: titlecase(&t2), \n                count: c2,\n                size: 0,\n            };\n            tags.push(tagcount);\n        }\n        if tags.len() > 4 {\n            if tags.len() > 7 {\n                let mut i = 0u16;\n                for mut v in &mut tags[0..6] {\n                    v.size = 6-i;\n                    i += 1;\n                }\n                \n            } else {\n                let mut i = 0u16;\n                for mut v in &mut tags[0..3] {\n                    v.size = (3-i)*2;\n                }\n            }\n            tags.sort_by(|a, b| a.tag.cmp(&b.tag));\n        }\n        \n    }\n    \n    let output: Template = hbs_template(TemplateBody::Tags(tags), None, Some(\"Viewing All Tags\".to_string()), String::from(\"/all_tags\"), admin, user, None, Some(start.0));\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n// // NOT USED ANYMORE?\n// // View paginated articles - pretty much just a test route\n// #[get(\"/view_articles\")]\n// pub fn hbs_view_articles(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n//     \n//     let total_query = \"SELECT COUNT(*) as count FROM articles\";\n//     let output: Template;\n//     if let Ok(rst) = conn.query(total_query, &[]) {\n//         if !rst.is_empty() && rst.len() == 1 {\n//             let row = rst.get(0);\n//             let count: i64 = row.get(0);\n//             let total_items: u32 = count as u32;\n//             let (ipp, cur, num_pages) = pagination.page_data(total_items);\n//             // let sql = pagination.sql(\"SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)\", Some(\"posted DESC\"));\n//             let sql = pagination.sql(&format!(\"SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)\", DESC_LIMIT), Some(\"posted DESC\"));\n//             println!(\"Prepared paginated query:\\n{}\", sql);\n//             if let Some(results) = conn.articles(&sql) {\n//                 // let results: Vec<Article> = conn.articles(&sql);\n//                 if results.len() != 0 {\n//                     let page_information = pagination.page_info(total_items);\n//                     output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some(format!(\"Viewing All Articles - Page {} of {}\", cur, num_pages)), String::from(\"/view_articles\"), admin, user, None, Some(start.0));\n//                     let express: Express = output.into();\n//                     return express.compress( encoding );\n//                 }\n//             }\n//             // if let Ok(qry) = conn.query(sql, &[]) {\n//             //     if !qry.is_empty() && rst.len() != 0 {\n//                       \n//             //     }\n//             // }\n//         }\n//     }\n//    \n//     output = hbs_template(TemplateBody::General(alert_danger(\"Database query failed.\"), None), Some(\"Viewing All Articles\".to_string()), String::from(\"/view_articles\"), admin, user, None, Some(start.0));\n//     let express: Express = output.into();\n//     express.compress( encoding )\n// }\n\n#[get(\"/tag?<tag>\")]\npub fn hbs_articles_tag_redirect(tag: Tag) -> Redirect {\n    Redirect::to(&format!(\"/tag/{}\", tag.tag))\n}\n\n#[get(\"/tag/<tag>\")]\npub fn hbs_articles_tag(start: GenTimer, tag: String, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    \n    let output: Template;\n    \n    // let tag = \n    \n    // vtags - Vector of Tags - Vector<Tags>\n    let vtags = split_tags(tag.clone());\n    if vtags.len() == 0 {\n            output = hbs_template(TemplateBody::General(alert_danger(\"No tag specified.\")), None, Some(\"No Tag Specified\".to_string()), String::from(\"/tag\"), admin, user, None, Some(start.0));\n    } else {\n        let sql: String = if vtags.len() == 1 {\n            format!(\" WHERE '{}' = ANY(a.tag)\", sanitize_tag(&vtags[0]))\n        } else {\n            let mut tmp = String::with_capacity((vtags.len()*35) + 50);\n            // tmp.push_str(\" WHERE \");\n            tmp.push_str(\" WHERE '\");\n            tmp.push_str(&sanitize_tag(&vtags[0]));\n            tmp.push_str(\"' = ANY(a.tag)\");\n            // tmp.push_str(\"\");\n            \n            for t in &vtags[1..] {\n                tmp.push_str(\" AND '\");\n                tmp.push_str(&sanitize_tag(t));\n                tmp.push_str(\"' = ANY(a.tag)\");\n                // tmp.push_str(\"\");\n            }\n            tmp\n        };\n        \n        let mut countqrystr = String::with_capacity(sql.len() + 60);\n        countqrystr.push_str(\"SELECT COUNT(*) as count FROM articles a\");\n        countqrystr.push_str(&sql);\n        \n        let mut qrystr = String::with_capacity(sql.len() + 60);\n        qrystr.push_str(&format!(\"SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)\", DESC_LIMIT));\n        qrystr.push_str(&sql);\n        \n        // println!(\"\\nTag count query: {}\\nTag articles query: {}\\n\", countqrystr, qrystr);\n        \n        if let Ok(rst) = conn.query(&countqrystr, &[]) {\n            if !rst.is_empty() && rst.len() == 1 {\n                let countrow = rst.get(0);\n                let count: i64 = countrow.get(0);\n                let total_items: u32 = count as u32;\n                let (ipp, cur, num_pages) = pagination.page_data(total_items);\n                let pagesql = pagination.sql(&qrystr, Some(\"posted DESC\"));\n                // println!(\"Tag pagination query:\\n{}\", pagesql);\n                if let Some(results) = conn.articles(&pagesql) {\n                    if results.len() != 0 {\n                        let page_information = pagination.page_info(total_items);\n                        output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information)), None, Some(format!(\"Viewing Tag {} - Page {} of {}\", tag, cur, num_pages)), String::from(\"/tag\"), admin, user, None, Some(start.0));\n                    } else {\n                        output = hbs_template(TemplateBody::General(alert_danger(\"No articles found with the specified tag.\")), None, Some(\"Tag\".to_string()), String::from(\"/tag\"), admin, user, None, Some(start.0));\n                    }\n                } else {\n                        output = hbs_template(TemplateBody::General(alert_danger(\"No articles found with the specified tag.\")), None, Some(\"Tag\".to_string()), String::from(\"/tag\"), admin, user, None, Some(start.0));\n                }\n            } else {\n                output = hbs_template(TemplateBody::General(alert_danger(\"No articles found with the specified tag.\")), None, Some(\"Tag\".to_string()), String::from(\"/tag\"), admin, user, None, Some(start.0));\n            }\n        } else {\n                output = hbs_template(TemplateBody::General(alert_danger(\"No articles found with the specified tag.\")), None, Some(\"Tag\".to_string()), String::from(\"/tag\"), admin, user, None, Some(start.0));\n        }\n    }\n    let express: Express = output.into();\n    express.compress( encoding )\n    \n    \n    \n    \n    \n    // let total_query = \"SELECT COUNT(*) as count FROM articles\";\n    // let output: Template;\n    // if let Ok(rst) = conn.query(total_query, &[]) {\n    //     if !rst.is_empty() && rst.len() == 1 {\n    //         let row = rst.get(0);\n    //         let count: i64 = row.get(0);\n    //         let total_items: u32 = count as u32;\n    //         let (ipp, cur, num_pages) = pagination.page_data(total_items);\n    //         // let sql = pagination.sql(\"SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)\", Some(\"posted DESC\"));\n    //         let sql = pagination.sql(&format!(\"SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)\", DESC_LIMIT), Some(\"posted DESC\"));\n    //         println!(\"Prepared paginated query:\\n{}\", sql);\n    //         if let Some(results) = conn.articles(&sql) {\n    //             // let results: Vec<Article> = conn.articles(&sql);\n    //             if results.len() != 0 {\n    //                 let page_information = pagination.page_info(total_items);\n    //                 output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information), None), Some(format!(\"Viewing All Articles - Page {} of {}\", cur, num_pages)), String::from(\"/view_articles\"), admin, user, None, Some(start.0));\n    //                 let express: Express = output.into();\n    //                 return express.compress( encoding );\n    //             }\n    //         }\n    //         // if let Ok(qry) = conn.query(sql, &[]) {\n    //         //     if !qry.is_empty() && rst.len() != 0 {\n                    \n    //         //     }\n    //         // }\n    //     }\n    // }\n    \n    // output = hbs_template(TemplateBody::General(alert_danger(\"Database query failed.\"), None), Some(\"Viewing All Articles\".to_string()), String::from(\"/view_articles\"), admin, user, None, Some(start.0));\n    // let express: Express = output.into();\n    // express.compress( encoding )\n    \n    \n    // let output: Template;\n    // let tags = Some(split_tags(medium_sanitize(tag.tag.clone())));\n    // // limit, # body chars, min date, max date, tags, strings\n    // let results = Article::retrieve_all(conn, 0, Some(-1), None, None, tags, None);\n    // if results.len() != 0 {\n    //     output = hbs_template(TemplateBody::Articles(results, None), Some(format!(\"Viewing Articles with Tags: {}\", tag.tag)), String::from(\"/all_tags\"), admin, user, None, Some(start.0));\n    // } else {\n    //     output = hbs_template(TemplateBody::General(alert_danger(\"Could not find any articles with the specified tag.\"), None), Some(format!(\"Could not find any articles with the tag(s): {}\", medium_sanitize(tag.tag) )), String::from(\"/tag\"), admin, user, None, Some(start.0));\n    // }\n    \n    // let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    // let express: Express = output.into();\n    // express.compress(encoding)\n}\n\n#[get(\"/article/<aid>/<title>\")]\n\npub fn hbs_article_title(start: GenTimer, aid: ArticleId, title: Option<&RawStr>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    hbs_article_view(start, aid, conn, admin, user, encoding, uhits)\n}\n\n#[get(\"/article/<aid>\")]\npub fn hbs_article_id(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    hbs_article_view(start, aid, conn, admin, user, encoding, uhits)\n}\n\n#[get(\"/article?<aid>\")]\npub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    // let start = Instant::now();\n    let rst = aid.retrieve_with_conn(conn); // retrieve result\n    let mut output: Template; \n    if let Some(article) = rst {\n        let title = article.title.clone();\n        output = hbs_template(TemplateBody::Article(article), None, Some(title), String::from(\"/article\"), admin, user, Some(\"enable_toc(true);\".to_owned()), Some(start.0));\n    } else {\n        output = hbs_template(TemplateBody::General(alert_danger(&format!(\"Article {} not found.\", aid.aid))), None, Some(\"Article Not Found\".to_string()), String::from(\"/article\"), admin, user, None, Some(start.0));\n    }\n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n#[get(\"/article\")]\npub fn hbs_article_not_found(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    // let start = Instant::now();\n    let output: Template = hbs_template(TemplateBody::General(alert_danger(\"Article not found\")), None, Some(\"Article not found\".to_string()), String::from(\"/article\"), admin, user, None, Some(start.0));\n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n#[post(\"/create\", data = \"<form>\")]\npub fn hbs_article_process(start: GenTimer, form: Form<ArticleForm>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n    // let start = Instant::now();\n    \n    let output: Template;\n    \n    let username = if let Some(ref display) = admin.display { display.clone() } else { titlecase(&admin.username) };\n    \n    let cr_options = ComrakOptions { ext_header_ids: Some(\"section-\".to_string()), .. COMRAK_OPTIONS };\n    \n    let mut article: ArticleForm = form.into_inner();\n    \n    if &article.body == \"\" && &article.markdown != \"\" {\n        let html: String = markdown_to_html(&article.markdown, &cr_options);\n        article.body = html;\n    }\n    \n    \n    let result = article.save(&conn, admin.userid, &username);\n    match result {\n        Ok(article) => {\n            // let article = articlesrc.to_article();\n            let title = article.title.clone();\n            output = hbs_template(TemplateBody::Article(article), None, Some(title), String::from(\"/create\"), Some(admin), user, None, Some(start.0));\n        },\n        Err(why) => {\n            output = hbs_template(TemplateBody::General(alert_danger(&format!(\"Could not post the submitted article.  Reason: {}\", why))), None, Some(\"Could not post article\".to_string()), String::from(\"/create\"), Some(admin), user, None, Some(start.0));\n        },\n    }\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n#[post(\"/create\", rank=2)]\npub fn hbs_create_unauthorized(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n    // let start = Instant::now();\n    // let output: Template = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE)), None, Some(\"Not Authorized\".to_string()), String::from(\"/create\"), admin, user, None, Some(start.0));\n    \n    let mut loginmsg = String::with_capacity(300);\n        loginmsg.push_str(\"You are not logged in, please <a href=\\\"\");\n        loginmsg.push_str(BLOG_URL);\n        loginmsg.push_str(\"admin\");\n        loginmsg.push_str(\"\\\">Login</a>\");\n    \n    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some(\"Create\".to_string()), String::from(\"/create\"), None, user, None, Some(start.0));\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n#[get(\"/create\")]\npub fn hbs_create_form(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    // let start = Instant::now();\n    \n    let output: Template;\n    if admin.is_some() {\n        output = hbs_template(TemplateBody::Create(CREATE_FORM_URL.to_string()), None, Some(\"Create New Article\".to_string()), String::from(\"/create\"), admin, user, None, Some(start.0));\n    } else {\n        output = hbs_template(TemplateBody::General(alert_danger(UNAUTHORIZED_POST_MESSAGE)), None, Some(\"Not Authorized\".to_string()), String::from(\"/create\"), admin, user, None, Some(start.0));\n    }\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n// #[get(\"/logout\")]\n// pub fn hbs_logout(admin: Option<AdministratorCookie>, user: Option<UserCookie>, mut cookies: Cookies) -> Result<Flash<Redirect>, Redirect> {\n//     use cookie_data::CookieId;\n//     if admin.is_some() || user.is_some() {\n//         if let Some(a) = admin {\n//             cookies.remove_private(Cookie::named(AdministratorCookie::get_cid()));\n//             // cookies.remove_private(Cookie::named(\"user_id\"));\n//         }\n//         if let Some(u) = user {\n//             cookies.remove_private(Cookie::named(UserCookie::get_cid()));\n//         }\n//         Ok(Flash::success(Redirect::to(\"/\"), \"Successfully logged out.\"))\n//     } else {\n//         Err(Redirect::to(\"/admin\"))\n//     }\n// }\n\n\n// Do a full-text search on the body and title fields\n//   on the tag field match each word against a tag,\n//   this will only match complete word matches\n//     research using array_to_tsvector() in the future\n// https://www.postgresql.org/docs/current/static/functions-textsearch.html\n\n// // NOT IMPLEMENTED YET\n// #[get(\"/search\")]\n// pub fn hbs_search_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n//     //show an advanced search form\n    \n//     let output: Template = hbs_template(TemplateBody::General(\"Search page not implemented yet.  Please use the search form in the top right corner of the page.\".to_string(), None), Some(\"Search\".to_string()), String::from(\"/search\"), admin, user, None, Some(start.0));\n//     let express: Express = output.into();\n//     express.compress(encoding)\n// }\n\n#[get(\"/search?<search>\")]\npub fn hbs_search_redirect(start: GenTimer, pagination: Page<Pagination>, search: Search, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Redirect {\n    // Add min/max date later, its not implemented in the search page anyways\n    // let min = if let Some(mi) = search.min {\n    //     format!(\"{}\", mi.0.format(\"%Y-%m-%d %H:%M:%S\"))\n    // } else {\n    //     String::new()\n    // };\n    // let max = if let Some(mi) = search.min {\n    //     format!(\"{}\", mi.0.format(\"%Y-%m-%d %H:%M:%S\"))\n    // } else {\n    //     String::new()\n    // };\n    if let Some(q) = search.q {\n        Redirect::to( &format!( \"/search/{}\", q ) )\n    } else {\n        Redirect::to( \"/search\" )\n    }\n}\n\n#[get(\"/search/<searchstr>\")]\npub fn hbs_search_results(start: GenTimer, pagination: Page<Pagination>, searchstr: String, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    \n    let search = Search {\n        limit: None,\n        o: None,\n        p: None,\n        q: Some(searchstr),\n        min: None,\n        max: None,\n    };\n    \n    /*\n        SELECT  \n            a.aid, \n            a.title, \n            a.posted,\n            a.tag, \n            ts_rank(a.fulltxt, fqry, 32) AS rank, \n            ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = \"<mark>\", StopSel = \"</mark>\"') AS body\n        FROM \n            articles a, \n            plainto_tsquery('pg_catalog.english', 'handlebars or hello') fqry\n        WHERE \n            fqry @@ a.fulltxt\n                OR\n            'cool' = ANY(a.tag)\n                AND\n            a.posted > '2017-01-01'\n                AND\n            a.posted < '2018-01-01'\n        ORDER BY \n            rank DESC\n        LIMIT 20\n    */\n    \n    // full-text search: title, description, body\n    // entirety match 'each word' = ANY(tag)\n    \n    // println!(\"Search parameters:\\n{:?}\", search);\n    \n    let mut countqry = String::with_capacity(750);\n    let mut qrystr = String::with_capacity(750);\n    // aid title posted body tag description userid display\n    \n    // New Query:\n    qrystr.push_str(r#\"\nSELECT a.aid, a.title, a.posted, \n    ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = \"<mark>\", StopSel = \"</mark>\"') AS body, \n    a.tag, a.description, u.userid, u.display, u.username, \n    ts_rank(a.fulltxt, fqry, 32) AS rank\nFROM articles a JOIN users u ON (a.author = u.userid),\n    plainto_tsquery('pg_catalog.english', '\"#);\n    \n// Old Query\n//     qrystr.push_str(r#\"\n// SELECT a.aid, a.title, a.posted, a.tag, ts_rank(a.fulltxt, fqry, 32) AS rank, ts_headline('pg_catalog.english', a.body, fqry, 'StartSel = \"<mark>\", StopSel = \"</mark>\"') AS body,\n//     u.userid, u.display, u.username\n// FROM articles a JOIN users u ON (a.author = u.userid),\n// plainto_tsquery('pg_catalog.english', '\"#);\n    \n    countqry.push_str(r##\"SELECT COUNT(*) FROM articles a, plainto_tsquery('pg_catalog.english', '\"##);\n    // ts_headline([ config regconfig, ] document text, query tsquery [, options text ]) returns text\n    // qrystr.push_str(r#\"SELECT ts_headline('english', body) FROM articles\"#);\n    \n    let mut wherestr = String::new();\n    let original = search.clone();\n    \n    let mut tags: Option<String> = None;\n    if let Some(mut q) = search.q {\n        if &q != \"\" {\n            // prevent attacks based on length and complexity of the sql query for full-text searches\n            if q.len() > 200 {\n                q = q[..200].to_string();\n            }\n            // WHERE to_tsvector('english', body) @@ to_tsquery('english', 'friend');\n            let sanitized = &sanitize_sql(q);\n            qrystr.push_str(sanitized);\n            countqry.push_str(sanitized);\n            // do a full-text search on title, description, and body fields\n            // for each word add: 'word' = ANY(tag)\n            let ts = sanitized.split(\" \").map(|s| format!(\"'{}' = ANY(a.tag)\", s)).collect::<Vec<_>>().join(\" OR \");\n            tags = if &ts != \"\" { Some(ts) } else { None };\n            // wherestr.push_str(&tags);\n        }\n    }\n    qrystr.push_str(\"') fqry WHERE fqry @@ a.fulltxt\");\n    countqry.push_str(\"') fqry WHERE fqry @@ a.fulltxt\");\n    \n    if let Some(t) = tags {\n        qrystr.push_str(\" OR \");\n        qrystr.push_str(&t);\n        countqry.push_str(\" OR \");\n        countqry.push_str(&t);\n    }\n    if let Some(min) = search.min {\n        // after min\n        qrystr.push_str(\" AND a.posted > '\");\n        qrystr.push_str(&format!(\"{}\", min.0.format(\"%Y-%m-%d %H:%M:%S\")));\n        qrystr.push_str(\"'\");\n        \n        countqry.push_str(\" AND a.posted > '\");\n        countqry.push_str(&format!(\"{}\", min.0.format(\"%Y-%m-%d %H:%M:%S\")));\n        countqry.push_str(\"'\");\n    }\n    if let Some(max) = search.max {\n        // before max\n        qrystr.push_str(\" AND a.posted < '\");\n        qrystr.push_str(&format!(\"{}\", max.0.format(\"%Y-%m-%d %H:%M:%S\")));\n        qrystr.push_str(\"'\");\n        \n        countqry.push_str(\" AND a.posted < '\");\n        countqry.push_str(&format!(\"{}\", max.0.format(\"%Y-%m-%d %H:%M:%S\")));\n        countqry.push_str(\"'\");\n    }\n    \n    // qrystr.push_str(\" ORDER BY rank DESC\");\n    // if let Some(limit) = search.limit {\n    //     // if str_is_numeric(limit) {\n    //     if limit <= 50 {\n    //         qrystr.push_str(&format!(\" LIMIT {}\", limit));\n    //         countqry.push_str(&format!(\" LIMIT {}\", limit));\n    //     } else {\n    //         qrystr.push_str(\" LIMIT 50\");\n    //         countqry.push_str(\" LIMIT 50\");\n    //     }\n    // } else {\n    //     qrystr.push_str(\" LIMIT 40\");\n    //     countqry.push_str(\" LIMIT 40\");\n    // }\n    \n    // println!(\"Generated the following SQL Query:\\nCount:\\n{}\\n\\nSearch Query:\\n{}\", countqry, qrystr);\n    // println!(\"Generated the following SQL Query:\\n{}\", qrystr);\n    \n    let total_query = countqry;\n    let output: Template;\n    if let Ok(rst) = conn.query(&total_query, &[]) {\n        if !rst.is_empty() && rst.len() == 1 {\n            let row = rst.get(0);\n            let count: i64 = row.get(0);\n            let total_items: u32 = count as u32;\n            let (ipp, cur, num_pages) = pagination.page_data(total_items);\n            // let sql = pagination.sql(&format!(\"SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)\", DESC_LIMIT), Some(\"posted DESC\"));\n            let sql = pagination.sql(&qrystr, Some(\"rank DESC\"));\n            // println!(\"Prepared paginated query:\\n{}\", sql);\n            if let Some(results) = conn.articles(&sql) {\n                if results.len() != 0 {\n                    // let page_information = pagination.page_info(total_items);\n                    let pinfo = pagination.page_info(total_items);\n                    let welcome = r##\"<h1>Search Results</h1>\"##;\n                    \n                    let mut page_information = String::with_capacity(pinfo.len() + welcome.len() + 50);\n                    page_information.push_str(welcome);\n                    page_information.push_str(&pinfo);\n                    \n                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information)), None, Some(\"Search Results\".to_string()), String::from(\"/search\"), admin, user, None, Some(start.0));\n                    let express: Express = output.into();\n                    \n                    let end = start.0.elapsed();\n                    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n                    \n                    return express.compress( encoding );\n                }\n            }\n        }\n    }\n    \n    output = hbs_template(TemplateBody::General(alert_danger(\"No articles to show.\")), None, Some(\"Search Results\".to_string()), String::from(\"/search\"), admin, user, None, Some(start.0));\n    let express: Express = output.into();\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    \n    express.compress( encoding )\n    \n    // let mut articles: Vec<Article> = Vec::new();\n    // let qry = conn.query(&qrystr, &[]);\n    // let output: Template;\n    // if let Ok(result) = qry {\n    //     for row in &result {\n            \n    //         let display: Option<String> = row.get(7);\n    //         let username: String = if let Some(disp) = display { disp } else { row.get(8) };\n            \n    //         let a = Article {\n    //             aid: row.get(0),\n    //             title: row.get(1),\n    //             posted: row.get(2),\n    //             tags: row.get_opt(3).unwrap_or(Ok(Vec::<String>::new())).unwrap_or(Vec::<String>::new()),\n    //             body: row.get(5),\n    //             description: String::new(),\n    //             userid: row.get(6),\n    //             username: titlecase( &username ),\n    //         };\n    //         articles.push(a);\n    //     }\n    //     output = hbs_template(TemplateBody::Search(articles, Some(original), None), Some(\"Search Results\".to_string()), String::from(\"/search\"), admin, user, None, Some(start.0));\n    // } else {\n    //     println!(\"Query failed. Query: {}\", qrystr);\n    //     output = hbs_template(TemplateBody::General(alert_danger(\"No results were found.\"), None), Some(\"Search Results\".to_string()), String::from(\"/search\"), admin, user, None, Some(start.0));\n    // }\n    // let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    // let express: Express = output.into();\n    // express.compress(encoding)\n}\n\n// application/rss+xml\n#[get(\"/rss.xml\")]\n// EXPRESS X - pub fn rss_page(conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>) -> String {\npub fn rss_page(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    use rss::{Channel, ChannelBuilder, Guid, GuidBuilder, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};\n    use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};\n    use urlencoding::encode;\n    \n    let rss: Express;\n    \n    let result = conn.articles(\"\");\n    if let Some(articles) = result {\n        let mut article_items: Vec<Item> = Vec::new();\n        for article in &articles {\n            let mut link = String::with_capacity(BLOG_URL.len()+20);\n            link.push_str(BLOG_URL);\n            // link.push_str(\"article?aid=\");\n            link.push_str(\"article/\");\n            link.push_str(&article.aid.to_string());\n            link.push_str(\"/\");\n            // let encoded = encode(\"This string will be URL encoded.\");\n            link.push_str( &encode(&article.title) );\n            \n            let desc: &str = if &article.description != \"\" {\n                &article.description\n            } else {\n                if article.body.len() > DESC_LIMIT {\n                    &article.body[..200]\n                } else {\n                    &article.body[..]\n                }\n            };\n            \n            let guid = GuidBuilder::default()\n                .value(link.clone())\n                .build()\n                .expect(\"Could not create article guid.\");\n            \n            let date_posted = DateTime::<Utc>::from_utc(article.posted, Utc).to_rfc2822();\n            \n            let item =ItemBuilder::default()\n                .title(article.title.clone())\n                .link(link)\n                .description(desc.to_string())\n                // .author(\"Andrew Prindle\".to_string())\n                .author(article.username.clone())\n                // .categories()\n                .guid(guid)\n                .pub_date(date_posted)\n                .build();\n                \n            match item {\n                Ok(i) => article_items.push(i),\n                Err(e) => println!(\"Could not create rss article {}.  Error: {}\", article.aid, e),\n            }\n        }\n        // Items:\n        // title    link    description author  categories  guid    pub_date\n        // Channels:\n        // title    link    description categories  language    copyright   rating  ttl\n        let mut search_link = String::with_capacity(BLOG_URL.len()+10);\n        search_link.push_str(BLOG_URL);\n        search_link.push_str(\"search\");\n        \n        let searchbox = TextInputBuilder::default()\n            .title(\"Search\")\n            .name(\"q\")\n            .description(\"Search articles\")\n            .link(search_link)\n            .build()\n            .expect(\"Could not create text input item in RSS channel.\");\n        \n        let channel = ChannelBuilder::default()\n            .title(\"Vishus Blog\")\n            .link(BLOG_URL)\n            .description(\"A programming and development blog about Rust, Javascript, and Web Development.\")\n            .language(\"en-us\".to_string())\n            .copyright(\"2017 Andrew Prindle\".to_string())\n            .ttl(720.to_string()) // half a day, 1440 minutes in a day\n            .items(article_items)\n            .text_input(searchbox)\n            .build()\n            .expect(\"Could not create RSS channel.\");\n        \n        let rss_output = channel.to_string();\n        let mut output = String::with_capacity(rss_output.len() + 30);\n        output.push_str(r#\"<?xml version=\"1.0\"?>\"#);\n        output.push_str(&rss_output);\n        \n        let express: Express = output.into();\n        rss = express.set_content_type(ContentType::XML).compress(encoding);\n            // set_ttl(-1)\n            // .add_extra(\"Content-Type\".to_string(), \"application/rss+xml\".to_string())\n    } else {\n        let output = String::from(\"Could not create RSS feed.\");\n        let express: Express = output.into();\n        // Do not need to compress output with such a small string.\n        // express.compress(encoding).set_content_type(ContentType::XML\n        rss = express;\n    }\n    \n    let end = start.0.elapsed();\n    // println!(\"RSS Generated in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    rss\n}\n\n// #[get(\"/author/<authorid>/<authorname>\")]\n// pub fn hbs_author_display(start: GenTimer, authorid: u32, authorname: Option<String>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n//     unimplemented!()\n    \n// }\n\n#[get(\"/author/<authorid>/<authorname>\")]\npub fn hbs_author_display(start: GenTimer, authorid: u32, pagination: Page<Pagination>, authorname: Option<&RawStr>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    hbs_author(start, authorid, pagination, conn, admin, user, encoding, uhits)\n}\n\n#[get(\"/author/<authorid>\")]\npub fn hbs_author(start: GenTimer, authorid: u32, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    // unimplemented!()\n    let output: Template;\n    \n    // let results = conn.articles( &format!(\"SELECT a.aid, a.title, a.posted, description({}, a.body, a.description), a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE userid = {}\", DESC_LIMIT, authorid) );\n    \n    // if let Some(articles) = results {\n    //     output = hbs_template(TemplateBody::Articles(articles, None), Some(\"Articles by Author\".to_string()), String::from(\"/author\"), admin, user, None, Some(start.0));\n    // } else {\n    //     output = hbs_template(TemplateBody::General(\"There are no articles by the specified user.\".to_string(), None), Some(\"Articles by Author\".to_string()), String::from(\"/author\"), admin, user, None, Some(start.0));\n    // }\n    \n    let total_query = format!(\"SELECT COUNT(*) AS count FROM articles WHERE author = {}\", authorid);\n    if let Ok(rst) = conn.query(&total_query, &[]) {\n        if !rst.is_empty() && rst.len() == 1 {\n            let row = rst.get(0);\n            let count: i64 = row.get(0);\n            let total_items: u32 = count as u32;\n            let (ipp, cur, num_pages) = pagination.page_data(total_items);\n            let sql = pagination.sql(&format!(\"SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.author = {}\", DESC_LIMIT, authorid), Some(\"posted DESC\"));\n            // println!(\"Prepared paginated query:\\n{}\", sql);\n            if let Some(results) = conn.articles(&sql) {\n                if results.len() != 0 {\n                    let page_information = pagination.page_info(total_items);\n                    \n                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information)), None, Some(\"Articles by Author\".to_string()), String::from(\"/author\"), admin, user, None, Some(start.0));\n                } else {\n                    output = hbs_template(TemplateBody::General(\"There are no articles by the specified user.\".to_string()), None, Some(\"Articles by Author\".to_string()), String::from(\"/author\"), admin, user, None, Some(start.0));\n                }\n            } else {\n                    output = hbs_template(TemplateBody::General(\"There are no articles by the specified user.\".to_string()), None, Some(\"Articles by Author\".to_string()), String::from(\"/author\"), admin, user, None, Some(start.0));\n            }\n        } else {\n            output = hbs_template(TemplateBody::General(\"There are no articles by the specified user.\".to_string()), None, Some(\"Articles by Author\".to_string()), String::from(\"/author\"), admin, user, None, Some(start.0));\n        }\n    } else {\n        output = hbs_template(TemplateBody::General(\"There are no articles by the specified user.\".to_string()), None, Some(\"Articles by Author\".to_string()), String::from(\"/author\"), admin, user, None, Some(start.0));\n    }\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n#[get(\"/about\")]\npub fn hbs_about(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    // don't forget to put the start Instant in the hbs_template() function\n    let output = hbs_template(TemplateBody::General(\"This page is not implemented yet.  Soon it will tell a little about me.\".to_string()), None, Some(\"About Me\".to_string()), String::from(\"/about\"), admin, user, None, Some(start.0));\n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n\n#[get(\"/edit\", rank=2)]\npub fn hbs_edit_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n    let mut loginmsg = String::with_capacity(300);\n        loginmsg.push_str(\"You are not logged in, please <a href=\\\"\");\n        loginmsg.push_str(BLOG_URL);\n        loginmsg.push_str(\"admin\");\n        loginmsg.push_str(\"\\\">Login</a>\");\n    \n    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some(\"Unauthorized\".to_string()), String::from(\"/edit\"), None, user, None, Some(start.0));\n    let express: Express = output.into();\n    express.compress( encoding )\n}\n\n#[get(\"/edit/<aid>\")]\npub fn hbs_edit(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash_opt: Option<FlashMessage>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n\n    // let options = ComrakOptions {\n    //     hardbreaks: true,            // \\n => <br>\\n\n    //     width: 120usize,             \n    //     github_pre_lang: false,      \n    //     ext_strikethrough: true,     // hello ~world~ person.\n    //     ext_tagfilter: true,         // filters out certain html tags\n    //     ext_table: true,             // | a | b |\\n|---|---|\\n| c | d |\n    //     ext_autolink: true,          \n    //     ext_tasklist: true,          // * [x] Done\\n* [ ] Not Done\n    //     ext_superscript: true,       // e = mc^2^\n    //     ext_header_ids: Some(\"section-\".to_string()),        // None / Some(\"some-id-prefix-\".to_string())\n    //     ext_footnotes: true,         // Hi[^x]\\n\\n[^x]: A footnote here\\n\n    // };\n    \n    // let html: String = markdown_to_html(text, &ComrakOptions::default());\n    // let html: String = markdown_to_html(text, &COMRAK_OPTIONS);\n    // html\n    \n    let flash = process_flash(flash_opt);\n    \n    let cr_options = ComrakOptions { ext_header_ids: Some(\"section-\".to_string()), .. COMRAK_OPTIONS };\n    \n    let output: Template;\n    let id = ArticleId::new(aid);\n    if let Some(mut article) = id.retrieve_with_conn(conn) {\n        // println!(\"Retrieved article info: {}\", article.info());\n        //\n        let title = article.title.clone();\n        \n        // If the body is empty that means the javascript did not process the Markdown into HTML\n        // so convert the Markdown into HTML using Rust and the Comrak crate \n        //      The Comrak crate is slower than the pulldown-cmark but more options\n        if &article.body == \"\" && &article.markdown != \"\" {\n            let html: String = markdown_to_html(&article.markdown, &cr_options);\n            article.body = html;\n        }\n        \n        output = hbs_template(TemplateBody::Edit(EDIT_FORM_URL.to_string(), article), flash, Some(format!(\"Editing '{}'\", title)), String::from(\"/edit\"), Some(admin), user, None, Some(start.0));\n        let express: Express = output.into();\n        return express.compress(encoding);\n    }\n    \n    // let qrystr = format!(\"a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid) WHERE a.aid = {}\", aid);\n    // if let Some(articles) = conn.articles(&qrystr) {\n    //     if articles.len() == 1 {\n    //         let article = &articles[0];\n    //         output = hbs_template(TemplateBody::Edit(EDIT_FORM_URL.to_string(), *article, None), Some(format!(\"Editing '{}'\", &article.title)), String::from(\"/edit\"), admin, user, None, Some(start.0));\n    //         let express: Express = output.into();\n    //         return express.compress(encoding);\n    //     }\n    // }\n    output = hbs_template(TemplateBody::General(\"The reuqested article could not be found.\".to_string()), flash, Some(\"Edit\".to_string()), String::from(\"/edit\"), Some(admin), user, None, Some(start.0));\n    \n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n\n#[post(\"/edit\", data = \"<form>\")]\n// pub fn hbs_edit_process(start: GenTimer, form: Form<Article>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Flash<Redirect> {\npub fn hbs_edit_process(start: GenTimer, form: Form<ArticleWrapper>, conn: DbConn, admin: AdministratorCookie, encoding: AcceptCompression) -> Flash<Redirect> {\n    \n    let cr_options = ComrakOptions { ext_header_ids: Some(\"section-\".to_string()), .. COMRAK_OPTIONS };\n    \n    let wrapper: ArticleWrapper = form.into_inner();\n    let mut article: Article = wrapper.to_article();\n    \n    if &article.body == \"\" && &article.markdown != \"\" {\n        let html: String = markdown_to_html(&article.markdown, &cr_options);\n        article.body = html;\n    }\n    \n    // println!(\"Processing Article info: {}\", article.info());\n    let result = article.save(conn);\n    match result {\n        Ok(k) => {\n            Flash::success(Redirect::to(&format!(\"/edit/{}\", &article.aid)), &k)\n        },\n        Err(ref e) if e == \"\" => {\n            Flash::success(Redirect::to(&format!(\"/edit/{}\", &article.aid)), &e)\n            // Flash::error(Redirect::to(\"\"), \"\")\n        },\n        Err(e) => {\n            Flash::success(Redirect::to(&format!(\"/edit/{}\", &article.aid)), &e)\n            // Flash::error(Redirect::to(\"\"), \"\")\n        }\n    }\n    \n}\n\n#[get(\"/manage\", rank=2)]\npub fn hbs_manage_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n    let mut loginmsg = String::with_capacity(300);\n        loginmsg.push_str(\"You are not logged in, please <a href=\\\"\");\n        loginmsg.push_str(BLOG_URL);\n        loginmsg.push_str(\"admin\");\n        loginmsg.push_str(\"\\\">Login</a>\");\n    \n    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some(\"Unauthorized\".to_string()), String::from(\"/manage\"), None, user, None, Some(start.0));\n    let express: Express = output.into();\n    express.compress( encoding )\n}\n\n\n#[get(\"/manage\")]\npub fn hbs_manage_basic(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    hbs_manage_full(start, \"\".to_string(), \"\".to_string(), pagination, conn, admin, user, flash, encoding, uhits)\n}\n\n#[get(\"/manage/<sortstr>/<orderstr>\")]\npub fn hbs_manage_full(start: GenTimer, sortstr: String, orderstr: String, pagination: Page<Pagination>, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    \n    let output: Template;\n    \n    let fmsg: Option<String>;\n    if let Some(flashmsg) = flash {\n        if flashmsg.name() == \"error\" {\n            fmsg = Some(alert_danger( flashmsg.msg() ));\n        } else if flashmsg.name() == \"warning\" {\n            fmsg = Some(alert_warning( flashmsg.msg() ));\n        } else if flashmsg.name() == \"success\" {\n            fmsg = Some(alert_success( flashmsg.msg() ));\n        } else {\n            fmsg = Some(alert_info( flashmsg.msg() ));\n        }\n    }  else {\n        fmsg = None;\n    }\n    \n    let mut total_query = \"SELECT COUNT(*) AS count FROM articles\";\n    \n    // let mut querystr: String = \"SELECT a.aid, a.title, a.posted, description({}, a.body, a.description), a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)\".to_string();\n    let mut page_query = \"SELECT a.aid, a.title, a.posted, '' as body, a.tag, a.description, u.userid, u.display, u.username FROM articles a JOIN users u ON (a.author = u.userid)\";\n    \n    // let order_str = sortstr.to_lowercase();\n    let order = match sortstr.to_lowercase().as_ref() {\n        \"date\" if &orderstr == \"desc\" => \"posted DESC\",\n        \"date\" if &orderstr == \"asc\" => \"posted\",\n        \"date\" => \"posted DESC\",\n        \"title\" if &orderstr == \"desc\" => \"title DESC\",\n        \"title\" if &orderstr == \"asc\" => \"title\",\n        \"title\" => \"title\",\n        _ if &orderstr == \"desc\" => \"posted DESC\",\n        _ if &orderstr == \"asc\" => \"posted\",\n        _ => \"posted DESC\",\n    };\n    \n    let sort_options: Sort = match order {\n        \"posted DESC\" => Sort::Date(true),\n        \"posted\" => Sort::Date(false),\n        \"title\" => Sort::Title(false),\n        \"title DESC\" => Sort::Title(true),\n        _ => Sort::Date(true),\n    };\n    \n    if let Ok(rst) = conn.query(total_query, &[]) {\n        if !rst.is_empty() && rst.len() == 1 {\n            let countrow = rst.get(0);\n            let count: i64 = countrow.get(0);\n            let total_items: u32 = count as u32;\n            let (ipp, cur, num_pages) = pagination.page_data(total_items);\n            let pagesql = pagination.sql(page_query, Some(order));\n            // println!(\"Manage paginated query: {}\", pagesql);\n            if let Some(results) = conn.articles(&pagesql) {\n                if results.len() != 0 {\n                    // let page_info = pagination.page_info(total_items);\n                    \n                    output = hbs_template(TemplateBody::Manage(results, pagination, total_items, sort_options), fmsg, Some(format!(\"Manage Articles - Page {} of {}\", cur, num_pages)), String::from(\"/manage\"), Some(admin), user, None, Some(start.0));\n                    \n                    let express: Express = output.into();\n                    return express.compress(encoding);\n                    \n                }\n            }\n            \n            \n        }\n    }\n    \n    output = hbs_template(TemplateBody::General(alert_danger(\"No articles found.\")), fmsg, Some(\"Manage Articles\".to_string()), String::from(\"/manage\"), Some(admin), user, None, Some(start.0));\n    \n    let express: Express = output.into();\n    express.compress(encoding)\n    \n}\n\n// #[get(\"/hit\")]\n// pub fn hit_count(uhits: UniqueHits) -> String {\n//     // let (page, count) = hits;\n//     let page = hits.0;\n//     let count = hits.1;\n//     let views = hits.2;\n//     format!(\"The page `{}` has {} page views.\\nTotal views: {}\", page, count, views)\n// }\n\n\n// #[get(\"/hit2\")]\n// pub fn hit_count2(uhits: UniqueHits) -> String {\n//     // let (page, count) = hits;\n//     let page = hits.0;\n//     let count = hits.1;\n//     let views = hits.2;\n//     format!(\"The page `{}` has {} page views.\\nTotal views: {}\", page, count, views)\n// }\n\n\n// #[get(\"/hit3\")]\n// pub fn hit_count3(uhits: UniqueHits) -> String {\n//     // let (page, count) = hits;\n//     let page = hits.0;\n//     let count = hits.1;\n//     let views = hits.2;\n//     format!(\"The page `{}` has {} page views.\\nTotal views: {}\", page, count, views)\n// }\n\n\n#[get(\"/delete\", rank=2)]\npub fn hbs_delete_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n    let mut loginmsg = String::with_capacity(300);\n        loginmsg.push_str(\"You are not logged in, please <a href=\\\"\");\n        loginmsg.push_str(BLOG_URL);\n        loginmsg.push_str(\"admin\");\n        loginmsg.push_str(\"\\\">Login</a>\");\n    \n    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some(\"Unauthorized\".to_string()), String::from(\"/delete\"), None, user, None, Some(start.0));\n    let express: Express = output.into();\n    express.compress( encoding )\n}\n\n#[get(\"/delete/<aid>\")]\npub fn hbs_delete_confirm(start: GenTimer, aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n    \n    let confirm = alert_warning(&format!(r#\"\n        You are attempting to permanently delete an article, are you sure you want to continue?  \n        This action cannot be undone.\n        <form action=\"{}process_delete/{}\" method=\"post\" id=\"delete-form\">\n            <input type=\"hidden\" value=\"{}\" id=\"manage-page\">\n            <div class=\"v-centered-text\">\n                <button type=\"submit\" id=\"delete-button\" class=\"v-del-confirm btn btn-danger\">Delete</button>\n                <span class=\"v-spacer-del\"></span>\n                <button type=\"button\" id=\"delete-cancel\" class=\"v-del-cancel btn btn-warning\">Cancel</button>\n            </div>\n        </form>\n        \"#, BLOG_URL, aid, MANAGE_URL));\n    \n    let output = hbs_template(TemplateBody::General(confirm), None, Some(\"Delete Article\".to_string()), String::from(\"/delete\"), Some(admin), user, None, Some(start.0));\n    \n    let express: Express = output.into();\n    express.compress( encoding )\n}\n\n#[post(\"/process_delete/<aid>\")]\npub fn hbs_process_delete(aid: u32, conn: DbConn, admin: AdministratorCookie, user: Option<UserCookie>) -> Result<Flash<Redirect>, Redirect> {\n    let qrystr = format!(\"DELETE FROM articles WHERE aid = {}\", aid);\n    \n    // println!(\"Delete query:\\n{}\\n\", &qrystr);\n    \n    if let Ok(num) = conn.execute(&qrystr, &[]) {\n        if num == 1 {\n            // println!(\"Delete succeeded\");\n            Ok( Flash::success(Redirect::to(\"/manage\"), &format!(\"Article {} successfully deleted.\", aid)) )\n        } else if num == 0 {\n            println!(\"Delete failed - no articles deleted.\");\n            Ok( Flash::error(Redirect::to(\"/manage\"), &format!(\"Article {} was not deleted.\", aid)) )\n        } else {\n            println!(\"Delete failed - multiple articles deleted!\");\n            Ok( Flash::error(Redirect::to(\"/manage\"), &format!(\"A mistake occurred. Multiple articles ({} articles) appear to have been deleted.\", num)) )\n        }\n    } else {\n        println!(\"Delete failed.\");\n        Err( Redirect::to(\"/manage\") )\n    }\n}\n\n#[get(\"/backup\", rank=2)]\npub fn hbs_backup_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n    let mut loginmsg = String::with_capacity(300);\n        loginmsg.push_str(\"You are not logged in, please <a href=\\\"\");\n        loginmsg.push_str(BLOG_URL);\n        loginmsg.push_str(\"admin\");\n        loginmsg.push_str(\"\\\">Login</a>\");\n    \n    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some(\"Unauthorized\".to_string()), String::from(\"/backup\"), None, user, None, Some(start.0));\n    let express: Express = output.into();\n    express.compress( encoding )\n}\n\n#[get(\"/backup\")]\npub fn backup(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    use std::process::Command;\n    use rocket::http::hyper::header::{Headers, ContentDisposition, DispositionType, DispositionParam, Charset};\n    \n    // \"C:\\Program Files\\PostgreSQL\\10\\bin\\pg_dump.exe\"\n    /*\n    pg_dump --file \"db_backup-2.sql\" --format=p --no-owner --create \n        --no-privileges --inserts --column-inserts \n        --dbname=\"postgres://vishus:Mutex7892@localhost/blog\"\n    */ /*\n     \"C:\\Program Files\\PostgreSQL\\10\\bin\\pg_dump.exe\" \n         --file \"db_backup-testy.sql\" --format=p --no-owner \n         --create --no-privileges --inserts --column-inserts \n         --dbname=\"postgres://postgres:andrew@localhost/blog\"\n    */ /*\n        Content-Disposition: attachment; filename=\"MyFileName.ext\"\n        Content-Transfer-Encoding: binary\n        Content-Length: \n    */\n    \n    let constr = format!(\"--dbname=\\\"{}\\\"\", DATABASE_URL);\n    \n    #[cfg(not(production))]\n    let output_rst = Command::new(DB_BACKUP_SCRIPT).output();\n    #[cfg(production)]\n    let output_rst = Command::new(DB_BACKUP_SCRIPT)\n        .arg(DB_BACKUP_ARG)\n        .output();\n    \n    if let Ok(output) = output_rst {\n        let now = Local::now().naive_local();\n        let today = now.date();\n        \n        let dl_name = now.format(\"db_blog_%Y-%m-%d.sql\").to_string();\n        \n        let disposition = ContentDisposition {\n            disposition: DispositionType::Attachment,\n            parameters: vec![DispositionParam::Filename(\n              Charset::Iso_8859_1, // The character set for the bytes of the filename\n              None, // The optional language tag (see `language-tag` crate)\n                dl_name.into_bytes() // b\"db_blog-\".to_vec() // the actual bytes of the filename\n            )]\n        };\n        \n        let backup = String::from_utf8_lossy(&output.stdout).into_owned();\n        let length = backup.len();\n        // println!(\"Backup succeeded with a length of {} bytes\", length);\n        let express: Express = backup.into();\n        express.set_content_type(ContentType::Binary)\n                .add_header(disposition)\n    } else {\n        let output = hbs_template(TemplateBody::General(alert_danger(\"Backup failed.\")), None, Some(\"Backup Failed\".to_string()), String::from(\"/backup\"), Some(admin), user, None, Some(start.0));\n        \n        let express: Express = output.into();\n        express.compress(encoding)\n    }\n}\n\n#[get(\"/pageviews\", rank=2)]\npub fn hbs_pageviews_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n    let mut loginmsg = String::with_capacity(300);\n        loginmsg.push_str(\"You are not logged in, please <a href=\\\"\");\n        loginmsg.push_str(BLOG_URL);\n        loginmsg.push_str(\"admin\");\n        loginmsg.push_str(\"\\\">Login</a>\");\n    \n    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some(\"Unauthorized\".to_string()), String::from(\"/pageviews\"), None, user, None, Some(start.0));\n    let express: Express = output.into();\n    express.compress( encoding )\n}\n\n#[get(\"/pagestats\", rank=2)]\npub fn hbs_pagestats_unauthorized(start: GenTimer, user: Option<UserCookie>, encoding: AcceptCompression) -> Express {\n    let mut loginmsg = String::with_capacity(300);\n        loginmsg.push_str(\"You are not logged in, please <a href=\\\"\");\n        loginmsg.push_str(BLOG_URL);\n        loginmsg.push_str(\"admin\");\n        loginmsg.push_str(\"\\\">Login</a>\");\n    \n    let output = hbs_template(TemplateBody::General(alert_danger(&loginmsg)), None, Some(\"Unauthorized\".to_string()), String::from(\"/pagestats\"), None, user, None, Some(start.0));\n    let express: Express = output.into();\n    express.compress( encoding )\n}\n\n#[get(\"/pagestats\")]\npub fn hbs_pagestats_no_errors(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits, counter_state: State<Counter>, unique_state: State<UStatsWrapper>) -> Redirect {\n    Redirect::to(\"/pagestats/false\")\n}\n\n#[get(\"/pagestats/<show_errors>\")]\npub fn hbs_pagestats(start: GenTimer, show_errors: bool, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits, counter_state: State<Counter>, unique_state: State<UStatsWrapper>) -> Express {\n    use urlencoding::decode;\n    use htmlescape::*;\n    \n    let output: Template;\n    let counter_mutex = counter_state.stats.lock();\n    if let Ok(counter) = counter_mutex {\n        let unique_rwlock = unique_state.0.read();\n        if let Ok(unique) = unique_rwlock {\n            let mut buffer = String::with_capacity((unique.stats.len() * 1000) + 1000);\n            \n            // buffer.push_str(r#\"<div class=\"v-stats-container-totals container\"><div class=\"v-stats v-stats-total row\"><div class=\"v-stats-page col\"><i class=\"fa fa-bar-chart\" aria-hidden=\"true\"></i> Total Hits</div><div class=\"v-stats-hits col-auto\">\"#);\n            buffer.push_str(r#\"<div class=\"v-stats-container-totals container\">\n                <div class=\"v-stats v-stats-total row\">\n                <div class=\"v-stats-page col-md\">\n                <i class=\"fa fa-bar-chart\" aria-hidden=\"true\"></i> Total Hits\"#);\n            buffer.push_str(\"<br>\");\n            if show_errors {\n                buffer.push_str(r#\"<a href=\"\"#);\n                buffer.push_str(&BLOG_URL);\n                buffer.push_str(r#\"pagestats/false\">Show statistics for normal pages</a>\"#);\n            } else {\n                buffer.push_str(r#\"<a href=\"\"#);\n                buffer.push_str(&BLOG_URL);\n                buffer.push_str(r#\"pagestats/true\">Show statistics for error pages</a>\"#);\n            }\n            // buffer.push_str(r#\"</div><div class=\"v-stats-hits col-auto\">\"#);\n            buffer.push_str(r#\"</div><div class=\"v-stats-hits col-md\">\"#);\n            buffer.push_str( &((&uhits.0).2.to_string()) );\n            buffer.push_str(&format!(r#\"<br><a href=\"{url}download/page_stats.json\">Download basic log</a><br><a href=\"{url}download/unique_stats.json\">Download IP Logs</a>\"#, url=BLOG_URL));\n            // buffer.push_str(r#\"</div></div></div><div class=\"v-stats-container container\">\"#);\n            buffer.push_str(r#\"</div></div></div><div class=\"v-stats-container container\">\"#);\n            \n            for (page, hits) in counter.map.iter() {\n                // if page is an error page and show_errors is false, skip the page\n                if page.starts_with(\"error\") || page.starts_with(\"!error\") {\n                    if !show_errors { continue; }\n                // if page is not an error page but show_errors is true, skip the entry\n                } else if show_errors {\n                    continue;\n                }\n                \n                // if !show_errors && (page.starts_with(\"!error\") || page.starts_with(\"error\")) { continue; }\n                \n                if let Some(u_stats) = unique.stats.get(page) {\n                    // Extended statistics are available\n                    let total_ips: usize = u_stats.len();\n                    let total_visits: usize = u_stats.values().sum();\n                    let avg_visits: usize = total_visits / total_ips;\n                    \n                    buffer.push_str(r#\"<div class=\"v-stats row v-stats-extended\"><div class=\"v-stats-page col\">\"#);\n                    // buffer.push_str(&page);\n                    buffer.push_str( &encode_minimal( &decode(&page).unwrap_or(\"DECODE ERROR\".to_owned()) ) );\n                    buffer.push_str(r#\"</div></div><div class=\"v-stats row\"><div class=\"v-stats-hits col-auto\"></div><div class=\"v-stats-hits col-lg-2\" data-toggle=\"tooltip\" data-html=\"false\" title=\"Total hits\">Hits: \"#);\n                    buffer.push_str(&hits.to_string());\n                    // buffer.push_str(\" - \");\n                    // buffer.push_str(&total_visits.to_string());\n                    buffer.push_str(r#\"</div><div class=\"v-stats-hits col-lg-3\" data-toggle=\"tooltip\" data-html=\"false\" title=\"Unique Visitors\">Visitors: \"#);\n                    buffer.push_str(&total_ips.to_string());\n                    buffer.push_str(r#\"</div><div class=\"v-stats-hits col-lg-3\" data-toggle=\"tooltip\" data-html=\"false\" title=\"Average Visits Per Unique Visitor\">Avg Visits: \"#);\n                    buffer.push_str(&avg_visits.to_string());\n                    buffer.push_str(r#\"</div><div class=\"v-stats-hits col-lg-3\" data-toggle=\"tooltip\" data-html=\"false\" title=\"Total Visits For Unique Visitors\">Total Visits: \"#);\n                    buffer.push_str(&total_visits.to_string());\n                    buffer.push_str(r#\"</div></div>\"#);\n                } else {\n                    buffer.push_str(r#\"<div class=\"v-stats row v-stats-basic\"><div class=\"v-stats-page col\">\"#);\n                    // buffer.push_str(&page);\n                    buffer.push_str( &encode_minimal( &decode(&page).unwrap_or(\"DECODE ERROR\".to_owned()) ) );\n                    buffer.push_str(r#\"</div></div><div class=\"v-stats row\"><div class=\"v-stats-hits col-auto\"></div><div class=\"v-stats-hits col-11\" data-toggle=\"tooltip\" data-html=\"false\" title=\"Total hits\">Hits: \"#);\n                    buffer.push_str(&hits.to_string());\n                    buffer.push_str(r#\"</div></div>\"#);\n                }\n                \n            }\n            \n            buffer.push_str(\"</div>\");\n            if buffer.capacity() > ((unique.stats.len() * 1000) + 1000) {\n                println!(\"Pagestats buffer increased, original size: {}\\n\\tNew size: {}, new capacity: {}\", ((unique.stats.len() * 1000) + 1000), buffer.len(), buffer.capacity());\n            }\n            output = hbs_template(TemplateBody::General(buffer), None, Some(\"Page Statistics\".to_string()), String::from(\"/pagestats\"), Some(admin), user, None, Some(start.0));\n        } else {\n            output = hbs_template(TemplateBody::General(alert_danger(\"Could not retrieve page statistics.<br>Failed to acquire read lock.\")), None, Some(\"Page Views\".to_string()), String::from(\"/pagestats\"), Some(admin), user, None, Some(start.0));\n        }\n        \n    } else {\n        output = hbs_template(TemplateBody::General(alert_danger(\"Could not retrieve page statistics.<br>Failed to acquire mutex lock.\")), None, Some(\"Page Views\".to_string()), String::from(\"/pagestats\"), Some(admin), user, None, Some(start.0));\n    }\n    \n    let end = start.0.elapsed();\n    println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    \n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n#[get(\"/pagestats2\")]\n// pub fn hbs_pagestats(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression/*, uhits: UniqueHits*/, counter_state: State<Counter>, unique_state: State<UniqueHits>) -> Express {\npub fn hbs_pagestats2(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits, counter_state: State<Counter>, unique_state: State<UStatsWrapper>) -> Express {\n    use urlencoding::decode;\n    use htmlescape::*;\n    \n    let output: Template;\n    let stats_lock = counter_state.stats.lock();\n    if let Ok(counter) = stats_lock {\n        let unique_lock = unique_state.0.read();\n        if let Ok(unique_unlocked) = unique_lock {\n            let unique = unique_unlocked;\n            // let mut buffer = String::with_capacity(unique.len() * 200);\n            let mut buffer = String::with_capacity(unique.stats.len() * 500);\n            \n            // for (page, ips) in unique.stats.iter() {\n            // let u_stats = unique.stats.get(page);\n            \n            for (page, ips) in unique.stats.iter() {\n            // for (page, ips) in unique.stats.iter() {\n                let total_ips: usize = ips.len();\n                let mut total_visits: usize = ips.values().sum();\n                let avg_visits: usize = total_visits / total_ips;\n                \n                // let hits: String = if let Some(h) = (*counter).map.get(page) {\n                //     h.to_string()\n                // } else {\n                //     \"-\".to_owned()\n                // };\n                \n                \n                let hits: String = if let Some(h) = (*counter).map.get(page) {\n                    h.to_string()\n                } else {\n                    \"-\".to_owned()\n                };\n                \n                \n                buffer.push_str(r#\"<div class=\"v-stats row\"><div class=\"v-stats-page col\">\"#);\n                buffer.push_str(&page);\n                buffer.push_str(r#\"</div></div><div class=\"v-stats row\"><div class=\"v-stats col-1\"></div><div class=\"v-stats-hits col-3\" data-toggle=\"tooltip\" data-html=\"false\" title=\"Total hitsr\">Hits: \"#);\n                buffer.push_str(&hits);\n                buffer.push_str(r#\"</div><div class=\"v-stats-hits col-4\" data-toggle=\"tooltip\" data-html=\"false\" title=\"Unique Visitors\">Visitors: \"#);\n                buffer.push_str(&total_ips.to_string());\n                buffer.push_str(r#\"</div><div class=\"v-stats-hits col-4\" data-toggle=\"tooltip\" data-html=\"false\" title=\"Average Visits Per Unique Visitor\">Avg Visits: \"#);\n                buffer.push_str(&avg_visits.to_string());\n                \n                // buffer.push(r#\"</div><div class=\"v-stats-hits col-4\" data-toggle=\"tooltip\" data-html=\"false\" title=\"\">\"#);\n                // buffer.push();\n                buffer.push_str(r#\"</div></div>\"#);\n            }\n            \n            // if buffer.capacity() > (unique.len() * 500) {\n            //     println!(\"Pagestats buffer capacity increased to {}, using {} items\", buffer.capacity(), buffer.len() ):\n            // }\n            \n            let mut page = String::with_capacity(buffer.len() + 500);\n            \n            // <div class=\"v-stats-container-totals container\"><div class=\"v-stats v-stats-total row\"><div class=\"v-stats-page col\"><i class=\"fa fa-bar-chart\" aria-hidden=\"true\"></i> Total Hits</div><div class=\"v-stats-hits col-auto\">\n            // </div></div></div><div class=\"v-stats-container container\">\n            \n            \n            page.push_str(r#\"<div class=\"v-stats-container-totals container\"><div class=\"v-stats v-stats-total row\"><div class=\"v-stats-page col\"><i class=\"fa fa-bar-chart\" aria-hidden=\"true\"></i> Total Hits</div><div class=\"v-stats-hits col-auto\">\"#);\n            page.push_str( &((&uhits.0).2.to_string()) );\n            page.push_str(r#\"</div></div></div><div class=\"v-stats-container container\">\"#);\n            page.push_str( &buffer );\n            page.push_str(\"</div>\");\n            \n            output = hbs_template(TemplateBody::General(page), None, Some(\"Page Statistics\".to_string()), String::from(\"/pagestats\"), Some(admin), user, None, Some(start.0));\n            \n        } else {\n            output = hbs_template(TemplateBody::General(alert_danger(\"Could not retrieve page statistics.<br>Failed to acquire read lock.\")), None, Some(\"Page Views\".to_string()), String::from(\"/pagestats\"), Some(admin), user, None, Some(start.0));\n        }\n    } else {\n        output = hbs_template(TemplateBody::General(alert_danger(\"Could not retrieve page statistics.<br>Failed to acquire mutex lock.\")), None, Some(\"Page Views\".to_string()), String::from(\"/pagestats\"), Some(admin), user, None, Some(start.0));\n        \n    }\n    \n    let end = start.0.elapsed();\n    println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    \n    let express: Express = output.into();\n    express.compress(encoding)\n}\n\n#[get(\"/pageviews\")]\npub fn hbs_pageviews(start: GenTimer, admin: AdministratorCookie, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits, stats: State<Counter>) -> Express {\n    use urlencoding::decode;\n    use htmlescape::*;\n    \n    let output: Template;\n    let lockstats = stats.stats.lock();\n    // if let \n    if let Ok(counter) = lockstats {\n        \n        let statistics: Vec<String> = counter.map.iter()\n            .map(|(n, v)| \n                format!(r#\"<div class=\"v-stats row\"><div class=\"v-stats-page col\">{}</div><div class=\"v-stats-hits col-auto\">{}</div></div>\"#, \n                    encode_minimal(&decode(n).unwrap_or(String::new()) ), v))\n            .collect();\n        \n        \n        let pages = statistics.join(\"\\n\");\n        let mut page: String = String::with_capacity(pages.len() + 250);\n        page.push_str(r#\"<div class=\"v-stats-container-totals container\"><div class=\"v-stats v-stats-total row\"><div class=\"v-stats-page col\"><i class=\"fa fa-bar-chart\" aria-hidden=\"true\"></i> Total Hits</div><div class=\"v-stats-hits col-auto\">\"#);\n        // page.push_str(&hits.2.to_string());\n        page.push_str(&((&uhits.0).2.to_string()));\n        page.push_str(r#\"</div></div></div><div class=\"v-stats-container container\">\"#);\n        page.push_str(&pages);\n        page.push_str(r#\"</div>\"#);\n        \n        output = hbs_template(TemplateBody::General(page), None, Some(\"Page Views\".to_string()), String::from(\"/pageviews\"), Some(admin), user, None, Some(start.0));\n    } else {\n        output = hbs_template(TemplateBody::General(alert_danger(\"Could not retrieve page statistics.<br>Failed to acquire mutex lock.\")), None, Some(\"Page Views\".to_string()), String::from(\"/pageviews\"), Some(admin), user, None, Some(start.0));\n    }\n    \n    let express: Express = output.into();\n    express.compress(encoding)\n    \n}\n\n\n\n#[get(\"/\")]\npub fn hbs_index(start: GenTimer, pagination: Page<Pagination>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, flash: Option<FlashMessage>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {\n    \n    // println!(\"Unique hits:\\n\\tRoute: {}\\n\\tIP Address: {}\\n\\tVisits: {}\\n\\tUnique Visitors: {}\\n\", &uhits.0, &uhits.1, &uhits.2, &uhits.3);\n    \n    let fmsg: Option<String>;\n    if let Some(flashmsg) = flash {\n        fmsg = Some(alert_info( flashmsg.msg() ));\n    } else {\n        fmsg = None;\n    }\n    \n    \n    \n    let total_query = \"SELECT COUNT(*) AS count FROM articles\";\n    let output: Template;\n    if let Ok(rst) = conn.query(total_query, &[]) {\n        if !rst.is_empty() && rst.len() == 1 {\n            let row = rst.get(0);\n            let count: i64 = row.get(0);\n            let total_items: u32 = count as u32;\n            let (ipp, cur, num_pages) = pagination.page_data(total_items);\n            let sql = pagination.sql(&format!(\"SELECT a.aid, a.title, a.posted, description({}, a.body, a.description) as body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified FROM articles a JOIN users u ON (a.author = u.userid)\", DESC_LIMIT), Some(\"posted DESC\"));\n            // println!(\"Prepared paginated query:\\n{}\", sql);\n            if let Some(results) = conn.articles(&sql) {\n                if results.len() != 0 {\n                    // let page_information = pagination.page_info(total_items);\n                    let mut page_information: String;\n                    let pinfo = pagination.page_info(total_items);\n                    if cur == 1 {\n                        // r##\"background: rgba(0, 0, 0, 0) url(\"http://localhost:8000/assets/welcome.png\") no-repeat scroll center center;\"##\n                        /*let welcome = format!(r##\"<h1 style=\"text-align: center; background: #212529 url('{}assets/welcome.png') no-repeat scroll center center;\">Welcome</h1>\n                            <p>This is the personal blog of Andrew Prindle.  My recent topics of interest include:\n                             the Rust programming language, web development, javascript, databases, cryptology, security, and compression.  \n                             Feel free to contact me at the email address at the bottom of the page.</p>\n                             <hr>\n                             \"##, BLOG_URL);*/\n                        let welcome = r##\"<h1 style=\"text-align: center;\">Welcome</h1>\n                            <p>This is the personal blog of Andrew Prindle.  My recent topics of interest include:\n                             the Rust programming language, web development, javascript, databases, cryptology, security, and compression.  \n                             Feel free to contact me at the email address at the bottom of the page.</p>\n                             <hr>\n                             \"##;\n                             // <h3>All Articles By Date</h3>\n                             // </div></div><div class=\"v-content\"><div class=\"v-pageinfo\">\n                        page_information = String::with_capacity(pinfo.len() + welcome.len() + 50);\n                        page_information.push_str( welcome );\n                        page_information.push_str( &pinfo );\n                    } else {\n                        // page_information = pagination.page_info(total_items);\n                        // page_information = String::with_capacity(pinfo.len() + 50);\n                        let welcome = r##\"<h1 style=\"text-align: center;\">Articles By Date</h1>\n                        \"##;\n                        /*let welcome = format!(r##\"</*h1*/ style=\"text-align: center; background: #212529 url('{}assets/welcome.png') no-repeat scroll center center;\">Articles By Date</h1>\n                        \"##, BLOG_URL);*/\n                        page_information = String::with_capacity(pinfo.len() + welcome.len() + 50);\n                        page_information.push_str( welcome );\n                        page_information.push_str( &pinfo );\n                    }\n                    \n                    output = hbs_template(TemplateBody::ArticlesPages(results, pagination, total_items, Some(page_information)), fmsg, None, String::from(\"/\"), admin, user, None, Some(start.0));\n                    let express: Express = output.into();\n                    \n                    let end = start.0.elapsed();\n                    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n                    \n                    return express.compress( encoding );\n                }\n            }\n        }\n    }\n    \n    output = hbs_template(TemplateBody::General(alert_danger(\"No articles to show.\")), fmsg, None, String::from(\"/\"), admin, user, None, Some(start.0));\n    let express: Express = output.into();\n    \n    let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    \n    express.compress( encoding )\n    \n    // let output: Template;\n    // let fmsg: Option<String>;\n    // if let Some(flashmsg) = flash {\n    //     fmsg = Some(alert_info( flashmsg.msg() ));\n    // } else {\n    //     fmsg = None;\n    // }\n    // let results = Article::retrieve_all(conn, 0, Some(300), None, None, None, None);\n    // if results.len() != 0 {\n    //     output = hbs_template(TemplateBody::Articles(results, fmsg), None, String::from(\"/\"), admin, user, None, Some(start.0));\n    // } else if admin.is_some() {\n    //     output = hbs_template(TemplateBody::General(\"There are no articles.<br>\\n<a href =\\\"/insert\\\">Create Article</a>\".to_string(), None), None, String::from(\"/\"), admin, user, None, Some(start.0));\n    // } else {\n    //     output = hbs_template(TemplateBody::General(\"There are no articles.\".to_string(), None), None, String::from(\"/\"), admin, user, None, Some(start.0));\n    // }\n    \n    // // let end = start.0.elapsed();\n    // let end = start.0.elapsed();\n    // println!(\"Served in {}.{:09} seconds\", end.as_secs(), end.subsec_nanos());\n    // let express: Express = output.into();\n    // express.compress(encoding)\n}\n\n\n",
 			"file": "src/pages.rs",
+			"file_size": 114775,
+			"file_write_time": 131659136643043793,
 			"settings":
 			{
 				"buffer_size": 112498,
@@ -1022,7 +1025,7 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -1049,6 +1052,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1092,6 +1098,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1136,6 +1145,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -1204,8 +1216,8 @@
 						"selection":
 						[
 							[
-								6366,
-								4845
+								104838,
+								104838
 							]
 						],
 						"settings":
@@ -1223,18 +1235,18 @@
 								"current_ext": ".rs",
 								"current_syntax": "Rust/Rust",
 								"enabled": false,
-								"last_updated": 1521592389.02
+								"last_updated": 1519614412.17
 							},
 							"git_gutter_is_enabled": true,
 							"syntax": "Packages/Rust/Rust.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 16.0,
-						"translation.y": 3234.0,
+						"translation.x": 0.0,
+						"translation.y": 45061.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -1265,6 +1277,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1281,7 +1296,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -1308,6 +1323,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1324,7 +1342,7 @@
 						"translation.y": 13489.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -1352,6 +1370,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".json",
@@ -1368,7 +1389,7 @@
 						"translation.y": 485.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -1395,6 +1416,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1438,6 +1462,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1481,6 +1508,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1524,6 +1554,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1567,6 +1600,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1610,6 +1646,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1653,6 +1692,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1696,6 +1738,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1739,6 +1784,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1782,6 +1830,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1825,6 +1876,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".toml",
@@ -1866,6 +1920,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1907,6 +1964,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1950,6 +2010,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -1966,7 +2029,7 @@
 						"translation.y": 725.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -1993,6 +2056,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".toml",
@@ -2040,6 +2106,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2053,7 +2122,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 62.0,
-						"translation.y": 0.0,
+						"translation.y": 1724.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 28,
@@ -2083,6 +2152,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2126,6 +2198,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2139,10 +2214,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 74.0,
-						"translation.y": 0.0,
+						"translation.y": 44690.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -2169,6 +2244,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2185,7 +2263,7 @@
 						"translation.y": 9088.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -2211,6 +2289,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": null,
@@ -2227,7 +2308,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -2254,6 +2335,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2267,10 +2351,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 82.0,
-						"translation.y": 0.0,
+						"translation.y": 18625.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -2297,6 +2381,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2340,6 +2427,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -2384,6 +2474,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".js",
@@ -2427,6 +2520,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".js",
@@ -2471,6 +2567,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".js",
@@ -2513,6 +2612,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".js",
@@ -2524,7 +2626,7 @@
 							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
 						},
 						"translation.x": 1720.0,
-						"translation.y": 0.0,
+						"translation.y": 46.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 45,
@@ -2611,6 +2713,198 @@
 								"#ffffffCC@1",
 								"#ffffffff"
 							],
+							"color_helper.preview_meta":
+							{
+								"10368":
+								[
+									2138508339369898149,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									54,
+									"1521426354.808366"
+								],
+								"10408":
+								[
+									2138507940535282289,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									55,
+									"1521426354.810371"
+								],
+								"10482":
+								[
+									2138598695842096835,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									56,
+									"1521426354.812378"
+								],
+								"10534":
+								[
+									6047125297183746956,
+									7,
+									"hex",
+									4063893953099842174,
+									57,
+									"1521426354.81338"
+								],
+								"1396":
+								[
+									2138599695174850078,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									64,
+									"1521426355.329786"
+								],
+								"14236":
+								[
+									7037908802606310817,
+									7,
+									"hex",
+									4063893953099842174,
+									52,
+									"1521426354.3103"
+								],
+								"14530":
+								[
+									4177347396219504739,
+									7,
+									"hex",
+									4063893953099842174,
+									53,
+									"1521426354.31884"
+								],
+								"1488":
+								[
+									2138606626544220468,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									68,
+									"1521426368.839684"
+								],
+								"1520":
+								[
+									2138509888325408744,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									66,
+									"1521426355.332794"
+								],
+								"1570":
+								[
+									2138509888325408744,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									67,
+									"1521426355.333798"
+								],
+								"18956":
+								[
+									3326641609375897158,
+									21,
+									"rgba",
+									5743554384451778817,
+									51,
+									"1521426353.811377"
+								],
+								"215":
+								[
+									6047125297183746956,
+									7,
+									"hex",
+									4063893953099842174,
+									58,
+									"1521426355.313742"
+								],
+								"245":
+								[
+									-8185648273526511477,
+									7,
+									"hex",
+									4063893953099842174,
+									59,
+									"1521426355.318754"
+								],
+								"30239":
+								[
+									2138598695842096835,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									50,
+									"1521426352.802235"
+								],
+								"30294":
+								[
+									2138598695842096835,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									47,
+									"1521426352.305899"
+								],
+								"30329":
+								[
+									2138606626544220468,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									48,
+									"1521426352.308911"
+								],
+								"30357":
+								[
+									2138603245017594495,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									49,
+									"1521426352.311916"
+								],
+								"370":
+								[
+									6047125297183746956,
+									7,
+									"hex",
+									4063893953099842174,
+									60,
+									"1521426355.321263"
+								],
+								"505":
+								[
+									-8185648273526511477,
+									7,
+									"hex",
+									4063893953099842174,
+									61,
+									"1521426355.324272"
+								],
+								"550":
+								[
+									6047125297183746956,
+									7,
+									"hex",
+									4063893953099842174,
+									62,
+									"1521426355.325775"
+								],
+								"711":
+								[
+									2138599695174850078,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									63,
+									"1521426355.327279"
+								]
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -2697,6 +2991,207 @@
 								"#ff0000ff",
 								"#ffffffff"
 							],
+							"color_helper.preview_meta":
+							{
+								"142394":
+								[
+									2138606626544220468,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									23,
+									"1521426299.85222"
+								],
+								"142540":
+								[
+									-4794666732219409383,
+									7,
+									"hex",
+									4063893953099842174,
+									24,
+									"1521426299.854727"
+								],
+								"142653":
+								[
+									2138508339369898149,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									25,
+									"1521426299.856733"
+								],
+								"142675":
+								[
+									963448988724586590,
+									7,
+									"hex",
+									4063893953099842174,
+									26,
+									"1521426299.857735"
+								],
+								"142707":
+								[
+									2138606626544220468,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									27,
+									"1521426299.859239"
+								],
+								"143595":
+								[
+									2138513340172660900,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									28,
+									"1521426299.862246"
+								],
+								"143606":
+								[
+									2138599695174850078,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									29,
+									"1521426299.86325"
+								],
+								"143786":
+								[
+									2138603245017594495,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									30,
+									"1521426299.864753"
+								],
+								"143852":
+								[
+									2138599695174850078,
+									4,
+									"hex_compressed",
+									4063893953099842174,
+									31,
+									"1521426299.865904"
+								],
+								"144283":
+								[
+									1190952730834385139,
+									3,
+									"webcolors",
+									-866827715894637892,
+									32,
+									"1521426299.872923"
+								],
+								"145205":
+								[
+									-3537383702513380446,
+									7,
+									"hex",
+									4063893953099842174,
+									33,
+									"1521426299.87573"
+								],
+								"145219":
+								[
+									-6130473873206854790,
+									7,
+									"hex",
+									4063893953099842174,
+									34,
+									"1521426299.876731"
+								],
+								"145240":
+								[
+									-8498446047270191596,
+									7,
+									"hex",
+									4063893953099842174,
+									35,
+									"1521426299.878739"
+								],
+								"146015":
+								[
+									4673594303021675061,
+									7,
+									"hex",
+									4063893953099842174,
+									36,
+									"1521426299.879739"
+								],
+								"146029":
+								[
+									5280020335383120730,
+									7,
+									"hex",
+									4063893953099842174,
+									37,
+									"1521426299.881745"
+								],
+								"146050":
+								[
+									6719556614508437825,
+									7,
+									"hex",
+									4063893953099842174,
+									38,
+									"1521426299.882748"
+								],
+								"146895":
+								[
+									7526222761620625845,
+									7,
+									"hex",
+									4063893953099842174,
+									39,
+									"1521426299.88375"
+								],
+								"146909":
+								[
+									-5923513193271845091,
+									7,
+									"hex",
+									4063893953099842174,
+									40,
+									"1521426299.884753"
+								],
+								"146930":
+								[
+									-2741985231063064793,
+									7,
+									"hex",
+									4063893953099842174,
+									41,
+									"1521426299.886758"
+								],
+								"147466":
+								[
+									8541612363294611345,
+									7,
+									"hex",
+									4063893953099842174,
+									42,
+									"1521426299.888765"
+								],
+								"147491":
+								[
+									3043127582132657589,
+									7,
+									"hex",
+									4063893953099842174,
+									43,
+									"1521426299.889766"
+								],
+								"147512":
+								[
+									5998439870679176930,
+									7,
+									"hex",
+									4063893953099842174,
+									44,
+									"1521426299.890769"
+								]
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -2764,6 +3259,36 @@
 								"#282c30ff",
 								"#343a40ff"
 							],
+							"color_helper.preview_meta":
+							{
+								"302":
+								[
+									-5572615818783096736,
+									7,
+									"hex",
+									6972119171107606304,
+									5,
+									"1520052101.547916"
+								],
+								"364":
+								[
+									-5572615818783096736,
+									7,
+									"hex",
+									6972119171107606304,
+									6,
+									"1520052101.548919"
+								],
+								"7963":
+								[
+									-1498787372653360525,
+									7,
+									"hex",
+									4899836847423042126,
+									7,
+									"1520208268.749564"
+								]
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -2830,6 +3355,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".page",
@@ -2875,6 +3403,18 @@
 							],
 							"color_helper.popup_active": false,
 							"color_helper.popup_auto": true,
+							"color_helper.preview_meta":
+							{
+								"132":
+								[
+									-1501277326913579598,
+									7,
+									"hex",
+									4899836847423042126,
+									2,
+									"1521420805.102581"
+								]
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -2942,6 +3482,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -3014,6 +3557,36 @@
 							"color_helper.no_auto": false,
 							"color_helper.popup_active": false,
 							"color_helper.popup_auto": true,
+							"color_helper.preview_meta":
+							{
+								"302":
+								[
+									-5572615818783096736,
+									7,
+									"hex",
+									6972119171107606304,
+									1,
+									"1520044894.274892"
+								],
+								"364":
+								[
+									-5572615818783096736,
+									7,
+									"hex",
+									6972119171107606304,
+									2,
+									"1520044894.277897"
+								],
+								"7952":
+								[
+									-1498787372653360525,
+									7,
+									"hex",
+									4899836847423042126,
+									5,
+									"1520208247.235199"
+								]
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -3081,6 +3654,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -3146,6 +3722,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -3276,6 +3855,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".hbs",
@@ -3317,6 +3899,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".hbs",
@@ -3362,6 +3947,27 @@
 							[
 								"#343a40ff"
 							],
+							"color_helper.preview_meta":
+							{
+								"312":
+								[
+									-5572615818783096736,
+									7,
+									"hex",
+									6972119171107606304,
+									8,
+									"1520410382.639677"
+								],
+								"374":
+								[
+									-5572615818783096736,
+									7,
+									"hex",
+									6972119171107606304,
+									9,
+									"1520410382.643687"
+								]
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -3430,6 +4036,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -3497,6 +4106,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": "",
@@ -3540,6 +4152,36 @@
 							[
 								"#212529ff"
 							],
+							"color_helper.preview_meta":
+							{
+								"112":
+								[
+									-1501277326913579598,
+									7,
+									"hex",
+									4899836847423042126,
+									1,
+									"1520853465.986665"
+								],
+								"1436":
+								[
+									-1501277326913579598,
+									7,
+									"hex",
+									4899836847423042126,
+									3,
+									"1521010464.431004"
+								],
+								"334":
+								[
+									-1501277326913579598,
+									7,
+									"hex",
+									4899836847423042126,
+									2,
+									"1520853465.991669"
+								]
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -3605,6 +4247,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": null,
@@ -3621,7 +4266,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -3648,6 +4293,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".txt",
@@ -3662,7 +4310,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -3689,6 +4337,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -3733,6 +4384,18 @@
 							[
 								"#212529ff"
 							],
+							"color_helper.preview_meta":
+							{
+								"7998":
+								[
+									-1501277326913579598,
+									7,
+									"hex",
+									4899836847423042126,
+									1,
+									"1520853509.132793"
+								]
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -3801,6 +4464,18 @@
 							[
 								"#212529ff"
 							],
+							"color_helper.preview_meta":
+							{
+								"8873":
+								[
+									-1501277326913579598,
+									7,
+									"hex",
+									4899836847423042126,
+									1,
+									"1520853489.053364"
+								]
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -3867,6 +4542,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".hbs",
@@ -3911,6 +4589,27 @@
 								"#5bff5bff",
 								"#ff0000ff"
 							],
+							"color_helper.preview_meta":
+							{
+								"4558":
+								[
+									-718258203255544079,
+									7,
+									"hex",
+									6972119171107606304,
+									3,
+									"1521267688.285207"
+								],
+								"4618":
+								[
+									2138599695224655278,
+									4,
+									"hex_compressed",
+									6972119171107606304,
+									4,
+									"1521267688.287212"
+								]
+							},
 							"color_helper.scan":
 							{
 								"allowed_colors":
@@ -3977,6 +4676,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -4020,6 +4722,9 @@
 							"color_helper.file_palette":
 							[
 							],
+							"color_helper.preview_meta":
+							{
+							},
 							"color_helper.scan":
 							{
 								"current_ext": ".rs",
@@ -4109,7 +4814,7 @@
 		"height": 28.0
 	},
 	"pinned_build_system": "",
-	"project": "blogr-proj-post-fractal-frontpage.sublime-project",
+	"project": "blogr-proj-2018-03-20.sublime-project",
 	"replace":
 	{
 		"height": 76.0

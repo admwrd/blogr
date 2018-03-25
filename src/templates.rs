@@ -50,7 +50,7 @@ pub enum TemplateBody {
         Vec<Article>,       // articles
         Page<Pagination>,   // pagination info
         u32,                // total number of items
-        Option<String>,
+        Option<String>,     // page information - "Showing page x of y - z items found"
     ), 
     // Search(Vec<Article>, Option<String>, Option<String>), // articles and an optional message
     Search(Vec<Article>, Option<Search>), // articles and an optional message
