@@ -40,19 +40,24 @@ use templates::*;
 use xpress::*;
 
 
+pub struct ArticleCacheReader<'b> {
+    pub cache: Arc<evmap::ReadHandle<u32, &'b blog::Article>>,
+}
+
+
 pub struct ArticleCache {
-    articles: HashMap<u32, Article>,
+    pub articles: HashMap<u32, Article>,
 }
 
 pub struct PageCache {
-    pages: HashMap<String, String>,
+    pub pages: HashMap<String, String>,
 }
 
 pub struct ArticleCacheLock {
-    lock: RwLock<ArticleCache>,
+    pub lock: RwLock<ArticleCache>,
 }
 pub struct PageCacheLock {
-    lock: RwLock<PageCache>,
+    pub lock: RwLock<PageCache>,
 }
 
 

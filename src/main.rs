@@ -372,6 +372,9 @@ fn main() {
         panic!("Could not load articles map from database.");
     }
     
+    let article_map_cache = ArticleCacheLock{ lock: RwLock::new( ArticleCache{ articles: map_articles } ) };
+    
+    
     let (articles_reader, mut articles_writer) = evmap::new();
     match routes::load_article_cache(&all_articles, &mut articles_writer, &conn) {
         Ok( num ) => {
@@ -381,6 +384,9 @@ fn main() {
         },
         Err( err ) => { panic!("{}", err); },
     }
+    
+    let article_reader_cache = ArticleCacheReader{ cache: Arc::new(articles_reader) };
+    
     
     let (pages_reader, mut pages_writer) = evmap::new();
     match routes::load_pages(&mut pages_writer, &conn) {
@@ -444,6 +450,8 @@ fn main() {
         .manage(content_context)
         .manage(content_cache)
         
+        .manage(article_map_cache)
+        // .manage(article_reader_cache)
         // .manage(all_articles)
         // .manage(articles_reader.clone())
         
@@ -512,6 +520,9 @@ fn main() {
             pages::hbs_pagestats,
             pages::hbs_pagestats_unauthorized,
             pages::hbs_pagestats_no_errors,
+            
+            pages::test_cache,
+            
             
             // pages_administrator::resp_test,
             // pages_administrator::uncompressed,

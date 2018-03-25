@@ -142,11 +142,13 @@ fn destruct_cache(cache: ContentCacheLock) -> (HashMap<String, ContentCached>, u
 }
 
 
-// #[get("/test_cache")]
-// // pub fn test_cache(articles: State<Vec<Article>>) -> Express {
+#[get("/test_cache")]
 // pub fn test_cache(articles: State<Vec<Article>>) -> Express {
+pub fn test_cache(articles: State<ArticleCacheLock>) -> Express {
+    unimplemented!()
     
-// }
+    
+}
 
 
 #[get("/refresh_content")]
