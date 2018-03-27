@@ -168,10 +168,64 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
 */
 
 
+#[get("/test_article")]
+pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+    let aid = 21u32;
+    
+    
+    // needs to be able to take in general info
+    // as well as template-specific stuff
+    
+    /* if let Some(article) = ArticleCacheLock::retrieve_article(aid) {
+        
+        let (body, info) = routes::body::article(article);
+        let rendered: Express = routes::render(body, info);
+        express.compress( encoding )
+    } else {
+        
+    } */
+    // OR - better, allows optional body in the route method article()
+    // let article_rst = ArticleCacheLock::retrieve_article(aid);
+    let article_rst = article_state.retrieve_article(aid);
+    let (body, info) = routes::body::article(article_rst);
+    let express: Express = routes::express(body, info);
+    
+    
+    // let page = routes::article();
+    
+    // let body_rst = routes::body::article_lookup(aid);
+    // // Body is a struct holding a Generic parameter that implements BodyTypes/BodyOptions
+    // let info: Body = if let Some(body) = body_rst {
+    //     routes::general_info();
+    // } else { routes::BodyTYpes::text("Could not find article") };
+    
+    // let template: Template = match routes::body::article_lookup(aid) {
+    //     Ok() => {
+            
+    //     }, Err("".to_owned()) => {
+            
+    //     }, Err(err) => {
+            
+    //     }
+    // }
+    
+    
+    // Need to allow different body and titles depending on the
+    //   result of logic in the method to generate/lookup the contents
+    /* could have three parts:
+      general info (title admin/user cookies, gentime, javascript, message, page/route(not exact))
+      template-specific info (see mod.rs in routes module)
+      route-specific info - 
+      
+    */
+    let express: Express = String::new().into();
+    express
+}
+
 
 #[get("/test_cache")]
 // pub fn test_cache(articles: State<Vec<Article>>) -> Express {
-pub fn test_cache(articles_state: State<ArticleCacheLock>, start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+pub fn test_cache(start: GenTimer, articles_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
     // unimplemented!()
     let aid = 21;
     

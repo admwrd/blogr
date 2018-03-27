@@ -65,6 +65,19 @@ Organization
 		Each Rocket route will call the corresponding method in the module
 		using Request Guard parameters 
 	
+
+Caching
+	Figure out a way to tie page info (such as title, admin/user cookies, encoding, etc)
+		into the caching retrieval stuffs
+
+	Should the caching functinos return an Express instance?
+
+	Should the templating functions be rewritten and optimized?
+		Maybe later?
+
+	Make a function/method to handle all of the code currently in the test route
+	Add a fallback when the acquring the lock fails to generate the content
+
 	
 
 Blogr-Fixes

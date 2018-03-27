@@ -350,23 +350,6 @@ fn main() {
     let content_cache: ContentCacheLock = ContentCacheLock::new();
     
     
-    // let all_articles = Arc<Vec<Article>>;
-    // let all_articles: Vec<Article> = routes::load_all_articles(&conn);
-    // maybe use RwLock??
-    // let all_articles: Arc<Vec<Article>> = Arc::new(routes::load_all_articles(&conn));
-    
-    
-    // let all_articles: Vec<Article> = routes::load_all_articles(&conn);
-    
-    /* 
-    let all_articles: Vec<Article>;
-    if let Some(articles) = routes::load_all_articles(&conn) {
-        all_articles = articles;
-    } else {
-        panic!("Could not load articles from database.");
-    }
-     */
-    
     let map_articles: HashMap<u32, Article>;
     if let Some(articles) = routes::load_articles_map(&conn) {
         map_articles = articles;
@@ -376,30 +359,6 @@ fn main() {
     
     let article_map_cache = ArticleCacheLock{ lock: RwLock::new( ArticleCache{ articles: map_articles } ) };
     
-    /* 
-    let (articles_reader, mut articles_writer) = evmap::new();
-    match routes::load_article_cache(&all_articles, &mut articles_writer, &conn) {
-        Ok( num ) => {
-            if !PRODUCTION {
-                println!("Article cache loaded with {} articles.", num);
-            }
-        },
-        Err( err ) => { panic!("{}", err); },
-    }
-    
-    let article_reader_cache = ArticleCacheReader{ cache: Arc::new(articles_reader) };
-    
-    
-    let (pages_reader, mut pages_writer) = evmap::new();
-    match routes::load_pages(&mut pages_writer, &conn) {
-        Ok( num ) => {
-            if !PRODUCTION {
-                println!("Pages cache loaded with {} pages.", num);
-            }
-        },
-        Err( err ) => { panic!("{}", err); },
-    }
-    */
     
     /*
     
@@ -454,9 +413,6 @@ fn main() {
         .manage(content_cache)
         
         .manage(article_map_cache)
-        // .manage(article_reader_cache)
-        // .manage(all_articles)
-        // .manage(articles_reader.clone())
         
         .attach(Template::fairing())
         
