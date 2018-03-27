@@ -187,8 +187,10 @@ pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, con
     // OR - better, allows optional body in the route method article()
     // let article_rst = ArticleCacheLock::retrieve_article(aid);
     let article_rst = article_state.retrieve_article(aid);
-    let (body, info) = routes::body::article(article_rst);
-    let express: Express = routes::express(body, info);
+    // let (body, info) = routes::body::article(article_rst);
+    // let express: Express = routes::express(body, info);
+    let ctx = routes::body::article(article_rst);
+    let express: Express = routes::template(ctx);
     
     
     // let page = routes::article();

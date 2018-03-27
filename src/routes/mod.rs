@@ -104,7 +104,12 @@ impl MultiArticlePages {
 
 
 // pub fn express<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
-pub fn express<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
+// pub fn express<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
+
+pub fn template<T: BodyContext>(body: CtxBody<T>) -> Express {
+    unimplemented!()
+}
+pub fn express<T: BodyContext>(body: CtxBody<T>) -> Express {
     unimplemented!()
 }
 // pub fn render<T: BodyContext>(body: T, info: CtxInfo) -> Express {
