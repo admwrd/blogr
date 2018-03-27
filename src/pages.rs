@@ -48,6 +48,7 @@ use rocket::http::hyper::header::{Headers, ContentDisposition, DispositionType, 
 use super::*;
 // use counter::*;
 use routes::*;
+use routes::body::*;
 use counter::*;
 use location::*;
 use referrer::*;
@@ -167,6 +168,16 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
 } 
 */
 
+#[get("/test_articles")]
+pub fn test_articles(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+    
+    unimplemented!()
+}
+
+#[get("/test_tag")]
+pub fn test_tag(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+    unimplemented!()
+}
 
 #[get("/test_article")]
 pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
@@ -189,7 +200,8 @@ pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, con
     let article_rst = article_state.retrieve_article(aid);
     // let (body, info) = routes::body::article(article_rst);
     // let express: Express = routes::express(body, info);
-    let ctx = routes::body::article(article_rst);
+    
+    let ctx: CtxBody<TemplateArticle> = routes::body::article(article_rst, admin, user, Some(uhits), Some(start), None);
     let express: Express = routes::template(ctx);
     
     

@@ -38,7 +38,8 @@ use data::*;
 use content::*;
 use templates::*;
 use xpress::*;
-
+use ral_user::*;
+use ral_administrator::*;
 
 pub trait BodyContext {
     // fn content() -> String;
@@ -47,17 +48,20 @@ pub trait BodyContext {
 #[derive(Debug, Clone, Serialize)]
 pub struct CtxBody<T: BodyContext>(T);
 
+impl BodyContext for TemplateArticlesPages {}
+impl BodyContext for TemplateGeneral {}
+impl BodyContext for TemplateArticle {}
+impl BodyContext for TemplateTags {}
+
+// Admin pages should not be cached so the structs below should not
+// need to be used, they may but they are not needed (most likely)
 impl BodyContext for TemplateLogin {}
 impl BodyContext for TemplateLoginData {}
 impl BodyContext for TemplateCreate {}
 impl BodyContext for TemplateEdit {}
-impl BodyContext for TemplateGeneral {}
-impl BodyContext for TemplateArticle {}
-impl BodyContext for TemplateArticles {}
 impl BodyContext for TemplateSearch {}
-impl BodyContext for TemplateTags {}
-impl BodyContext for TemplateArticlesPages {}
 impl BodyContext for TemplateManage {}
+impl BodyContext for TemplateArticles {} // Is this still used??
 
 
 // pub struct ArticleBody {
@@ -77,15 +81,20 @@ impl BodyContext for TemplateManage {}
 
 
 
-pub struct CtxInfo {
+// pub struct CtxInfo {
     
-}
+// }
 
 
 // pub fn article(article_opt: Option<Article>) -> (CtxBody<TemplateArticle>, CtxInfo) {
-pub fn article(article_opt: Option<Article>) -> CtxBody<TemplateArticle> {
+// pub fn article(article_opt: Option<Article>) -> CtxBody<TemplateArticle> {
+// pub fn article<T: BodyContext>(body: CtxBody<T>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
+// pub fn article<T: BodyContext>(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
+pub fn article(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
     unimplemented!()
 }
+
+
 
 
 

@@ -77,6 +77,8 @@ pub struct TextCache {
 }
 
 impl TextCacheLock {
+    // For text retrieval maybe add a closure or function pointer parameter
+    // that will be called in case the specified index(cached text) is not in the cache
     pub fn retrieve_text(&self, idx: &str) -> Option<String> {
         unimplemented!()
         
@@ -112,11 +114,11 @@ pub fn template<T: BodyContext>(body: CtxBody<T>) -> Express {
 pub fn express<T: BodyContext>(body: CtxBody<T>) -> Express {
     unimplemented!()
 }
-// pub fn render<T: BodyContext>(body: T, info: CtxInfo) -> Express {
-pub fn render<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
-// pub fn render(body: CtxBody, info: CtxInfo) -> Express {
-    unimplemented!()
-}
+// // pub fn render<T: BodyContext>(body: T, info: CtxInfo) -> Express {
+ // pub fn render<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
+// // pub fn render(body: CtxBody, info: CtxInfo) -> Express {
+//     unimplemented!()
+// }
 
 
 // Make the articles_cache a lazy_static wrapped in a mutex/rwlock/arc?

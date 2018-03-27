@@ -67,6 +67,10 @@ Organization
 	
 
 Caching
+	Make loading all static content pages and all articles into the cache optional
+		Change the retrieve_article() to fetch the article if it exists in database
+		and insert it into the article cache
+
 	Figure out a way to tie page info (such as title, admin/user cookies, encoding, etc)
 		into the caching retrieval stuffs
 
