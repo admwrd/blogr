@@ -176,6 +176,18 @@ pub fn test_articles(start: GenTimer, article_state: State<ArticleCacheLock>, co
 
 #[get("/test_tag")]
 pub fn test_tag(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+    // Need to either 
+    //   1. specify here to retrieve the cached aids with a fallback
+    //      generating the aids for the specified tag
+    //    OR
+    //   2. make the function take a function pointer or closure that
+    //      will be called if aids for the specified tag could not be
+    //      found in the cache
+    
+    // let tag = "";
+    // let articles
+    
+    
     unimplemented!()
 }
 
@@ -183,55 +195,11 @@ pub fn test_tag(start: GenTimer, article_state: State<ArticleCacheLock>, conn: D
 pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
     let aid = 21u32;
     
-    
-    // needs to be able to take in general info
-    // as well as template-specific stuff
-    
-    /* if let Some(article) = ArticleCacheLock::retrieve_article(aid) {
-        
-        let (body, info) = routes::body::article(article);
-        let rendered: Express = routes::render(body, info);
-        express.compress( encoding )
-    } else {
-        
-    } */
-    // OR - better, allows optional body in the route method article()
-    // let article_rst = ArticleCacheLock::retrieve_article(aid);
+    let template_name = "general-template";
     let article_rst = article_state.retrieve_article(aid);
-    // let (body, info) = routes::body::article(article_rst);
-    // let express: Express = routes::express(body, info);
-    
     let ctx: CtxBody<TemplateArticle> = routes::body::article(article_rst, admin, user, Some(uhits), Some(start), None);
-    let express: Express = routes::template(ctx);
+    let express: Express = routes::template(template_name, ctx);
     
-    
-    // let page = routes::article();
-    
-    // let body_rst = routes::body::article_lookup(aid);
-    // // Body is a struct holding a Generic parameter that implements BodyTypes/BodyOptions
-    // let info: Body = if let Some(body) = body_rst {
-    //     routes::general_info();
-    // } else { routes::BodyTYpes::text("Could not find article") };
-    
-    // let template: Template = match routes::body::article_lookup(aid) {
-    //     Ok() => {
-            
-    //     }, Err("".to_owned()) => {
-            
-    //     }, Err(err) => {
-            
-    //     }
-    // }
-    
-    
-    // Need to allow different body and titles depending on the
-    //   result of logic in the method to generate/lookup the contents
-    /* could have three parts:
-      general info (title admin/user cookies, gentime, javascript, message, page/route(not exact))
-      template-specific info (see mod.rs in routes module)
-      route-specific info - 
-      
-    */
     let express: Express = String::new().into();
     express
 }

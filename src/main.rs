@@ -350,14 +350,15 @@ fn main() {
     let content_cache: ContentCacheLock = ContentCacheLock::new();
     
     
-    let map_articles: HashMap<u32, Article>;
-    if let Some(articles) = routes::load_articles_map(&conn) {
-        map_articles = articles;
-    } else {
-        panic!("Could not load articles map from database.");
-    }
+    // let map_articles: HashMap<u32, Article>;
+    // if let Some(articles) = routes::load_articles_map(&conn) {
+    //     map_articles = articles;
+    // } else {
+    //     panic!("Could not load articles map from database.");
+    // }
     
-    let article_map_cache = ArticleCacheLock{ lock: RwLock::new( ArticleCache{ articles: map_articles } ) };
+    // let article_map_cache = ArticleCacheLock{ lock: RwLock::new( ArticleCache{ articles: map_articles } ) };
+    let article_map_cache = ArticleCacheLock::new( ArticleCache::load_cache(&conn) );
     
     
     /*

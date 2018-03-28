@@ -54,9 +54,24 @@ pub struct ArticleCache {
     pub articles: HashMap<u32, Article>,
 }
 
-
+impl ArticleCache {
+    pub fn load_cache(conn: &DbConn) -> Self {
+        if let Some(articles) = conn.articles_full("") {
+            let mut map: HashMap<u32, Article> = HashMap::new();
+            for article in articles {
+                map.insert(article.aid, article);
+            }
+            ArticleCache{ articles: map }
+        } else {
+            ArticleCache{ articles: HashMap::new() }
+        }
+    }
+}
 
 impl ArticleCacheLock {
+    pub fn new(cache: ArticleCache) -> Self {
+        ArticleCacheLock{ lock: RwLock::new( cache ) }
+    }
     pub fn retrieve_article(&self, aid: u32) -> Option<Article> {
         unimplemented!()
     }
@@ -108,7 +123,7 @@ impl MultiArticlePages {
 // pub fn express<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
 // pub fn express<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
 
-pub fn template<T: BodyContext>(body: CtxBody<T>) -> Express {
+pub fn template<T: BodyContext>(template_name: &str, body: CtxBody<T>) -> Express {
     unimplemented!()
 }
 pub fn express<T: BodyContext>(body: CtxBody<T>) -> Express {

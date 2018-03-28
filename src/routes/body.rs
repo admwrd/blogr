@@ -31,15 +31,16 @@ use comrak::{markdown_to_html, ComrakOptions};
 // mod body_options;
 // mod page_routes;
 
-// use super::super::*;
+use super::super::*;
 use super::*;
-use blog::*;
-use data::*;
-use content::*;
-use templates::*;
-use xpress::*;
-use ral_user::*;
-use ral_administrator::*;
+use ::blog::*;
+use ::data::*;
+use ::content::*;
+use ::templates::*;
+use ::xpress::*;
+use ::ral_user::*;
+use ::ral_administrator::*;
+
 
 pub trait BodyContext {
     // fn content() -> String;
@@ -90,8 +91,39 @@ impl BodyContext for TemplateArticles {} // Is this still used??
 // pub fn article(article_opt: Option<Article>) -> CtxBody<TemplateArticle> {
 // pub fn article<T: BodyContext>(body: CtxBody<T>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
 // pub fn article<T: BodyContext>(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
+
 pub fn article(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
     unimplemented!()
+}
+
+
+
+mod article {
+    use super::*;
+    // Could make it look like:
+    // serve(body: CtxBody<BodyArticle>, info: CtxInfo)
+    // with CtxInfo looking like:
+    /*   CtxInfo {
+            admin: Option<AdministratorCookie>, 
+            user: Option<UserCookie>, 
+            uhits: Option<UniqueHits>, 
+            gen: Option<GenTimer>, 
+            msg: Option<String>
+        }
+    */ 
+    pub fn serve(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
+        unimplemented!()
+    }
+    // pub fn 
+}
+
+mod articles {
+    use super::*;
+    pub fn serve(body: Option<Vec<Article>>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
+        unimplemented!()
+        
+    }
+    
 }
 
 
