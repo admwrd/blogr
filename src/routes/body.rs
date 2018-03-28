@@ -99,7 +99,7 @@ impl DbConn {
     }
 }
 
-pub fn article(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
+pub fn article(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> {
     unimplemented!()
 }
 

@@ -132,13 +132,30 @@ impl MultiArticlePages {
 // pub fn express<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
 
 // pub fn template<T: BodyContext>(template_name: &str, body: CtxBody<T>) -> Express {
-pub fn template<T: BodyContext>(body: CtxBody<T>) -> Express {
+pub fn template<T: BodyContext, U: BodyContext>(body_rst: Result<CtxBody<T>, CtxBody<U>>) -> Express where T: serde::Serialize, U: serde::Serialize {
     // let template_name = body.0.template_name();
     // let template_name = routes::body::BodyContext::template_name(body.0);
-    let template_name = T::template_name();
-    // unimplemented!()
-    let express: Express = String::new().into();
-    express
+    // let template_name = T::template_name();
+    // let is_t = if body_rst.is_ok() { true } else { false };
+    // let body = match body_rst {
+    //     Ok(k) => k,
+    //     Err(e) => e,
+    // };
+    match body_rst {
+        Ok(body)  => {
+            let template = Template::render(T::template_name(), body);
+            let express: Express = template.into();
+            express
+        },
+        Err(body) => {
+            let template = Template::render(U::template_name(), body);
+            let express: Express = template.into();
+            express
+        },
+    }
+    
+    // let express: Express = String::new().into();
+    // express
 }
 pub fn express<T: BodyContext>(body: CtxBody<T>) -> Express {
     unimplemented!()

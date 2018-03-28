@@ -196,7 +196,7 @@ pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, con
     let aid = 21u32;
     
     let article_rst = article_state.retrieve_article(aid);
-    let ctx: CtxBody<TemplateArticle> = routes::body::article(article_rst, admin, user, Some(uhits), Some(start), None);
+    let ctx: Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> = routes::body::article(article_rst, admin, user, Some(uhits), Some(start), None);
     // let express: Express = routes::template(template_name, ctx);
     let express: Express = routes::template(ctx);
     
