@@ -33,6 +33,8 @@ use comrak::{markdown_to_html, ComrakOptions};
 
 pub mod body;
 use body::*;
+pub mod pages;
+use pages::*;
 
 use super::*;
 use blog::*;
@@ -116,15 +118,29 @@ pub struct MultiArticlePages {
     pub pages: HashMap<String, Vec<u32>>,
 }
 
-pub struct TextPages {
-    pub pages: HashMap<String, String>,
+pub struct MultiArticlePagesLock {
+    pub lock: RwLock<MultiArticlePages>,
 }
 
 impl MultiArticlePages {
-    pub fn retrieve_aids(page: &str) -> Option<Vec<u32>> {
+    pub fn load_cache(conn: &DbConn) -> Self {
+        // retrieve all distinct tags then call routes::pages::tags::tag_aids()
         unimplemented!()
     }
 }
+impl MultiArticlePagesLock {
+    pub fn retrieve_aids(&self, page: &str) -> Option<Vec<u32>> {
+        unimplemented!()
+    }
+    pub fn new(cache: MultiArticlePages) -> Self {
+        MultiArticlePagesLock{ lock: RwLock::new( cache ) }
+    }
+}
+
+// Is this really needed??
+// pub struct TextPages {
+//     pub pages: HashMap<String, String>,
+// }
 
 
 

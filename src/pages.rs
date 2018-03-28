@@ -175,7 +175,9 @@ pub fn test_articles(start: GenTimer, article_state: State<ArticleCacheLock>, co
 }
 
 #[get("/test_tag")]
-pub fn test_tag(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+pub fn test_tag(start: GenTimer, multi_aids: State<MultiArticlePagesLock>, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+    // unimplemented!()
+    
     // Need to either 
     //   1. specify here to retrieve the cached aids with a fallback
     //      generating the aids for the specified tag
@@ -184,24 +186,24 @@ pub fn test_tag(start: GenTimer, article_state: State<ArticleCacheLock>, conn: D
     //      will be called if aids for the specified tag could not be
     //      found in the cache
     
-    // let tag = "";
-    // let articles
+    let tag = "code";
     
+    routes::pages::tag::serve(tag, start, multi_aids, article_state, &conn, admin, user, encoding, uhits)
     
-    unimplemented!()
 }
 
 #[get("/test_article")]
 pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
     let aid = 21u32;
     
-    let article_rst = article_state.retrieve_article(aid);
-    let ctx: Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> = routes::body::article(article_rst, admin, user, Some(uhits), Some(start), None);
-    // let express: Express = routes::template(template_name, ctx);
-    let express: Express = routes::template(ctx);
+    routes::pages::article::serve(aid, start, article_state, &conn, admin, user, encoding, uhits)
+    // let article_rst = article_state.retrieve_article(aid);
+    // let ctx: Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> = routes::body::article(article_rst, admin, user, Some(uhits), Some(start), None);
+    // // let express: Express = routes::template(template_name, ctx);
+    // let express: Express = routes::template(ctx);
     
-    // let express: Express = String::new().into();
-    express
+    // // let express: Express = String::new().into();
+    // express
 }
 
 

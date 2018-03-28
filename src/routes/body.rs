@@ -66,6 +66,23 @@ impl BodyContext for TemplateManage { fn template_name() -> &'static str { "mana
 impl BodyContext for TemplateArticles  { fn template_name() -> &'static str { "articles-template"} }// Is this still used??
 
 
+
+
+pub fn article(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> {
+    unimplemented!()
+}
+
+pub fn articles(body: Option<Vec<Article>>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> Result<CtxBody<TemplateArticles>, CtxBody<TemplateGeneral>> {
+    // let articles = conn.articles("");
+    unimplemented!()
+}
+
+
+
+
+
+
+
 // pub struct ArticleBody {
     
 // }
@@ -93,45 +110,41 @@ impl BodyContext for TemplateArticles  { fn template_name() -> &'static str { "a
 // pub fn article<T: BodyContext>(body: CtxBody<T>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
 // pub fn article<T: BodyContext>(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
 
-impl DbConn {
-    pub fn test(&self) -> bool {
-        true
-    }
-}
-
-pub fn article(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> {
-    unimplemented!()
-}
+// impl DbConn {
+//     pub fn test(&self) -> bool {
+//         true
+//     }
+// }
 
 
 
-mod article {
-    use super::*;
-    // Could make it look like:
-    // serve(body: CtxBody<BodyArticle>, info: CtxInfo)
-    // with CtxInfo looking like:
-    /*   CtxInfo {
-            admin: Option<AdministratorCookie>, 
-            user: Option<UserCookie>, 
-            uhits: Option<UniqueHits>, 
-            gen: Option<GenTimer>, 
-            msg: Option<String>
-        }
-    */ 
-    pub fn serve(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
-        unimplemented!()
-    }
-    // pub fn 
-}
+// mod article {
+//     use super::*;
+//     // Could make it look like:
+//     // serve(body: CtxBody<BodyArticle>, info: CtxInfo)
+//     // with CtxInfo looking like:
+//     /*   CtxInfo {
+//             admin: Option<AdministratorCookie>, 
+//             user: Option<UserCookie>, 
+//             uhits: Option<UniqueHits>, 
+//             gen: Option<GenTimer>, 
+//             msg: Option<String>
+//         }
+//     */ 
+//     pub fn serve(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
+//         unimplemented!()
+//     }
+//     // pub fn 
+// }
 
-mod articles {
-    use super::*;
-    pub fn serve(body: Option<Vec<Article>>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
-        unimplemented!()
+// mod articles {
+//     use super::*;
+//     pub fn serve(body: Option<Vec<Article>>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
+//         unimplemented!()
         
-    }
+//     }
     
-}
+// }
 
 
 
