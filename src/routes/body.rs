@@ -77,6 +77,10 @@ pub fn articles(body: Option<Vec<Article>>, admin: Option<AdministratorCookie>, 
     unimplemented!()
 }
 
+pub fn tags() {
+    
+}
+
 
 
 
