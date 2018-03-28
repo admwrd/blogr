@@ -90,8 +90,16 @@ pub struct TextCacheLock {
 pub struct TextCache {
     pub pages: HashMap<String, String>,
 }
-
+impl TextCache {
+    pub fn load_cache(conn: &DbConn) -> Self {
+        unimplemented!()
+    }
+    
+}
 impl TextCacheLock {
+    pub fn new(cache: TextCache) -> Self {
+        TextCacheLock{ lock: RwLock::new(cache) }
+    }
     // For text retrieval maybe add a closure or function pointer parameter
     // that will be called in case the specified index(cached text) is not in the cache
     pub fn retrieve_text(&self, idx: &str) -> Option<String> {
@@ -123,8 +131,14 @@ impl MultiArticlePages {
 // pub fn express<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
 // pub fn express<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
 
-pub fn template<T: BodyContext>(template_name: &str, body: CtxBody<T>) -> Express {
-    unimplemented!()
+// pub fn template<T: BodyContext>(template_name: &str, body: CtxBody<T>) -> Express {
+pub fn template<T: BodyContext>(body: CtxBody<T>) -> Express {
+    // let template_name = body.0.template_name();
+    // let template_name = routes::body::BodyContext::template_name(body.0);
+    let template_name = T::template_name();
+    // unimplemented!()
+    let express: Express = String::new().into();
+    express
 }
 pub fn express<T: BodyContext>(body: CtxBody<T>) -> Express {
     unimplemented!()

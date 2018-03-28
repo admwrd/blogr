@@ -72,6 +72,8 @@ Caching
 		    and insert it into the article cache
 		Add a const/lazy_static/state with the total number of articles
 		Maybe make a function to read the route's state and return a template
+		Templates are determined by the struct they use, CtxBody<T: BodyContext>(T)
+		    TemplateGeneral will use the general template, TemplateLogin the login, etc
 
 
 	Figure out a way to tie page info (such as title, admin/user cookies, encoding, etc)

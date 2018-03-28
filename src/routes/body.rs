@@ -44,25 +44,26 @@ use ::ral_administrator::*;
 
 pub trait BodyContext {
     // fn content() -> String;
+    fn template_name() -> &'static str;
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct CtxBody<T: BodyContext>(T);
+pub struct CtxBody<T: BodyContext>(pub T);
 
-impl BodyContext for TemplateArticlesPages {}
-impl BodyContext for TemplateGeneral {}
-impl BodyContext for TemplateArticle {}
-impl BodyContext for TemplateTags {}
+impl BodyContext for TemplateArticlesPages { fn template_name() -> &'static str { "articles-pagination-template"} }
+impl BodyContext for TemplateGeneral { fn template_name() -> &'static str { "general-template"} }
+impl BodyContext for TemplateArticle { fn template_name() -> &'static str { "article-template"} }
+impl BodyContext for TemplateTags { fn template_name() -> &'static str { "tags-template"} }
 
 // Admin pages should not be cached so the structs below should not
 // need to be used, they may but they are not needed (most likely)
-impl BodyContext for TemplateLogin {}
-impl BodyContext for TemplateLoginData {}
-impl BodyContext for TemplateCreate {}
-impl BodyContext for TemplateEdit {}
-impl BodyContext for TemplateSearch {}
-impl BodyContext for TemplateManage {}
-impl BodyContext for TemplateArticles {} // Is this still used??
+impl BodyContext for TemplateLogin { fn template_name() -> &'static str { "login-template"} }
+impl BodyContext for TemplateLoginData { fn template_name() -> &'static str { "login-template"} }
+impl BodyContext for TemplateCreate { fn template_name() -> &'static str { "create-template"} }
+impl BodyContext for TemplateEdit { fn template_name() -> &'static str { "edit-article-template"} }
+impl BodyContext for TemplateSearch { fn template_name() -> &'static str { "search-template"} }
+impl BodyContext for TemplateManage { fn template_name() -> &'static str { "manage-pagination-template"} }
+impl BodyContext for TemplateArticles  { fn template_name() -> &'static str { "articles-template"} }// Is this still used??
 
 
 // pub struct ArticleBody {
@@ -91,6 +92,12 @@ impl BodyContext for TemplateArticles {} // Is this still used??
 // pub fn article(article_opt: Option<Article>) -> CtxBody<TemplateArticle> {
 // pub fn article<T: BodyContext>(body: CtxBody<T>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
 // pub fn article<T: BodyContext>(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
+
+impl DbConn {
+    pub fn test(&self) -> bool {
+        true
+    }
+}
 
 pub fn article(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> CtxBody<TemplateArticle> {
     unimplemented!()

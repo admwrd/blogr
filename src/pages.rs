@@ -195,12 +195,12 @@ pub fn test_tag(start: GenTimer, article_state: State<ArticleCacheLock>, conn: D
 pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
     let aid = 21u32;
     
-    let template_name = "general-template";
     let article_rst = article_state.retrieve_article(aid);
     let ctx: CtxBody<TemplateArticle> = routes::body::article(article_rst, admin, user, Some(uhits), Some(start), None);
-    let express: Express = routes::template(template_name, ctx);
+    // let express: Express = routes::template(template_name, ctx);
+    let express: Express = routes::template(ctx);
     
-    let express: Express = String::new().into();
+    // let express: Express = String::new().into();
     express
 }
 
