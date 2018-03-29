@@ -360,7 +360,7 @@ fn main() {
     // let article_map_cache = ArticleCacheLock{ lock: RwLock::new( ArticleCache{ articles: map_articles } ) };
     let article_map_cache = ArticleCacheLock::new( ArticleCache::load_cache(&conn) );
     let text_cache = TextCacheLock::new( TextCache::load_cache(&conn) );
-    let multi_aids = MultiArticlePagesLock::new( MultiArticlePages::load_cache(&conn) );
+    let multi_aids = TagAidsLock::new( TagAids::load_cache(&conn) );
     /*
     
     all_tags

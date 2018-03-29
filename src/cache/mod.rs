@@ -114,16 +114,16 @@ impl TextCacheLock {
 
 
 
-pub struct MultiArticlePages {
+pub struct TagAids {
     pub pages: HashMap<String, Vec<u32>>,
     pub tags: HashMap<String, u32>,
 }
 
-pub struct MultiArticlePagesLock {
-    pub lock: RwLock<MultiArticlePages>,
+pub struct TagAidsLock {
+    pub lock: RwLock<TagAids>,
 }
 
-impl MultiArticlePages {
+impl TagAids {
     pub fn load_cache(conn: &DbConn) -> Self {
         // retrieve all distinct tags then call routes::pages::tags::tag_aids()
         // find all tags - use the query for the tag cloud (get tag and number of times used)
@@ -133,9 +133,9 @@ impl MultiArticlePages {
         unimplemented!()
     }
 }
-impl MultiArticlePagesLock {
+impl TagAidsLock {
     pub fn retrieve_tag_aids(&self, page: &str) -> Option<Vec<u32>> {
-        // unlock MultiArticlePagesLock
+        // unlock TagAidsLock
         // find the page
         // return the aids
         
@@ -145,8 +145,8 @@ impl MultiArticlePagesLock {
         // 
         unimplemented!()
     }
-    pub fn new(cache: MultiArticlePages) -> Self {
-        MultiArticlePagesLock{ lock: RwLock::new( cache ) }
+    pub fn new(cache: TagAids) -> Self {
+        TagAidsLock{ lock: RwLock::new( cache ) }
     }
 }
 

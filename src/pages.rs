@@ -187,7 +187,7 @@ pub fn test_articles(start: GenTimer, article_state: State<ArticleCacheLock>, co
 
 #[get("/test_tag")]
 pub fn test_tag(start: GenTimer, 
-                multi_aids: State<MultiArticlePagesLock>, 
+                multi_aids: State<TagAidsLock>, 
                 article_state: State<ArticleCacheLock>, 
                 conn: DbConn, 
                 admin: Option<AdministratorCookie>, 
@@ -196,6 +196,10 @@ pub fn test_tag(start: GenTimer,
                 uhits: UniqueHits
                ) -> Express 
 {
+    
+    // Add a tags cache (stores tags and their count)
+    //   add to the TagAids struct
+    
     // let tag = "code".to_owned();
     // // routes::pages::tag::serve(tag, start, multi_aids, article_state, &conn, admin, user, encoding, uhits)
     

@@ -84,7 +84,7 @@ pub mod article {
 
 pub mod tag {
     use super::*;
-    pub fn serve(tag: &str, start: GenTimer, multi_aids: State<MultiArticlePagesLock>, article_state: State<ArticleCacheLock>, conn: &DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+    pub fn serve(tag: &str, start: GenTimer, multi_aids: State<TagAidsLock>, article_state: State<ArticleCacheLock>, conn: &DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
         // let aids = 
         // if let Some() = lookup_aids() {
             
@@ -108,7 +108,7 @@ pub mod tag {
         }
         
     }
-    pub fn lookup_aids(tag: &str, multi_aids: &MultiArticlePagesLock) -> Option<Vec<u32>> {
+    pub fn lookup_aids(tag: &str, multi_aids: &TagAidsLock) -> Option<Vec<u32>> {
         multi_aids.retrieve_tag_aids(&format!("tag/{}", tag))
     }
 }
