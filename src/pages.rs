@@ -45,10 +45,13 @@ use rocket::http::hyper::header::{Headers, ContentDisposition, DispositionType, 
 // use authorize::*;
 // use administrator::*;
 // use roles::*;
-use super::*;
 // use counter::*;
-use routes::*;
-use routes::body::*;
+use super::*;
+// use routes::*;
+// use routes::pages::*;
+use cache::*;
+use cache::body::*;
+use cache::pages::*;
 use counter::*;
 use location::*;
 use referrer::*;
@@ -170,14 +173,6 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
 
 #[get("/test_articles")]
 pub fn test_articles(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
-    
-    unimplemented!()
-}
-
-#[get("/test_tag")]
-pub fn test_tag(start: GenTimer, multi_aids: State<MultiArticlePagesLock>, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
-    // unimplemented!()
-    
     // Need to either 
     //   1. specify here to retrieve the cached aids with a fallback
     //      generating the aids for the specified tag
@@ -186,9 +181,32 @@ pub fn test_tag(start: GenTimer, multi_aids: State<MultiArticlePagesLock>, artic
     //      will be called if aids for the specified tag could not be
     //      found in the cache
     
-    let tag = "code";
     
-    routes::pages::tag::serve(tag, start, multi_aids, article_state, &conn, admin, user, encoding, uhits)
+    unimplemented!()
+}
+
+#[get("/test_tag")]
+pub fn test_tag(start: GenTimer, 
+                multi_aids: State<MultiArticlePagesLock>, 
+                article_state: State<ArticleCacheLock>, 
+                conn: DbConn, 
+                admin: Option<AdministratorCookie>, 
+                user: Option<UserCookie>, 
+                encoding: AcceptCompression, 
+                uhits: UniqueHits
+               ) -> Express 
+{
+    // let tag = "code".to_owned();
+    // // routes::pages::tag::serve(tag, start, multi_aids, article_state, &conn, admin, user, encoding, uhits)
+    
+    // // let tag_aids = multi_aids.tag_aids(tag);
+    // let tag_aids_opt = cache::pages::tag::lookup_aids(&tag, multi_aids);
+    // let article_opt = article_state.retrieve_articles()
+    
+    
+    
+    unimplemented!()
+    
     
 }
 
@@ -196,7 +214,8 @@ pub fn test_tag(start: GenTimer, multi_aids: State<MultiArticlePagesLock>, artic
 pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
     let aid = 21u32;
     
-    routes::pages::article::serve(aid, start, article_state, &conn, admin, user, encoding, uhits)
+    // routes::pages::article::serve(aid, start, article_state, &conn, admin, user, encoding, uhits)
+    cache::pages::article::serve(aid, start, article_state, &conn, admin, user, encoding, uhits)
     // let article_rst = article_state.retrieve_article(aid);
     // let ctx: Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> = routes::body::article(article_rst, admin, user, Some(uhits), Some(start), None);
     // // let express: Express = routes::template(template_name, ctx);
@@ -233,6 +252,14 @@ pub fn test_cache(start: GenTimer, articles_state: State<ArticleCacheLock>, conn
     let express: Express = output.into();
     express.compress( encoding )
 }
+
+
+
+
+
+
+
+
 
 
 #[get("/refresh_content")]

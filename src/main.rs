@@ -77,7 +77,7 @@ extern crate rocket_auth_login;
 
 // mod vcache;
 // mod counthits;
-mod routes;
+mod cache;
 mod counter;
 // mod static_pages;
 mod content;
@@ -107,7 +107,7 @@ mod ral_user;
 // use vcache::*;
 // use counthits::*;
 use blog::*;
-use routes::*;
+use cache::*;
 use counter::*;
 // use counter::*;
 use xpress::*;
