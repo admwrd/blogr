@@ -36,7 +36,7 @@ use ::templates::*;
 use ::xpress::*;
 use ::ral_user::*;
 use ::ral_administrator::*;
-
+use ::collate::*;
 
 /*
 
@@ -96,7 +96,15 @@ pub mod article {
 
 pub mod tag {
     use super::*;
-    pub fn context(body: Option<Vec<Article>>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> Result<CtxBody<TemplateArticles>, CtxBody<TemplateGeneral>> {
+    pub fn context(body: Option<Vec<Article>>,
+                   pagination: Page<Pagination>,
+                   admin: Option<AdministratorCookie>, 
+                   user: Option<UserCookie>, 
+                   uhits: Option<UniqueHits>, 
+                   gen: Option<GenTimer>, 
+                   msg: Option<String>
+                  ) -> Result<CtxBody<TemplateArticlesPages>, CtxBody<TemplateGeneral>>
+    {
         unimplemented!()
         
     }
@@ -133,20 +141,46 @@ pub mod tag {
 
 pub mod tags {
     use super::*;
-    pub fn context(body: Option<Vec<TagCount>>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> Result<CtxBody<TemplateArticles>, CtxBody<TemplateGeneral>> {
+    pub fn context(body: Option<Vec<TagCount>>, 
+                   admin: Option<AdministratorCookie>, 
+                   user: Option<UserCookie>, 
+                   uhits: Option<UniqueHits>, 
+                   gen: Option<GenTimer>, 
+                   msg: Option<String>
+                  ) -> Result<CtxBody<TemplateTags>, CtxBody<TemplateGeneral>> 
+    {
         unimplemented!()
     }
     pub fn serve(start: GenTimer, tag_lock: State<TagAidsLock>, conn: &DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
         unimplemented!()
     }
-    pub fn load_all_tags() -> Option<Vec<TagCount>> {
+    pub fn load_all_tags(conn: &DbConn) -> Option<Vec<TagCount>> {
         unimplemented!()
     }
-    pub fn load_tagcloud(conn: &DbConn) -> String {
+    pub fn lookup_tags(cache: TagAidsLock) -> Option<Vec<TagCount>> {
+        unimplemented!()
+    }
+    pub fn load_tagcloud(cache: TagAidsLock) -> String {
         unimplemented!()
     }
     
     
+}
+
+pub mod author {
+    use super::*;
+    pub fn context(body: Option<Vec<Article>>, 
+                   pagination: Page<Pagination>,
+                   admin: Option<AdministratorCookie>, 
+                   user: Option<UserCookie>, 
+                   uhits: Option<UniqueHits>, 
+                   gen: Option<GenTimer>, 
+                   msg: Option<String>
+                  ) -> Result<CtxBody<TemplateArticlesPages>, CtxBody<TemplateGeneral>>
+    {
+        unimplemented!()
+        
+    }
 }
 
 
