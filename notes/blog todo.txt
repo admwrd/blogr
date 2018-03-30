@@ -90,6 +90,10 @@ Caching
 	
 
 Blogr-Fixes
+	Maybe make a module called routes and move all pages functions into that
+		the route functinos will have Rocket attributes (the #[get()] and #[post()] attributes)
+		the route functions will call functions/methods in the pages module
+
 	Maybe add a sort by last modified in manage admin page
 
 	Add modified date to articles

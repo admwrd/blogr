@@ -185,6 +185,47 @@ pub fn test_articles(start: GenTimer, article_state: State<ArticleCacheLock>, co
     unimplemented!()
 }
 
+#[get("/test_tagcloud")]
+pub fn test_tagcloud(start: GenTimer, 
+                // multi_aids: State<TagAidsLock>, 
+                text_cache: State<TextCacheLock>, 
+                conn: DbConn, 
+                admin: Option<AdministratorCookie>, 
+                user: Option<UserCookie>, 
+                encoding: AcceptCompression, 
+                uhits: UniqueHits
+               ) -> Express
+{
+    unimplemented!()
+}
+
+#[get("/test_rss")]
+pub fn test_rss(start: GenTimer, 
+                article_state: State<ArticleCacheLock>, 
+                conn: DbConn, 
+                admin: Option<AdministratorCookie>, 
+                user: Option<UserCookie>, 
+                encoding: AcceptCompression, 
+                uhits: UniqueHits
+               ) -> Express
+{
+    unimplemented!()
+}
+
+#[get("/test_author")]
+pub fn test_author(start: GenTimer, 
+                   multi_aids: State<TagAidsLock>, 
+                   article_state: State<ArticleCacheLock>, 
+                   conn: DbConn, 
+                   admin: Option<AdministratorCookie>, 
+                   user: Option<UserCookie>, 
+                   encoding: AcceptCompression, 
+                   uhits: UniqueHits
+                  ) -> Express 
+{
+    unimplemented!()
+}
+
 #[get("/test_tag")]
 pub fn test_tag(start: GenTimer, 
                 multi_aids: State<TagAidsLock>, 
@@ -200,16 +241,23 @@ pub fn test_tag(start: GenTimer,
     // Add a tags cache (stores tags and their count)
     //   add to the TagAids struct
     
-    // let tag = "code".to_owned();
+    let tag = "code".to_owned();
     // // routes::pages::tag::serve(tag, start, multi_aids, article_state, &conn, admin, user, encoding, uhits)
     
-    // // let tag_aids = multi_aids.tag_aids(tag);
-    // let tag_aids_opt = cache::pages::tag::lookup_aids(&tag, multi_aids);
-    // let article_opt = article_state.retrieve_articles()
+    // let tag_aids = multi_aids.tag_aids(tag);
+    let tag_aids_opt = cache::pages::tag::lookup_aids(&tag, &multi_aids);
+    if let Some(tag_aids) = tag_aids_opt {
+        let articles_opt = article_state.retrieve_articles(tag_aids);
+        if let Some(articles) = articles_opt {
+            
+        }
+    } else {
+        
+    }
     
-    
-    
-    unimplemented!()
+    let express: Express = String::new().into();
+    express.compress( encoding )
+    // unimplemented!()
     
     
 }

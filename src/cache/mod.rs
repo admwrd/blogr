@@ -114,39 +114,52 @@ impl TextCacheLock {
 
 
 
-pub struct TagAids {
+// pub struct TagAids {
+pub struct AidsCache {
     pub pages: HashMap<String, Vec<u32>>,
+}
+pub struct TagsCache {
     pub tags: HashMap<String, u32>,
 }
 
 pub struct TagAidsLock {
-    pub lock: RwLock<TagAids>,
+    pub aids_lock: RwLock<AidsCache>,
+    pub tags_lock: RwLock<TagsCache>,
 }
 
-impl TagAids {
+impl AidsCache {
     pub fn load_cache(conn: &DbConn) -> Self {
         // retrieve all distinct tags then call routes::pages::tags::tag_aids()
         // find all tags - use the query for the tag cloud (get tag and number of times used)
         // store tags and tag counts
-        // call db_tag_aids on each tag
+        // call load_tag_aids() on each tag
         
         unimplemented!()
     }
 }
+impl TagsCache {
+    pub fn load_cache(conn: &DbConn) -> Self {
+        unimplemented!()
+    }
+}
+
 impl TagAidsLock {
-    pub fn retrieve_tag_aids(&self, page: &str) -> Option<Vec<u32>> {
+    // pub fn retrieve_tag_aids(&self, page: &str) -> Option<Vec<u32>> {
+    pub fn retrieve_aids(&self, page: &str) -> Option<Vec<u32>> {
         // unlock TagAidsLock
         // find the page
         // return the aids
         
         unimplemented!()
     }
-    pub fn tag_aids(tag: &str) -> Option<Vec<u32>> {
-        // 
+    pub fn retrieve_tags() -> Option<Vec<TagCount>> {
         unimplemented!()
     }
-    pub fn new(cache: TagAids) -> Self {
-        TagAidsLock{ lock: RwLock::new( cache ) }
+    pub fn tag_aids(tag: &str) -> Option<Vec<u32>> {
+        unimplemented!()
+    }
+    pub fn new(aids: AidsCache, tags: TagsCache) -> Self {
+        TagAidsLock{ aids_lock: RwLock::new( aids), tags_lock: RwLock::new( tags ) }
     }
 }
 

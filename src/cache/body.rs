@@ -66,8 +66,8 @@ impl BodyContext for TemplateManage { fn template_name() -> &'static str { "mana
 impl BodyContext for TemplateArticles  { fn template_name() -> &'static str { "articles-template"} }// Is this still used??
 
 
-
-
+/* 
+// MIGHT NEED??
 pub fn article(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> {
     unimplemented!()
 }
@@ -80,7 +80,7 @@ pub fn articles(body: Option<Vec<Article>>, admin: Option<AdministratorCookie>, 
 pub fn tags() {
     
 }
-
+ */
 
 
 
