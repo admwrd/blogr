@@ -18,7 +18,8 @@ use std::prelude::*;
 use std::ffi::OsStr;
 use std::collections::HashMap;
 use std::sync::{Mutex, Arc, RwLock};
-use std::sync::atomic::AtomicUsize;
+// use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use rocket;
 use rocket::http::Status;
 use rocket::State;
@@ -47,6 +48,19 @@ use serde_json::{Value, Error};
 
 
 // pub const DEFAULT_TEMPLATE: &'static str = "static-default.html.hbs";
+
+pub fn destruct_context(ctx: ContentContext) -> (HashMap<String, PageContext>, usize) {
+    let reader = ctx.pages.read().unwrap().clone();
+    let size = ctx.size.load(Ordering::SeqCst);
+    (reader, size)
+}
+
+pub fn destruct_cache(cache: ContentCacheLock) -> (HashMap<String, ContentCached>, usize) {
+    let reader = cache.pages.read().unwrap().clone();
+    let size = cache.size.load(Ordering::SeqCst);
+    (reader, size)
+}
+
 
 pub const SEPARATOR: &[u8] = b"
 -----";

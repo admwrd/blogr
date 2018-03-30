@@ -50,6 +50,8 @@ use super::*;
 // use routes::*;
 // use routes::pages::*;
 use cache::*;
+// use content::*;
+use content::{destruct_cache, destruct_context};
 use cache::body::*;
 use cache::pages::*;
 use counter::*;
@@ -133,17 +135,6 @@ use comrak::{markdown_to_html, ComrakOptions};
 //     ContentCacheLock::cache(rock, STATIC_PAGES_DIR);
 // }
 
-fn destruct_context(ctx: ContentContext) -> (HashMap<String, PageContext>, usize) {
-    let reader = ctx.pages.read().unwrap().clone();
-    let size = ctx.size.load(Ordering::SeqCst);
-    (reader, size)
-}
-
-fn destruct_cache(cache: ContentCacheLock) -> (HashMap<String, ContentCached>, usize) {
-    let reader = cache.pages.read().unwrap().clone();
-    let size = cache.size.load(Ordering::SeqCst);
-    (reader, size)
-}
 
 
 
