@@ -63,7 +63,26 @@ use ::collate::*;
 */
 
 
-
+pub mod info {
+    use super::*;
+    pub fn info(title: Option<String>,
+                page: String,
+                admin: Option<AdministratorCookie>,
+                user: Option<UserCookie>,
+                gen: Option<GenTimer>,
+                uhits: Option<UniqueHits>,
+                encoding: Option<AcceptCompression>,
+                msg: Option<String>,
+                javascript: Option<String>,
+               ) -> TemplateInfo
+    {
+        let js = if let Some(j) = javascript { j } else { "".to_string() };
+        let (pages, admin_pages) = create_menu(&page, &admin, &user);
+        let info = TemplateInfo::new(title, admin, user, js, gen.map(|g| g.0), page, pages, admin_pages, msg);
+        
+        unimplemented!()
+    }
+}
 
 
 
@@ -73,25 +92,70 @@ use ::collate::*;
 /// the page, it only needs a serve function.
 pub mod article {
     use super::*;
-    pub fn context(body: Option<Article>, admin: Option<AdministratorCookie>, user: Option<UserCookie>, uhits: Option<UniqueHits>, gen: Option<GenTimer>, msg: Option<String>) -> Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> {
-        unimplemented!()
+    pub fn context(body: Option<Article>, 
+                   admin: Option<AdministratorCookie>, 
+                   user: Option<UserCookie>, 
+                   gen: Option<GenTimer>, 
+                   uhits: Option<UniqueHits>, 
+                   encoding: Option<AcceptCompression>, 
+                   msg: Option<String>
+                  ) -> Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>>
+    {
+        let javascript: Option<String> = None;
+        // call info::info()
+        // call TemplateArticle::new() with the result from info::info()s
+        // let info = |title: Into<String>, page: Into<String>| {
+        let info = |title: &str, page: &str| {
+            // let t_opt: Option<String> = if title == "" { None } else { let temp: String = title.into(); Some(temp) };
+            let t_opt: Option<String> = if title == "" { None } else { Some(title.to_owned()) };
+            // let p_opt: Option<String> = if page == "" { None } else { let temp: String = page.into(); Some(temp) };
+            // let p_opt: Option<String> = if page == "" { None } else { Some(page.to_owned()) };
+            let p: String = page.to_owned();
+            // let t: String = title.into();
+            // let p: String = page.into();
+            info::info(t_opt, p, admin, user, gen, uhits, encoding, javascript, msg)
+        };
+        
+        let i = info("Article", "Blah");
+        if let Some(article) = body {
+            Ok(CtxBody( TemplateArticle::new(article, i) ))
+        } else {
+            Err(CtxBody( TemplateGeneral::new("The article could not be found.".to_owned(), i) ))
+        }
+        
+        // unimplemented!()
     }
-    pub fn serve(aid: u32, start: GenTimer, article_state: State<ArticleCacheLock>, conn: &DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+    pub fn serve(aid: u32, 
+                 start: GenTimer, 
+                 article_state: State<ArticleCacheLock>, 
+                 conn: &DbConn, 
+                 admin: Option<AdministratorCookie>, 
+                 user: Option<UserCookie>, 
+                 encoding: AcceptCompression, 
+                 uhits: UniqueHits
+                ) -> Express 
+    {
         let article_rst = article_state.retrieve_article(aid);
         
         // Is this really needed?  Maybe just inline the article() here instead of a call to it
         let ctx: Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>>
             //  = cache::body::article(article_rst, 
              = cache::pages::article::context(article_rst, 
-                                    admin, 
-                                    user, 
-                                    Some(uhits), 
-                                    Some(start), 
-                                    None);
+                                              admin, 
+                                              user, 
+                                              Some(start), 
+                                              Some(uhits), 
+                                              Some(encoding),
+                                              None
+                                             );
         
         let express: Express = cache::template(ctx);
         express
     }
+    pub fn fallback(aid: u32, start: GenTimer, article_state: State<ArticleCacheLock>, conn: &DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+        unimplemented!()
+    }
+    
 }
 
 pub mod tag {
