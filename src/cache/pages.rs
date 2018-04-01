@@ -85,7 +85,6 @@ pub mod info {
 }
 
 
-
 /// The article route module allows routes to serve up pages with
 /// a single article as the content.
 /// The article route module does not need a function to generate
@@ -105,7 +104,17 @@ pub mod article {
         // call info::info()
         // call TemplateArticle::new() with the result from info::info()s
         // let info = |title: Into<String>, page: Into<String>| {
-        let info = |title: &str, page: &str| {
+        
+        macro_rules! ctx_info {
+            // ( $title:expr; and $page:expr ) => {
+            ( $title:expr, $page:expr ) => {
+                // let t_opt = if $title == "" { None } else { $title.to_owned() };
+                info::info(if $title == "" { None } else { Some($title.to_owned()) }, $page.to_owned(), admin, user, gen, uhits, encoding, javascript, msg)
+                
+            }
+        }
+        
+        /* let info = |title: &str, page: &str| {
             // let t_opt: Option<String> = if title == "" { None } else { let temp: String = title.into(); Some(temp) };
             let t_opt: Option<String> = if title == "" { None } else { Some(title.to_owned()) };
             // let p_opt: Option<String> = if page == "" { None } else { let temp: String = page.into(); Some(temp) };
@@ -114,9 +123,10 @@ pub mod article {
             // let t: String = title.into();
             // let p: String = page.into();
             info::info(t_opt, p, admin, user, gen, uhits, encoding, javascript, msg)
-        };
+        }; */
         
-        let i = info("Article", "Blah");
+        // let i = info("Article", "Blah");
+        let i = ctx_info!("", "/");
         if let Some(article) = body {
             Ok(CtxBody( TemplateArticle::new(article, i) ))
         } else {
