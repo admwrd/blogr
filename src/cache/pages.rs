@@ -97,7 +97,8 @@ pub mod article {
                    gen: Option<GenTimer>, 
                    uhits: Option<UniqueHits>, 
                    encoding: Option<AcceptCompression>, 
-                   msg: Option<String>
+                   msg: Option<String>,
+                   javascript: Option<String>
                   ) -> Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>>
     {
         let javascript: Option<String> = None;
@@ -136,13 +137,14 @@ pub mod article {
         // unimplemented!()
     }
     pub fn serve(aid: u32, 
-                 start: GenTimer, 
                  article_state: State<ArticleCacheLock>, 
                  conn: &DbConn, 
                  admin: Option<AdministratorCookie>, 
                  user: Option<UserCookie>, 
-                 encoding: AcceptCompression, 
-                 uhits: UniqueHits
+                 start: GenTimer, 
+                 uhits: UniqueHits,
+                 encoding: AcceptCompression,
+                 msg: Option<String>
                 ) -> Express 
     {
         let article_rst = article_state.retrieve_article(aid);
@@ -156,6 +158,7 @@ pub mod article {
                                               Some(start), 
                                               Some(uhits), 
                                               Some(encoding),
+                                              None,
                                               None
                                              );
         
@@ -176,7 +179,8 @@ pub mod tag {
                    user: Option<UserCookie>, 
                    uhits: Option<UniqueHits>, 
                    gen: Option<GenTimer>, 
-                   msg: Option<String>
+                   msg: Option<String>,
+                   javascript: Option<String>
                   ) -> Result<CtxBody<TemplateArticlesPages>, CtxBody<TemplateGeneral>>
     {
         unimplemented!()
@@ -220,7 +224,8 @@ pub mod tags {
                    user: Option<UserCookie>, 
                    uhits: Option<UniqueHits>, 
                    gen: Option<GenTimer>, 
-                   msg: Option<String>
+                   msg: Option<String>,
+                   javascript: Option<String>
                   ) -> Result<CtxBody<TemplateTags>, CtxBody<TemplateGeneral>> 
     {
         unimplemented!()
@@ -249,7 +254,8 @@ pub mod author {
                    user: Option<UserCookie>, 
                    uhits: Option<UniqueHits>, 
                    gen: Option<GenTimer>, 
-                   msg: Option<String>
+                   msg: Option<String>,
+                   javascript: Option<String>
                   ) -> Result<CtxBody<TemplateArticlesPages>, CtxBody<TemplateGeneral>>
     {
         unimplemented!()

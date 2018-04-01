@@ -258,7 +258,18 @@ pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, con
     let aid = 21u32;
     
     // routes::pages::article::serve(aid, start, article_state, &conn, admin, user, encoding, uhits)
-    cache::pages::article::serve(aid, start, article_state, &conn, admin, user, encoding, uhits)
+    // cache::pages::article::serve(aid, start, article_state, &conn, admin, user, encoding, uhits)
+    cache::pages::article::serve(aid, 
+                                 article_state, 
+                                 &conn, 
+                                 admin, 
+                                 user, 
+                                 start,
+                                 uhits,
+                                 encoding, 
+                                 None
+                                )
+    
     // let article_rst = article_state.retrieve_article(aid);
     // let ctx: Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> = routes::body::article(article_rst, admin, user, Some(uhits), Some(start), None);
     // // let express: Express = routes::template(template_name, ctx);
