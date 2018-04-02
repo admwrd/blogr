@@ -162,19 +162,19 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
 } 
 */
 
-#[get("/test_articles")]
-pub fn test_articles(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
-    // Need to either 
-    //   1. specify here to retrieve the cached aids with a fallback
-    //      generating the aids for the specified tag
-    //    OR
-    //   2. make the function take a function pointer or closure that
-    //      will be called if aids for the specified tag could not be
-    //      found in the cache
+// #[get("/test_articles")]
+// pub fn test_articles(start: GenTimer, article_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+//     // Need to either 
+//     //   1. specify here to retrieve the cached aids with a fallback
+//     //      generating the aids for the specified tag
+//     //    OR
+//     //   2. make the function take a function pointer or closure that
+//     //      will be called if aids for the specified tag could not be
+//     //      found in the cache
     
     
-    unimplemented!()
-}
+//     unimplemented!()
+// }
 
 #[get("/test_tagcloud")]
 pub fn test_tagcloud(start: GenTimer, 
@@ -283,32 +283,32 @@ pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, con
 }
 
 
-#[get("/test_cache")]
-// pub fn test_cache(articles: State<Vec<Article>>) -> Express {
-pub fn test_cache(start: GenTimer, articles_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
-    // unimplemented!()
-    let aid = 21;
+// #[get("/test_cache")]
+// // pub fn test_cache(articles: State<Vec<Article>>) -> Express {
+// pub fn test_cache(start: GenTimer, articles_state: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+//     // unimplemented!()
+//     let aid = 21;
     
-    let output: Template;
-    if let Ok(a) = articles_state.lock.read() {
-        if let Some(article) = a.articles.get(&aid) {
-            let title = article.title.clone();
-            // println!("Article {}\n{:?}", article.aid, &article);
-            output = hbs_template(TemplateBody::Article(article.clone()), None, Some(title), String::from("/article"), admin, user, Some("enable_toc(true);".to_owned()), Some(start.0));
-        } else {
-             output = hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid))), None, Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
-        }
+//     let output: Template;
+//     if let Ok(a) = articles_state.lock.read() {
+//         if let Some(article) = a.articles.get(&aid) {
+//             let title = article.title.clone();
+//             // println!("Article {}\n{:?}", article.aid, &article);
+//             output = hbs_template(TemplateBody::Article(article.clone()), None, Some(title), String::from("/article"), admin, user, Some("enable_toc(true);".to_owned()), Some(start.0));
+//         } else {
+//              output = hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid))), None, Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
+//         }
         
         
-    } else {
-        output =  hbs_template(TemplateBody::General(alert_danger(&format!("Failed to acquire cache lock for article {}.", aid))), None, Some("Internal Error".to_string()), String::from("/article"), admin, user, None, Some(start.0));
-    }
-    // let express: Express = String::new().into();
-    let end = start.0.elapsed();
-    println!("Processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
-    let express: Express = output.into();
-    express.compress( encoding )
-}
+//     } else {
+//         output =  hbs_template(TemplateBody::General(alert_danger(&format!("Failed to acquire cache lock for article {}.", aid))), None, Some("Internal Error".to_string()), String::from("/article"), admin, user, None, Some(start.0));
+//     }
+//     // let express: Express = String::new().into();
+//     let end = start.0.elapsed();
+//     println!("Processed in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+//     let express: Express = output.into();
+//     express.compress( encoding )
+// }
 
 
 

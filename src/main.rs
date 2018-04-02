@@ -488,8 +488,12 @@ fn main() {
             pages::hbs_pagestats_unauthorized,
             pages::hbs_pagestats_no_errors,
             
-            pages::test_cache,
-            
+            // pages::test_cache,
+            pages::test_article,
+            pages::test_tag,
+            pages::test_author,
+            pages::test_rss,
+            pages::test_tagcloud,
             
             // pages_administrator::resp_test,
             // pages_administrator::uncompressed,
