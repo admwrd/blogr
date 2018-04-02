@@ -88,6 +88,14 @@ const UNIQUE_HITS_LOG: &'static str = "logs/unique_stats.json";
 #[cfg(not(production))]
 // const DOWNLOADABLE_LOGS: &[&'static str] = vec!["page_stats.json", "unique_stats.json", "total_views.json"];
 const DOWNLOADABLE_LOGS: &[&'static str] = &["page_stats.json", "unique_stats.json", "total_views.json"];
+// Enables fallback database queries if cache is disabled
+#[cfg(not(production))]
+const CACHE_FALLBACK: bool = true;
+#[cfg(not(production))]
+const CACHE_ENABLED: bool = true;
+#[cfg(not(production))]
+const ENABLE_DEBUG_OUTPUT: bool = false;
+
 // #[cfg(not(production))]
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu::new("Rust Tutorials".to_owned(), "/content/tutorials".to_owned(), "")]);
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu {name: "Rust Tutorials".to_owned(), url: format!("{}content/tutorials", BLOG_URL), separator: false, classes: String::new()}]);
@@ -186,11 +194,21 @@ const UNIQUE_HITS_LOG: &'static str = "logs/unique_stats.json";
 #[cfg(production)]
 // const DOWNLOADABLE_LOGS = vec!["page_stats.json", "unique_stats.json", "total_views.json"];
 const DOWNLOADABLE_LOGS: &[&'static str] = &["page_stats.json", "unique_stats.json", "total_views.json"];
+// Enables fallback database queries if cache is disabled
+#[cfg(production)]
+const CACHE_FALLBACK: bool = true;
+#[cfg(production)]
+const CACHE_ENABLED: bool = true;
+#[cfg(production)]
+const ENABLE_DEBUG_OUTPUT: bool = false;
+
+
+
+
 
 // #[cfg(production)]
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu::new("Rust Tutorials".to_owned(), "/content/tutorials".to_owned(), "")]);
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu {name: "Rust Tutorials".to_owned(), url: format!("{}content/tutorials", BLOG_URL), separator: false, classes: String::new()}]);
-
 
 // Comrak Markdown rendering default settings
 #[cfg(production)]

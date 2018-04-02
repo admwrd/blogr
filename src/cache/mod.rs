@@ -77,7 +77,7 @@ impl ArticleCacheLock {
     pub fn retrieve_article(&self, aid: u32) -> Option<Article> {
         unimplemented!()
     }
-    pub fn retrieve_articles(&self, aids: Vec<u32>) -> Option<Article> {
+    pub fn retrieve_articles(&self, aids: Vec<u32>) -> Option<Vec<Article>> {
         unimplemented!()
         
     }
@@ -139,12 +139,15 @@ impl AidsCache {
 }
 impl TagsCache {
     pub fn load_cache(conn: &DbConn) -> Self {
+        // Find all unique tags and store the number of times they are used
+        // in a HashMap<String, u32>
         unimplemented!()
     }
 }
 
 impl TagAidsLock {
     // pub fn retrieve_tag_aids(&self, page: &str) -> Option<Vec<u32>> {
+    // Returns the ArticleIds for the given page
     pub fn retrieve_aids(&self, page: &str) -> Option<Vec<u32>> {
         // unlock TagAidsLock
         // find the page
@@ -152,15 +155,107 @@ impl TagAidsLock {
         
         unimplemented!()
     }
-    pub fn retrieve_tags() -> Option<Vec<TagCount>> {
+    // Retrieve (from the cache) all tags and the number of times they have been used
+    pub fn retrieve_tags(&self) -> Option<Vec<TagCount>> {
         unimplemented!()
     }
-    pub fn tag_aids(tag: &str) -> Option<Vec<u32>> {
-        unimplemented!()
+    // pub fn tag_aids(tag: &str) -> Option<Vec<u32>> {
+    //     unimplemented!()
+    // }
+    // pub fn load_tag_cache(conn: &DbConn, tags: &Vec<TagCount>) -> Option<Vec<u32>> {
+    // pub fn load_tag_cache(conn: &DbConn, tags: &HashMap<String, u32>) -> Option<Vec<u32>> {
+    
+    
+    // pub fn load_tag_cache(conn: &DbConn, tags: &HashMap<String, u32>) -> Vec<u32> {
+    //     // Load tags then for each tag call 
+    //     // cache::pages::tag::load_tag_aids(conn, tag) -> Option<Vec<u32>>
+    //     // in order to find all articles attributed to that tag
+    //     unimplemented!()
+    // }
+    // // pub fn load_author_cache(conn: &DbConn) -> Option<Vec<u32>> {
+    
+    
+    // pub fn load_author_cache(conn: &DbConn) -> Vec<u32> {
+    //     // Call cache::pages::author::load_authors(conn)
+    //     // and call cache::pages::author::load_author_articles(conn, userid)
+    //     // on each of the userids returned by the load_authors()
+    //     unimplemented!()
+    // }
+    pub fn load_cache(conn: &DbConn) -> Self {
+        // let tag_cache = TagsCache::load_cache(&conn);
+        // let mut tag_articles = TagAidsLock::load_tag_cache(conn, &tag_cache);
+        // let mut author_articles = TagAidsLock::load_author_cache(conn);
+        // tag_articles.append(&mut author_articles);
+        // TagAidsLock::new( AidsCache::load_cache(&conn),  );
+        
+        let tag_cache = TagsCache::load_cache(&conn);
+        let authors = cache::pages::author::load_authors(conn);
+        
+        let mut article_cache: HashMap<String, Vec<u32>> = HashMap::with_capacity(tag_cache.len() + authors.len() + 10);
+        
+        for tag in &tag_cache.keys() {
+            if let Some(aids) = cache::pages::tag::load_tag_aids(conn, &tag) {
+                let key = format!("tag/{}", tag);
+                article_cache.insert(key, aids);
+            } else {
+                println!("Error loading multi article cache on tag {} - no articles found", tag);
+            }
+        }
+        
+        for user in authors {
+            if let Some(aids) = cache::pages::author::load_author_articles(conn, user) {
+                let key = format!("author/{}", tag);
+                article_cache.isnert(key, aids);
+            } else {
+                println!("Error loadign multi article cache on author {} - no articles found", user);
+            }
+        }
+        
+        TagAidsCache{
+            aids_lock: RwLock::new( AidsCache{ pages: article_cache } ),
+            tags_lock: RwLock::new( TagsCache{ tags: tag_cache } ),
+        }
+        
     }
+    #[inline]
     pub fn new(aids: AidsCache, tags: TagsCache) -> Self {
         TagAidsLock{ aids_lock: RwLock::new( aids), tags_lock: RwLock::new( tags ) }
     }
+    // pub fn paginated_tag(pagination: Page<Pagination>) -> Option<Vec<Article>, u32> {
+    pub fn tag_articles(&self, article_cache: ArticleCacheLock, tag: &str, pagination: Page<Paginatino>) -> Option<(Vec<Article>, u32)> {
+        let mut starting = pagination.cur_page;
+        let mut ending = pagination.cur_page + pagination.settings.ipp;
+        if let Some(aids) = self.retrieve_aids(&format!("tag/{}", tag)) {
+            let total_items = aids.len();
+            // let mut articles: Vec<Article> = Vec::with_capacity(pagination.settings.ipp+2);
+            
+            // the greater OR EQUALS part is equivelant to > total_items -1
+            if starting >= total_items {
+                // show last page
+                let starting = total_items - 1 - pagination.settings.ipp;
+                let ending = total_items - 1;
+            // the greater OR EQUALS part is equivelant to > total_items -1
+            } else if ending >= total_items { 
+                let ending = total_items -1;
+            }
+            if starting - ending <= 0 {
+                return None;
+            }
+            let ids: Vec<u32> = (starting..ending+1).iter().map(|i| i as u32).collect();
+            let articles = article_cache.retrieve_articles(ids);
+            let length = articles.len();
+            if length != total_items {
+                println!("ERROR: Retrieving articles with tag `{}` yielded differing results.\nIt was supposed to return {} items but returned {} items.", tag, total_items, length);
+            }
+            Some( (articles, length) )
+        } else {
+            None
+        }
+        
+        // unimplemented!()
+    }
+    // Maybe add a function that executes a closure?
+    // pub fn unlock<F, T>(f: F) -> T  where F: Fn(i32) -> T { unimplemented!() }
 }
 
 // Is this really needed??

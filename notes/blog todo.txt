@@ -94,6 +94,13 @@ Blogr-Fixes
 		the route functinos will have Rocket attributes (the #[get()] and #[post()] attributes)
 		the route functions will call functions/methods in the pages module
 
+	Could make a struct called Articles that holds a Vec<Article>
+		it would implement Iterator
+		and Vec<Article> should implement IntoIterator (I think)
+		Article (or Vec<Article) should implement FromIterator
+	Could also add ArticleIds that hold Vec<ArticleId> or Vec<u32>
+		Could add a method to retrieve the aids from database
+
 	Maybe add a sort by last modified in manage admin page
 
 	Add modified date to articles
