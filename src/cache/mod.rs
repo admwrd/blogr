@@ -76,7 +76,18 @@ impl ArticleCacheLock {
         ArticleCacheLock{ lock: RwLock::new( cache ) }
     }
     pub fn retrieve_article(&self, aid: u32) -> Option<Article> {
-        unimplemented!()
+        
+        if let Ok(article_cache) = self.lock.read() {
+            if let Some(article) = article_cache.articles.get(&aid) {
+                Some(article.clone())
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+        
+        // unimplemented!()
     }
     pub fn retrieve_articles(&self, aids: Vec<u32>) -> Option<Vec<Article>> {
         unimplemented!()
@@ -142,7 +153,27 @@ impl TagsCache {
     pub fn load_cache(conn: &DbConn) -> Self {
         // Find all unique tags and store the number of times they are used
         // in a HashMap<String, u32>
-        unimplemented!()
+        
+        let qrystr = "SELECT COUNT(*) as cnt, unnest(tag) as untag FROM articles GROUP BY untag ORDER BY cnt DESC;";
+        let qry = conn.query(qrystr, &[]);
+        if let Ok(result) = qry {
+            let mut pages: HashMap<String, u32> = HashMap::new();
+            for row in &result {
+                let c: i64 = row.get(0);
+                let t: String = row.get(1);
+                pages.insert(t, c as u32);
+            }
+            TagsCache {
+                tags: pages,
+            }
+        } else {
+            TagsCache {
+                tags: HashMap::new(),
+            }
+        }
+        
+        
+        // unimplemented!()
     }
 }
 
@@ -173,7 +204,8 @@ impl TagAidsLock {
             for (tag, count) in &all_tags.tags {
                 let t = TagCount {
                     tag: tag.clone(),
-                    url: titlecase(tag.trim_matches('\'')),
+                    // url: titlecase(tag.trim_matches('\'')),
+                    url: tag.trim_matches('\'').to_owned(),
                     count: *count,
                     size: 0u16,
                 };
