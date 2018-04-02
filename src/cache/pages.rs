@@ -79,8 +79,8 @@ pub mod info {
         let js = if let Some(j) = javascript { j } else { "".to_string() };
         let (pages, admin_pages) = create_menu(&page, &admin, &user);
         let info = TemplateInfo::new(title, admin, user, js, gen.map(|g| g.0), page, pages, admin_pages, msg);
-        
-        unimplemented!()
+        info
+        // unimplemented!()
     }
 }
 
@@ -266,7 +266,15 @@ pub mod tags {
     {
         unimplemented!()
     }
-    pub fn serve(start: GenTimer, tag_lock: State<TagAidsLock>, conn: &DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+    pub fn serve(start: GenTimer, 
+                 tag_lock: State<TagAidsLock>, 
+                 conn: &DbConn, 
+                 admin: Option<AdministratorCookie>, 
+                 user: Option<UserCookie>, 
+                 encoding: AcceptCompression, 
+                 uhits: UniqueHits
+                ) -> Express 
+    {
         unimplemented!()
     }
     pub fn load_all_tags(conn: &DbConn) -> Option<Vec<TagCount>> {
