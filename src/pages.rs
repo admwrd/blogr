@@ -235,16 +235,16 @@ pub fn test_tag(start: GenTimer,
     let tag = "code".to_owned();
     // // routes::pages::tag::serve(tag, start, multi_aids, article_state, &conn, admin, user, encoding, uhits)
     
-    // let tag_aids = multi_aids.tag_aids(tag);
-    let tag_aids_opt = cache::pages::tag::lookup_aids(&tag, &multi_aids);
-    if let Some(tag_aids) = tag_aids_opt {
-        let articles_opt = article_state.retrieve_articles(tag_aids);
-        if let Some(articles) = articles_opt {
+    // // let tag_aids = multi_aids.tag_aids(tag);
+    // let tag_aids_opt = cache::pages::tag::lookup_aids(&tag, &multi_aids);
+    // if let Some(tag_aids) = tag_aids_opt {
+    //     let articles_opt = article_state.retrieve_articles(tag_aids);
+    //     if let Some(articles) = articles_opt {
             
-        }
-    } else {
+    //     }
+    // } else {
         
-    }
+    // }
     
     let express: Express = String::new().into();
     express.compress( encoding )

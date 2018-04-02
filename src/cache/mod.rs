@@ -38,8 +38,9 @@ use pages::*;
 
 use super::*;
 use blog::*;
-use data::*;
+use collate::*;
 use content::*;
+use data::*;
 use templates::*;
 use xpress::*;
 
@@ -191,9 +192,9 @@ impl TagAidsLock {
         let tag_cache = TagsCache::load_cache(&conn);
         let authors = cache::pages::author::load_authors(conn);
         
-        let mut article_cache: HashMap<String, Vec<u32>> = HashMap::with_capacity(tag_cache.len() + authors.len() + 10);
+        let mut article_cache: HashMap<String, Vec<u32>> = HashMap::with_capacity(tag_cache.tags.len() + authors.len() + 10);
         
-        for tag in &tag_cache.keys() {
+        for tag in tag_cache.tags.keys() {
             if let Some(aids) = cache::pages::tag::load_tag_aids(conn, &tag) {
                 let key = format!("tag/{}", tag);
                 article_cache.insert(key, aids);
@@ -204,16 +205,16 @@ impl TagAidsLock {
         
         for user in authors {
             if let Some(aids) = cache::pages::author::load_author_articles(conn, user) {
-                let key = format!("author/{}", tag);
-                article_cache.isnert(key, aids);
+                let key = format!("author/{}", user);
+                article_cache.insert(key, aids);
             } else {
                 println!("Error loadign multi article cache on author {} - no articles found", user);
             }
         }
         
-        TagAidsCache{
+        TagAidsLock {
             aids_lock: RwLock::new( AidsCache{ pages: article_cache } ),
-            tags_lock: RwLock::new( TagsCache{ tags: tag_cache } ),
+            tags_lock: RwLock::new( tag_cache ),
         }
         
     }
@@ -222,17 +223,17 @@ impl TagAidsLock {
         TagAidsLock{ aids_lock: RwLock::new( aids), tags_lock: RwLock::new( tags ) }
     }
     // pub fn paginated_tag(pagination: Page<Pagination>) -> Option<Vec<Article>, u32> {
-    pub fn tag_articles(&self, article_cache: ArticleCacheLock, tag: &str, pagination: Page<Paginatino>) -> Option<(Vec<Article>, u32)> {
-        let mut starting = pagination.cur_page;
-        let mut ending = pagination.cur_page + pagination.settings.ipp;
+    pub fn tag_articles(&self, article_cache: ArticleCacheLock, tag: &str, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+        let mut starting = pagination.cur_page as u32;
+        let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
         if let Some(aids) = self.retrieve_aids(&format!("tag/{}", tag)) {
-            let total_items = aids.len();
+            let total_items = aids.len() as u32;
             // let mut articles: Vec<Article> = Vec::with_capacity(pagination.settings.ipp+2);
             
             // the greater OR EQUALS part is equivelant to > total_items -1
             if starting >= total_items {
                 // show last page
-                let starting = total_items - 1 - pagination.settings.ipp;
+                let starting = total_items - 1 - (pagination.settings.ipp as u32);
                 let ending = total_items - 1;
             // the greater OR EQUALS part is equivelant to > total_items -1
             } else if ending >= total_items { 
@@ -241,13 +242,17 @@ impl TagAidsLock {
             if starting - ending <= 0 {
                 return None;
             }
-            let ids: Vec<u32> = (starting..ending+1).iter().map(|i| i as u32).collect();
-            let articles = article_cache.retrieve_articles(ids);
-            let length = articles.len();
-            if length != total_items {
-                println!("ERROR: Retrieving articles with tag `{}` yielded differing results.\nIt was supposed to return {} items but returned {} items.", tag, total_items, length);
+            let ids: Vec<u32> = (starting..ending+1).into_iter().map(|i| i as u32).collect();
+            // let articles = article_cache.retrieve_articles(ids);
+            if let Some(articles) = article_cache.retrieve_articles(ids) {
+                let length = articles.len() as u32;
+                if length != total_items {
+                    println!("ERROR: Retrieving articles with tag `{}` yielded differing results.\nIt was supposed to return {} items but returned {} items.", tag, total_items, length);
+                }
+                Some( (articles, length) )
+            } else {
+                None
             }
-            Some( (articles, length) )
         } else {
             None
         }

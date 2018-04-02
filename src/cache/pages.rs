@@ -186,9 +186,12 @@ pub mod tag {
     use super::*;
     pub fn context(tag: &str,
                 //    body: Option<Vec<Article>>,
-                   pagination: Page<Pagination>,
+                   conn: &DbConn,
+                   pagination: &Page<Pagination>,
                 //    total_items: u32, // 0 if tag not found
-                   article_state: State<ArticleCacheLock>,
+                //    article_state: State<ArticleCacheLock>,
+                   article_cache: ArticleCacheLock,
+                   multi_aids: TagAidsLock,
                    admin: Option<AdministratorCookie>, 
                    user: Option<UserCookie>, 
                    uhits: Option<UniqueHits>, 
@@ -202,22 +205,22 @@ pub mod tag {
         // let output: Result<Vec<Article>, String>;
         
         if CACHE_ENABLED {
-            if let Some((articles, total_items)) = multi_aids.tag_articles(tag, pagination) {
+            if let Some((articles, total_items)) = multi_aids.tag_articles(article_cache, tag, &pagination) {
                 let javascript: Option<String> = None;
                 let info_opt: Option<String> = None;
                 let i = info::info( Some(format!("Showing articles with tag '{}'", &tag)), "/tag".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
-                Ok(CtxBody( TemplateArticlesPages::new(articles, pagination, total_items, info_opt, i) ))
+                Ok(CtxBody( TemplateArticlesPages::new(articles, pagination.clone(), total_items, info_opt, i) ))
             } else {
                 let i = info::info( Some(format!("No articles to display for tag '{}'", &tag)), "/tag".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
                 Err(CtxBody( TemplateGeneral::new(format!("No artiles displayed for tag {}", tag), i) ))
             }
             
         } else if CACHE_FALLBACK {
-            if let Some((articles, total_items)) = cache::pages::tag::fallback(tag, pagination, conn) {
+            if let Some((articles, total_items)) = cache::pages::tag::fallback(tag, &pagination, conn) {
                 let javascript: Option<String> = None;
                 let info_opt: Option<String> = None;
                 let i = info::info( Some(format!("Showing articles with tag '{}'", &tag)), "/tag".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
-                Ok(CtxBody( TemplateArticlesPages::new(articles, pagination, total_items, info_opt, i) ))
+                Ok(CtxBody( TemplateArticlesPages::new(articles, pagination.clone(), total_items, info_opt, i) ))
             } else {
                 let i = info::info( Some(format!("No articles to display for tag '{}'", &tag)), "/tag".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
                 Err(CtxBody( TemplateGeneral::new(format!("No artiles displayed for tag {}", tag), i) ))
@@ -260,9 +263,10 @@ pub mod tag {
     }
     // ADD ARTICLE CACHE TO SERVE() AND CONTEXT()
     pub fn serve(tag: &str, 
+                 pagination: &Page<Pagination>,
                  start: GenTimer, 
-                 multi_aids: State<TagAidsLock>, 
-                 article_state: State<ArticleCacheLock>, 
+                 multi_aids: TagAidsLock, 
+                 article_state: ArticleCacheLock, 
                  conn: &DbConn, 
                  admin: Option<AdministratorCookie>, 
                  user: Option<UserCookie>, 
@@ -274,7 +278,9 @@ pub mod tag {
         use ::sanitize::sanitize_tag;
         // let output: Result<(Vec<Article>, Page<Pagination>, u32), String>;
         let t = sanitize_tag(tag);
-        cache::template( cache::pages::tag::context(t, pagination, admin, user, uhits, gen, encoding, msg, javascript) )
+        let javascript: Option<String> = None;
+        // cache::template( cache::pages::tag::context(t, pagination, admin, user, uhits, gen, encoding, msg, javascript) )
+        cache::template( cache::pages::tag::context(&t, conn, &pagination, article_state, multi_aids, admin, user, uhits, gen, encoding, msg, javascript) )
     }
     // pub fn db_tag_aids(conn: &DbConn, tag: &str) -> Option<Vec<u32>> {
     // This function is used to fill the multi article cache.  
@@ -294,16 +300,18 @@ pub mod tag {
             None
         }
     }
-    // pub fn lookup_aids(tag: &str, starting: u32, ending: u32, multi_aids: &TagAidsLock) -> Option<(Vec<u32>, u32)> {
+    // pub fn lookup_articles(tag: &str, pagination: Page<Pagination>, multi_aids: &TagAidsLock, article_cache: ArticleCacheLock) -> Option<(Vec<u32>, u32)> {
     //     // multi_aids.retrieve_tag_aids(&format!("tag/{}", tag))
     //     // multi_aids.retrieve_aids(&format!("tag/{}", tag))
-    //     multi_aids.tag_articles(tag, starting, ending, multi_aids)
+    //     // multi_aids.tag_articles(tag, starting, ending, multi_aids)
+    //     multi_aids.tag_articles(article_cache, tag, pagination)
     // }
-    pub fn fallback(tag: &str, pagination: Page<Pagination>, conn: &DbConn) -> Option<Vec<Article>> {
+    // The fallback() should return the current page of articles and the total number of articles
+    pub fn fallback(tag: &str, pagination: &Page<Pagination>, conn: &DbConn) -> Option<(Vec<Article>, u32)> {
         // conn.articles(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified  FROM articles a JOIN users u ON (a.author = u.userid) WHERE '{}' = ANY(tag)", tag))
         // Need to use collate's methods to help generate the SQL
         // use ArticleId.retrieve_with_conn(conn)
-        
+        unimplemented!()
     }
 }
 
@@ -356,7 +364,7 @@ pub mod author {
     // Find all authors' user ids
     // pub fn load_author_articles(conn: &DbConn, userid: u32) -> Option<Vec<u32>> {
     pub fn load_author_articles(conn: &DbConn, userid: u32) -> Option<Vec<u32>> {
-        
+        unimplemented!()
     }
     pub fn load_authors(conn: &DbConn) -> Vec<u32> {
         unimplemented!()
