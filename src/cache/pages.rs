@@ -275,7 +275,7 @@ pub mod tags {
     pub fn lookup_tags(cache: TagAidsLock) -> Option<Vec<TagCount>> {
         unimplemented!()
     }
-    pub fn load_tagcloud(cache: TagAidsLock) -> String {
+    pub fn load_tagcloud(cache: &TagAidsLock) -> String {
         unimplemented!()
     }
     
@@ -309,7 +309,151 @@ pub mod author {
     }
 }
 
-
+pub mod rss {
+    use super::*;
+    // pub fn context(conn: &DbConn,
+    //                article_cache: &ArticleCacheLock,
+    //                multi_aids: &TagAidsLock,
+    //                admin: Option<AdministratorCookie>, 
+    //                user: Option<UserCookie>, 
+    //                uhits: Option<UniqueHits>, 
+    //                gen: Option<GenTimer>, 
+    //                encoding: Option<AcceptCompression>,
+    //                msg: Option<String>,
+    //                javascript: Option<String>
+    //               ) -> Result<CtxBody<TemplateArticlesPages>, CtxBody<TemplateGeneral>>
+    // {
+    //     unimplemented!()
+    // }
+    pub fn serve(conn: &DbConn, 
+                //  pagination: &Page<Pagination>,
+                //  multi_aids: &TagAidsLock, 
+                //  article_state: &ArticleCacheLock, 
+                 text_lock: TextCacheLock,
+                 admin: Option<AdministratorCookie>, 
+                 user: Option<UserCookie>, 
+                 uhits: Option<UniqueHits>, 
+                 gen: Option<GenTimer>, 
+                 encoding: Option<AcceptCompression>,
+                 msg: Option<String>,
+                ) -> Express
+    {
+        let javascript: Option<String> = None;
+        let content = text_lock.retrieve_text("rss").unwrap_or("Could not load RSS feed.".to_owned());
+        let express: Express = content.into();
+        // express.set_content_type(ContentType::XML).compress(encoding)
+        express.set_content_type(ContentType::XML)
+        
+        // if let Some(rss) = text_lock.retrieve_text("rss") {
+        // } else {
+        //     
+        // }
+        // let i = info::info( Some("".to_owned(), "/rss".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
+        // let ctx_body = CtxBody( TemplateGeneral::new(rss, i) )
+        
+        // unimplemented!()
+    }
+    pub fn load_rss(conn: &DbConn) -> String {
+        use rss::{Channel, ChannelBuilder, Guid, GuidBuilder, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};
+        use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
+        use urlencoding::encode;
+        
+        // let rss: Express;
+        
+        
+        let result = conn.articles("");
+        if let Some(articles) = result {
+            let mut article_items: Vec<Item> = Vec::new();
+            for article in &articles {
+                let mut link = String::with_capacity(BLOG_URL.len()+20);
+                link.push_str(BLOG_URL);
+                // link.push_str("article?aid=");
+                link.push_str("article/");
+                link.push_str(&article.aid.to_string());
+                link.push_str("/");
+                // let encoded = encode("This string will be URL encoded.");
+                link.push_str( &encode(&article.title) );
+                
+                let desc: &str = if &article.description != "" {
+                    &article.description
+                } else {
+                    if article.body.len() > DESC_LIMIT {
+                        &article.body[..200]
+                    } else {
+                        &article.body[..]
+                    }
+                };
+                
+                let guid = GuidBuilder::default()
+                    .value(link.clone())
+                    .build()
+                    .expect("Could not create article guid.");
+                
+                let date_posted = DateTime::<Utc>::from_utc(article.posted, Utc).to_rfc2822();
+                
+                let item =ItemBuilder::default()
+                    .title(article.title.clone())
+                    .link(link)
+                    .description(desc.to_string())
+                    // .author("Andrew Prindle".to_string())
+                    .author(article.username.clone())
+                    // .categories()
+                    .guid(guid)
+                    .pub_date(date_posted)
+                    .build();
+                    
+                match item {
+                    Ok(i) => article_items.push(i),
+                    Err(e) => println!("Could not create rss article {}.  Error: {}", article.aid, e),
+                }
+            }
+            // Items:
+            // title    link    description author  categories  guid    pub_date
+            // Channels:
+            // title    link    description categories  language    copyright   rating  ttl
+            let mut search_link = String::with_capacity(BLOG_URL.len()+10);
+            search_link.push_str(BLOG_URL);
+            search_link.push_str("search");
+            
+            let searchbox = TextInputBuilder::default()
+                .title("Search")
+                .name("q")
+                .description("Search articles")
+                .link(search_link)
+                .build()
+                .expect("Could not create text input item in RSS channel.");
+            
+            let channel = ChannelBuilder::default()
+                .title("Vishus Blog")
+                .link(BLOG_URL)
+                .description("A programming and development blog about Rust, Javascript, and Web Development.")
+                .language("en-us".to_string())
+                .copyright("2017 Andrew Prindle".to_string())
+                .ttl(720.to_string()) // half a day, 1440 minutes in a day
+                .items(article_items)
+                .text_input(searchbox)
+                .build()
+                .expect("Could not create RSS channel.");
+            
+            let rss_output = channel.to_string();
+            let mut output = String::with_capacity(rss_output.len() + 30);
+            output.push_str(r#"<?xml version="1.0"?>"#);
+            output.push_str(&rss_output);
+            output
+            // let express: Express = output.into();
+            // rss = express.set_content_type(ContentType::XML).compress(encoding);
+            //     // set_ttl(-1)
+            //     // .add_extra("Content-Type".to_string(), "application/rss+xml".to_string())
+        } else {
+            let output = String::from("Could not create RSS feed.");
+            output
+            // let express: Express = output.into();
+            // // Do not need to compress output with such a small string.
+            // // express.compress(encoding).set_content_type(ContentType::XML
+            // rss = express;
+        }
+    }
+}
 
 
 

@@ -118,8 +118,19 @@ pub struct TextCache {
     pub pages: HashMap<String, String>,
 }
 impl TextCache {
-    pub fn load_cache(conn: &DbConn) -> Self {
-        unimplemented!()
+    pub fn load_cache(conn: &DbConn, multi_aids: &TagAidsLock) -> Self {
+        let mut pages: HashMap<String, String> = HashMap::new();
+        
+        let rss = cache::pages::rss::load_rss(conn);
+        pages.insert("rss".to_owned(), rss);
+        
+        let tagcloud = cache::pages::tags::load_tagcloud(multi_aids);
+        pages.insert("tagcloud".to_owned(), tagcloud);
+        
+        TextCache {
+            pages
+        }
+        // unimplemented!()
     }
     
 }
@@ -130,8 +141,13 @@ impl TextCacheLock {
     // For text retrieval maybe add a closure or function pointer parameter
     // that will be called in case the specified index(cached text) is not in the cache
     pub fn retrieve_text(&self, idx: &str) -> Option<String> {
-        unimplemented!()
+        if let Ok(text_cache) = self.lock.read() {
+            text_cache.pages.get(idx).map(|s| s.clone())
+        } else {
+            None
+        }
         
+        // unimplemented!()
     }
 }
 

@@ -361,10 +361,10 @@ fn main() {
     
     // Cache Todo:: if CACHE_ENABLED is false, make blank structs
     let article_map_cache = ArticleCacheLock::new( ArticleCache::load_cache(&conn) );
-    let text_cache = TextCacheLock::new( TextCache::load_cache(&conn) );
     // let multi_aids = TagAidsLock::new( TagAids::load_cache(&conn) );
     // let multi_aids = TagAidsLock::new( AidsCache::load_cache(&conn), TagsCache::load_cache(&conn) );
     let multi_aids = TagAidsLock::load_cache(&conn);
+    let text_cache = TextCacheLock::new( TextCache::load_cache(&conn, &multi_aids) );
     
     /*
     
