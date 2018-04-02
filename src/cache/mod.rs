@@ -26,7 +26,7 @@ use std::borrow::Cow;
 
 use evmap::*;
 use comrak::{markdown_to_html, ComrakOptions};
-
+use titlecase::titlecase;
 
 // mod body_options;
 // mod page_routes;
@@ -152,12 +152,37 @@ impl TagAidsLock {
         // unlock TagAidsLock
         // find the page
         // return the aids
+        if let Ok(multi_aids) = self.aids_lock.read() {
+            if let Some(aids) = multi_aids.pages.get(page) {
+                Some(aids.clone())
+            } else {
+                None
+            }
+        } else {
+            None
+        }
         
-        unimplemented!()
+        
+        // unimplemented!()
     }
     // Retrieve (from the cache) all tags and the number of times they have been used
     pub fn retrieve_tags(&self) -> Option<Vec<TagCount>> {
-        unimplemented!()
+        // unimplemented!()
+        if let Ok(all_tags) = self.tags_lock.read() {
+            let mut tags: Vec<TagCount> = Vec::new();
+            for (tag, count) in &all_tags.tags {
+                let t = TagCount {
+                    tag: tag.clone(),
+                    url: titlecase(tag.trim_matches('\'')),
+                    count: *count,
+                    size: 0u16,
+                };
+                tags.push(t);
+            }
+            Some(tags)
+        } else {
+            None
+        }
     }
     
     // pub fn tag_aids(tag: &str) -> Option<Vec<u32>> {
@@ -310,81 +335,6 @@ pub fn load_articles_map(conn: &DbConn) -> Option<HashMap<u32, Article>> {
     }
 }
 
-/* 
-pub trait Cachable {
-    type Index;
-    type StateType;
-    // type Output;
-    fn new(Self::Index) -> Self;
-    // fn retrieve(self, State<Self::StateType>, Option<&DbConn>) -> Option<Self::Output>;
-    fn retrieve(self, State<Self::StateType>, Option<&DbConn>) -> Express;
-    
-}
-
-pub struct SingleArticle(u32);
-
-pub struct MultiArticles(Vec<u32>);
-
-pub struct GenericInfo{
-    
-}
-
-impl Cachable for SingleArticle {
-    type Index = u32;
-    type StateType = ArticleCacheLock;
-    // type Output = Express;
-    
-    fn new(aid: u32) -> SingleArticle {
-        SingleArticle(aid)
-    }
-    // pub fn retrieve(self, conn_opt: Option<&DbConn>) -> Option<Article> {
-    fn retrieve(self, articles_state: State<Self::StateType>, conn_opt: Option<&DbConn>) -> Express {
-        let aid = self.0;
-        
-        
-        // let output: Template;
-        // // let output = 
-        // if let Ok(a) = articles_state.lock.read() {
-        //     if let Some(article) = a.articles.get(&aid) {
-        //         let title = article.title.clone();
-        //         // println!("Article {}\n{:?}", article.aid, &article);
-        //         // output = hbs_template(TemplateBody::Article(article.clone()), None, Some(title), String::from("/article"), admin, user, Some("enable_toc(true);".to_owned()), Some(start.0));
-        //         hbs_template(TemplateBody::Article(article.clone()), None, Some(title), String::from("/article"), admin, user, Some("enable_toc(true);".to_owned()), Some(start.0))
-        //     } else {
-        //         // output = hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid))), None, Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
-        //         hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid))), None, Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0))
-        //     }
-        // } else {
-        //     // output =  hbs_template(TemplateBody::General(alert_danger(&format!("Failed to acquire cache lock for article {}.", aid))), None, Some("Internal Error".to_string()), String::from("/article"), admin, user, None, Some(start.0));
-        //     hbs_template(TemplateBody::General(alert_danger(&format!("Failed to acquire cache lock for article {}.", aid))), None, Some("Internal Error".to_string()), String::from("/article"), admin, user, None, Some(start.0))
-        // }
-        
-        
-        // let output: Template;
-        // // let output = 
-        // if let Ok(a) = articles_state.lock.read() {
-        //     if let Some(article) = a.articles.get(&aid) {
-        //         let title = article.title.clone();
-        //         // println!("Article {}\n{:?}", article.aid, &article);
-        //         // output = hbs_template(TemplateBody::Article(article.clone()), None, Some(title), String::from("/article"), admin, user, Some("enable_toc(true);".to_owned()), Some(start.0));
-        //         hbs_template(TemplateBody::Article(article.clone()), None, Some(title), String::from("/article"), admin, user, Some("enable_toc(true);".to_owned()), Some(start.0))
-        //     } else {
-        //         // output = hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid))), None, Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
-        //         hbs_template(TemplateBody::General(alert_danger(&format!("Article {} not found.", aid))), None, Some("Article Not Found".to_string()), String::from("/article"), admin, user, None, Some(start.0))
-        //     }
-        // } else {
-        //     // output =  hbs_template(TemplateBody::General(alert_danger(&format!("Failed to acquire cache lock for article {}.", aid))), None, Some("Internal Error".to_string()), String::from("/article"), admin, user, None, Some(start.0));
-        //     hbs_template(TemplateBody::General(alert_danger(&format!("Failed to acquire cache lock for article {}.", aid))), None, Some("Internal Error".to_string()), String::from("/article"), admin, user, None, Some(start.0))
-        // }
-        // // };
-        // output
-        
-        let express: Express = String::new().into();
-        express
-    }
-}
-
- */
 
 
 
