@@ -221,6 +221,7 @@ pub fn test_author(start: GenTimer,
 pub fn test_tag(start: GenTimer, 
                 multi_aids: State<TagAidsLock>, 
                 article_state: State<ArticleCacheLock>, 
+                pagination: Page<Pagination>,
                 conn: DbConn, 
                 admin: Option<AdministratorCookie>, 
                 user: Option<UserCookie>, 
@@ -232,8 +233,10 @@ pub fn test_tag(start: GenTimer,
     // Add a tags cache (stores tags and their count)
     //   add to the TagAids struct
     
-    let tag = "code".to_owned();
+    let tag = "code";
     // // routes::pages::tag::serve(tag, start, multi_aids, article_state, &conn, admin, user, encoding, uhits)
+    
+    let express: Express = cache::pages::tag::serve(tag, &pagination, &*multi_aids, &*article_state, &conn, admin, user, Some(uhits), Some(start), Some(encoding), None);
     
     // // let tag_aids = multi_aids.tag_aids(tag);
     // let tag_aids_opt = cache::pages::tag::lookup_aids(&tag, &multi_aids);
@@ -246,7 +249,7 @@ pub fn test_tag(start: GenTimer,
         
     // }
     
-    let express: Express = String::new().into();
+    // let express: Express = String::new().into();
     express.compress( encoding )
     // unimplemented!()
     

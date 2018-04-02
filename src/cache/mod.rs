@@ -223,7 +223,7 @@ impl TagAidsLock {
         TagAidsLock{ aids_lock: RwLock::new( aids), tags_lock: RwLock::new( tags ) }
     }
     // pub fn paginated_tag(pagination: Page<Pagination>) -> Option<Vec<Article>, u32> {
-    pub fn tag_articles(&self, article_cache: ArticleCacheLock, tag: &str, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+    pub fn tag_articles(&self, article_cache: &ArticleCacheLock, tag: &str, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
         let mut starting = pagination.cur_page as u32;
         let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
         if let Some(aids) = self.retrieve_aids(&format!("tag/{}", tag)) {

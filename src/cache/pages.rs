@@ -190,8 +190,8 @@ pub mod tag {
                    pagination: &Page<Pagination>,
                 //    total_items: u32, // 0 if tag not found
                 //    article_state: State<ArticleCacheLock>,
-                   article_cache: ArticleCacheLock,
-                   multi_aids: TagAidsLock,
+                   article_cache: &ArticleCacheLock,
+                   multi_aids: &TagAidsLock,
                    admin: Option<AdministratorCookie>, 
                    user: Option<UserCookie>, 
                    uhits: Option<UniqueHits>, 
@@ -264,9 +264,8 @@ pub mod tag {
     // ADD ARTICLE CACHE TO SERVE() AND CONTEXT()
     pub fn serve(tag: &str, 
                  pagination: &Page<Pagination>,
-                 start: GenTimer, 
-                 multi_aids: TagAidsLock, 
-                 article_state: ArticleCacheLock, 
+                 multi_aids: &TagAidsLock, 
+                 article_state: &ArticleCacheLock, 
                  conn: &DbConn, 
                  admin: Option<AdministratorCookie>, 
                  user: Option<UserCookie>, 
