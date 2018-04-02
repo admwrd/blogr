@@ -128,16 +128,16 @@ pub struct TagAidsLock {
     pub tags_lock: RwLock<TagsCache>,
 }
 
-impl AidsCache {
-    pub fn load_cache(conn: &DbConn) -> Self {
-        // retrieve all distinct tags then call routes::pages::tags::tag_aids()
-        // find all tags - use the query for the tag cloud (get tag and number of times used)
-        // store tags and tag counts
-        // call load_tag_aids() on each tag
+// impl AidsCache {
+//     pub fn load_cache(conn: &DbConn) -> Self {
+//         // retrieve all distinct tags then call routes::pages::tags::tag_aids()
+//         // find all tags - use the query for the tag cloud (get tag and number of times used)
+//         // store tags and tag counts
+//         // call load_tag_aids() on each tag
         
-        unimplemented!()
-    }
-}
+//         unimplemented!()
+//     }
+// }
 impl TagsCache {
     pub fn load_cache(conn: &DbConn) -> Self {
         // Find all unique tags and store the number of times they are used
@@ -147,7 +147,6 @@ impl TagsCache {
 }
 
 impl TagAidsLock {
-    // pub fn retrieve_tag_aids(&self, page: &str) -> Option<Vec<u32>> {
     // Returns the ArticleIds for the given page
     pub fn retrieve_aids(&self, page: &str) -> Option<Vec<u32>> {
         // unlock TagAidsLock
@@ -160,34 +159,26 @@ impl TagAidsLock {
     pub fn retrieve_tags(&self) -> Option<Vec<TagCount>> {
         unimplemented!()
     }
+    
     // pub fn tag_aids(tag: &str) -> Option<Vec<u32>> {
     //     unimplemented!()
     // }
-    // pub fn load_tag_cache(conn: &DbConn, tags: &Vec<TagCount>) -> Option<Vec<u32>> {
-    // pub fn load_tag_cache(conn: &DbConn, tags: &HashMap<String, u32>) -> Option<Vec<u32>> {
-    
     
     // pub fn load_tag_cache(conn: &DbConn, tags: &HashMap<String, u32>) -> Vec<u32> {
-    //     // Load tags then for each tag call 
-    //     // cache::pages::tag::load_tag_aids(conn, tag) -> Option<Vec<u32>>
-    //     // in order to find all articles attributed to that tag
     //     unimplemented!()
     // }
-    // // pub fn load_author_cache(conn: &DbConn) -> Option<Vec<u32>> {
-    
     
     // pub fn load_author_cache(conn: &DbConn) -> Vec<u32> {
-    //     // Call cache::pages::author::load_authors(conn)
-    //     // and call cache::pages::author::load_author_articles(conn, userid)
-    //     // on each of the userids returned by the load_authors()
     //     unimplemented!()
     // }
     pub fn load_cache(conn: &DbConn) -> Self {
-        // let tag_cache = TagsCache::load_cache(&conn);
-        // let mut tag_articles = TagAidsLock::load_tag_cache(conn, &tag_cache);
-        // let mut author_articles = TagAidsLock::load_author_cache(conn);
-        // tag_articles.append(&mut author_articles);
-        // TagAidsLock::new( AidsCache::load_cache(&conn),  );
+        // Load tags then for each tag call 
+        // cache::pages::tag::load_tag_aids(conn, tag) -> Option<Vec<u32>>
+        // in order to find all articles attributed to that tag
+        // 
+        // Call cache::pages::author::load_authors(conn)
+        // and call cache::pages::author::load_author_articles(conn, userid)
+        // on each of the userids returned by the load_authors()
         
         let tag_cache = TagsCache::load_cache(&conn);
         let authors = cache::pages::author::load_authors(conn);
@@ -222,14 +213,11 @@ impl TagAidsLock {
     pub fn new(aids: AidsCache, tags: TagsCache) -> Self {
         TagAidsLock{ aids_lock: RwLock::new( aids), tags_lock: RwLock::new( tags ) }
     }
-    // pub fn paginated_tag(pagination: Page<Pagination>) -> Option<Vec<Article>, u32> {
     pub fn tag_articles(&self, article_cache: &ArticleCacheLock, tag: &str, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
         let mut starting = pagination.cur_page as u32;
         let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
         if let Some(aids) = self.retrieve_aids(&format!("tag/{}", tag)) {
             let total_items = aids.len() as u32;
-            // let mut articles: Vec<Article> = Vec::with_capacity(pagination.settings.ipp+2);
-            
             // the greater OR EQUALS part is equivelant to > total_items -1
             if starting >= total_items {
                 // show last page
@@ -243,7 +231,6 @@ impl TagAidsLock {
                 return None;
             }
             let ids: Vec<u32> = (starting..ending+1).into_iter().map(|i| i as u32).collect();
-            // let articles = article_cache.retrieve_articles(ids);
             if let Some(articles) = article_cache.retrieve_articles(ids) {
                 let length = articles.len() as u32;
                 if length != total_items {
@@ -256,8 +243,6 @@ impl TagAidsLock {
         } else {
             None
         }
-        
-        // unimplemented!()
     }
     // Maybe add a function that executes a closure?
     // pub fn unlock<F, T>(f: F) -> T  where F: Fn(i32) -> T { unimplemented!() }
@@ -268,21 +253,7 @@ impl TagAidsLock {
 //     pub pages: HashMap<String, String>,
 // }
 
-
-
-// pub fn express<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
-// pub fn express<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
-
-// pub fn template<T: BodyContext>(template_name: &str, body: CtxBody<T>) -> Express {
 pub fn template<T: BodyContext, U: BodyContext>(body_rst: Result<CtxBody<T>, CtxBody<U>>) -> Express where T: serde::Serialize, U: serde::Serialize {
-    // let template_name = body.0.template_name();
-    // let template_name = routes::body::BodyContext::template_name(body.0);
-    // let template_name = T::template_name();
-    // let is_t = if body_rst.is_ok() { true } else { false };
-    // let body = match body_rst {
-    //     Ok(k) => k,
-    //     Err(e) => e,
-    // };
     match body_rst {
         Ok(body)  => {
             let template = Template::render(T::template_name(), body);
@@ -295,22 +266,13 @@ pub fn template<T: BodyContext, U: BodyContext>(body_rst: Result<CtxBody<T>, Ctx
             express
         },
     }
-    
-    // let express: Express = String::new().into();
-    // express
 }
-pub fn express<T: BodyContext>(body: CtxBody<T>) -> Express {
-    unimplemented!()
-}
-// // pub fn render<T: BodyContext>(body: T, info: CtxInfo) -> Express {
- // pub fn render<T: BodyContext>(body: CtxBody<T>, info: CtxInfo) -> Express {
-// // pub fn render(body: CtxBody, info: CtxInfo) -> Express {
+
+// pub fn express<T: BodyContext>(body: CtxBody<T>) -> Express {
 //     unimplemented!()
 // }
 
-
-// Make the articles_cache a lazy_static wrapped in a mutex/rwlock/arc?
-// make a request guard to retrieve a reference to the articles
+// make a request guard to retrieve a reference to the articles?
 
 /*
     General - body text String

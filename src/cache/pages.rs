@@ -105,15 +105,14 @@ pub mod article {
     {
         let javascript: Option<String> = None;
         
-        macro_rules! ctx_info {
-            ( $title:expr, $page:expr ) => {
-                info::info(if $title == "" { None } else { Some($title.to_owned()) }, $page.to_owned(), admin, user, gen, uhits, encoding, javascript, msg)
-            }
-        }
-        
+        // macro_rules! ctx_info {
+        //     ( $title:expr, $page:expr ) => {
+        //         info::info(if $title == "" { None } else { Some($title.to_owned()) }, $page.to_owned(), admin, user, gen, uhits, encoding, javascript, msg)
+        //     }
+        // }
+        // let i = ctx_info!("Article", "/");
         
         if let Some(article) = body {
-            // let i = ctx_info!("Article", "/");
             let i = info::info(Some(article.title.clone()), "/article".to_owned(), admin, user, gen, uhits, encoding, javascript, msg);
             Ok(CtxBody( TemplateArticle::new(article, i) ))
         } else if let Some(article) = cache::pages::article::fallback(aid, conn) {
@@ -123,14 +122,11 @@ pub mod article {
             }
             Ok(CtxBody( TemplateArticle::new(article, i) ))
         } else {
-            // let i = ctx_info!("", "/");
             let i = info::info(Some(format!("Article {} not found", aid)), "/article".to_owned(), admin, user, gen, uhits, encoding, javascript, msg);
             Err(CtxBody( TemplateGeneral::new("The article could not be found.".to_owned(), i) ))
         }
     }
-    // pub fn context_fallback(aid: u32, conn: &DbConn) -> Option<CtxBody<TemplateArticle>> {
     pub fn fallback(aid: u32, conn: &DbConn) -> Option<Article> {
-        // unimplemented!()
         let id = ArticleId { aid };
         id.retrieve()
     }
@@ -163,33 +159,13 @@ pub mod article {
         let express: Express = cache::template(ctx);
         express
     }
-    // pub fn fallback(aid: u32, start: GenTimer, article_state: State<ArticleCacheLock>, conn: &DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
-    // pub fn fallback(aid: u32, 
-    //                 start: GenTimer, 
-    //                 article_state: State<ArticleCacheLock>, 
-    //                 conn: &DbConn, 
-    //                 admin: Option<AdministratorCookie>, 
-    //                 user: Option<UserCookie>, 
-    //                 encoding: AcceptCompression, 
-    //                 uhits: UniqueHits
-    //                ) -> Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> {
-    //     // unimplemented!()
-    //     // Todo: Add an actual fallback implementation here
-    //     //         it should query the database looking for
-    //     //         the requested article and return it
-    //     Err(CtxBody( TemplateGeneral::new("The article could not be found.".to_owned(), i) ))
-    // }
-    
 }
 
 pub mod tag {
     use super::*;
     pub fn context(tag: &str,
-                //    body: Option<Vec<Article>>,
                    conn: &DbConn,
                    pagination: &Page<Pagination>,
-                //    total_items: u32, // 0 if tag not found
-                //    article_state: State<ArticleCacheLock>,
                    article_cache: &ArticleCacheLock,
                    multi_aids: &TagAidsLock,
                    admin: Option<AdministratorCookie>, 
@@ -201,9 +177,6 @@ pub mod tag {
                    javascript: Option<String>
                   ) -> Result<CtxBody<TemplateArticlesPages>, CtxBody<TemplateGeneral>>
     {
-        // unimplemented!()
-        // let output: Result<Vec<Article>, String>;
-        
         if CACHE_ENABLED {
             if let Some((articles, total_items)) = multi_aids.tag_articles(article_cache, tag, &pagination) {
                 let javascript: Option<String> = None;
@@ -230,38 +203,7 @@ pub mod tag {
             let i = info::info( Some("Error".to_owned()), "/tag".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
             Err(CtxBody( TemplateGeneral::new("Error retrieving articles.".to_owned(), i) ))
         }
-        
-        // let i = info::info( Some(format!("Showing Articles with tag '{}'", sanitize_tag(&tag))), "/tag".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
-        // return CtxBody( TemplateGeneral("No articles were found for the given tag.".to_owned(), i) );
-        // let mut total_items: u32 = 0;
-        // // if CACHE_ENABLED {
-        //     if let Some(articles) = body {
-        //         output = Ok(articles);
-        //     } else {
-        //         output = Err("No articles found for the given tag.".to_owned());
-        //     }
-        // } else if CACHE_FALLBACK {
-        //     if let Some(articles) = cache::pages::tag::fallback(tag, conn) {
-        //         output = Ok(articles);
-        //     } else {
-        //         if !PRODUCTION { println!(); }
-        //         output = Err("No articles found for the given tag.".to_owned());
-        //     }
-        // } else {
-        //     println!("Really bad error: cache and fallback are both disabled.");
-        //     output = Err("Error: cache and database lookup disabled.".to_owned();
-        // }
-        // match output {
-        //     Ok(articles) => {
-        //         Ok(CtxBody( TemplateArticlesPages::new(articles, pagination, total) ))
-        //     },
-        //     Err(err) => {
-        //         let i = ;
-        //         Err(CtxBody( TemplateGeneral::new(err.to_owned(), i) ))
-        //     },
-        // }
     }
-    // ADD ARTICLE CACHE TO SERVE() AND CONTEXT()
     pub fn serve(tag: &str, 
                  pagination: &Page<Pagination>,
                  multi_aids: &TagAidsLock, 
@@ -275,17 +217,14 @@ pub mod tag {
                  msg: Option<String>,
                 ) -> Express {
         use ::sanitize::sanitize_tag;
-        // let output: Result<(Vec<Article>, Page<Pagination>, u32), String>;
         let t = sanitize_tag(tag);
         let javascript: Option<String> = None;
-        // cache::template( cache::pages::tag::context(t, pagination, admin, user, uhits, gen, encoding, msg, javascript) )
         cache::template( cache::pages::tag::context(&t, conn, &pagination, article_state, multi_aids, admin, user, uhits, gen, encoding, msg, javascript) )
     }
     // pub fn db_tag_aids(conn: &DbConn, tag: &str) -> Option<Vec<u32>> {
     // This function is used to fill the multi article cache.  
     // This is used to cache what articles correspond with each tag
     pub fn load_tag_aids(conn: &DbConn, tag: &str) -> Option<Vec<u32>> {
-        // unimplemented!()
         // look up all ArticleId's for the given tag
         let result = conn.query(&format!("SELECT aid FROM articles WHERE '{}' = ANY(tag)", tag), &[]);
         if let Ok(rst) = result {
