@@ -76,7 +76,6 @@ impl ArticleCacheLock {
         ArticleCacheLock{ lock: RwLock::new( cache ) }
     }
     pub fn retrieve_article(&self, aid: u32) -> Option<Article> {
-        
         if let Ok(article_cache) = self.lock.read() {
             if let Some(article) = article_cache.articles.get(&aid) {
                 Some(article.clone())
@@ -86,12 +85,26 @@ impl ArticleCacheLock {
         } else {
             None
         }
-        
-        // unimplemented!()
     }
     pub fn retrieve_articles(&self, aids: Vec<u32>) -> Option<Vec<Article>> {
-        unimplemented!()
-        
+        if let Ok(article_cache) = self.lock.read() {
+            let mut articles: Vec<Article> = Vec::new();
+            for aid in aids {
+                if let Some(article) = article_cache.articles.get(&aid) {
+                    articles.push(article.clone());
+                } else {
+                    println!("Failed to retrieve article {} from collection", aid);
+                }
+            }
+            if articles.len() != 0 {
+                Some(articles)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+        // unimplemented!()
     }
 }
 
