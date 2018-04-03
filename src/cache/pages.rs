@@ -85,6 +85,81 @@ pub mod info {
 }
 
 
+pub mod articles {
+    use super::*;
+    pub fn context(conn: &DbConn,
+                   pagination: Page<Pagination>,
+                   article_lock: &ArticleCacheLock,
+                   admin: Option<AdministratorCookie>, 
+                   user: Option<UserCookie>, 
+                   gen: Option<GenTimer>, 
+                   uhits: Option<UniqueHits>, 
+                   encoding: Option<AcceptCompression>, 
+                   msg: Option<String>,
+                   javascript: Option<String>,
+                   info_opt: Option<String>
+                  ) -> Result<CtxBody<TemplateArticlesPages>, CtxBody<TemplateGeneral>>
+    {
+        let javascript: Option<String> = None;
+        // let info_opt: Option<String> = None;
+        // macro_rules! ctx_info {
+        //     ( $title:expr, $page:expr ) => {
+        //         info::info(if $title == "" { None } else { Some($title.to_owned()) }, $page.to_owned(), admin, user, gen, uhits, encoding, javascript, msg)
+        //     }
+        // }
+        // let i = ctx_info!("Article", "/");
+        
+        if let Some((articles, total_items)) = article_lock.all_articles(&pagination) {
+            let i = info::info(None, "/".to_owned(), admin, user, gen, uhits, encoding, javascript, msg);
+            Ok(CtxBody( TemplateArticlesPages::new(articles, pagination.clone(), total_items, info_opt, i) ))
+        } else if let Some((articles, total_items)) = cache::pages::articles::fallback(conn, &pagination) {
+            let i = info::info(None, "/".to_owned(), admin, user, gen, uhits, encoding, javascript, msg);
+            if !PRODUCTION {
+                println!("Serving all aticles from fallacbk instead of cache");
+            }
+            Ok(CtxBody( TemplateArticlesPages::new(articles, pagination, total_items, info_opt, i) ))
+        } else {
+            let i = info::info(Some(format!("No articles found")), "/".to_owned(), admin, user, gen, uhits, encoding, javascript, msg);
+            Err(CtxBody( TemplateGeneral::new("No articles found.".to_owned(), i) ))
+        }
+    }
+    pub fn fallback(conn: &DbConn, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+        unimplemented!()
+    }
+    #[inline]
+    pub fn serve(article_lock: State<ArticleCacheLock>, 
+                 pagination: Page<Pagination>,
+                 conn: &DbConn, 
+                 admin: Option<AdministratorCookie>, 
+                 user: Option<UserCookie>, 
+                 start: GenTimer, 
+                 uhits: UniqueHits,
+                 encoding: AcceptCompression,
+                 msg: Option<String>,
+                 info_opt: Option<String>
+                ) -> Express 
+    {
+        // let article_rst = article_state.retrieve_article(aid);
+        
+        // let ctx: Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>>
+        let ctx = cache::pages::articles::context(conn,
+                                                    pagination,
+                                                    &*article_lock,
+                                                    admin, 
+                                                    user, 
+                                                    Some(start), 
+                                                    Some(uhits), 
+                                                    Some(encoding),
+                                                    None,
+                                                    None,
+                                                    info_opt,
+                                                   );
+        
+        let express: Express = cache::template(ctx);
+        express
+    }
+}
+
 /// The article route module allows routes to serve up pages with
 /// a single article as the content.
 /// The article route module does not need a function to generate
@@ -156,9 +231,9 @@ pub mod article {
                                               None,
                                               None
                                              );
-        
-        let express: Express = cache::template(ctx);
-        express
+        // let express: Express = cache::template(ctx);
+        // express
+        cache::template(ctx)
     }
 }
 
