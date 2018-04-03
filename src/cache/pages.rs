@@ -283,8 +283,37 @@ pub mod tags {
     pub fn lookup_tags(cache: TagAidsLock) -> Option<Vec<TagCount>> {
         unimplemented!()
     }
-    pub fn load_tagcloud(cache: &TagAidsLock) -> String {
-        unimplemented!()
+    pub fn load_tagcloud(cache: &TagAidsLock) -> Option<String> {
+        // unimplemented!()
+        if let Some(mut tags) = cache.retrieve_tags() {
+            // let mut tagcounts: Vec<TagCount> = Vec::new();
+            if tags.len() > 4 {
+                if tags.len() > 7 {
+                    let mut i = 0u16;
+                    for mut v in &mut tags[0..6] {
+                        v.size = 6-i;
+                        i += 1;
+                    }
+                } else {
+                    let mut i = 0u16;
+                    for mut v in &mut tags[0..3] {
+                        v.size = (3-i)*2;
+                    }
+                }
+                tags.sort_by(|a, b| a.tag.cmp(&b.tag));
+            }
+            
+            for tag in all_tags {
+                
+                
+                
+            }
+            
+        } else {
+            "Could not load tags.".to_owned()
+        }
+        
+        
     }
     
     

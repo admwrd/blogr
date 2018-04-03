@@ -90,6 +90,14 @@ Caching
 	
 
 Blogr-Fixes
+	How to store tagcloud?  It's a Vec<TagCount> NOT A STRING.  Maybe find a HashMap
+		that can store different types??  So far only RSS and About use text.
+		Maybe make a separate cache??? :(
+		NO!  Either add a tag_counts field to TagAidsLock or change the tags field
+			to be a Vec<TagCount> instead of a HashMap<String, u32>
+			See if that field is used at all, and how many places would 
+			have to be rewritten to change the field
+	
 	Maybe make a module called routes and move all pages functions into that
 		the route functinos will have Rocket attributes (the #[get()] and #[post()] attributes)
 		the route functions will call functions/methods in the pages module

@@ -124,8 +124,10 @@ impl TextCache {
         let rss = cache::pages::rss::load_rss(conn);
         pages.insert("rss".to_owned(), rss);
         
-        let tagcloud = cache::pages::tags::load_tagcloud(multi_aids);
-        pages.insert("tagcloud".to_owned(), tagcloud);
+        // let tagcloud = cache::pages::tags::load_tagcloud(multi_aids);
+        if let Some(tagcloud) = cache::pages::tags::load_tagcloud(multi_aids) {
+            pages.insert("tagcloud".to_owned(), tagcloud);
+        }
         
         TextCache {
             pages
@@ -232,7 +234,8 @@ impl TagAidsLock {
             let mut tags: Vec<TagCount> = Vec::new();
             for (tag, count) in &all_tags.tags {
                 let t = TagCount {
-                    tag: tag.clone(),
+                    // tag: tag.clone(),
+                    tag: titlecase(tag),
                     // url: titlecase(tag.trim_matches('\'')),
                     url: tag.trim_matches('\'').to_owned(),
                     count: *count,
