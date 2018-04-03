@@ -387,8 +387,10 @@ pub mod author {
                  encoding: Option<AcceptCompression>,
                  msg: Option<String>,
     ) -> Express {
-        unimplemented!()
+        let javascript: Option<String> = None;
+        cache::template( cache::pages::author::context(author, &pagination, conn, multi_aids, article_lock, admin, user, uhits, gen, encoding, msg, javascript) )
         
+        // unimplemented!()
     }
     
     // Find all authors, their user id, their username, and display name
