@@ -255,27 +255,40 @@ pub mod tag {
 
 pub mod tags {
     use super::*;
-    pub fn context(body: Option<Vec<TagCount>>, 
+    pub fn context(conn: &DbConn,
+                   multi_aids: &TagAidsLock,
                    admin: Option<AdministratorCookie>, 
                    user: Option<UserCookie>, 
-                   gen: Option<GenTimer>, 
                    uhits: Option<UniqueHits>, 
+                   gen: Option<GenTimer>, 
+                   encoding: Option<AcceptCompression>,
                    msg: Option<String>,
                    javascript: Option<String>
                   ) -> Result<CtxBody<TemplateTags>, CtxBody<TemplateGeneral>> 
     {
-        unimplemented!()
+        // unimplemented!()
+        if let Some(all_tags) = multi_aids.retrieve_tags() {
+            let i = info::info( Some("Tag Cloud".to_owned()), "/all_tags".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
+            Ok(CtxBody( TemplateTags::new(all_tags.clone(), i) ))
+        } else {
+            let i = info::info( Some("Error".to_owned()), "/all_tags".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
+            Err(CtxBody( TemplateGeneral::new("Error retrieving tags".to_owned(), i) ))
+        }
     }
-    pub fn serve(start: GenTimer, 
-                 tag_lock: State<TagAidsLock>, 
-                 conn: &DbConn, 
+    pub fn serve(conn: &DbConn, 
+                 multi_aids: &TagAidsLock, 
                  admin: Option<AdministratorCookie>, 
                  user: Option<UserCookie>, 
-                 encoding: AcceptCompression, 
-                 uhits: UniqueHits
+                 uhits: Option<UniqueHits>, 
+                 gen: Option<GenTimer>, 
+                 encoding: Option<AcceptCompression>,
+                 msg: Option<String>,
                 ) -> Express 
     {
-        unimplemented!()
+        let javascript: Option<String> = None;
+        cache::template( cache::pages::tags::context(conn, multi_aids, admin, user, uhits, gen, encoding, msg, javascript) )
+        
+        // unimplemented!()
     }
     pub fn load_all_tags(conn: &DbConn) -> Option<Vec<TagCount>> {
         unimplemented!()
@@ -284,29 +297,29 @@ pub mod tags {
         unimplemented!()
     }
     
-    pub fn load_tagcloud(cache: &TagAidsLock) -> Option<TagCount> {
-        unimplemented!()
-        // if let Some(mut tags) = cache.retrieve_tags() {
-        //     // let mut tagcounts: Vec<TagCount> = Vec::new();
-        //     if tags.len() > 4 {
-        //         if tags.len() > 7 {
-        //             let mut i = 0u16;
-        //             for mut v in &mut tags[0..6] {
-        //                 v.size = 6-i;
-        //                 i += 1;
-        //             }
-        //         } else {
-        //             let mut i = 0u16;
-        //             for mut v in &mut tags[0..3] {
-        //                 v.size = (3-i)*2;
-        //             }
-        //         }
-        //         tags.sort_by(|a, b| a.tag.cmp(&b.tag));
-        //     }
-        // } else {
-        //     "Could not load tags.".to_owned()
-        // }
-    }
+    // pub fn load_tagcloud(cache: &TagAidsLock) -> Option<TagCount> {
+    //     unimplemented!()
+    //     // if let Some(mut tags) = cache.retrieve_tags() {
+    //     //     // let mut tagcounts: Vec<TagCount> = Vec::new();
+    //     //     if tags.len() > 4 {
+    //     //         if tags.len() > 7 {
+    //     //             let mut i = 0u16;
+    //     //             for mut v in &mut tags[0..6] {
+    //     //                 v.size = 6-i;
+    //     //                 i += 1;
+    //     //             }
+    //     //         } else {
+    //     //             let mut i = 0u16;
+    //     //             for mut v in &mut tags[0..3] {
+    //     //                 v.size = (3-i)*2;
+    //     //             }
+    //     //         }
+    //     //         tags.sort_by(|a, b| a.tag.cmp(&b.tag));
+    //     //     }
+    //     // } else {
+    //     //     "Could not load tags.".to_owned()
+    //     // }
+    // }
     
     // pub fn load_tagcloud(cache: &TagAidsLock) -> Option<String> {
     //     // unimplemented!()

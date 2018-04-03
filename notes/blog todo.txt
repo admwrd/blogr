@@ -90,6 +90,9 @@ Caching
 	
 
 Blogr-Fixes
+	Ensure tag cloud and tag lookup works correctly - they may be stored differently
+		than they are looked up
+
 	How to store tagcloud?  It's a Vec<TagCount> NOT A STRING.  Maybe find a HashMap
 		that can store different types??  So far only RSS and About use text.
 		Maybe make a separate cache??? :(
