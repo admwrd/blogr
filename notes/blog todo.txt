@@ -90,47 +90,31 @@ Caching
 	
 
 Blogr-Fixes
+	***** test_tag and test_author do not yield correct results *****
+		this makes sense as the code was basically copied from retrieve_tag() to retrieve_author()
+		FIX THIS
+
+	Test the cache pages with the routes:
+		test_tagcloud
+		test_author
+		test_rss
+		test_tag
+		test_article
+
+	Maybe add a javascript parameter to the serve() functions in cache::pages
+		Could also add a javascript variable in serve() that only is applied
+			when the calling route function does not supply javascript
+
 	Ensure tag cloud and tag lookup works correctly - they may be stored differently
 		than they are looked up
 
-	How to store tagcloud?  It's a Vec<TagCount> NOT A STRING.  Maybe find a HashMap
-		that can store different types??  So far only RSS and About use text.
-		Maybe make a separate cache??? :(
-		NO!  Either add a tag_counts field to TagAidsLock or change the tags field
-			to be a Vec<TagCount> instead of a HashMap<String, u32>
-			See if that field is used at all, and how many places would 
-			have to be rewritten to change the field
-	
-	Maybe make a module called routes and move all pages functions into that
-		the route functinos will have Rocket attributes (the #[get()] and #[post()] attributes)
-		the route functions will call functions/methods in the pages module
-
-	Could make a struct called Articles that holds a Vec<Article>
-		it would implement Iterator
-		and Vec<Article> should implement IntoIterator (I think)
-		Article (or Vec<Article) should implement FromIterator
-	Could also add ArticleIds that hold Vec<ArticleId> or Vec<u32>
-		Could add a method to retrieve the aids from database
-
-	Maybe add a sort by last modified in manage admin page
-
-	Add modified date to articles
-		if the modified date equals the created date don't show modified date (in tempplate.rs)
-		
-
-	Change the menu items for pageviews to pagestats
-
-	FIX setup-vps PAGE - javascript popup appearing when it shouldn't?
-	
-	Add modified date to template module and contexts as well as in the templates
 
 	Log ip addresses for error pages
 		Make a new BlogErrors structure that tracks:
 		Internal 500 errors: HashMap<page, (datetime, ip, message)> or Vec<page, datetime, ip address, message>
 		NotFound 400 errors: HashMap<page, (datetime, ip)> or Vec<page, datetime, ip address>
 
-	In the pagestats admin page make a link to all 404 errors
-		the 404 error should 
+
 
 	Add a hide article button to admin page
 		change all other pages to look for hide = 0 in the SQL statements
@@ -250,6 +234,19 @@ Blogr-Fixes
 
 
 Blogr-Features
+	Could make a struct called Articles that holds a Vec<Article>
+		it would implement Iterator
+		and Vec<Article> should implement IntoIterator (I think)
+		Article (or Vec<Article) should implement FromIterator
+	Could also add ArticleIds that hold Vec<ArticleId> or Vec<u32>
+		Could add a method to retrieve the aids from database
+
+	Maybe add a sort by last modified in manage admin page
+
+	Add modified date to articles
+		if the modified date equals the created date don't show modified date (in tempplate.rs)
+	Add modified date to template module and contexts as well as in the templates
+
 	Maybe add tests.  For testing add comments with special codes identifying
 		certain parts of the page
 
@@ -715,6 +712,26 @@ Rocket-auth-login:
 
 
 DONE
+	How to store tagcloud?  It's a Vec<TagCount> NOT A STRING.  Maybe find a HashMap
+		that can store different types??  So far only RSS and About use text.
+		Maybe make a separate cache??? :(
+		NO!  Either add a tag_counts field to TagAidsLock or change the tags field
+			to be a Vec<TagCount> instead of a HashMap<String, u32>
+			See if that field is used at all, and how many places would 
+			have to be rewritten to change the field
+	
+	Maybe make a module called routes and move all pages functions into that
+		the route functinos will have Rocket attributes (the #[get()] and #[post()] attributes)
+		the route functions will call functions/methods in the pages module
+
+	FIXED - fix setup-vps PAGE - javascript popup appearing when it shouldn't?
+		Moved the code to a separate file and added a link in setup-vps
+
+	Change the menu items for pageviews to pagestats
+
+	In the pagestats admin page make a link to all 404 errors
+		the 404 error should 
+
 	Change pagestats to iterate over the counter structure rather than unique stats
 		then get unique stats entry for that route
 

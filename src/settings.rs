@@ -73,7 +73,7 @@ const STATIC_PAGES_DIR: &'static str = "pages";
 // ex: /article/<aid>/Search_Engine_Friendly_Title
 // const MULTI_SEGMENT_PATHS: Vec<&'static str> = vec!["article", "search", "tag"];
 #[cfg(not(production))]
-const MULTI_SEGMENT_PATHS: &[&'static str] = &["article", "search", "tag"];
+const MULTI_SEGMENT_PATHS: &[&'static str] = &["article", "search", "tag", "content", "download"];
 // const MULTI_SEGMENT_PATHS: &[&'static str] = [""];
 #[cfg(not(production))]
 const PAGE_TEMPLATES: &[&'static str] = &["page-template", "page-code-template", "page-blank-template"];
@@ -180,7 +180,7 @@ const STATIC_PAGES_DIR: &'static str = "pages";
 // ex: /article/<aid>/Search_Engine_Friendly_Title
 // const MULTI_SEGMENT_PATHS: Vec<&'static str> = vec!["article", "search", "tag"];
 #[cfg(production)]
-const MULTI_SEGMENT_PATHS: &[&'static str] = &["article", "search", "tag"];
+const MULTI_SEGMENT_PATHS: &[&'static str] = &["article", "search", "tag", "content", "download"];
 #[cfg(production)]
 const PAGE_TEMPLATES: &[&'static str] = &["page-template", "page-code-template", "page-blank-template"];
 #[cfg(production)]

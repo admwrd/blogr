@@ -309,6 +309,7 @@ impl TagAidsLock {
         for tag in tag_cache.tags.iter() {
             if let Some(aids) = cache::pages::tag::load_tag_aids(conn, &tag.url) {
                 let key = format!("tag/{}", &tag.url);
+                if !PRODUCTION { println!("Loading tag {}\n\t{:?}\n\trelated articles:\n\t{:#?}", &tag.url, &tag, &aids); }
                 article_cache.insert(key, aids);
             } else {
                 println!("Error loading multi article cache on tag {} - no articles found", tag.url);
@@ -318,6 +319,7 @@ impl TagAidsLock {
         for user in authors {
             if let Some(aids) = cache::pages::author::load_author_articles(conn, user) {
                 let key = format!("author/{}", user);
+                if !PRODUCTION { println!("Loading user {}\n\trelated articles:\n\t{:#?}", &user, &aids); }
                 article_cache.insert(key, aids);
             } else {
                 println!("Error loadign multi article cache on author {} - no articles found", user);
@@ -340,21 +342,22 @@ impl TagAidsLock {
     pub fn author_articles(&self, article_cache: &ArticleCacheLock, author: u32, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
         let mut starting = pagination.cur_page as u32;
         let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
-        if let Some(aids) = self.retrieve_aids(&format!("author/{}", author)) {
+        if let Some(aids) = self.retrieve_aids(&format!("author/{}", &author)) {
             let total_items = aids.len() as u32;
             if starting >= total_items {
                 // show last page
-                let starting = total_items - 1 - (pagination.settings.ipp as u32);
-                let ending = total_items - 1;
+                let starting = total_items - (pagination.settings.ipp as u32);
+                let ending = total_items;
             // the greater OR EQUALS part is equivelant to > total_items -1
             } else if ending >= total_items { 
-                let ending = total_items -1;
+                let ending = total_items;
             }
             if starting - ending <= 0 {
+                println!("Pagination error!  Start-Ending <= 0");
                 return None;
             }
             
-            let ids: Vec<u32> = (starting..ending+1).into_iter().map(|i| i as u32).collect();
+            let ids: Vec<u32> = (starting..ending).into_iter().map(|i| i as u32).collect();
             if let Some(articles) = article_cache.retrieve_articles(ids) {
                 let length = articles.len() as u32;
                 if length != total_items {
@@ -362,10 +365,12 @@ impl TagAidsLock {
                 }
                 Some( (articles, length) )
             } else {
+                println!("Could not retrieve articles in author_articles() - retrieve_articles failed");
                 None
             }
             
         } else {
+            println!("Error retrieving articles for author, retrieve_aids() failed for `author/{}`", &author);
             None
         }
     }
@@ -378,16 +383,16 @@ impl TagAidsLock {
             // the greater OR EQUALS part is equivelant to > total_items -1
             if starting >= total_items {
                 // show last page
-                let starting = total_items - 1 - (pagination.settings.ipp as u32);
-                let ending = total_items - 1;
+                let starting = total_items - (pagination.settings.ipp as u32);
+                let ending = total_items ;
             // the greater OR EQUALS part is equivelant to > total_items -1
             } else if ending >= total_items { 
-                let ending = total_items -1;
+                let ending = total_items;
             }
             if starting - ending <= 0 {
                 return None;
             }
-            let ids: Vec<u32> = (starting..ending+1).into_iter().map(|i| i as u32).collect();
+            let ids: Vec<u32> = (starting..ending).into_iter().map(|i| i as u32).collect();
             if let Some(articles) = article_cache.retrieve_articles(ids) {
                 let length = articles.len() as u32;
                 if length != total_items {

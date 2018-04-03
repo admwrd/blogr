@@ -178,8 +178,8 @@ pub fn hbs_article_view(start: GenTimer, aid: ArticleId, conn: DbConn, admin: Op
 
 #[get("/test_tagcloud")]
 pub fn test_tagcloud(start: GenTimer, 
-                // multi_aids: State<TagAidsLock>, 
-                text_cache: State<TextCacheLock>, 
+                multi_aids: State<TagAidsLock>, 
+                // text_cache: State<TextCacheLock>, 
                 conn: DbConn, 
                 admin: Option<AdministratorCookie>, 
                 user: Option<UserCookie>, 
@@ -187,7 +187,19 @@ pub fn test_tagcloud(start: GenTimer,
                 uhits: UniqueHits
                ) -> Express
 {
-    unimplemented!()
+    // unimplemented!()
+    let express: Express = cache::pages::tags::serve(&conn,
+                                                     &multi_aids,
+                                                     admin,
+                                                     user,
+                                                     Some(uhits),
+                                                     Some(start.clone()),
+                                                     Some(encoding),
+                                                     None
+                                                    );
+    let end = start.0.elapsed();
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    express.compress( encoding )
     
 }
 
@@ -201,16 +213,18 @@ pub fn test_rss(start: GenTimer,
                 uhits: UniqueHits
                ) -> Express
 {
-    // unimplemented!()
-    cache::pages::rss::serve(&conn,
-                             &*text_lock,
-                             admin,
-                             user,
-                             Some(uhits),
-                             Some(start),
-                             Some(encoding),
-                             None
-                            )
+    let express: Express = cache::pages::rss::serve(&conn,
+                                                    &*text_lock,
+                                                    admin,
+                                                    user,
+                                                    Some(uhits),
+                                                    Some(start.clone()),
+                                                    Some(encoding),
+                                                    None
+                                                   );
+    let end = start.0.elapsed();
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    express.compress( encoding )
 }
 
 #[get("/test_author")]
@@ -226,20 +240,21 @@ pub fn test_author(start: GenTimer,
                   ) -> Express 
 {
     let author: u32 = 1;
-    cache::pages::author::serve(author, 
-                                &pagination, 
-                                &conn, 
-                                &multi_aids, 
-                                &article_lock,
-                                admin,
-                                user,
-                                Some(uhits),
-                                Some(start),
-                                Some(encoding),
-                                None
-                               )
-    
-    // unimplemented!()
+    let express: Express = cache::pages::author::serve(author, 
+                                                       &pagination, 
+                                                       &conn, 
+                                                       &multi_aids, 
+                                                       &article_lock,
+                                                       admin,
+                                                       user,
+                                                       Some(uhits),
+                                                       Some(start.clone()),
+                                                       Some(encoding),
+                                                       None
+                                                      );
+    let end = start.0.elapsed();
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    express.compress( encoding )
 }
 
 #[get("/test_tag")]
@@ -255,29 +270,22 @@ pub fn test_tag(start: GenTimer,
                ) -> Express 
 {
     
-    // Add a tags cache (stores tags and their count)
-    //   add to the TagAids struct
-    
     let tag = "code";
-    // // routes::pages::tag::serve(tag, start, multi_aids, article_state, &conn, admin, user, encoding, uhits)
-    
-    let express: Express = cache::pages::tag::serve(tag, &pagination, &*multi_aids, &*article_state, &conn, admin, user, Some(uhits), Some(start), Some(encoding), None);
-    
-    // // let tag_aids = multi_aids.tag_aids(tag);
-    // let tag_aids_opt = cache::pages::tag::lookup_aids(&tag, &multi_aids);
-    // if let Some(tag_aids) = tag_aids_opt {
-    //     let articles_opt = article_state.retrieve_articles(tag_aids);
-    //     if let Some(articles) = articles_opt {
-            
-    //     }
-    // } else {
-        
-    // }
-    
-    // let express: Express = String::new().into();
+    let express: Express = cache::pages::tag::serve(tag, 
+                                                    &pagination, 
+                                                    &*multi_aids, 
+                                                    &*article_state, 
+                                                    &conn, 
+                                                    admin, 
+                                                    user, 
+                                                    Some(uhits), 
+                                                    Some(start.clone()), 
+                                                    Some(encoding), 
+                                                    None
+                                                   );
+    let end = start.0.elapsed();
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
     express.compress( encoding )
-    // unimplemented!()
-    
     
 }
 
@@ -287,16 +295,19 @@ pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, con
     
     // routes::pages::article::serve(aid, start, article_state, &conn, admin, user, encoding, uhits)
     // cache::pages::article::serve(aid, start, article_state, &conn, admin, user, encoding, uhits)
-    cache::pages::article::serve(aid, 
-                                 article_state, 
-                                 &conn, 
-                                 admin, 
-                                 user, 
-                                 start,
-                                 uhits,
-                                 encoding, 
-                                 None
-                                )
+    let express: Express = cache::pages::article::serve(aid, 
+                                                        article_state, 
+                                                        &conn, 
+                                                        admin, 
+                                                        user, 
+                                                        start.clone(),
+                                                        uhits,
+                                                        encoding, 
+                                                        None
+                                );
+    let end = start.0.elapsed();
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    express.compress( encoding )
     
     // let article_rst = article_state.retrieve_article(aid);
     // let ctx: Result<CtxBody<TemplateArticle>, CtxBody<TemplateGeneral>> = routes::body::article(article_rst, admin, user, Some(uhits), Some(start), None);

@@ -406,7 +406,12 @@ fn main() {
     // init_pg_pool().get().unwrap();
     
     // rocket::ignite()
-    
+    if CACHE_ENABLED {
+        println!("Starting blog.  Cache enabled.");
+    } else {
+        println!("Starting blog.  Cache is DISABLED.");
+    }
+        
     rock
         // .manage(vcache)
         
@@ -425,6 +430,13 @@ fn main() {
         .attach(Template::fairing())
         
         .mount("/", routes![
+            
+            
+            pages::test_article,
+            pages::test_tag,
+            pages::test_author,
+            pages::test_rss,
+            pages::test_tagcloud,
             
             pages::static_pages,
             pages::code_download,
@@ -488,12 +500,7 @@ fn main() {
             pages::hbs_pagestats_unauthorized,
             pages::hbs_pagestats_no_errors,
             
-            // pages::test_cache,
-            pages::test_article,
-            pages::test_tag,
-            pages::test_author,
-            pages::test_rss,
-            pages::test_tagcloud,
+            // pages::test_cache,,
             
             // pages_administrator::resp_test,
             // pages_administrator::uncompressed,

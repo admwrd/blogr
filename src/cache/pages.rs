@@ -350,6 +350,7 @@ pub mod author {
             let aids: Vec<u32> = result.iter().map(|row| row.get(0)).collect();
             Some(aids)
         } else {
+            println!("Failed to load multi article cache for author {}", userid);
             None
         }
     }
@@ -360,6 +361,7 @@ pub mod author {
             let users: Vec<u32> = result.iter().map(|row| row.get(0)).collect();
             users
         } else {
+            println!("Failed to load multi article cache for authors.  Could not find any users.");
             Vec::new()
         }
         
