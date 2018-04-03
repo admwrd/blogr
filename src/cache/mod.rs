@@ -124,10 +124,11 @@ impl TextCache {
         let rss = cache::pages::rss::load_rss(conn);
         pages.insert("rss".to_owned(), rss);
         
-        // let tagcloud = cache::pages::tags::load_tagcloud(multi_aids);
-        if let Some(tagcloud) = cache::pages::tags::load_tagcloud(multi_aids) {
-            pages.insert("tagcloud".to_owned(), tagcloud);
-        }
+        // TagCloud is not text! It is a Vec<TagCount>
+        // // let tagcloud = cache::pages::tags::load_tagcloud(multi_aids);
+        // if let Some(tagcloud) = cache::pages::tags::load_tagcloud(multi_aids) {
+        //     pages.insert("tagcloud".to_owned(), tagcloud);
+        // }
         
         TextCache {
             pages
@@ -162,7 +163,8 @@ pub struct AidsCache {
     pub pages: HashMap<String, Vec<u32>>,
 }
 pub struct TagsCache {
-    pub tags: HashMap<String, u32>,
+    // pub tags: HashMap<String, u32>,
+    pub tags: Vec<TagCount>,
 }
 
 pub struct TagAidsLock {
@@ -188,18 +190,45 @@ impl TagsCache {
         let qrystr = "SELECT COUNT(*) as cnt, unnest(tag) as untag FROM articles GROUP BY untag ORDER BY cnt DESC;";
         let qry = conn.query(qrystr, &[]);
         if let Ok(result) = qry {
-            let mut pages: HashMap<String, u32> = HashMap::new();
+            // let mut pages: HashMap<String, u32> = HashMap::new();
+            let mut tags: Vec<TagCount> = Vec::new();
             for row in &result {
                 let c: i64 = row.get(0);
                 let t: String = row.get(1);
-                pages.insert(t, c as u32);
+                let t2: String = t.trim_matches('\'').to_string();
+                let tc: TagCount = TagCount {
+                    tag: titlecase(&t2),
+                    url: t2,
+                    count: c as u32,
+                    size: 0,
+                };
+                tags.push(tc);
+                // pages.insert(t, c as u32);
             }
+            
+            if tags.len() > 4 {
+                if tags.len() > 7 {
+                    let mut i = 0u16;
+                    for mut v in &mut tags[0..6] {
+                        v.size = 6-i;
+                        i += 1;
+                    }
+                } else {
+                    let mut i = 0u16;
+                    for mut v in &mut tags[0..3] {
+                        v.size = (3-i)*2;
+                    }
+                }
+                tags.sort_by(|a, b| a.tag.cmp(&b.tag));
+            }
+            
             TagsCache {
-                tags: pages,
+                tags,
             }
         } else {
             TagsCache {
-                tags: HashMap::new(),
+                // tags: HashMap::new(),
+                tags: Vec::new(),
             }
         }
         
@@ -231,19 +260,21 @@ impl TagAidsLock {
     pub fn retrieve_tags(&self) -> Option<Vec<TagCount>> {
         // unimplemented!()
         if let Ok(all_tags) = self.tags_lock.read() {
-            let mut tags: Vec<TagCount> = Vec::new();
-            for (tag, count) in &all_tags.tags {
-                let t = TagCount {
-                    // tag: tag.clone(),
-                    tag: titlecase(tag),
-                    // url: titlecase(tag.trim_matches('\'')),
-                    url: tag.trim_matches('\'').to_owned(),
-                    count: *count,
-                    size: 0u16,
-                };
-                tags.push(t);
-            }
-            Some(tags)
+            Some(all_tags.tags.clone())
+            
+            // let mut tags: Vec<TagCount> = Vec::new();
+            // for (tag, count) in &all_tags.tags {
+            //     let t = TagCount {
+            //         // tag: tag.clone(),
+            //         tag: titlecase(tag),
+            //         // url: titlecase(tag.trim_matches('\'')),
+            //         url: tag.trim_matches('\'').to_owned(),
+            //         count: *count,
+            //         size: 0u16,
+            //     };
+            //     tags.push(t);
+            // }
+            // Some(tags)
         } else {
             None
         }
@@ -274,12 +305,13 @@ impl TagAidsLock {
         
         let mut article_cache: HashMap<String, Vec<u32>> = HashMap::with_capacity(tag_cache.tags.len() + authors.len() + 10);
         
-        for tag in tag_cache.tags.keys() {
-            if let Some(aids) = cache::pages::tag::load_tag_aids(conn, &tag) {
-                let key = format!("tag/{}", tag);
+        // for tag in tag_cache.tags.keys() {
+        for tag in tag_cache.tags.iter() {
+            if let Some(aids) = cache::pages::tag::load_tag_aids(conn, &tag.url) {
+                let key = format!("tag/{}", &tag.url);
                 article_cache.insert(key, aids);
             } else {
-                println!("Error loading multi article cache on tag {} - no articles found", tag);
+                println!("Error loading multi article cache on tag {} - no articles found", tag.url);
             }
         }
         
