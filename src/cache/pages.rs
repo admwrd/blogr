@@ -290,12 +290,12 @@ pub mod tags {
         
         // unimplemented!()
     }
-    pub fn load_all_tags(conn: &DbConn) -> Option<Vec<TagCount>> {
-        unimplemented!()
-    }
-    pub fn lookup_tags(cache: TagAidsLock) -> Option<Vec<TagCount>> {
-        unimplemented!()
-    }
+    // pub fn load_all_tags(conn: &DbConn) -> Option<Vec<TagCount>> {
+    //     unimplemented!()
+    // }
+    // pub fn lookup_tags(cache: TagAidsLock) -> Option<Vec<TagCount>> {
+    //     unimplemented!()
+    // }
     
     // pub fn load_tagcloud(cache: &TagAidsLock) -> Option<TagCount> {
     //     unimplemented!()
@@ -350,28 +350,71 @@ pub mod tags {
 
 pub mod author {
     use super::*;
-    pub fn context(body: Option<Vec<Article>>, 
-                   pagination: Page<Pagination>,
+    pub fn context(author: u32,
+                   pagination: &Page<Pagination>,
+                   conn: &DbConn,
+                   multi_aids: &TagAidsLock,
+                   article_lock: &ArticleCacheLock,
                    admin: Option<AdministratorCookie>, 
                    user: Option<UserCookie>, 
-                   gen: Option<GenTimer>, 
                    uhits: Option<UniqueHits>, 
+                   gen: Option<GenTimer>, 
+                   encoding: Option<AcceptCompression>,
                    msg: Option<String>,
                    javascript: Option<String>
-                  ) -> Result<CtxBody<TemplateArticlesPages>, CtxBody<TemplateGeneral>>
-    {
+    ) -> Result<CtxBody<TemplateArticlesPages>, CtxBody<TemplateGeneral>> {
+        if let Some((articles, total_items)) = multi_aids.author_articles(article_lock, author, &pagination) {
+            let javascript: Option<String> = None;
+            let info_opt: Option<String> = None;
+            let i = info::info( Some("Showing articles by author".to_owned()), "/author".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
+                Ok(CtxBody( TemplateArticlesPages::new(articles, pagination.clone(), total_items, info_opt, i) ))
+        } else {
+            let i = info::info( Some( "No articles to display".to_owned() ), "/author".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
+            Err(CtxBody( TemplateGeneral::new("No articles found for specified author.".to_owned(), i) ))
+        }
+        
+        // unimplemented!()
+    }
+    pub fn serve(author: u32,
+                 pagination: &Page<Pagination>,
+                 conn: &DbConn, 
+                 multi_aids: &TagAidsLock, 
+                 article_lock: &ArticleCacheLock,
+                 admin: Option<AdministratorCookie>, 
+                 user: Option<UserCookie>, 
+                 uhits: Option<UniqueHits>, 
+                 gen: Option<GenTimer>, 
+                 encoding: Option<AcceptCompression>,
+                 msg: Option<String>,
+    ) -> Express {
         unimplemented!()
         
     }
+    
     // Find all authors, their user id, their username, and display name
     // pub fn load_authors() -> Vec<(u32, String, String)> {
     // Find all authors' user ids
     // pub fn load_author_articles(conn: &DbConn, userid: u32) -> Option<Vec<u32>> {
     pub fn load_author_articles(conn: &DbConn, userid: u32) -> Option<Vec<u32>> {
-        unimplemented!()
+        // unimplemented!()
+        let qry = conn.query(&format!("SELECT aid FROM articles WHERE author = {}", userid), &[]);
+        if let Ok(result) = qry {
+            let aids: Vec<u32> = result.iter().map(|row| row.get(0)).collect();
+            Some(aids)
+        } else {
+            None
+        }
     }
     pub fn load_authors(conn: &DbConn) -> Vec<u32> {
-        unimplemented!()
+        // unimplemented!()
+        let qry = conn.query("SELECT userid FROM users", &[]);
+        if let Ok(result) = qry {
+            let users: Vec<u32> = result.iter().map(|row| row.get(0)).collect();
+            users
+        } else {
+            Vec::new()
+        }
+        
     }
 }
 
