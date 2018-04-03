@@ -46,6 +46,20 @@ use xpress::*;
 
 
 
+pub fn make_descriptions(articles: Vec<Article>) -> Vec<Article> {
+    let output: Vec<Article> = articles.into_iter()
+        .map(|mut article| {
+            article.body = if article.description != "" {
+                article.description.clone()
+            } else {
+                article.body[..DESC_LIMIT].to_owned()
+            };
+            article
+        }
+    ).collect();
+    output
+}
+
 
 
 
@@ -343,6 +357,7 @@ impl TagAidsLock {
         let mut starting = pagination.cur_page as u32;
         let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
         if let Some(aids) = self.retrieve_aids(&format!("author/{}", &author)) {
+            // println!("Attempting to retrieve author articles: {:#?}", &aids);
             let total_items = aids.len() as u32;
             if total_items <= pagination.settings.ipp as u32 {
                 starting = 0;
@@ -361,9 +376,12 @@ impl TagAidsLock {
                     return None;
                 }
             }
-            
-            let ids: Vec<u32> = (starting..ending).into_iter().map(|i| i as u32).collect();
-            if let Some(articles) = article_cache.retrieve_articles(ids) {
+            // println!("Attempting to grab articles ({}, {}]", starting, ending);
+            let slice: &[u32] = &aids[starting as usize..ending as usize];
+            // println!("which are: {:?}", &slice);
+            let ids = slice.to_owned();
+            if let Some(mut articles) = article_cache.retrieve_articles(ids) {
+                articles = make_descriptions(articles);
                 let length = articles.len() as u32;
                 if length != total_items {
                     println!("ERROR: Retrieving articles with author `{}` yielded differing results.\nIt was supposed to return {} items but returned {} items.", author, total_items, length);
@@ -402,19 +420,39 @@ impl TagAidsLock {
                     return None;
                 }
             }
-            let ids: Vec<u32> = (starting..ending).into_iter().map(|i| i as u32).collect();
-            if let Some(articles) = article_cache.retrieve_articles(ids) {
+            // println!("Attempting to grab articles ({}, {}]", starting, ending);
+            let slice: &[u32] = &aids[starting as usize..ending as usize];
+            let ids = slice.to_owned();
+            if let Some(mut articles) = article_cache.retrieve_articles(ids) {
+                articles = make_descriptions(articles);
                 let length = articles.len() as u32;
                 if length != total_items {
                     println!("ERROR: Retrieving articles with tag `{}` yielded differing results.\nIt was supposed to return {} items but returned {} items.", tag, total_items, length);
                 }
                 Some( (articles, length) )
             } else {
+                println!("Could not retrieve articles in tag_articles() - retrieve_articles failed");
                 None
             }
+            
         } else {
+            println!("Error retrieving articles for tag, retrieve_aids() failed for `tag/{}`", &tag);
             None
         }
+        //     let ids: Vec<u32> = (starting..ending).into_iter().map(|i| i as u32).collect();
+        //     if let Some(mut articles) = article_cache.retrieve_articles(ids) {
+        //         articles = make_descriptions(articles);
+        //         let length = articles.len() as u32;
+        //         if length != total_items {
+        //             println!("ERROR: Retrieving articles with tag `{}` yielded differing results.\nIt was supposed to return {} items but returned {} items.", tag, total_items, length);
+        //         }
+        //         Some( (articles, length) )
+        //     } else {
+        //         None
+        //     }
+        // } else {
+        //     None
+        // }
     }
     // Maybe add a function that executes a closure?
     // pub fn unlock<F, T>(f: F) -> T  where F: Fn(i32) -> T { unimplemented!() }
