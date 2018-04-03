@@ -130,6 +130,7 @@ pub mod article {
         let id = ArticleId { aid };
         id.retrieve()
     }
+    #[inline]
     pub fn serve(aid: u32, 
                  article_state: State<ArticleCacheLock>, 
                  conn: &DbConn, 
@@ -204,6 +205,7 @@ pub mod tag {
             Err(CtxBody( TemplateGeneral::new("Error retrieving articles.".to_owned(), i) ))
         }
     }
+    #[inline]
     pub fn serve(tag: &str, 
                  pagination: &Page<Pagination>,
                  multi_aids: &TagAidsLock, 
@@ -275,6 +277,7 @@ pub mod tags {
             Err(CtxBody( TemplateGeneral::new("Error retrieving tags".to_owned(), i) ))
         }
     }
+    #[inline]
     pub fn serve(conn: &DbConn, 
                  multi_aids: &TagAidsLock, 
                  admin: Option<AdministratorCookie>, 
@@ -287,65 +290,7 @@ pub mod tags {
     {
         let javascript: Option<String> = None;
         cache::template( cache::pages::tags::context(conn, multi_aids, admin, user, uhits, gen, encoding, msg, javascript) )
-        
-        // unimplemented!()
     }
-    // pub fn load_all_tags(conn: &DbConn) -> Option<Vec<TagCount>> {
-    //     unimplemented!()
-    // }
-    // pub fn lookup_tags(cache: TagAidsLock) -> Option<Vec<TagCount>> {
-    //     unimplemented!()
-    // }
-    
-    // pub fn load_tagcloud(cache: &TagAidsLock) -> Option<TagCount> {
-    //     unimplemented!()
-    //     // if let Some(mut tags) = cache.retrieve_tags() {
-    //     //     // let mut tagcounts: Vec<TagCount> = Vec::new();
-    //     //     if tags.len() > 4 {
-    //     //         if tags.len() > 7 {
-    //     //             let mut i = 0u16;
-    //     //             for mut v in &mut tags[0..6] {
-    //     //                 v.size = 6-i;
-    //     //                 i += 1;
-    //     //             }
-    //     //         } else {
-    //     //             let mut i = 0u16;
-    //     //             for mut v in &mut tags[0..3] {
-    //     //                 v.size = (3-i)*2;
-    //     //             }
-    //     //         }
-    //     //         tags.sort_by(|a, b| a.tag.cmp(&b.tag));
-    //     //     }
-    //     // } else {
-    //     //     "Could not load tags.".to_owned()
-    //     // }
-    // }
-    
-    // pub fn load_tagcloud(cache: &TagAidsLock) -> Option<String> {
-    //     // unimplemented!()
-    //     if let Some(mut tags) = cache.retrieve_tags() {
-    //         // let mut tagcounts: Vec<TagCount> = Vec::new();
-    //         if tags.len() > 4 {
-    //             if tags.len() > 7 {
-    //                 let mut i = 0u16;
-    //                 for mut v in &mut tags[0..6] {
-    //                     v.size = 6-i;
-    //                     i += 1;
-    //                 }
-    //             } else {
-    //                 let mut i = 0u16;
-    //                 for mut v in &mut tags[0..3] {
-    //                     v.size = (3-i)*2;
-    //                 }
-    //             }
-    //             tags.sort_by(|a, b| a.tag.cmp(&b.tag));
-    //         }
-    //     } else {
-    //         "Could not load tags.".to_owned()
-    //     }
-    // }
-    
-    
 }
 
 pub mod author {
@@ -375,6 +320,7 @@ pub mod author {
         
         // unimplemented!()
     }
+    #[inline]
     pub fn serve(author: u32,
                  pagination: &Page<Pagination>,
                  conn: &DbConn, 
@@ -422,25 +368,12 @@ pub mod author {
 
 pub mod rss {
     use super::*;
-    // pub fn context(conn: &DbConn,
-    //                article_cache: &ArticleCacheLock,
-    //                multi_aids: &TagAidsLock,
-    //                admin: Option<AdministratorCookie>, 
-    //                user: Option<UserCookie>, 
-    //                uhits: Option<UniqueHits>, 
-    //                gen: Option<GenTimer>, 
-    //                encoding: Option<AcceptCompression>,
-    //                msg: Option<String>,
-    //                javascript: Option<String>
-    //               ) -> Result<CtxBody<TemplateArticlesPages>, CtxBody<TemplateGeneral>>
-    // {
-    //     unimplemented!()
-    // }
+    #[inline]
     pub fn serve(conn: &DbConn, 
                 //  pagination: &Page<Pagination>,
                 //  multi_aids: &TagAidsLock, 
                 //  article_state: &ArticleCacheLock, 
-                 text_lock: TextCacheLock,
+                 text_lock: &TextCacheLock,
                  admin: Option<AdministratorCookie>, 
                  user: Option<UserCookie>, 
                  uhits: Option<UniqueHits>, 
@@ -454,23 +387,11 @@ pub mod rss {
         let express: Express = content.into();
         // express.set_content_type(ContentType::XML).compress(encoding)
         express.set_content_type(ContentType::XML)
-        
-        // if let Some(rss) = text_lock.retrieve_text("rss") {
-        // } else {
-        //     
-        // }
-        // let i = info::info( Some("".to_owned(), "/rss".to_owned(), admin, user, gen, uhits, encoding, javascript, msg );
-        // let ctx_body = CtxBody( TemplateGeneral::new(rss, i) )
-        
-        // unimplemented!()
     }
     pub fn load_rss(conn: &DbConn) -> String {
         use rss::{Channel, ChannelBuilder, Guid, GuidBuilder, Item, ItemBuilder, Category, CategoryBuilder, TextInput, TextInputBuilder, extension};
         use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
         use urlencoding::encode;
-        
-        // let rss: Express;
-        
         
         let result = conn.articles("");
         if let Some(articles) = result {
@@ -482,7 +403,6 @@ pub mod rss {
                 link.push_str("article/");
                 link.push_str(&article.aid.to_string());
                 link.push_str("/");
-                // let encoded = encode("This string will be URL encoded.");
                 link.push_str( &encode(&article.title) );
                 
                 let desc: &str = if &article.description != "" {

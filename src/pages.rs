@@ -188,11 +188,12 @@ pub fn test_tagcloud(start: GenTimer,
                ) -> Express
 {
     unimplemented!()
+    
 }
 
 #[get("/test_rss")]
 pub fn test_rss(start: GenTimer, 
-                article_state: State<ArticleCacheLock>, 
+                text_lock: State<TextCacheLock>, 
                 conn: DbConn, 
                 admin: Option<AdministratorCookie>, 
                 user: Option<UserCookie>, 
@@ -200,13 +201,23 @@ pub fn test_rss(start: GenTimer,
                 uhits: UniqueHits
                ) -> Express
 {
-    unimplemented!()
+    // unimplemented!()
+    cache::pages::rss::serve(&conn,
+                             &*text_lock,
+                             admin,
+                             user,
+                             Some(uhits),
+                             Some(start),
+                             Some(encoding),
+                             None
+                            )
 }
 
 #[get("/test_author")]
 pub fn test_author(start: GenTimer, 
+                   pagination: Page<Pagination>,
                    multi_aids: State<TagAidsLock>, 
-                   article_state: State<ArticleCacheLock>, 
+                   article_lock: State<ArticleCacheLock>, 
                    conn: DbConn, 
                    admin: Option<AdministratorCookie>, 
                    user: Option<UserCookie>, 
@@ -214,7 +225,21 @@ pub fn test_author(start: GenTimer,
                    uhits: UniqueHits
                   ) -> Express 
 {
-    unimplemented!()
+    let author: u32 = 1;
+    cache::pages::author::serve(author, 
+                                &pagination, 
+                                &conn, 
+                                &multi_aids, 
+                                &article_lock,
+                                admin,
+                                user,
+                                Some(uhits),
+                                Some(start),
+                                Some(encoding),
+                                None
+                               )
+    
+    // unimplemented!()
 }
 
 #[get("/test_tag")]
