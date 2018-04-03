@@ -118,7 +118,53 @@ impl ArticleCacheLock {
         } else {
             None
         }
-        // unimplemented!()
+    }
+    pub fn all_articles(&self, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+        let mut starting = pagination.cur_page as u32;
+        let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
+        
+        if let Ok(article_lock) = self.lock.read() {
+            let aids: Vec<u32> = article_lock.articles.keys().map(|i| *i).collect();
+        // if let Some(aids) = self.retrieve_aids(&format!("author/{}", &author)) {
+            // println!("Attempting to retrieve author articles: {:#?}", &aids);
+            let total_items = aids.len() as u32;
+            if total_items <= pagination.settings.ipp as u32 {
+                starting = 0;
+                ending = total_items;
+            } else {
+                if starting >= total_items {
+                    // show last page
+                    let starting = total_items - (pagination.settings.ipp as u32);
+                    let ending = total_items;
+                // the greater OR EQUALS part is equivelant to > total_items -1
+                } else if ending >= total_items { 
+                    let ending = total_items;
+                }
+                if starting - ending <= 0 {
+                    println!("Pagination error!  Start-Ending <= 0");
+                    return None;
+                }
+            }
+            // println!("Attempting to grab articles ({}, {}]", starting, ending);
+            let slice: &[u32] = &aids[starting as usize..ending as usize];
+            // println!("which are: {:?}", &slice);
+            let ids = slice.to_owned();
+            // The retireve_articles() opens another reader in the RwLock,
+            // but this shouldn't cause any major issues, maybe a little slower
+            if let Some(mut articles) = self.retrieve_articles(ids) {
+                articles = make_descriptions(articles);
+                let length = articles.len() as u32;
+                if length != total_items {
+                    println!("ERROR: Retrieving all articles yielded differing results.\nIt was supposed to return {} items but returned {} items.", total_items, length);
+                }
+                Some( (articles, length) )
+            } else {
+                println!("Could not retrieve all articles - retrieve_articles failed");
+                None
+            }
+        } else {
+            None
+        }
     }
 }
 
@@ -321,8 +367,8 @@ impl TagAidsLock {
         
         // for tag in tag_cache.tags.keys() {
         for tag in tag_cache.tags.iter() {
-            if let Some(aids) = cache::pages::tag::load_tag_aids(conn, &tag.url) {
-                let key = format!("tag/{}", &tag.url);
+            if let Some(aids) = cache::pages::tag::load_tag_aids(conn, &tag.tag.to_lowercase()) {
+                let key = format!("tag/{}", &tag.tag);
                 if !PRODUCTION { println!("Loading tag {}\n\t{:?}\n\trelated articles:\n\t{:#?}", &tag.url, &tag, &aids); }
                 article_cache.insert(key, aids);
             } else {
