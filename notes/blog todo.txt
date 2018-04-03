@@ -92,6 +92,9 @@ Caching
 Blogr-Fixes
 	Add articles/homepage module that lists all articles, with pagination
 
+	Maybe have the serve() and context() functions take a &GenTimer instead
+		of an owned instance, this allows it to be borrowed and not clone()'d
+
 	Add optional page_info to the multiple article serve() and context() functions
 		to allow displaying customized pagination text
 

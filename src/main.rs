@@ -437,6 +437,7 @@ fn main() {
             pages::test_author,
             pages::test_rss,
             pages::test_tagcloud,
+            pages::test_home,
             
             pages::static_pages,
             pages::code_download,

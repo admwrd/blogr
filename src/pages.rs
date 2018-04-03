@@ -318,6 +318,26 @@ pub fn test_article(start: GenTimer, article_state: State<ArticleCacheLock>, con
     // express
 }
 
+#[get("/test_home")]
+pub fn test_home(start: GenTimer, pagination: Page<Pagination>, article_lock: State<ArticleCacheLock>, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+    let page_info: Option<String> = None;
+    
+    let express: Express = cache::pages::articles::serve(&*article_lock, 
+                                                         pagination, 
+                                                         &conn, 
+                                                         admin, 
+                                                         user, 
+                                                         start.clone(), 
+                                                         uhits, 
+                                                         encoding, 
+                                                         None, 
+                                                         page_info
+                                                        );
+    let end = start.0.elapsed();
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+    express.compress( encoding )
+    
+}
 
 // #[get("/test_cache")]
 // // pub fn test_cache(articles: State<Vec<Article>>) -> Express {

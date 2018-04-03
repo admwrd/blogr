@@ -127,7 +127,7 @@ pub mod articles {
         unimplemented!()
     }
     #[inline]
-    pub fn serve(article_lock: State<ArticleCacheLock>, 
+    pub fn serve(article_lock: &ArticleCacheLock, 
                  pagination: Page<Pagination>,
                  conn: &DbConn, 
                  admin: Option<AdministratorCookie>, 
