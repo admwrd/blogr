@@ -173,29 +173,45 @@ pub mod article {
     use super::*;
 
     #[get("/article/<aid>/<title>")]
-    pub fn cache_article_title(aid: ArticleId, title: Option<&RawStr>) -> Express {
-        // cache_article_view()
-        unimplemented!()
+    pub fn cache_article_title(start: GenTimer,
+                               aid: ArticleId, 
+                               title: Option<&RawStr>,
+                               article_lock: State<ArticleCacheLock>,
+                               conn: DbConn,
+                               admin: Option<AdministratorCookie>,
+                               user: Option<UserCookie>,
+                               encoding: AcceptCompression,
+                               uhits: UniqueHits
+                              ) -> Express 
+    {
+        routes::article::cache_article_view(start, aid, article_lock, conn, admin, user, encoding, uhits)
     }
 
     #[get("/article/<aid>")]
-    pub fn cache_article_id(aid: ArticleId) -> Express {
-        // cache_article_view()
-        unimplemented!()
+    pub fn cache_article_id(start: GenTimer,
+                            aid: ArticleId, 
+                            article_lock: State<ArticleCacheLock>,
+                            conn: DbConn,
+                            admin: Option<AdministratorCookie>,
+                            user: Option<UserCookie>,
+                            encoding: AcceptCompression,
+                            uhits: UniqueHits
+                           ) -> Express 
+    {
+        routes::article::cache_article_view(start, aid, article_lock, conn, admin, user, encoding, uhits)
     }
 
     #[get("/article?<aid>")]
     pub fn cache_article_view(start: GenTimer, 
-                            aid: ArticleId,
-                            article_state: State<ArticleCacheLock>, 
-                            conn: DbConn, 
-                            admin: Option<AdministratorCookie>, 
-                            user: Option<UserCookie>, 
-                            encoding: AcceptCompression, 
-                            uhits: UniqueHits
-                        ) -> Express 
+                              aid: ArticleId,
+                              article_state: State<ArticleCacheLock>, 
+                              conn: DbConn, 
+                              admin: Option<AdministratorCookie>, 
+                              user: Option<UserCookie>, 
+                              encoding: AcceptCompression, 
+                              uhits: UniqueHits
+                          ) -> Express 
     {
-        // unimplemented!()
         let express: Express = cache::pages::article::serve(aid.aid, 
                                                             article_state, 
                                                             &conn, 
@@ -253,23 +269,33 @@ pub mod author {
     use super::*;
 
     #[get("/author/<author>/<authorname>")]
-    pub fn cache_author_seo(author: u32, authorname: &RawStr) -> Express {
-        // cache_author()
-        unimplemented!()
+    pub fn cache_author_seo(start: GenTimer,
+                            author: u32, 
+                            authorname: &RawStr,
+                            pagination: Page<Pagination>,
+                            multi_aids: State<TagAidsLock>,
+                            article_lock: State<ArticleCacheLock>,
+                            conn: DbConn,
+                            admin: Option<AdministratorCookie>,
+                            user: Option<UserCookie>,
+                            encoding: AcceptCompression,
+                            uhits: UniqueHits
+                           ) -> Express {
+        routes::author::cache_author(start, author, pagination, multi_aids, article_lock, conn, admin, user, encoding, uhits)
     }
 
     #[get("/author/<author>")]
     pub fn cache_author(start: GenTimer,
-                    author: u32,
-                    pagination: Page<Pagination>,
-                    multi_aids: State<TagAidsLock>,
-                    article_lock: State<ArticleCacheLock>,
-                    conn: DbConn,
-                    admin: Option<AdministratorCookie>,
-                    user: Option<UserCookie>,
-                    encoding: AcceptCompression,
-                    uhits: UniqueHits
-                    ) -> Express {
+                        author: u32,
+                        pagination: Page<Pagination>,
+                        multi_aids: State<TagAidsLock>,
+                        article_lock: State<ArticleCacheLock>,
+                        conn: DbConn,
+                        admin: Option<AdministratorCookie>,
+                        user: Option<UserCookie>,
+                        encoding: AcceptCompression,
+                        uhits: UniqueHits
+                       ) -> Express {
         
         let express: Express = cache::pages::author::serve(author, 
                                                         &pagination, 
