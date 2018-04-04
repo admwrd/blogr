@@ -78,6 +78,7 @@ extern crate rocket_auth_login;
 // mod vcache;
 // mod counthits;
 mod cache;
+mod routes;
 mod counter;
 // mod static_pages;
 mod content;
@@ -106,6 +107,7 @@ mod ral_user;
 // use cache::*;
 // use vcache::*;
 // use counthits::*;
+use routes::*;
 use blog::*;
 use cache::*;
 use counter::*;
@@ -444,13 +446,21 @@ fn main() {
             pages::refresh_content,
             
             // pages::hbs_view_articles,
-            pages::hbs_tags_all,
-            pages::hbs_articles_tag_redirect,
-            pages::hbs_articles_tag,
-            pages::hbs_article_title,
-            pages::hbs_article_id,
-            pages::hbs_article_view,
-            pages::hbs_article_not_found,
+            // old_pages::hbs_tags_all,
+            routes::tagcloud::cache_tagcloud,
+            // old_pages::hbs_articles_tag_redirect,
+            routes::tag::cache_tag_redirect,
+            // old_pages::hbs_articles_tag,
+            routes::tag::cache_tag,
+            // old_pages::hbs_article_title,
+            routes::article::cache_article_title,
+            // old_pages::hbs_article_id,
+            routes::article::cache_article_id,
+            // old_pages::hbs_article_view,
+            routes::article::cache_article_view,
+            // old_pages::hbs_article_not_found,
+            routes::article::hbs_article_not_found,
+            
             pages::hbs_article_process,
             pages::hbs_create_unauthorized,
             pages::hbs_create_form,
@@ -462,11 +472,15 @@ fn main() {
             // pages::hbs_search_page,
             pages::hbs_search_redirect,
             pages::hbs_search_results,
-            pages::hbs_author_display,
-            pages::hbs_author,
+            // old_pages::hbs_author_display,
+            routes::author::cache_author_seo,
+            // old_pages::hbs_author,
+            routes::author::cache_author,
             pages::hbs_about,
-            pages::rss_page,
-            pages::hbs_index,
+            // old_pages::rss_page,
+            routes::rss::cache_rss,
+            // old_pages::hbs_index,
+            routes::articles::cache_index,
             
             pages::hbs_manage_basic,
             pages::hbs_manage_full,

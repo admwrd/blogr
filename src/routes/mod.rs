@@ -82,12 +82,15 @@ fn err_file_name(name: &str) -> PathBuf {
     }
 }
 
+#[cfg(PRODUCTION)]
+fn debug_timer(_: &GenTimer) { }
 
 #[cfg(not(PRODUCTION))]
-#[inline]
-fn debug_timer(start: &GenTimer) { }
+fn debug_timer(start: &GenTimer) {
+    let end = start.0.elapsed();
+    println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+}
 
-#[cfg(PRODUCTION)]
 #[inline]
 fn fmsg(flash: Option<FlashMessage>) -> Option<String> {
     if let Some(flashmsg) = flash {
@@ -98,205 +101,230 @@ fn fmsg(flash: Option<FlashMessage>) -> Option<String> {
 }
 
 
+pub mod tagcloud {
+    use super::*;
 
-// replaces route pages::hbs_tags_all
-#[get("/all_tags")]
-pub fn hbs_tags_all(start: GenTimer, 
-                    multi_aids: State<TagAidsLock>,
+    // replaces route pages::hbs_tags_all
+    #[get("/all_tags")]
+    pub fn cache_tagcloud(start: GenTimer, 
+                        multi_aids: State<TagAidsLock>,
+                        conn: DbConn,
+                        admin: Option<AdministratorCookie>,
+                        user: Option<UserCookie>,
+                        encoding: AcceptCompression,
+                        uhits: UniqueHits
+                    ) -> Express 
+    {
+        // unimplemented!()
+        let express: Express = cache::pages::tags::serve(&conn,
+                                                        &multi_aids,
+                                                        admin,
+                                                        user,
+                                                        Some(uhits),
+                                                        Some(start.clone()),
+                                                        Some(encoding),
+                                                        None
+                                                        );
+        debug_timer(&start);
+        express.compress( encoding )
+    }
+}
+
+pub mod tag {
+    use super::*;
+
+    #[get("/tag?<tag>")]
+    pub fn cache_tag_redirect(tag: Tag) -> Redirect {
+        Redirect::to(&format!("/tag/{}", tag.tag))
+    }
+
+    #[get("/tag/<tag>")]
+    pub fn cache_tag(start: GenTimer,
+                            tag: String,
+                            multi_aids: State<TagAidsLock>, 
+                            article_state: State<ArticleCacheLock>, 
+                            pagination: Page<Pagination>,
+                            conn: DbConn, 
+                            admin: Option<AdministratorCookie>, 
+                            user: Option<UserCookie>, 
+                            encoding: AcceptCompression, 
+                            uhits: UniqueHits
+                        ) -> Express 
+    {
+        
+        let express: Express = cache::pages::tag::serve(&tag, 
+                                                        &pagination, 
+                                                        &*multi_aids, 
+                                                        &*article_state, 
+                                                        &conn, 
+                                                        admin, 
+                                                        user, 
+                                                        Some(uhits), 
+                                                        Some(start.clone()), 
+                                                        Some(encoding), 
+                                                        None
+                                                    );
+        debug_timer(&start);
+        express.compress( encoding )
+    }
+}
+
+pub mod article {
+    use super::*;
+
+    #[get("/article/<aid>/<title>")]
+    pub fn cache_article_title(aid: ArticleId, title: Option<&RawStr>) -> Express {
+        // cache_article_view()
+        unimplemented!()
+    }
+
+    #[get("/article/<aid>")]
+    pub fn cache_article_id(aid: ArticleId) -> Express {
+        // cache_article_view()
+        unimplemented!()
+    }
+
+    #[get("/article?<aid>")]
+    pub fn cache_article_view(start: GenTimer, 
+                            aid: ArticleId,
+                            article_state: State<ArticleCacheLock>, 
+                            conn: DbConn, 
+                            admin: Option<AdministratorCookie>, 
+                            user: Option<UserCookie>, 
+                            encoding: AcceptCompression, 
+                            uhits: UniqueHits
+                        ) -> Express 
+    {
+        // unimplemented!()
+        let express: Express = cache::pages::article::serve(aid.aid, 
+                                                            article_state, 
+                                                            &conn, 
+                                                            admin, 
+                                                            user, 
+                                                            start.clone(),
+                                                            uhits,
+                                                            encoding, 
+                                                            None
+                                                        );
+        debug_timer(&start);
+        express.compress( encoding )
+    }
+
+    #[get("/article")]
+    pub fn hbs_article_not_found(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
+        // let start = Instant::now();
+        let output: Template = hbs_template(TemplateBody::General(alert_danger("Article not found")), None, Some("Article not found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
+        let end = start.0.elapsed();
+        // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
+        let express: Express = output.into();
+        express.compress(encoding)
+    }
+}
+
+pub mod rss {
+    use super::*;
+
+    #[get("/rss.xml")]
+    pub fn cache_rss(start: GenTimer,
+                    text_lock: State<TextCacheLock>,
                     conn: DbConn,
                     admin: Option<AdministratorCookie>,
                     user: Option<UserCookie>,
                     encoding: AcceptCompression,
                     uhits: UniqueHits
-                   ) -> Express 
-{
-    // unimplemented!()
-    let express: Express = cache::pages::tags::serve(&conn,
-                                                     &multi_aids,
-                                                     admin,
-                                                     user,
-                                                     Some(uhits),
-                                                     Some(start.clone()),
-                                                     Some(encoding),
-                                                     None
-                                                    );
-    debug_timer(&start);
-    express.compress( encoding )
-}
-
-#[get("/tag?<tag>")]
-pub fn hbs_articles_tag_redirect(tag: Tag) -> Redirect {
-    Redirect::to(&format!("/tag/{}", tag.tag))
-}
-
-#[get("/tag/<tag>")]
-pub fn hbs_articles_tag(start: GenTimer,
-                        tag: String,
-                        multi_aids: State<TagAidsLock>, 
-                        article_state: State<ArticleCacheLock>, 
-                        pagination: Page<Pagination>,
-                        conn: DbConn, 
-                        admin: Option<AdministratorCookie>, 
-                        user: Option<UserCookie>, 
-                        encoding: AcceptCompression, 
-                        uhits: UniqueHits
-                       ) -> Express 
-{
-    
-    let express: Express = cache::pages::tag::serve(&tag, 
-                                                    &pagination, 
-                                                    &*multi_aids, 
-                                                    &*article_state, 
-                                                    &conn, 
-                                                    admin, 
-                                                    user, 
-                                                    Some(uhits), 
-                                                    Some(start.clone()), 
-                                                    Some(encoding), 
-                                                    None
-                                                   );
-    debug_timer(&start);
-    express.compress( encoding )
-}
-
-#[get("/article/<aid>/<title>")]
-pub fn hbs_article_title(aid: ArticleId, title: Option<&RawString>) -> Express {
-    hbs_article_view()
-}
-
-#[get("/article/<aid>")]
-pub fn hbs_article_id(aid: ArticleId) -> Express {
-    hbs_article_view()
-}
-
-#[get("/article?<aid>")]
-pub fn hbs_article_view(start: GenTimer, 
-                        aid: u32,
-                        article_state: State<ArticleCacheLock>, 
-                        conn: DbConn, 
-                        admin: Option<AdministratorCookie>, 
-                        user: Option<UserCookie>, 
-                        encoding: AcceptCompression, 
-                        uhits: UniqueHits
-                       ) -> Express 
-{
-    // unimplemented!()
-    let express: Express = cache::pages::article::serve(aid, 
-                                                        article_state, 
-                                                        &conn, 
-                                                        admin, 
-                                                        user, 
-                                                        start.clone(),
-                                                        uhits,
-                                                        encoding, 
+                ) -> Express {
+        
+        let express: Express = cache::pages::rss::serve(&conn,
+                                                        &*text_lock,
+                                                        admin,
+                                                        user,
+                                                        Some(uhits),
+                                                        Some(start.clone()),
+                                                        Some(encoding),
                                                         None
-                                                       );
-    debug_timer(&start);
-    express.comrpess( encoding )
+                                                    );
+        
+        debug_timer(&start);
+        express.compress( encoding )
+    }
 }
 
-#[get("/article")]
-pub fn hbs_article_not_found(start: GenTimer, conn: DbConn, admin: Option<AdministratorCookie>, user: Option<UserCookie>, encoding: AcceptCompression, uhits: UniqueHits) -> Express {
-    // let start = Instant::now();
-    let output: Template = hbs_template(TemplateBody::General(alert_danger("Article not found")), None, Some("Article not found".to_string()), String::from("/article"), admin, user, None, Some(start.0));
-    let end = start.0.elapsed();
-    // println!("Served in {}.{:09} seconds", end.as_secs(), end.subsec_nanos());
-    let express: Express = output.into();
-    express.compress(encoding)
-}
+pub mod author {
+    use super::*;
 
-#[get("/rss.xml")]
-pub fn rss_page(start: GenTimer,
-                text_lock: State<TextCacheLock>,
-                conn: DbConn,
-                admin: Option<AdministratorCookie>,
-                user: Option<UserCookie>,
-                encoding: AcceptCompression,
-                uhits: UniqueHits
-               ) -> Express {
-    
-    let express: Express = cache::pages::rss::serve(&conn,
-                                                    &*text_lock,
-                                                    admin,
-                                                    user,
-                                                    Some(uhits),
-                                                    Some(start.clone()),
-                                                    Some(encoding),
-                                                    None
-                                                   );
-    
-    debug_timer(&start);
-    express.compress( encoding )
-}
+    #[get("/author/<author>/<authorname>")]
+    pub fn cache_author_seo(author: u32, authorname: &RawStr) -> Express {
+        // cache_author()
+        unimplemented!()
+    }
 
-#[get("/author/<author>/<authorname>")]
-pub fn hbs_author_display() -> Express {
-    hbs_author()
-}
-
-#[get("/author/<author>")]
-pub fn hbs_author(start: GenTimer,
-                  author: u32,
-                  pagination: Page<Pagination>,
-                  multi_aids: State<TagAidsLock>,
-                  article_lock: State<ArticleCacheLock>,
-                  conn: DbConn,
-                  admin: Option<AdministratorCookie>,
-                  user: Option<UserCookie>,
-                  encoding: AcceptCompression,
-                  uhits: UniqueHits
-                 ) -> Express {
-    
-    let express: Express = cache::pages::author::serve(author, 
-                                                       &pagination, 
-                                                       &conn, 
-                                                       &multi_aids, 
-                                                       &article_lock,
-                                                       admin,
-                                                       user,
-                                                       Some(uhits),
-                                                       Some(start.clone()),
-                                                       Some(encoding),
-                                                       None
-                                                      );
-    
-    debug_timer(&start);
-    express.compress( encoding )
-    
-}
-
-
-#[get("/")]
-hbs_index(start: GenTimer, 
-          pagination: Page<Pagination>, 
-          article_lock: <ArticleCacheLock>,
-          conn: DbConn, 
-          admin: Option<AdministratorCookie>, 
-          user: Option<UserCookie>, 
-          flash: Option<FlashMessage>, 
-          encoding: AcceptCompression, 
-          uhits: UniqueHits
-         ) -> Express 
-{
-    let fmsg = fmsg(&flash);
-    
-    let express: Express = cache::pages::articles::serve(&*article_lock, 
-                                                         pagination, 
-                                                         &conn, 
-                                                         admin, 
-                                                         user, 
-                                                         start.clone(), 
-                                                         uhits, 
-                                                         encoding, 
-                                                         fmsg, 
-                                                         page_info
+    #[get("/author/<author>")]
+    pub fn cache_author(start: GenTimer,
+                    author: u32,
+                    pagination: Page<Pagination>,
+                    multi_aids: State<TagAidsLock>,
+                    article_lock: State<ArticleCacheLock>,
+                    conn: DbConn,
+                    admin: Option<AdministratorCookie>,
+                    user: Option<UserCookie>,
+                    encoding: AcceptCompression,
+                    uhits: UniqueHits
+                    ) -> Express {
+        
+        let express: Express = cache::pages::author::serve(author, 
+                                                        &pagination, 
+                                                        &conn, 
+                                                        &multi_aids, 
+                                                        &article_lock,
+                                                        admin,
+                                                        user,
+                                                        Some(uhits),
+                                                        Some(start.clone()),
+                                                        Some(encoding),
+                                                        None
                                                         );
-    
-    debug_timer(&start);
-    express.compress( encoding )
-    
+        
+        debug_timer(&start);
+        express.compress( encoding )
+        
+    }
 }
 
+pub mod articles {
+    use super::*;
+
+    #[get("/")]
+    pub fn cache_index(start: GenTimer, 
+                       pagination: Page<Pagination>,
+                       article_lock: State<ArticleCacheLock>,
+                       conn: DbConn, 
+                       admin: Option<AdministratorCookie>, 
+                       user: Option<UserCookie>, 
+                       flash: Option<FlashMessage>, 
+                       encoding: AcceptCompression, 
+                       uhits: UniqueHits
+                      ) -> Express 
+    {
+        let fmsg = fmsg(flash);
+        let page_info: Option<String> = None;
+        
+        let express: Express = cache::pages::articles::serve(&*article_lock, 
+                                                             pagination, 
+                                                             &conn, 
+                                                             admin, 
+                                                             user, 
+                                                             start.clone(), 
+                                                             uhits, 
+                                                             encoding, 
+                                                             fmsg, 
+                                                             page_info
+                                                            );
+        
+        debug_timer(&start);
+        express.compress( encoding )
+        
+    }
+}
 
 
 
