@@ -367,8 +367,9 @@ impl TagAidsLock {
         
         // for tag in tag_cache.tags.keys() {
         for tag in tag_cache.tags.iter() {
-            if let Some(aids) = cache::pages::tag::load_tag_aids(conn, &tag.tag.to_lowercase()) {
-                let key = format!("tag/{}", &tag.tag);
+            // if let Some(aids) = cache::pages::tag::load_tag_aids(conn, &tag.tag.to_lowercase()) {
+            if let Some(aids) = cache::pages::tag::load_tag_aids(conn, &tag.tag) {
+                let key = format!("tag/{}", &tag.tag.to_lowercase());
                 if !PRODUCTION { println!("Loading tag {}\n\t{:?}\n\trelated articles:\n\t{:#?}", &tag.url, &tag, &aids); }
                 article_cache.insert(key, aids);
             } else {
@@ -447,7 +448,7 @@ impl TagAidsLock {
     pub fn tag_articles(&self, article_cache: &ArticleCacheLock, tag: &str, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
         let mut starting = pagination.cur_page as u32;
         let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
-        if let Some(aids) = self.retrieve_aids(&format!("tag/{}", tag)) {
+        if let Some(aids) = self.retrieve_aids(&format!("tag/{}", tag.to_lowercase())) {
             let total_items = aids.len() as u32;
             // the greater OR EQUALS part is equivelant to > total_items -1
             if total_items <= pagination.settings.ipp as u32 {

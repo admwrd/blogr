@@ -303,15 +303,21 @@ pub mod tag {
     // This is used to cache what articles correspond with each tag
     pub fn load_tag_aids(conn: &DbConn, tag: &str) -> Option<Vec<u32>> {
         // look up all ArticleId's for the given tag
-        let result = conn.query(&format!("SELECT aid FROM articles WHERE '{}' = ANY(tag)", tag), &[]);
+        let qrystr = format!("SELECT aid FROM articles WHERE '{}' = ANY(tag)", tag.to_lowercase());
+        let result = conn.query(&qrystr, &[]);
         if let Ok(rst) = result {
             let aids: Vec<u32> = rst.iter().map(|row| row.get(0)).collect();
             if aids.len() != 0 {
                 Some(aids)
             } else {
+                println!("ERROR LOADING TAG {} - no articles found\n'{}'", tag, &qrystr);
                 None
             }
+        } else if let Err(err) = result {
+            println!("ERROR LOADING TAG: {} - {}\n'{}'", tag, err, &qrystr);
+            None
         } else {
+            println!("ERROR LOADING TAG: {}\n'{}'", tag, &qrystr);
             None
         }
     }

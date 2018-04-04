@@ -53,6 +53,15 @@ Server
 
 Theme
 	Add scope for comment.line.documentation
+	Maybe add a bubble around the tags
+		Could set size of the div v-article-tags to something like:
+		-moz-fit-content
+		or cross-browser version:
+		  width: intrinsic;           /* Safari/WebKit uses a non-standard name */
+		  width: -moz-max-content;    /* Firefox/Gecko */
+		  width: -webkit-max-content; /* Chrome */
+		https://stackoverflow.com/questions/7839164/is-there-a-css-cross-browser-value-for-width-moz-fit-content
+		https://stackoverflow.com/questions/26151746/what-is-the-ie-equivalent-of-moz-fit-content-and-moz-center/26151871
 
 Organization
 	Make blogr into blogre as a library and binary project
