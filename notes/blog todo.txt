@@ -90,6 +90,14 @@ Caching
 	
 
 Blogr-Fixes
+	Pagination seems to fail when using 1 item per page
+		This might be in the cache module under:
+			cache::ArticleCacheLock::all_articles()
+			cache::TagAidsLock::author_articles()
+			cache::TagAidsLock::tag_articles()
+		but also check the collate module to see if it is possible for any unsigned integers
+		to have values below 0 (subtract from zero or something like that)
+
 	Add articles/homepage module that lists all articles, with pagination
 
 	Maybe have the serve() and context() functions take a &GenTimer instead
