@@ -95,6 +95,8 @@ const CACHE_FALLBACK: bool = true;
 const CACHE_ENABLED: bool = true;
 #[cfg(not(production))]
 const ENABLE_DEBUG_OUTPUT: bool = false;
+#[cfg(not(production))]
+const DEBUG_TIMING: bool = true;
 
 // #[cfg(not(production))]
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu::new("Rust Tutorials".to_owned(), "/content/tutorials".to_owned(), "")]);
@@ -201,6 +203,8 @@ const CACHE_FALLBACK: bool = true;
 const CACHE_ENABLED: bool = true;
 #[cfg(production)]
 const ENABLE_DEBUG_OUTPUT: bool = false;
+#[cfg(production)]
+const DEBUG_TIMING: bool = false;
 
 
 
