@@ -367,7 +367,7 @@ fn main() {
     // let multi_aids = TagAidsLock::new( AidsCache::load_cache(&conn), TagsCache::load_cache(&conn) );
     let multi_aids = TagAidsLock::load_cache(&conn);
     let text_cache = TextCacheLock::new( TextCache::load_cache(&conn, &multi_aids) );
-    
+    let num_articles = NumArticles( article_map_cache.num_articles() );
     /*
     
     all_tags
@@ -428,6 +428,7 @@ fn main() {
         .manage(article_map_cache)
         .manage(text_cache)
         .manage(multi_aids)
+        .manage(num_articles)
         
         .attach(Template::fairing())
         

@@ -323,6 +323,7 @@ pub mod articles {
     pub fn cache_index(start: GenTimer, 
                        pagination: Page<Pagination>,
                        article_lock: State<ArticleCacheLock>,
+                       num_articles: State<NumArticles>,
                        conn: DbConn, 
                        admin: Option<AdministratorCookie>, 
                        user: Option<UserCookie>, 
@@ -332,7 +333,31 @@ pub mod articles {
                       ) -> Express 
     {
         let fmsg = fmsg(flash);
-        let page_info: Option<String> = None;
+        
+        // Get pagination info to build the welcome message
+        let NumArticles(total_items) = *num_articles;
+        let (ipp, cur_page, num_pages) = pagination.page_data(total_items);
+        let info = pagination.page_info(total_items);
+        
+        // Define and build the welcome message
+        let mut page_info: String;
+        let welcome: &str = if cur_page == 1 {
+            r##"<h1 style="text-align: center;">Welcome</h1>
+<p>This is the personal blog of Andrew Prindle.  My recent topics of interest include:
+the Rust programming language, web development, javascript, databases, cryptology, security, and compression.  
+Feel free to contact me at the email address at the bottom of the page.</p>
+<hr>
+"##
+        } else {
+            r##"<h1 style="text-align: center;">Articles By Date</h1>
+"##
+        };
+        page_info = String::with_capacity(info.len() + welcome.len() + 100);
+        page_info.push_str( welcome );
+        page_info.push_str( &info );
+        
+        let page_msg = Some(page_info);
+        // let page_info: Option<String> = None;
         
         let express: Express = cache::pages::articles::serve(&*article_lock, 
                                                              pagination, 
@@ -343,7 +368,8 @@ pub mod articles {
                                                              uhits, 
                                                              encoding, 
                                                              fmsg, 
-                                                             page_info
+                                                            //  page_info
+                                                             page_msg
                                                             );
         
         debug_timer(&start);

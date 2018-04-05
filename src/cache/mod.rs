@@ -63,6 +63,14 @@ pub fn make_descriptions(articles: Vec<Article>) -> Vec<Article> {
 
 
 
+
+pub struct NumArticles(pub u32);
+
+
+
+
+
+
 pub struct ArticleCacheLock {
     pub lock: RwLock<ArticleCache>,
 }
@@ -88,6 +96,13 @@ impl ArticleCache {
 impl ArticleCacheLock {
     pub fn new(cache: ArticleCache) -> Self {
         ArticleCacheLock{ lock: RwLock::new( cache ) }
+    }
+    pub fn num_articles(&self) -> u32 {
+        if let Ok(article_cache) = self.lock.read() {
+            article_cache.articles.len() as u32
+        } else {
+            0
+        }
     }
     pub fn retrieve_article(&self, aid: u32) -> Option<Article> {
         if let Ok(article_cache) = self.lock.read() {
