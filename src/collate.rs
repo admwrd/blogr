@@ -394,7 +394,7 @@ Bootstrap:
     }
 }
 
-pub trait Collate {
+pub trait Collate : Clone {
     fn new(u8) -> Self;
     fn ipp(&self) -> u8;
     fn default_ipp() -> u8 { 10 }

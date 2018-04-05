@@ -119,7 +119,8 @@ impl ArticleCacheLock {
             None
         }
     }
-    pub fn all_articles(&self, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+    // pub fn all_articles(&self, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+    pub fn all_articles<T: Collate>(&self, pagination: &Page<T>) -> Option<(Vec<Article>, u32)> {
         let mut starting = pagination.cur_page as u32;
         // let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
         let mut ending = pagination.cur_page as u32 + pagination.settings.ipp() as u32;

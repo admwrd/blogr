@@ -99,6 +99,18 @@ Caching
 	
 
 Blogr-Fixes
+	Convert templates module to use generic Collate parameter, instead of Page<Pagination>
+		pub fn use_this<T: Collate>(pagination: Page<T>)
+		pub fn instead_of(pagination: Page<Pagination>)
+		change  TemplateArticlesPages & TemplateManage
+			TemplateBody
+			
+
+	Update cache::pages module's context() and serve() functions to take a generic pagination parameter
+		pub fn something<T: Collate>(pagination: Page<T>)
+		instead of
+		pub fn something(pagination: Page<Pagination>)
+
 	Add welcome message to / index route
 
 	Maybe update all pagination functions to be generic like

@@ -87,8 +87,8 @@ pub mod info {
 
 pub mod articles {
     use super::*;
-    pub fn context(conn: &DbConn,
-                   pagination: Page<Pagination>,
+    pub fn context<T: Collate>(conn: &DbConn,
+                   pagination: Page<T>,
                    article_lock: &ArticleCacheLock,
                    admin: Option<AdministratorCookie>, 
                    user: Option<UserCookie>, 
@@ -123,12 +123,12 @@ pub mod articles {
             Err(CtxBody( TemplateGeneral::new("No articles found.".to_owned(), i) ))
         }
     }
-    pub fn fallback(conn: &DbConn, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+    pub fn fallback<T: Collate>(conn: &DbConn, pagination: &Page<T>) -> Option<(Vec<Article>, u32)> {
         unimplemented!()
     }
     #[inline]
-    pub fn serve(article_lock: &ArticleCacheLock, 
-                 pagination: Page<Pagination>,
+    pub fn serve<T: Collate>(article_lock: &ArticleCacheLock, 
+                 pagination: Page<T>,
                  conn: &DbConn, 
                  admin: Option<AdministratorCookie>, 
                  user: Option<UserCookie>, 
@@ -239,9 +239,9 @@ pub mod article {
 
 pub mod tag {
     use super::*;
-    pub fn context(tag: &str,
+    pub fn context<T: Collate>(tag: &str,
                    conn: &DbConn,
-                   pagination: &Page<Pagination>,
+                   pagination: &Page<T>,
                    article_cache: &ArticleCacheLock,
                    multi_aids: &TagAidsLock,
                    admin: Option<AdministratorCookie>, 
@@ -281,8 +281,8 @@ pub mod tag {
         }
     }
     #[inline]
-    pub fn serve(tag: &str, 
-                 pagination: &Page<Pagination>,
+    pub fn serve<T: Collate>(tag: &str, 
+                 pagination: &Page<T>,
                  multi_aids: &TagAidsLock, 
                  article_state: &ArticleCacheLock, 
                  conn: &DbConn, 
@@ -328,7 +328,7 @@ pub mod tag {
     //     multi_aids.tag_articles(article_cache, tag, pagination)
     // }
     // The fallback() should return the current page of articles and the total number of articles
-    pub fn fallback(tag: &str, pagination: &Page<Pagination>, conn: &DbConn) -> Option<(Vec<Article>, u32)> {
+    pub fn fallback<T: Collate>(tag: &str, pagination: &Page<T>, conn: &DbConn) -> Option<(Vec<Article>, u32)> {
         // conn.articles(&format!("SELECT a.aid, a.title, a.posted, a.body, a.tag, a.description, u.userid, u.display, u.username, a.image, a.markdown, a.modified  FROM articles a JOIN users u ON (a.author = u.userid) WHERE '{}' = ANY(tag)", tag))
         // Need to use collate's methods to help generate the SQL
         // use ArticleId.retrieve_with_conn(conn)
@@ -376,8 +376,8 @@ pub mod tags {
 
 pub mod author {
     use super::*;
-    pub fn context(author: u32,
-                   pagination: &Page<Pagination>,
+    pub fn context<T: Collate>(author: u32,
+                   pagination: &Page<T>,
                    conn: &DbConn,
                    multi_aids: &TagAidsLock,
                    article_lock: &ArticleCacheLock,
@@ -402,8 +402,8 @@ pub mod author {
         // unimplemented!()
     }
     #[inline]
-    pub fn serve(author: u32,
-                 pagination: &Page<Pagination>,
+    pub fn serve<T: Collate>(author: u32,
+                 pagination: &Page<T>,
                  conn: &DbConn, 
                  multi_aids: &TagAidsLock, 
                  article_lock: &ArticleCacheLock,

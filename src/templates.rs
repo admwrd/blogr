@@ -42,6 +42,7 @@ pub struct TagCount {
 
 /// The TemplateBody struct determines which template is used and what info is passed to it
 #[derive(Debug, Clone)]
+// pub enum TemplateBody<T: Collate> {
 pub enum TemplateBody {
     General(String), // page content and optional message
     Article(Article), // article and optional message
@@ -71,6 +72,8 @@ pub enum TemplateBody {
     // turn sort into sort display
     
     // Manage(String, String, Vec<Article>, Page<Pagination>, u32, Sort, Option<String>), // Edit action, delete action, articles, pagination, total items, sort info
+    // Manage(Vec<Article>, Page<Pagination>, u32, Sort), // Articles, pagination, total items, sort info
+    // Manage(Vec<Article>, Page<T>, u32, Sort), // Articles, pagination, total items, sort info
     Manage(Vec<Article>, Page<Pagination>, u32, Sort), // Articles, pagination, total items, sort info
     
     Tags(Vec<TagCount>), // list of tags and their counts, and optional message
@@ -547,7 +550,8 @@ impl TemplateTags {
     }
 }
 impl TemplateArticlesPages {
-    pub fn new(content: Vec<Article>, page: Page<Pagination>, total_items: u32, info_opt: Option<String>, info: TemplateInfo) -> TemplateArticlesPages {
+    // pub fn new(content: Vec<Article>, page: Page<Pagination>, total_items: u32, info_opt: Option<String>, info: TemplateInfo) -> TemplateArticlesPages {
+    pub fn new<T: Collate>(content: Vec<Article>, page: Page<T>, total_items: u32, info_opt: Option<String>, info: TemplateInfo) -> TemplateArticlesPages {
         let mut articles: Vec<ArticleDisplay> = content.iter().map(|a| a.to_display()).collect();
         TemplateArticlesPages {
             body: articles,
@@ -558,7 +562,8 @@ impl TemplateArticlesPages {
     }
 }
 impl TemplateManage {
-    pub fn new(content: Vec<Article>, page: Page<Pagination>, total_items: u32, sort: Sort, info: TemplateInfo) -> TemplateManage {
+    // pub fn new(content: Vec<Article>, page: Page<Pagination>, total_items: u32, sort: Sort, info: TemplateInfo) -> TemplateManage {
+    pub fn new<T: Collate>(content: Vec<Article>, page: Page<T>, total_items: u32, sort: Sort, info: TemplateInfo) -> TemplateManage {
         let mut articles: Vec<ArticleDisplay> = content.iter().map(|a| a.to_display()).collect();
         TemplateManage {
             // action_url,
