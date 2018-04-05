@@ -121,7 +121,8 @@ impl ArticleCacheLock {
     }
     pub fn all_articles(&self, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
         let mut starting = pagination.cur_page as u32;
-        let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
+        // let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
+        let mut ending = pagination.cur_page as u32 + pagination.settings.ipp() as u32;
         
         if let Ok(article_lock) = self.lock.read() {
             let aids: Vec<u32> = article_lock.articles.keys().map(|i| *i).collect();
@@ -136,7 +137,8 @@ impl ArticleCacheLock {
                 ending = total_items - 1;
             }
             
-            if total_items == 1 || pagination.settings.ipp == 1 || ending.saturating_sub(starting) == 0 {
+            // if total_items == 1 || pagination.settings.ipp == 1 || ending.saturating_sub(starting) == 0 {
+            if total_items == 1 || pagination.settings.ipp() == 1 || ending.saturating_sub(starting) == 0 {
                 if let Some(aid) = aids.get(starting as usize) {
                     if let Some(article) = self.retrieve_article(*aid) {
                         let mut art: Vec<Article> = vec![article];
@@ -435,7 +437,8 @@ impl TagAidsLock {
         TagAidsLock{ aids_lock: RwLock::new( aids), tags_lock: RwLock::new( tags ) }
     }
     
-    pub fn multi_articles(&self, article_cache: &ArticleCacheLock, multi_page: &str, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+    // pub fn multi_articles(&self, article_cache: &ArticleCacheLock, multi_page: &str, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+    pub fn multi_articles<T: Collate>(&self, article_cache: &ArticleCacheLock, multi_page: &str, pagination: &Page<T>) -> Option<(Vec<Article>, u32)> {
         // let mut starting = pagination.cur_page as u32;
         // let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
         if let Some(aids) = self.retrieve_aids(multi_page) {
@@ -475,7 +478,8 @@ impl TagAidsLock {
             //     }
             // }
             // println!("Attempting to grab articles ({}, {}]", starting, ending);
-            if total_items == 1 || pagination.settings.ipp == 1 || ending.saturating_sub(starting) == 0 {
+            // if total_items == 1 || pagination.settings.ipp == 1 || ending.saturating_sub(starting) == 0 {
+            if total_items == 1 || pagination.settings.ipp() == 1 || ending.saturating_sub(starting) == 0 {
                 if let Some(aid) = aids.get(starting as usize) {
                     if let Some(article) = article_cache.retrieve_article(*aid) {
                         let mut art: Vec<Article> = vec![article];
@@ -514,11 +518,11 @@ impl TagAidsLock {
         }
         
     }
-    pub fn author_articles(&self, article_cache: &ArticleCacheLock, author: u32, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+    pub fn author_articles<T: Collate>(&self, article_cache: &ArticleCacheLock, author: u32, pagination: &Page<T>) -> Option<(Vec<Article>, u32)> {
         let multi_page = format!("author/{}", author);
         self.multi_articles(article_cache, &multi_page, pagination)
     }
-    pub fn tag_articles(&self, article_cache: &ArticleCacheLock, tag: &str, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+    pub fn tag_articles<T: Collate>(&self, article_cache: &ArticleCacheLock, tag: &str, pagination: &Page<T>) -> Option<(Vec<Article>, u32)> {
         let multi_page = format!("tag/{}", tag.to_lowercase());
         self.multi_articles(article_cache, &multi_page, pagination)
         
