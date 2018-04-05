@@ -99,6 +99,11 @@ Caching
 	
 
 Blogr-Fixes
+	Add welcome message to / index route
+
+	Maybe update all pagination functions to be generic like
+		pub fn something<T: Collate>(pagination: Page<T>)
+
 	Pagination seems to fail when using 1 item per page
 		This might be in the cache module under:
 			cache::ArticleCacheLock::all_articles()

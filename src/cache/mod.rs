@@ -125,8 +125,44 @@ impl ArticleCacheLock {
         
         if let Ok(article_lock) = self.lock.read() {
             let aids: Vec<u32> = article_lock.articles.keys().map(|i| *i).collect();
-        // if let Some(aids) = self.retrieve_aids(&format!("author/{}", &author)) {
-            // println!("Attempting to retrieve author articles: {:#?}", &aids);
+            let total_items = aids.len() as u32;
+            
+            let mut starting = pagination.start();
+            let mut ending = pagination.end();
+            
+            if total_items == 0 || starting >= total_items {
+                return None;
+            } else if ending >= total_items {
+                ending = total_items - 1;
+            }
+            
+            if total_items == 1 || pagination.settings.ipp == 1 || ending.saturating_sub(starting) == 0 {
+                if let Some(aid) = aids.get(starting as usize) {
+                    if let Some(article) = self.retrieve_article(*aid) {
+                        let mut art: Vec<Article> = vec![article];
+                        if !ONE_RESULT_SHOW_FULL && (!ONE_RESULT_ONE_PAGE || (ONE_RESULT_ONE_PAGE && pagination.num_pages(total_items) == 1)) {
+                            art = make_descriptions(art);
+                        }
+                        Some( ( art, total_items ) )
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            } else {
+                let slice: &[u32] = &aids[starting as usize..(ending+1) as usize];
+                let ids = slice.to_owned();
+                if let Some(mut articles) = self.retrieve_articles(ids) {
+                    articles = make_descriptions(articles);
+                    Some( (articles, total_items) )
+                } else {
+                    println!("Could not retrieve all articles page - retrieve_articles failed");
+                    None
+                }
+            }
+            
+            /* 
             let total_items = aids.len() as u32;
             if total_items <= pagination.settings.ipp as u32 {
                 starting = 0;
@@ -161,7 +197,8 @@ impl ArticleCacheLock {
             } else {
                 println!("Could not retrieve all articles - retrieve_articles failed");
                 None
-            }
+            } 
+            */
         } else {
             None
         }
@@ -418,7 +455,7 @@ impl TagAidsLock {
                 // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
                 // ending = starting.saturating_sub(total_items)+1;
             }
-            println!("showing items {} - {}", starting, ending);
+            // println!("showing items {} - {}", starting, ending);
             
             // if total_items <= pagination.settings.ipp as u32 {
             //     starting = 0;
