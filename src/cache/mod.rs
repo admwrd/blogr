@@ -397,9 +397,99 @@ impl TagAidsLock {
     pub fn new(aids: AidsCache, tags: TagsCache) -> Self {
         TagAidsLock{ aids_lock: RwLock::new( aids), tags_lock: RwLock::new( tags ) }
     }
+    
+    pub fn multi_articles(&self, article_cache: &ArticleCacheLock, multi_page: &str, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+        // let mut starting = pagination.cur_page as u32;
+        // let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
+        if let Some(aids) = self.retrieve_aids(multi_page) {
+            // println!("Attempting to retrieve author articles: {:#?}", &aids);
+            let total_items = aids.len() as u32;
+            let mut starting = pagination.start();
+            let mut ending = pagination.end();
+            
+            if total_items == 0 || starting >= total_items {
+                return None;
+            // } else if ending+1 > total_items {
+            } else if ending >= total_items {
+                // ending = starting - total_items;
+                // starting: 10, ending: 14, total_items: 13 (last item: 12)
+                // 
+                ending = total_items - 1;
+                // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+                // ending = starting.saturating_sub(total_items)+1;
+            }
+            println!("showing items {} - {}", starting, ending);
+            
+            // if total_items <= pagination.settings.ipp as u32 {
+            //     starting = 0;
+            //     ending = total_items;
+            // } else {
+            //     if starting >= total_items {
+            //         // show last page
+            //         let starting = total_items - (pagination.settings.ipp as u32);
+            //         let ending = total_items;
+            //     // the greater OR EQUALS part is equivelant to > total_items -1
+            //     } else if ending >= total_items { 
+            //         let ending = total_items;
+            //     }
+            //     if starting - ending <= 0 {
+            //         println!("Pagination error!  Start-Ending <= 0");
+            //         return None;
+            //     }
+            // }
+            // println!("Attempting to grab articles ({}, {}]", starting, ending);
+            if total_items == 1 || pagination.settings.ipp == 1 || ending.saturating_sub(starting) == 0 {
+                if let Some(aid) = aids.get(starting as usize) {
+                    if let Some(article) = article_cache.retrieve_article(*aid) {
+                        let mut art: Vec<Article> = vec![article];
+                        if !ONE_RESULT_SHOW_FULL && (!ONE_RESULT_ONE_PAGE || (ONE_RESULT_ONE_PAGE && pagination.num_pages(total_items) == 1)) {
+                            art = make_descriptions(art);
+                        }
+                        Some( ( art, total_items ) )
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            } else {
+                let slice: &[u32] = &aids[starting as usize..(ending+1) as usize];
+                // println!("which are: {:?}", &slice);
+                let ids = slice.to_owned();
+                if let Some(mut articles) = article_cache.retrieve_articles(ids) {
+                    articles = make_descriptions(articles);
+                    // let length = articles.len() as u32;
+                    // let length = total_items;
+                    
+                    // if length != total_items {
+                        // println!("ERROR: Retrieving multi-article page `{}` yielded differing results.\nIt was supposed to return {} items but returned {} items.", multi_page, total_items, length);
+                    // }
+                    Some( (articles, total_items) )
+                } else {
+                    println!("Could not retrieve mult-articles page for `{}` - retrieve_articles failed", multi_page);
+                    None
+                }
+            }
+            
+        } else {
+            println!("Error retrieving multi-article page, retrieve_aids() failed for `{}`", multi_page);
+            None
+        }
+        
+    }
+    pub fn author_articles(&self, article_cache: &ArticleCacheLock, author: u32, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+        let multi_page = format!("author/{}", author);
+        self.multi_articles(article_cache, &multi_page, pagination)
+    }
+    pub fn tag_articles(&self, article_cache: &ArticleCacheLock, tag: &str, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
+        let multi_page = format!("tag/{}", tag.to_lowercase());
+        self.multi_articles(article_cache, &multi_page, pagination)
+        
+    }
     // Could make author_articles() and tag_articles generic, 
     // take a page name &str to lookup the multi articles page.
     // And change error message to a generic message
+    /*
     pub fn author_articles(&self, article_cache: &ArticleCacheLock, author: u32, pagination: &Page<Pagination>) -> Option<(Vec<Article>, u32)> {
         let mut starting = pagination.cur_page as u32;
         let mut ending = pagination.cur_page as u32 + pagination.settings.ipp as u32;
@@ -501,6 +591,8 @@ impl TagAidsLock {
         //     None
         // }
     }
+    */
+    
     // Maybe add a function that executes a closure?
     // pub fn unlock<F, T>(f: F) -> T  where F: Fn(i32) -> T { unimplemented!() }
 }

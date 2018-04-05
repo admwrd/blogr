@@ -97,6 +97,23 @@ const CACHE_ENABLED: bool = true;
 const ENABLE_DEBUG_OUTPUT: bool = false;
 #[cfg(not(production))]
 const DEBUG_TIMING: bool = true;
+// The ONE_RESULT_SHOW_FULL will show the full article, not just the
+//   article's description, when only one article is to be displayed.
+// This will display the full article even if there are multiple pages
+// but only one article being displayed per page, or if its the last page
+// and there is only one article to display
+#[cfg(not(production))]
+const ONE_RESULT_SHOW_FULL: bool = true;
+// If ONE_RESULT_SHOW_FULL is enabled, and ONE_RESULT_ONE_PAGE is enabled,
+// then show the full article if only one article is displayed, but only
+// if there is only a single page to display, do not show the full article
+// if there are multiple pages, like if only one item per page is being shown
+// or it is the last page and only one item to show - then truncate the body.tion))]
+#[cfg(not(production))]
+const ONE_RESULT_ONE_PAGE: bool = false;
+
+
+
 
 // #[cfg(not(production))]
 // static DEFAULT_PAGE_MENU: Option<Vec<TemplateMenu>> = Some(vec![TemplateMenu::new("Rust Tutorials".to_owned(), "/content/tutorials".to_owned(), "")]);
@@ -205,7 +222,20 @@ const CACHE_ENABLED: bool = true;
 const ENABLE_DEBUG_OUTPUT: bool = false;
 #[cfg(production)]
 const DEBUG_TIMING: bool = false;
-
+// The ONE_RESULT_SHOW_FULL will show the full article, not just the
+//   article's description, when only one article is to be displayed.
+// This will display the full article even if there are multiple pages
+// but only one article being displayed per page, or if its the last page
+// and there is only one article to display
+#[cfg(production)]
+const ONE_RESULT_SHOW_FULL: bool = true;
+// If ONE_RESULT_SHOW_FULL is enabled, and ONE_RESULT_ONE_PAGE is enabled,
+// then show the full article if only one article is displayed, but only
+// if there is only a single page to display, do not show the full article
+// if there are multiple pages, like if only one item per page is being shown
+// or it is the last page and only one item to show - then truncate the body.
+#[cfg(production)]
+const ONE_RESULT_ONE_PAGE: bool = false;
 
 
 
