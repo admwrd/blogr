@@ -99,6 +99,10 @@ Caching
 	
 
 Blogr-Fixes
+	Finish making the cache a setting.
+		Finish the fallback functions in the cache::pages module
+		Add conditional compilation attributes to check if caching is enabled (CACHE_ENABLED)
+
 	Convert templates module to use generic Collate parameter, instead of Page<Pagination>
 		pub fn use_this<T: Collate>(pagination: Page<T>)
 		pub fn instead_of(pagination: Page<Pagination>)
